@@ -85,6 +85,8 @@ public abstract class BeanFactory {
   protected abstract ProcessAnnotationManager doGetProcessAnnotationManagerBean();
 
   protected abstract AdministrationProcessManager doGetAdministrationProcessManagerBean();
+  
+  protected abstract CalendarManager doGetCalendarManagerBean();
 
   protected abstract AdministrationFlowScheduleInterface doGetAdministrationFlowScheduleBean();
 
@@ -185,5 +187,10 @@ public abstract class BeanFactory {
 
   public static CodeTemplateManager getCodeTemplateManagerBean() {
     return getInstance().doGetCodeTemplateManager();
+  }
+  
+  public static CalendarManager getCalendarManagerBean()
+  {
+    return getInstance().doGetCalendarManagerBean();
   }
 }

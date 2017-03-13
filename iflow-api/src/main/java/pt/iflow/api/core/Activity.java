@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class Activity {
   public String userid;
+  public String previousUserid;
   public int flowid;
   public int pid;
   public int subpid;
@@ -37,6 +38,7 @@ public class Activity {
     flowid = orig.flowid;
     pid = orig.pid;
     subpid = orig.subpid;
+    this.previousUserid = orig.previousUserid;
     type = orig.type;
     priority = orig.priority;
     created = orig.created;
@@ -53,6 +55,21 @@ public class Activity {
     mid = orig.mid;
   }
   
+  public Activity(String u, String pu, int f, int p, int sp, Timestamp c, String descr, String ur)
+  {
+    this();
+    this.userid = u;
+    this.previousUserid = pu;
+    this.flowid = f;
+    this.pid = p;
+    this.subpid = sp;
+    this.created = c;
+    this.description = descr;
+    this.url = ur;
+    this.notify = true;
+    this.delegated = true;
+  }
+  
   public Activity(String u, int f, int p, int sp, Timestamp c, String descr, String ur) {
     this();
     userid = u;
@@ -64,6 +81,22 @@ public class Activity {
     url = ur;
     notify = true;
     delegated = true;
+  }
+  
+  public Activity(String u, String pu, int f, int p, int sp, int t, int pri, String descr, String ur)
+  {
+    this();
+    this.userid = u;
+    this.previousUserid = pu;
+    this.flowid = f;
+    this.pid = p;
+    this.subpid = sp;
+    this.type = t;
+    this.priority = pri;
+    this.description = descr;
+    this.url = ur;
+    this.notify = true;
+    this.delegated = false;
   }
 
   public Activity(String u, int f, int p, int sp, int t, int pri, String descr, String ur) {
@@ -78,6 +111,26 @@ public class Activity {
     url = ur;
     notify = true;
     delegated = false;
+  }
+  
+  public Activity(String u, String pu, int f, int p, int sp, int t, int pri, String descr, String ur, int notif)
+  {
+    this();
+    this.userid = u;
+    this.previousUserid = pu;
+    this.flowid = f;
+    this.pid = p;
+    this.subpid = sp;
+    this.type = t;
+    this.priority = pri;
+    this.description = descr;
+    this.url = ur;
+    if (notif == 1) {
+      this.notify = true;
+    } else {
+      this.notify = false;
+    }
+    this.delegated = false;
   }
 
   public Activity(String u, int f, int p, int sp, int t, int pri, String descr, String ur, int notif) {
@@ -97,6 +150,30 @@ public class Activity {
       notify = false;
     }
 	 delegated = false;
+  }
+  
+  public Activity(String u, String pu, int f, int p, int sp, int t, int pri, Timestamp s, Timestamp d, Timestamp a, String descr, String ur, int stat, int notif)
+  {
+    this();
+    this.userid = u;
+    this.previousUserid = pu;
+    this.flowid = f;
+    this.pid = p;
+    this.subpid = sp;
+    this.type = t;
+    this.priority = pri;
+    this.created = s;
+    this.started = d;
+    this.archived = a;
+    this.description = descr;
+    this.url = ur;
+    this.status = stat;
+    if (notif == 1) {
+      this.notify = true;
+    } else {
+      this.notify = false;
+    }
+    this.delegated = false;
   }
 
   public Activity(String u, int f, int p, int sp, int t, int pri,
@@ -121,6 +198,31 @@ public class Activity {
       notify = false;
     }
 	 delegated = false;
+  }
+  
+  public Activity(String u, String pu, int f, int p, int sp, int t, int pri, Timestamp s, Timestamp d, Timestamp a, String descr, String ur, int stat, int notif, String profName)
+  {
+    this();
+    this.userid = u;
+    this.previousUserid = pu;
+    this.flowid = f;
+    this.pid = p;
+    this.subpid = sp;
+    this.type = t;
+    this.priority = pri;
+    this.created = s;
+    this.started = d;
+    this.archived = a;
+    this.description = descr;
+    this.url = ur;
+    this.status = stat;
+    this.profilename = profName;
+    if (notif == 1) {
+      this.notify = true;
+    } else {
+      this.notify = false;
+    }
+    this.delegated = false;
   }
 
   public Activity(String u, int f, int p, int sp, int t, int pri,
@@ -286,6 +388,11 @@ public class Activity {
    */
   public String getUserid() {
     return userid;
+  }
+  
+  public String getPreviousUserid()
+  {
+    return this.previousUserid;
   }
 
   public int getFolderid() {

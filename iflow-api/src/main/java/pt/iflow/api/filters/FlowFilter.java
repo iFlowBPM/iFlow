@@ -17,6 +17,8 @@ public class FlowFilter {
   private String folderid = "0";
   private String labelid = "0";
   private String deadline = "0";
+  private String previousUserid = "";
+  private String subject = "";
   private boolean comment=false;
   
   public boolean isValid() {
@@ -137,6 +139,26 @@ public class FlowFilter {
 
   public String getDeadline() {
     return deadline;
+  }
+  
+  public void setPreviousUserid(String previousUserid)
+  {
+    this.previousUserid = previousUserid;
+  }
+  
+  public String getPreviousUserid()
+  {
+    return this.previousUserid;
+  }
+  
+  public String getSubject()
+  {
+    return this.subject;
+  }
+  
+  public void setSubject(String subject)
+  {
+    this.subject = subject;
   }
   
   public boolean isIntervenient() {

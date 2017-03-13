@@ -768,6 +768,44 @@ public class Utils {
     || StringUtils.equalsIgnoreCase(str, "sim")
     || StringUtils.equalsIgnoreCase(str, "s");
   }
+  
+  public static String getDuration(Timestamp tsStart, Timestamp tsStop, int flowid, UserInfoInterface userInfo)
+  {
+    long total = 0L;
+    String retObj = "";
+    
+
+    CalendarManager cmb = BeanFactory.getCalendarManagerBean();
+    pt.iflow.api.calendar.Calendar cal = cmb.getFlowCalendar(userInfo, flowid);
+    if (cal != null)
+    {
+      total = getDurationCalendar(tsStart, tsStop, cal, userInfo);
+      
+      long dias = total / 86400000L;
+      long t = total % 86400000L;
+      long horas = t / 3600000L;
+      t %= 3600000L;
+      long minutos = t / 60000L;
+      t %= 60000L;
+      long segundos = t / 1000L;
+      if (dias != 0L) {
+        retObj = retObj + dias + "d," + horas + "h," + minutos + "m," + segundos + "s";
+      } else if (horas != 0L) {
+        retObj = retObj + horas + "h," + minutos + "m," + segundos + "s";
+      } else if (minutos != 0L) {
+        retObj = retObj + minutos + "m," + segundos + "s";
+      } else if (segundos != 0L) {
+        retObj = retObj + segundos + "s";
+      } else {
+        retObj = "0s";
+      }
+    }
+    else
+    {
+      retObj = getDuration(tsStart, tsStop);
+    }
+    return retObj;
+  }
 
   public static String getDuration(Timestamp tsStart, Timestamp tsStop) {
     String retObj = "";
