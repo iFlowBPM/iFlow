@@ -234,7 +234,7 @@
   session.setAttribute("filtro_startindex",nStartIndex);
   session.setAttribute("filtro_nextstartindex",nNextStartIndex);
 
-  if(flagMode != -1) { //caso tenha vindo da sessão não é para actualizar
+  if(flagMode != -1) { //caso tenha vindo da sessÃ£o nÃ£o Ã© para actualizar
 		  if (nMode == 0) {
 		    nStartIndex = 0;
 		    nNextStartIndex = 0;
@@ -736,7 +736,8 @@ function editFolder(folderid, from){
 	} else if (from == '0') {
 		document.activities_form.mode.value='1';
 		document.activities_form.nextstartindex.value='<%=nNextStartIndex%>';
-		var editname = escape(document.getElementById('edit_'+folderid).value);
+		//var editname = escape(document.getElementById('edit_'+folderid).value);
+		var editname = encodeURI(document.getElementById('edit_'+folderid).value);
 		var cor = escape(document.getElementById('bt_pickColor_'+folderid).color);
 		//alert(cor);
 		if(editname != "" && cor != "ffffff") 
@@ -933,7 +934,7 @@ jscolor.bind();
         String accao = "<td></td>";
         if(folders.size() > 0){
           
-          String imgParam = "AnnotationIconsServlet?icon_name=action.png&ts='"+System.currentTimeMillis()+"'";
+          String imgParam = "AnnotationIconsServlet?icon_name='action.png'&ts='"+System.currentTimeMillis()+"'";
           imgParam = "<img class=\"toolTipImg\" src=\""+imgParam+"\" border=\"0\">";  
           
             accao = "<td onclick=\"javascript:menuonoff('atribui"+row+"')\" title=\""+messages.getString("actividades.folder.move")+"\">";
@@ -970,10 +971,10 @@ jscolor.bind();
         	       
           if (!showApplicationName && j == 1)
             continue;
-          if (j != 4) { // é o subpid
+          if (j != 4) { // Ã© o subpid
             out.print("          <td>"); 
             field = (String) altmp.get(j);
-            if (j == 3) { // este é o pid
+            if (j == 3) { // este Ã© o pid
               if (!Const.DEFAULT_SUBPID.equals((String) altmp.get(4))) {                 
                 field += "/" + (String) altmp.get(4);
               }

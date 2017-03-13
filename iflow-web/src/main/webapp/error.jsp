@@ -6,7 +6,9 @@
 String title = messages.getString("nopriv.title");
 %>
 <%@ include file = "inc/process_top.jspf" %>
-<div class="error_msg">
+
+<div class="alert alert-danger">
+<!-- <div class="error_msg">  -->
   <if:message string="error.generic"/>
 </div>
 <%@ include file = "inc/process_bottom.jspf" %>

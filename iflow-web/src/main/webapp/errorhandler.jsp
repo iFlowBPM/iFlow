@@ -22,6 +22,9 @@ Logger.errorJsp(_login, request.getPathInfo(), "Uncaptured exception in JSP", ex
   <meta http-equiv="Pragma" content="no-cache">
   <title><if:message string="error.generic"/></title>
   <link rel="stylesheet" href="<%=Const.APP_URL_PREFIX%>Themes/<%=BeanFactory.getOrganizationThemeBean().getOrganizationTheme(_userInfo).getThemeName() %>/css/iflow_main.css" type="text/css">
+  
+   <link href="<%=Const.APP_URL_PREFIX%>/javascript/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+  
   <script type="text/javascript" src="<%=Const.APP_URL_PREFIX%>javascript/ajax_processing.js"></script>
   <script type="text/javascript" src="<%=Const.APP_URL_PREFIX%>javascript/tabs.js"></script>
 </head>

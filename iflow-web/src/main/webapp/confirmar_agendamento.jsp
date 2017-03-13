@@ -92,6 +92,8 @@
 <%
   }
 %>
+		
 	<div class="button_box">
-		<input class="regular_button_02" type="button" name="continue" value="<%=messages.getString("confirmar_agendamento.button.continue")%>" onClick="javascript:tabber_right(5, '<%= response.encodeURL("gestao_tarefas.jsp") %>', 'sel=3');"/>
-	</div>
+	<!-- <input class="regular_button_02" -->
+		<input class="regular_button_03 btn btn-default" type="button" name="continue" value="<%=messages.getString("confirmar_agendamento.button.continue")%>" onClick="javascript:tabber_right(5, '<%= response.encodeURL("gestao_tarefas.jsp") %>', 'sel=3');"/>
+	</div>	

@@ -137,7 +137,7 @@
       <input type="hidden" name="ahid" value=""/>
       <input type="hidden" name="cb_accept" value=""/>
       <input type="hidden" name="cb_reject" value=""/>
-      <table class="itemlist">
+      <table class="itemlist table">
 
     <%bfirst = true;
       try {
@@ -196,12 +196,12 @@
       }
       if (bfirst) {%>
       <table>
-        <tr><td class="error_msg"><%=messages.getString("gestao_tarefas.msg.nodeleg")%></td></tr>
+        <tr><td class="alert alert_warning"><%=messages.getString("gestao_tarefas.msg.nodeleg")%></td></tr>
       </table>
       <%} else {%>
       <div class="button_box"> 
-        <input class="regular_button_03" type="button" name="add" value="<if:message string="button.accept_checked"></if:message>" onClick="javascript:document.requests.cb_accept.value=true;tabber_right(5, '<c:url value="confirmar_agendamento.jsp"></c:url>','ts=<%=ts%>&' + get_params(document.requests));"></input>
-        <input class="regular_button_03" type="button" name="add" value="<if:message string="button.refuse_checked"></if:message>" onClick="javascript:document.requests.cb_reject.value=true;tabber_right(5, '<c:url value="confirmar_agendamento.jsp"></c:url>','ts=<%=ts%>&' + get_params(document.requests));"></input>
+        <input class="regular_button_03 btn btn-default" type="button" name="add" value="<if:message string="button.accept_checked"></if:message>" onClick="javascript:document.requests.cb_accept.value=true;tabber_right(5, '<c:url value="confirmar_agendamento.jsp"></c:url>','ts=<%=ts%>&' + get_params(document.requests));"></input>
+        <input class="regular_button_03 btn btn-default" type="button" name="add" value="<if:message string="button.refuse_checked"></if:message>" onClick="javascript:document.requests.cb_reject.value=true;tabber_right(5, '<c:url value="confirmar_agendamento.jsp"></c:url>','ts=<%=ts%>&' + get_params(document.requests));"></input>
       </div>
       <%}%>
 
@@ -211,7 +211,7 @@
       <input type="hidden" name="id" value=""/>
       <input type="hidden" name="op" value=""/>
       <input type="hidden" name="cb_terminate" value=""/>
-      <table class="itemlist">
+      <table class="itemlist table">
     <%
       try {
         ds = Utils.getDataSource();
@@ -331,7 +331,7 @@
       </table>
       <%} else {%>
       <div class="button_box"> 
-        <input class="regular_button_03" type="button" name="add" value="<if:message string="button.terminate_checked"></if:message>" onClick="javascript:document.terminar.cb_terminate.value=true;tabber_right(5, '<c:url value="terminar_agendamento.jsp"></c:url>','ts=<%=ts%>&' + get_params(document.terminar));"></input>
+        <input class="regular_button_03 btn btn-default" type="button" name="add" value="<if:message string="button.terminate_checked"></if:message>" onClick="javascript:document.terminar.cb_terminate.value=true;tabber_right(5, '<c:url value="terminar_agendamento.jsp"></c:url>','ts=<%=ts%>&' + get_params(document.terminar));"></input>
       </div>
       <%}%>
 
@@ -342,7 +342,7 @@
       <input type="hidden" name="ownerid" value=""/>
       <input type="hidden" name="cb_request" value=""/>
       <input type="hidden" name="action" value="<%=sAction%>"/>
-      <table class="itemlist">
+      <table class="itemlist table">
       <%try {
           ds = Utils.getDataSource();
           db = ds.getConnection();
@@ -436,12 +436,12 @@
       <%if (bfirst) {%>
       <table>
         <tr>
-          <td class="error_msg"><%=messages.getString("gestao_tarefas.msg.nomorerequests")%></td>
+          <td class="alert alert-warning"><%=messages.getString("gestao_tarefas.msg.nomorerequests")%></td>
         </tr>
       </table>
       <%} else {%>
       <div class="button_box"> 
-        <input class="regular_button_03" type="button" name="add" value="<if:message string="button.request_checked"></if:message>" onClick="javascript:document.requisitar.cb_request.value=true;tabber_right(5, '<c:url value="requisitar_agendamento.jsp"></c:url>','ts=<%=ts%>&' + get_params(document.requisitar));"></input>
+        <input class="regular_button_03 btn btn-default" type="button" name="add" value="<if:message string="button.request_checked"></if:message>" onClick="javascript:document.requisitar.cb_request.value=true;tabber_right(5, '<c:url value="requisitar_agendamento.jsp"></c:url>','ts=<%=ts%>&' + get_params(document.requisitar));"></input>
       </div>
       <%}%>
     </form>
@@ -520,7 +520,7 @@
       %>
       <table>
         <tr>
-          <td class="error_msg"><%=messages.getString("gestao_tarefas.msg.nomorerequests")%></td>
+          <td class="alert alert-warning"><%=messages.getString("gestao_tarefas.msg.nomorerequests")%></td>
         </tr>
       </table>
     <%}%>
