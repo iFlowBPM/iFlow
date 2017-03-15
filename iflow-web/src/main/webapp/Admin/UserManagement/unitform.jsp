@@ -17,8 +17,10 @@
 	String unitId = fdFormData.getParameter("unitid");
 	String sOper = fdFormData.getParameter("oper");
 	String sErrorMsg = "";
+	  String calendId = "";
 	boolean bError = false;
 	UserInfoInterface ui = (UserInfoInterface) session.getAttribute(Const.USER_INFO);
+	UserManager manager = BeanFactory.getUserManagerBean();
 	
 	if ("add".equals(sOper)) {
 	
@@ -27,20 +29,20 @@
 	    try {
 	   		String name = fdFormData.getParameter("name");
 	   		String description = fdFormData.getParameter("description");
-	        //String organizationid = fdFormData.getParameter("organizationid");
 	        String parentid = fdFormData.getParameter("parentid");
 	        String managerid = fdFormData.getParameter("managerid");
+	        String calid = fdFormData.getParameter("calendar");
 	        
 	        if ("-1".equals(managerid)) {
 	        	managerid = String.valueOf(ui.getUserId());
 	        }
 	
-	        UserManager manager = BeanFactory.getUserManagerBean();
+	        manager = BeanFactory.getUserManagerBean();
 	        if(StringUtils.isEmpty(unitId)) {
-		        success = manager.createOrganizationalUnit(ui, ui.getCompanyID(), name, description, parentid, managerid);
+		        success = manager.createOrganizationalUnit(ui, ui.getCompanyID(), name, description, parentid, managerid, calid);
 	        } 
 	        else {
-		        success = manager.modifyOrganizationalUnit(ui, unitId, ui.getCompanyID(), name, description, parentid, managerid);
+		        success = manager.modifyOrganizationalUnit(ui, unitId, ui.getCompanyID(), name, description, parentid, managerid, calid);
 	        }
 		}
 		catch (Exception e) {
@@ -67,15 +69,30 @@
 	OrganizationalUnitViewInterface unitView = new OrganizationalUnitView(new HashMap<String,String>());
     OrganizationalUnitViewInterface [] units;
     UserViewInterface [] users;
+
+    List<String[]> calendar = new ArrayList<String[]>();
     try {
-      UserManager manager = BeanFactory.getUserManagerBean();
+      manager = BeanFactory.getUserManagerBean();
 		units = manager.getAllOrganizationalUnits(ui);
 		users = manager.getAllUsers(ui);
 		
 	    
 		if(unitId == null || "".equals(unitId)) {
 	unitId = "";
+	calendId = "-1";
+    try {
+    	calendar = manager.getCalendars(ui);
+    }
+    catch (Exception e) {
+    	e.printStackTrace();
+    }
 		} else {
+		  try {
+		  	calendar = manager.getCalendars(ui);
+		  }
+		  catch (Exception e) {
+		  	e.printStackTrace();
+		  	}
 	unitView = manager.getOrganizationalUnit(ui, unitId);
 	titulo = messages.getString("unitform.title.modify");
 	botao = messages.getString("button.modify");
@@ -85,7 +102,7 @@
     	 units = new OrganizationalUnitView[0];
 		    users = new UserView[0];
     }
-    
+    calendId = manager.getOrgUnitCalendarId(ui.getUtilizador(), unitId);
     String sUnitManager = StringUtils.isEmpty(unitId) ? userInfo.getUserId() : unitView.getManagerId();
     String curName = unitView.getName();
     String curId = unitView.getUnitId();
@@ -98,13 +115,13 @@
     }
 %>
 
-<form method="post" name="formulario" id="formulario">
+<form method="post" name="formulario" id="formulario" class="form-horizontal">
 	<input type="hidden" name="unitid" value="<%=unitId%>" />
 
 	<h1 id="title_admin"><%=titulo%></h1>
 
 <% if (bError) { %>
-	<div class="error_msg">
+	<div class="alert alert-danger">
 		<%=sErrorMsg%>
 	</div>
 <% } %>
@@ -133,11 +150,18 @@
 				<if:formOption label="<%=lbl%>" value='<%=punit.getUnitId()%>' />
 				<%}%>
 			</if:formSelect>
+			<if:formSelect name="calendar" edit="true" value='<%=calendId%>' labelkey="admin_nav.section.resources.tooltip.calend" >
+ 
+		  <if:formOption value=' ' label= '<%= messages.getString("actividades.folder.change")%>'/>
+		  <% for (int i = 0; i < calendar.size(); i++) { %>
+		    <if:formOption value='<%=calendar.get(i)[0]%>' label="<%=calendar.get(i)[1]%>"/>
+		  <% } %>
+		  </if:formSelect>
 		</ol>
 	</fieldset>
     <fieldset class="submit">
-        <input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/unitadm.jsp")%>');"/>
-		<input class="regular_button_01" type="button" name="clear" value="<%=messages.getString("button.clear")%>" onClick="javascript:document.formulario.reset()"/>
-		<input class="regular_button_01" type="button" name="add" value="<%=botao%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/unitform.jsp")%>','oper=add&' + get_params(document.formulario));"/>
+        <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/unitadm.jsp")%>');"/>
+		<input class="regular_button_01 btn btn-default" type="button" name="clear" value="<%=messages.getString("button.clear")%>" onClick="javascript:document.formulario.reset()"/>
+		<input class="regular_button_01 btn btn-default" type="button" name="add" value="<%=botao%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/unitform.jsp")%>','oper=add&' + get_params(document.formulario));"/>
 	</fieldset>
 </form>

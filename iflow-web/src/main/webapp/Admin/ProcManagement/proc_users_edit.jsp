@@ -247,7 +247,8 @@ if (sbError.length() == 0 && sOp.equals("2")) {
 %>
 
 <script type="text/javascript"></script>
-<form name="procusersedit" method="POST">
+<h1 id="title_admin"><%=title%></h1>
+<form name="procusersedit" method="POST" class="form-horizontal">
     <script>
       function isUserVarFilled(user){
           if (user != null && user != ''){
@@ -266,16 +267,16 @@ if (sbError.length() == 0 && sOp.equals("2")) {
   <input type="hidden" name="a" value="<%=sAction%>">
   <input type="hidden" name="uid" value="<%=sUID%>">
 
-  <h1 id="title_admin"><%=title%></h1>
+  
       
 <% if (sbError.length() > 0) { %>
-  <div class="error_msg">
+  <div class="alert alert-danger">
     <%=sbError%>
   </div>
 <% } %>
 
 <% if (!sHtml.equals("")) { %>
-  <div class="info_msg">
+  <div class="alert alert-info">
     <%=sHtml%>
   </div>
 <% } else {%>
@@ -309,16 +310,16 @@ if (sbError.length() == 0 && sOp.equals("2")) {
 <%
 if (!sHtml.equals("") || bDel) {
 %>
- 	  <input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.back")%>" 
+ 	  <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" 
       onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_users.jsp")%>', get_params(document.procusersedit));"/>
 <%
 }
 else {
 %>
- 	  <input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.back")%>" 
+ 	  <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" 
       onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_users.jsp")%>', get_params(document.procusersedit));"/>
- 	  <input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.next")%>" 
-      onClick="javascript:if (isUserVarFilled(document.procusersedit.user.value)){document.procusersedit.op.value='2';tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_users_edit.jsp")%>', get_params(document.procusersedit));}"/>
+ 	  <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.next")%>" 
+      onClick="javascript:document.procusersedit.op.value='2';tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_users_edit.jsp")%>', get_params(document.procusersedit));"/>
 <%
 }
 %>

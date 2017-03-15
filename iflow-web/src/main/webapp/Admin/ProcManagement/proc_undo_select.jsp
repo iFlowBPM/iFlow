@@ -286,46 +286,57 @@ else {
 
 <% Collection<UserData> users = BeanFactory.getAuthProfileBean().getAllUsers(userInfo.getOrganization());%>
 
-<%@page import="pt.iflow.api.transition.FlowRolesTO"%><form name="undoactivities" method="post">
+<%@page import="pt.iflow.api.transition.FlowRolesTO"%>
+
+<h1 id="title_admin"><%=title%></h1>
+
+<form name="undoactivities" method="post" class="form-horizontal">
   <input type="hidden" name="dummy" value="1">
   <input type="hidden" name="mode" value="0">
   <input type="hidden" name="startindex" value="<%=nStartIndex%>">
   <input type="hidden" name="nextstartindex" value="<%=nStartIndex%>">
   
-  <h1 id="title_admin"><%=title%></h1>
-
 <% if (sbError.length() > 0) { %>
-  <div class="error_msg">
+  <div class="alert alert-danger">
     <%=sbError.toString()%>
   </div>
 <% } %>  
 
   <fieldset>
-    <legend align="left"><%=messages.getString("proc_undo_select.header.criteria") %></legend>
+    <div class="alert"><%=messages.getString("proc_undo_select.header.criteria") %></div>
     <ol>
       <% if (!sShowFlowHtml.equals("")) { %>
-        <li>
-          <label for="showflowid"><%=messages.getString("proc_undo_select.crit.flow") %>:</label>
+        <li class="form-group">
+          <label class="control-label col-sm-2" for="showflowid"><%=messages.getString("proc_undo_select.crit.flow") %>:</label>
+		  <div class="col-sm-5">
           <%=sShowFlowHtml%>
+		  </div>
         </li>
       <% } %>
-      <li>
-        <label for="dtafter"><%=messages.getString("proc_undo_select.crit.after") %>:</label>
+        <li class="form-group">
+        <label  class="control-label col-sm-2" for="dtafter"><%=messages.getString("proc_undo_select.crit.after") %>:</label>
+		<div class="col-sm-5">
         <%=sAfterHtml%>
+		  </div>
       </li>
-      <li>
-        <label for="dtbefore"><%=messages.getString("proc_undo_select.crit.before") %>:</label>
+      <li class="form-group">
+        <label class="control-label col-sm-2" for="dtbefore"><%=messages.getString("proc_undo_select.crit.before") %>:</label>
+		<div class="col-sm-5">
         <%=sBeforeHtml%>
+		  </div>
       </li>
-      <li>
-        <label for="itemspage"><%=messages.getString("proc_undo_select.crit.tasks") %>:</label>
-        <input type="text" name="itemspage" value="<%=nItems%>" class="txt" size="5" maxlength="2" />
+      <li class="form-group">
+        <label class="control-label col-sm-2" for="itemspage"><%=messages.getString("proc_undo_select.crit.tasks") %>:</label>
+		<div class="col-sm-5">
+        <input type="text" name="itemspage" value="<%=nItems%>" class="txt form-control" size="5" maxlength="2" />
+		  </div>
       </li>
-      <li>
-        <label for="pid"><%=messages.getString("proc_undo_select.crit.process") %>:</label>
-        <input type="text" name="pid" value="<%=sPid%>" class="txt" size="8" />
+      <li class="form-group">
+        <label class="control-label col-sm-2" for="pid"><%=messages.getString("proc_undo_select.crit.process") %>:</label>
+		<div class="col-sm-5">
+        <input type="text" name="pid" value="<%=sPid%>" class="txt form-control" size="8" />
+		  </div>
       </li>
-      <li>
         <% if (users != null && users.size() > 0) { %>
             <if:formSelect name="beforeuser" edit="true" labelkey="proc_undo_select.crit.previousUser" value="<%=sBeforeUser %>" required="true" onchange="">
                 <if:formOption value="" labelkey="flow_schedule.add.field.combobox.default.text"/>
@@ -336,8 +347,6 @@ else {
         <% } else { %>
             <if:formInput name='beforeuser' labelkey="proc_undo_select.crit.previousUser" type="text" value='${sBeforeUser}' edit="true" required="true" maxlength="50" />
         <% } %>
-      </li>
-      <li>
         <% if (users != null && users.size() > 0) { %>
             <if:formSelect name="actualuser" edit="true" labelkey="proc_undo_select.crit.currentUser" value="<%=sActualUser %>" required="true" onchange="">
                 <if:formOption value="" labelkey="flow_schedule.add.field.combobox.default.text"/>
@@ -348,22 +357,22 @@ else {
         <% } else { %>
             <if:formInput name='actualuser' labelkey="proc_undo_select.crit.currentUser" type="text" value='${sActualUser}' edit="true" required="true" maxlength="50" />
         <% } %>
-      </li>
-      <li>
-        <label for=""></label>
+      <li class="form-group">
+        <label class="control-label col-sm-2" for=""></label>
       </li>
     </ol>
   </fieldset>
   <fieldset class="submit">
-    <input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.search")%>" 
+    <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.search")%>" 
       onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_undo_select.jsp")%>', get_params(document.undoactivities));"/>
   </fieldset>
 
 <% if (bSearch) { %>
+  <div class="alert">Resultados</div>
   <div class="table_inc">
-
+	
   <% if (alData.size() > 0) { %>
-   	<table class="list_item"> 
+   	<table class="list_item table"> 
       <tr class="tab_header">  
         <% for (int i=0; i < saCols.length; i++) { %>
           <td><%=saCols[i]%></td>
@@ -384,18 +393,18 @@ else {
       %>
     </table>  
   <% } else { %>
-    <div class="info_msg">
+    <div class="alert alert-info">
       N&atilde;o existem processos associados
     </div>
   <% } %>
   </div>
   <div class="button_box">
     <% if (!bFirstPage) { %>
-      <input class="regular_button_00" type="button" name="previous" value="<%=messages.getString("button.previous")%>" 
+      <input class="regular_button_00 btn btn-default" type="button" name="previous" value="<%=messages.getString("button.previous")%>" 
         onClick="javascript:document.undoactivities.mode.value='-1';document.undoactivities.nextstartindex.value='<%=nNextStartIndex%>';tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_undo_select.jsp")%>', get_params(document.undoactivities));"/>
     <% } %>
     <% if (bHasMoreItems) { %>
-      <input class="regular_button_00" type="button" name="next" value="<%=messages.getString("button.next")%>" 
+      <input class="regular_button_00 btn btn-default" type="button" name="next" value="<%=messages.getString("button.next")%>" 
         onClick="javascript:document.undoactivities.mode.value='1';document.undoactivities.nextstartindex.value='<%=nNextStartIndex%>';tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_undo_select.jsp")%>', get_params(document.undoactivities));"/>
     <% } %>
   </div>

@@ -27,8 +27,13 @@
             sbHtml = new StringBuffer("<p>");
             sbHtml.append(message).append("</p>");
         }
+    } else {    
+	    String msg = fdFormData.getParameter("msg");
+	    if(StringUtils.isNotEmpty(msg)){
+	        sbHtml = new StringBuffer("<p>");
+	        sbHtml.append(msg).append("</p>");	
+	    }
     }
-    
     boolean paramsOk = false;
     try {
      // use of fdFormData defined in /inc/defs.jsp
@@ -68,9 +73,9 @@
                 else {
                   sbHtml.append("<br/>");
                 }
-                sbHtml.append(messages.getString("proc_info.msg.fwshownuser"));                
+                sbHtml.append("<div class=\"alert alert-info\">").append(messages.getString("proc_info.msg.fwshownuser")).append("</div>");                
                 sbHtml.append("</div><div class=\"table_inc\">");
-                sbHtml.append("<table class=\"item_list\">");
+                sbHtml.append("<table class=\"item_list table\">");	
                 
                 AuthProfile aptmp = BeanFactory.getAuthProfileBean();
                 
@@ -101,8 +106,8 @@
         
         sColspan = "colspan=\"5\"";
         
-        sTDBefore = "<td width=\"20%\">&nbsp;</td>";
-        sTDBefore += "<td width=\"20%\" class=\"v10bAZUdec\" align=\"center\" valign=\"middle\">";
+        sTDBefore = "<td>&nbsp;</td>";
+        sTDBefore += "<td class=\"v10bAZUdec\" align=\"center\" valign=\"middle\">";
         
         sBatchLink = "<td width=\"20%\">&nbsp;</td>";
         sBatchLink += "<td width=\"20%\" class=\"v10bAZUdec\" align=\"center\" valign=\"middle\"><a href=\"" + response.encodeURL("processBatchProc.jsp") + "\" class=\"v10bAZUdec\"><img src=\"images/setaon.gif\" width=\"19\" height=\"19\" border=\"0\"><br>Pr&oacute;ximo Processo Lote</a></td>";
@@ -112,34 +117,53 @@
 %>
 <%@ include file="inc/process_top.jspf"%>
 
-<div class="info_msg" style="font-family: Verdana,Arial,sans-serif;"><%=sbHtml%></div>
+<div style="font-family: Verdana,Arial,sans-serif;"><%=sbHtml%></div>
 
 <%  String sFrom = fdFormData.getParameter("from");
     if (sFrom == null){
         sFrom = "";
     }
     if (pid > 0 && "forward".equals(sFrom)){ 
-      String labelId = fdFormData.getParameter("labelid");
-      if (labelId == null){
-        labelId = "";
-      }
-      String labelName = fdFormData.getParameter("labelname");
-      if (labelName == null){
-        labelName = "";
-      }
-    %>
-  <span id =""></span>
-  <script language="JavaScript" type="text/javascript">
-	if (parent.showProcessFowardAnnotations)
-	  parent.showProcessFowardAnnotations(<%=flowid%>,<%=pid%>,<%=subpid%>,'<%=sFrom%>', '<%=labelId%>', '<%=labelName%>');
-  </script>
-<% } %>
-<div class="info_msg" style="font-family: Verdana,Arial,sans-serif;"><%="A tarefa foi executada. Pode fechar a janela do browser se assim o desejar"%></div>
+		      String labelId = fdFormData.getParameter("labelid");
+		      if (labelId == null){
+		        labelId = "";
+		      }
+		      String labelName = fdFormData.getParameter("labelname");
+		      if (labelName == null){
+		        labelName = "";
+		      }
+		      
+		    %>
+		  <span id ="end_process_process_annotations_span"></span>
+		  <script language="JavaScript" type="text/javascript">
+		  	if (parent.showProcessFowardAnnotations){
+			  parent.showProcessFowardAnnotations(<%=flowid%>,<%=pid%>,<%=subpid%>,'<%=sFrom%>', '<%=labelId%>', '<%=labelName%>');
+		  	}
+		  </script>
+	<% } %>
+<hr class="apt_sep">
+<div class="button_box" style="text-align:center; margin-bottom:30px">
+  <form action="#" onsubmit="return false;">
+    <% String theme = BeanFactory.getOrganizationThemeBean().getOrganizationTheme(userInfo).getThemeName(); %>
+		<input class="regular_button_01 btn btn-default"
+			<%if (userInfo.isGuest() || "newflow".equals(theme)) {%>
+				type="hidden" 
+			<%}	else {%> 
+				type="button" 
+			<%}%> 
+			name="close" value="<if:message string="button.close"/>"
+			onclick="if(parent.saveForwardToProcessAnnotations)parent.saveForwardToProcessAnnotations('true');if(parent && parent.close_process) parent.close_process(3); return false;" />
+ 
+	<% if (pid > 0 && "forward".equals(sFrom)){ %>
+    		<script language="JavaScript" type="text/javascript">
+		  	window.frames.frameElement.style.height='800px';	 
+		  	</script>
+    <% } %>
+  </form>
+</div>
 
-  <script language="JavaScript" type="text/javascript">
-  parent.document.getElementById('section3_content_div').style.height='800px';
-  </script>
 
-<% out.println(ProcessEndDisplay.processTasks(userInfo, response)); %>
+<% 		//Slow Query disabled
+		//out.println(ProcessEndDisplay.processTasks(userInfo, response)); %>
 
 <%@ include file="inc/process_bottom.jspf"%>

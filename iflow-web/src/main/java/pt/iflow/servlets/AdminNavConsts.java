@@ -37,11 +37,13 @@ public abstract class AdminNavConsts {
   public static final int PROCESS_HISTORY = 43;
   public static final int PROCESS_CANCEL = 44;
   public static final int PROCESS_TASK_MANAGEMENT = 45;
+  public static final int PROCESS_HIDE = 46;
   
   public static final int RESOURCES_STYLESHEETS = 50;
   public static final int RESOURCES_PRINTING = 51;
   public static final int RESOURCES_EMAIL_TEMPLATES = 52;
   public static final int RESOURCES_PUBLIC = 53;
+  public static final int RESOURCES_CALEND = 54;
 
   public static final int ORGANIZATION_PROPERTIES = 60;
   public static final int ORGANIZATION_LICENSE = 61;

@@ -57,16 +57,16 @@ try {
 <input type="hidden" name="procStatus" value="<%=status%>">
 
   <div style="vertical-align: middle;">
-    <img src="images/icon_tab_tarefas.png" class="icon_item"/>
-    <h1><if:message string="user_proc_detail.title"/></h1>
+    <!-- img src="images/icon_tab_tarefas.png" class="icon_item"/-->
+    <div class="title_cont"><if:message string="user_proc_detail.title"/></div>
   </div>
       
 <% if (sbError.length() > 0) { %>
-  <div class="error_msg">
+  <div class="alert alert-danger">
     <%=sbError.toString()%>
   </div>
 <% } else if ((it == null || it.isEmpty()) && flowid > 0) { %>
-<div class="info_msg">
+<div class="alert alert-info">
   <if:message string="proc_hist.msg.noTaskHistory"/>
 </div>
 <% } else { %>
@@ -75,10 +75,10 @@ try {
 
   <fieldset class="submit">
   <% if(!fromNotification){ %>
-    <input class="regular_button_01" type="button" name="back" value="<if:message string="button.back"/>" 
+    <input class="regular_button_01 btn btn-default" type="button" name="back" value="<if:message string="button.back"/>" 
     onClick="javascript:tabber_right(8, '<%=response.encodeURL("user_procs.jsp")%>', get_params(document.user_procs_filter));"/>
 <% } if(showButton) { %>
-    <input class="regular_button_01" type="button" name="proc_detail" value="<if:message string="button.proc_detail"/>" 
+    <input class="regular_button_01 btn btn-default" type="button" name="proc_detail" value="<if:message string="button.proc_detail"/>" 
     onClick="javascript:tabber_right(8, '<%=response.encodeURL("user_proc_detail.jsp")%>', get_params(document.userproctasksForm));"/>
 <% } %>
   </fieldset>

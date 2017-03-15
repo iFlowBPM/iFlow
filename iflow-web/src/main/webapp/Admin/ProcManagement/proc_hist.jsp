@@ -95,26 +95,26 @@ request.setAttribute("sONGOING",sONGOING);
 %>
 
 
-<form name="prochist" method="POST">
+<h1 id="title_admin"><%=title%></h1>
+<form name="prochist" method="POST" class="form-horizontal">
   <input type="hidden" name="state" value="<%=state%>" />
   <input type="hidden" name="show" value="true" />
 
-  <h1 id="title_admin"><%=title%></h1>
       
 <% if (sbError.length() > 0) { %>
-  <div class="error_msg">
+  <div class="alert alert-danger">
     <%=sbError.toString()%>
   </div>
 <% } %>
 
 <% if ((alStates != null && alStates.size() == 0 ) && flowid > 0)  { %>
-  <div class="info_msg">
+  <div class="alert alert-info">
     <if:message string="proc_hist.msg.noStateHistory"/>
   </div>
 <% } %>
 
 <% if ((it == null || it.isEmpty()) && flowid > 0 && (iterator == null || !iterator.hasNext())) { %>
-  <div class="info_msg">
+  <div class="alert alert-info">
     <if:message string="proc_hist.msg.noTaskHistory"/>
   </div>
 <% } %>
@@ -133,14 +133,15 @@ request.setAttribute("sONGOING",sONGOING);
   </fieldset>
     <fieldset class="submit">
 <% if (state < 0) { %>
-      <input class="regular_button_00" type="button" name="show" value="<if:message string="button.show"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_hist.jsp") %>', get_params(document.prochist));"/>
+      <input class="regular_button_00 btn btn-default" type="button" name="show" value="<if:message string="button.show"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_hist.jsp") %>', get_params(document.prochist));"/>
 <% } %>
     </fieldset>
 
 <%@ include file = "../../inc/proc_hist_tables.jspf" %>
 <% if(iterator != null && iterator.hasNext()) { %>
-       <div class="table_inc">  
-    <table class="item_list">
+    <div class="alert">Agendamentos</div>
+	<div class="table_inc">  
+    <table class="item_list table">
       <tr class="tab_header">
         <td><%=messages.getString("proc_cancel.table.pnumber")%></td>
         <td><%=messages.getString("proc_cancel.table.pid")%></td>
@@ -207,7 +208,7 @@ request.setAttribute("sONGOING",sONGOING);
 <% } %>
 <% if (state > 0) { %>
   <div class="button_box">
-    <input class="regular_button_01" type="button" name="back" value="<if:message string="button.back"/>" 
+    <input class="regular_button_01 btn btn-default" type="button" name="back" value="<if:message string="button.back"/>" 
       onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/flow_state_procs.jsp") %>', get_params(document.prochist));"/>
   </div>
 <% } %>

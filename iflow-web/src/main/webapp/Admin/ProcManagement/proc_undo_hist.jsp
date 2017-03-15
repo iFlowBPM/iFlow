@@ -156,7 +156,7 @@ if (subpid != -1 && pid != -1 && flowid != -1) {
           int qMid = item.getMid();
           if (item.getExitFlag() == 0) { 
               sResultado = messages.getString("proc_undo_hist.msg.in");
-              Activity actv = new Activity(item.getModificationUser(), flowid, pid, subpid, 0, 0, "", "");
+              Activity actv = new Activity(item.getModificationUser(), item.getModificationUser(), flowid, pid, subpid, 0, 0, "", "");
               users = actv.getUserid();
 			  // FIXME isto esta mal. deveria ir buscar os activity owners associados ao state history 
 			  // que estamos a processar. O pm.getActivityOwners vai buscar os users ACTUAIS.

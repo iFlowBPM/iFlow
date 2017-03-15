@@ -120,13 +120,13 @@
 %>
 
 <div style="vertical-align: middle;">
-  <img src="images/icon_tab_tarefas.png" class="icon_item"/>
-  <h1><if:message string="user_procs.title" /></h1>
+  <!--img src="images/icon_tab_tarefas.png" class="icon_item"/-->
+  <div id="title_admin"><if:message string="user_procs.title" /></div>
 </div>
 <%
   if (!showUserProcs) {
 %>
-	<div class="info_msg">
+	<div class="alert alert-info">
 		<%=messages.getString("user_procs.msg.select")%>
 	</div>
 <%
@@ -134,14 +134,11 @@
     String[] idx = new String[Const.INDEX_COLUMN_COUNT];
     String proc_search = fdFormData.getParameter("proc_search");
     if (StringUtils.equals("true", proc_search)) {
-      for (int i = 0; i < Const.INDEX_COLUMN_COUNT; i++){
+      for (int i = 0; i < Const.INDEX_COLUMN_COUNT; i++)
         idx[i] = fdFormData.getParameter("idx" + i);
-        if("null".equals(idx[i]))
-        	idx[i]="";
-      }
     } else {
       for (int i = 0; i < Const.INDEX_COLUMN_COUNT; i++)
-        idx[i] = "";
+        idx[i] = null;
     }
 
     if (hmConfig != null) {
@@ -230,16 +227,19 @@
 	  	  }
 	  	%>
       </p>
-	  <table width="100%" cellpadding="2">
-	  	<tr class="tab_header">
-	  		<td />
-		  	<td><if:message string="user_procs.header.flow" /></td>
-		  	<td><if:message string="user_procs.header.process" /></td>
-		  	<td><if:message string="user_procs.header.status" /></td>
-		  	<td><if:message string="user_procs.header.statusDate" /></td>
-		  	<td style="min-width: 100px;"><if:message string="user_procs.header.assignedTo" /></td>	  	
-			<%=(StringUtils.isEmpty(targetUser) || isIntervenient) ? "<td>" + messages.getString("user_procs.header.owner") + "</td>" : ""%>
+	  <table width="100%" cellpadding="2" class="table sortable">
+	  	<thead>
+		<tr class="table_sub_header">
+	  		<th width="5%"/>
+		  	<th width="15%"><if:message string="user_procs.header.flow" /></th>
+		  	<th width="15%"><if:message string="user_procs.header.process" /></th>
+		  	<th width="40%"><if:message string="user_procs.header.status" /></th>
+		  	<th width="10%"><if:message string="user_procs.header.statusDate" /></th>
+		  	<th style="min-width: 100px;"><if:message string="user_procs.header.assignedTo" /></th>	  	
+			<%=(StringUtils.isEmpty(targetUser) || isIntervenient) ? "<th>" + messages.getString("user_procs.header.owner") + "</th>" : ""%>
 		</tr>
+		</thead>
+		<tbody>
 	   <% boolean bFirstPage = true;
 	      boolean bHasMoreItems = false;
 	      if (nStartIndex < 0) {
@@ -254,9 +254,9 @@
 	        if (row >= nItems) {
 	          bHasMoreItems = true;
 	          break;
-	        } %> 
-		<tr class="<%=((row % 2 == 0) ? "tab_row_even" : "tab_row_odd")%>">
-		<%
+	        } 
+				
+		 
 	         List<String> alMixedData = alData.get(row);
 	         String flowid = alMixedData.get(UserProcsConst.FLOW_ID);
 	         String flowName = alMixedData.get(UserProcsConst.FLOW_NAME);
@@ -288,48 +288,32 @@
 	         if (!showAssigned && !canView) {
 	           href = null;
 	         }
-	    %>
-         <% if(spid.equals(pid) && ssubpid.equals(subpid)){
-         	out.println("<td class=\"itemlist_icon\"><a><img class=\"toolTipImg\" src=\"images/icon_task_enable.png\" border=\"0\"></a> </td>");
-         }else
-         	out.println("<td> </td>");
+		 
+		 String myStyle = "style=\"background-color:#fafafa\"";
+		 
+		 if(spid.equals(pid) && ssubpid.equals(subpid)){
+         	//out.println("<td class=\"itemlist_icon\"><a><img class=\"toolTipImg\" src=\"images/icon_task_enable.png\" border=\"0\"></a> </td>");
+         }else {
+         	// out.println("<td> </td>");
+		 }
+
+		 if(spid.equals(pid) && ssubpid.equals(subpid)){
+			myStyle = " style=\"background-color:#ddd\"";
+         }	
+		 
+		 
+		 String onclick = "";
+		 if (href != null) {
+			onclick = "onclick=\"" + href+ "\"";
+		 }
+			
          %>
-		<td>
-	  	  <% if (href != null) { %>
-	  	  <a href="<%=href%>" class="toolTipImg" title="<%=messages.getString("user_procs.tooltip.view_history")%>">
-	  	  <% } %>
-	  	    <%=flowName%>
-	  	  <% if (href != null) { %>
-	  	  </a>
-	  	  <% } %>
-	  	</td>
-	  	<td>
-	  	  <% if (href != null) { %>
-	  	  <a href="<%=href%>" class="toolTipImg" title="<%=messages.getString("user_procs.tooltip.view_history")%>">
-	  	  <% } %>
-	  	    <%=pidShow%>
-	  	  <% if (href != null) { %>
-	  	  </a>
-	  	  <% } %>
-	  	</td>
-	  	<td>
-	  	  <% if (href != null) { %>
-	  	    <a href="<%=href%>" class="toolTipImg" title="<%=messages.getString("user_procs.tooltip.view_history")%>">
-	  	  <% } %>
-	  	    <%=result%>
-	  	  <% if (href != null) { %>
-	  	  </a>
-	  	  <% } %>
-	  	</td>
-	  	<td>
-	  	  <% if (href != null) { %>
-	  	  <a href="<%=href%>" class="toolTipImg" title="<%=messages.getString("user_procs.tooltip.view_history")%>">
-	  	  <% } %>
-	  	    <%=sDate%>
-	  	  <% if (href != null) { %>
-	  	  </a>
-	  	  <% } %>
-	  	</td>
+		 <tr style="float:none" class="<%=((row % 2 == 0) ? "tab_row_even" : "tab_row_odd")%> process_t3" <%=myStyle%> <%=onclick%>>
+		 <td width="5%"></td>
+		<td width="15%"><%=flowName%></td>
+	  	<td width="15%"><%=pidShow%></td>
+	  	<td width="40%"><%=result%></td>
+	  	<td width="10%"><%=sDate%></td>
 	    <% if (showAssigned) {
 	          // assigned
 	          Map<String, List<String>> hmPidUsers = new HashMap<String, List<String>>();
@@ -375,14 +359,14 @@
 
 	            }
 	          }
-	          out.print("          <td>");
+	          out.print("          <td style=\"min-width: 100px;\">");
 	          if (sbHtml.length() == 0)
 	            out.print(sPROTECTED);
 	          else
 	            out.print(sbHtml.toString());
 	          out.println("</td>");
 	        } else {
-	          out.print("          <td>");
+	          out.print("          <td style=\"min-width: 100px;\">");
 	          out.print(sPROTECTED);
 	          out.println("</td>");
 	        }
@@ -393,7 +377,8 @@
 	        }
 	%>
 	</tr>
-    <% } %>			
+    <% } %>	
+	</tbody>	
   </table>
 </div>
 <%
@@ -402,11 +387,11 @@
 %>
    <div class="button_box">
    <% if (!bDisableNavigationPrev) { %>
-   	<input class="regular_button_01" type="button" name="previous" value="<%=messages.getString("button.previous")%>" 
+   	<input class="regular_button_01 btn btn-default" type="button" name="previous" value="<%=messages.getString("button.previous")%>" 
    		onClick="javascript:document.userprocsForm.mode.value='-1';tabber_right(8, '<%=response.encodeURL("user_procs.jsp")%>', get_params(document.userprocsForm));"/>
    <% } %>
    <% if (!bDisableNavigationNext) { %>
-   	<input class="regular_button_01" type="button" name="next" value="<%=messages.getString("button.next")%>" 
+   	<input class="regular_button_01 btn btn-default" type="button" name="next" value="<%=messages.getString("button.next")%>" 
    		onClick="javascript:document.userprocsForm.mode.value='1';tabber_right(8, '<%=response.encodeURL("user_procs.jsp")%>', get_params(document.userprocsForm));"/>    
    <% } %>
    </div>

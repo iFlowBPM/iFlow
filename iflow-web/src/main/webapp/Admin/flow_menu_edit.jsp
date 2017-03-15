@@ -7,13 +7,14 @@
 String sPage = "Admin/flow_menu_edit";
 int flowid=-1; // this is used by auth.jsp
 %><%@ include file = "auth.jspf" %>
+<h1 id="title_admin"><%=title%></h1>
 <form method="post" name="menus">
 	<input type="hidden" name="toDelete" value="">
 
-	<h1 id="title_admin"><%=title%></h1>
+	
 
 	<div class="table_inc">
-    	<table class="item_list">
+    	<table class="item_list table">
       		<tr class="tab_header">
           		<td><if:message string="flow_menu_edit.field.description" /></td>
           		<td><if:message string="flow_menu_edit.field.remove" /></td>
@@ -40,7 +41,7 @@ int flowid=-1; // this is used by auth.jsp
 	</c:if>
 		</table>
 		<fieldset class="submit">
-			<input class="regular_button_01" type="button" name="add_unit" value="<if:message string="button.add"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_menu_add") %>','');"/>
+			<input class="regular_button_01 btn btn-default" type="button" name="add_unit" value="<if:message string="button.add"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_menu_add") %>','');"/>
 		</fieldset>
 	</div>
 	

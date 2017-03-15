@@ -5,7 +5,7 @@
 <%@ page import = "pt.iflow.api.core.AuthProfile" %>
 
 <if:checkUserAdmin type="org">
-  <div class="error_msg"><if:message string="admin.error.unauthorizedaccess"/></div>
+  <div class="alert alert-danger"><if:message string="admin.error.unauthorizedaccess"/></div>
 </if:checkUserAdmin>
 
 <%
@@ -214,15 +214,15 @@ for (int i=0; i < satmp.length; i++) {
 
       <h1 id="title_admin"><%=title%></h1>
 <% if (sbError.length() > 0) { %>
-      <div class="error_msg">
+      <div class="alert alert-danger">
         <%=sbError.toString()%>
 	  </div>
 <% } %>
-      <div class="info_msg">
+      <div class="alert alert-info">
         <%=messages.getString("profiles_edit.msg.flowName", sFlowName)%>
 	  </div>
       <div class="table_inc">  
-        <table width="100%" cellpadding="2">
+        <table width="100%" cellpadding="2" class="table">
           <tr class="tab_header">
             <td><%=messages.getString("profiles_edit.field.profile")%></td>
 <%
@@ -272,7 +272,7 @@ for (int i=0; i < satmp.length; i++) {
 %>
 		<tr class="tab_row_extra">
 			<td>
-				<select name="extrarow" size="5" multiple="multiple" >
+				<select name="extrarow" size="5" multiple="multiple" class="form-control">
 <%
 		for (int i=0; i < fra.length; i++) {
   			btmp = true;
@@ -308,20 +308,22 @@ for (int i=0; i < satmp.length; i++) {
 	</div>
 
     <div class="button_box">
- 		<input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_settings.jsp") %>');"/>
-    	<input class="regular_button_01" type="button" name="update" value="<%=messages.getString("button.update")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/profiles_edit.jsp") %>','op=2&' + get_params(document.flows));"/>
+ 		<input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_settings.jsp") %>');"/>
+    	<input class="regular_button_01 btn btn-default" type="button" name="update" value="<%=messages.getString("button.update")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/profiles_edit.jsp") %>','op=2&' + get_params(document.flows));"/>
 	</div>    
 
 	<fieldset>
 		<ol>
-			<li>
-				<label for="profiles"><%=messages.getString("profiles_edit.field.select")%></label>
-				<select name="profiles" class="txt" <%= saProfiles.length==0?"disabled=\"disabled\"":"multiple size=\"10\""%> >
+			<li class="form-group"><div class="col-sm-3"><%=messages.getString("profiles_edit.field.select")%></div></li>
+			<li class="form-group">
+				<div class="col-sm-4">
+				<select name="profiles" class="txt form-control" <%= saProfiles.length==0?"disabled=\"disabled\"":"multiple size=\"10\""%> >
 <% for (int i=0; i < saProfiles.length; i++) {%>
 					<option value="<%=saProfiles[i] %>"><%= saProfiles[i] %></option>
 <% } %>
 				</select>
-				<input class="regular_button_01" type="button" name="add" value="<%=messages.getString("button.add")%>" 
+				</div>
+				<input class="regular_button_01 btn btn-default" type="button" name="add" value="<%=messages.getString("button.add")%>" 
 						onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/profiles_edit.jsp") %>','op=3&' + get_params(document.flows));"
 				/>
 			</li>

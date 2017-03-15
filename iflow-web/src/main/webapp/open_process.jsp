@@ -26,7 +26,7 @@
     sNextURL = block.getUrl(userInfo, procData);
 
     if (StringUtils.isNotEmpty(sDescription) && StringUtils.isNotEmpty(sNextURL)) {
-      Activity a = new Activity(login, flowid, pid, subpid, 0, 0, sDescription, Block.getDefaultUrl(userInfo, procData), 0);
+      Activity a = new Activity(login, login, flowid, pid, subpid, 0, 0, sDescription, Block.getDefaultUrl(userInfo, procData), 0);
       pm.updateActivity(userInfo, a);
       sNextPage = sNextURL;
     }

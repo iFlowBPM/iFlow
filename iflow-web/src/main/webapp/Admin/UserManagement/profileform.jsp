@@ -16,7 +16,6 @@
 </if:checkUserAdmin>
 
 <%
-
 	UserManager manager = BeanFactory.getUserManagerBean();
 	String sOper = fdFormData.getParameter("oper");
 	String sErrorMsg = "";
@@ -59,8 +58,10 @@
 	String titulo = messages.getString("profileform.title.add");
 	String botao = messages.getString("button.add");
 	String profileId = fdFormData.getParameter("profileid");
-	ProfilesTO profile = new ProfilesTO();
+	ProfilesTO profile = new ProfilesTO();	  
+
 	if (StringUtils.isNotEmpty(profileId)) {
+	  
 		// Get organization;
 		try {
 			profile = manager.getProfile(ui, profileId);
@@ -77,7 +78,7 @@
 	String profileDesc = profile != null && profile.getDescription() != null ? profile.getDescription() : "";
 %>
 
-<form method="post" name="formulario" id="formulario">
+<form method="post" name="formulario" id="formulario" class="form-horizontal">
 	<input type="hidden" name="profileid" value="<%=profileId%>" />
 
 	<h1 id="title_admin"><%=titulo%></h1>
@@ -96,8 +97,9 @@
 		</ol>
 	</fieldset>
     <fieldset class="submit">
-        <input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profileadm.jsp")%>');"/>
-		<input class="regular_button_01" type="button" name="clear" value="<%=messages.getString("button.clear")%>" onClick="javascript:document.formulario.reset()"/>
-		<input class="regular_button_01" type="button" name="add" value="<%=botao%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profileform.jsp")%>','oper=add&' + get_params(document.formulario));"/>
+        <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profileadm.jsp")%>');"/>
+		<input class="regular_button_01 btn btn-default" type="button" name="clear" value="<%=messages.getString("button.clear")%>" onClick="javascript:document.formulario.reset()"/>
+		<input class="regular_button_01 btn btn-default" type="button" name="add" value="<%=botao%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profileform.jsp")%>','oper=add&' + get_params(document.formulario));"/>
 	</fieldset>
+	
 </form>

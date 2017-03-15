@@ -4,7 +4,7 @@
 <%@ include file="../../inc/defs.jsp"%>
 <%@page import="pt.iflow.servlets.ResourceNavConsts"%>
 <if:checkUserAdmin type="both">
-	<div class="error_msg"><if:message string="admin.error.unauthorizedaccess"/></div>
+	<div class="alert alert-danger"><if:message string="admin.error.unauthorizedaccess"/></div>
 </if:checkUserAdmin>
 <%
 

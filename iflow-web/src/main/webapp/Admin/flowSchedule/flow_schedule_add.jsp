@@ -56,7 +56,7 @@ function validateFieldsToSubmit (){
 </script>
 
 <if:checkUserAdmin type="org">
-    <div class="error_msg">
+    <div class="alert alert-danger">
         <if:message string="admin.error.unauthorizedaccess" />
     </div>
 </if:checkUserAdmin>
@@ -75,15 +75,14 @@ function validateFieldsToSubmit (){
     <c:set var="selectedprofile" value="0" />
 </c:if>
 
-<form method="post" name="flow_schedule_add" id="flow_schedule_add">
+<h1 id="title_admin"><if:message string="flow_schedule.add.title" /></h1>
+<form method="post" name="flow_schedule_add" id="flow_schedule_add" class="form-horizontal">
     <input type="hidden" name="ts"                  id="ts"                     value="<%=ts %>" />
     <input type="hidden" name="selectedUserName"    id="selectedUserName"       value="" />
     <input type="hidden" name="selectedProfileName" id="selectedProfileName"    value="" />
 
-    <h1 id="title_admin"><if:message string="flow_schedule.add.title" /></h1>
 
     <ol>
-        <li>
             <c:if test="${not empty flowItems}">
                 <if:formSelect name="form_add_flow" edit="true" labelkey="flow_schedule.add.field.flow" value="${selectedflow}" required="true">
                     <if:formOption value="0" labelkey="flow_schedule.add.field.combobox.default.text"/>
@@ -92,56 +91,36 @@ function validateFieldsToSubmit (){
                     </c:forEach>
                 </if:formSelect>
             </c:if>
-        </li>
-
-        <li>
             <c:if test="${not empty profiles}">
-                <if:formSelect name="form_add_profile" edit="true" labelkey="flow_schedule.add.field.profile" value="${selectedprofile}" required="true" onchange="javascript:updateSelectedProfileStr(form_add_profile.options[form_add_profile.selectedIndex].text);">
-                    <if:formOption value="0" labelkey="flow_schedule.add.field.combobox.default.text"/>
+                <if:formSelect name="form_add_profile" edit="true" labelkey="flow_schedule.add.field.profile" value="${selectedprofile}" required="true" onchange="var selectedProfileVar = document.getElementById('selectedProfileName'); selectedProfileVar.value = form_add_profile.options[form_add_profile.selectedIndex].text;">
+                    <if:formOption value="0" labelkey="flow_schedule.add.field.combobox.default.text"/> 
                     <c:forEach var="item" items="${profiles}">
                         <if:formOption value="${item.comboId}" label="${item.comboName}"/>
                     </c:forEach>
                 </if:formSelect>
             </c:if>
-        </li>
-
-        <li>
             <if:formInput name='form_add_user' labelkey="flow_schedule.add.field.user" type="text" value='${form_add_user}' edit="true" required="true" maxlength="20" />
-        </li>
-
-        <li>
             <if:formCalendar name="eventDate" edit="true" value="<%=sDate%>" labelkey="flow_schedule.add.field.start_date" required="true"/>
-        </li>
-
-        <li>
             <if:formInput name="eventTime" labelkey="flow_schedule.add.field.start_time" type="text" value="${eventTime}" edit="true" required="true"  size="5" maxlength="5" onblur="javascript:validateTimeFormat(this.value)"/>
-        </li>
-    </ol>
-    
-    <ol>
-       <if:formInput name="isRepeatable" type="checkbox" value="false" labelkey="flow_schedule.add.field.checkbox.is_repeatable" edit="true" required="false" onchange="javascript:processEventRepeateTimeFrameDiv(this.checked);"/>
+       <if:formInput name="isRepeatable" type="checkbox" value="false" labelkey="flow_schedule.add.field.checkbox.is_repeatable" edit="true" required="false" onchange="if (this.checked) {document.getElementById('eventRepeateTimeFrame').style.visibility='visible';} else { document.getElementById('eventRepeateTimeFrame').style.visibility='hidden';};"/>
     </ol>
     <div id="eventRepeateTimeFrame" style="visibility:hidden">
         <ol>
-            <li>
             <if:formInput name="eventInterval" type="text" value="" edit="true" required="true" labelkey="flow_schedule.add.field.repeat_time_frame" size="10"/>
-            </li>
-            <li>
             <if:formSelect name="form_add_time_frame_time_unit" edit="true" value="0" required="true">
                 <c:forEach var="item" items="${timeIntervalsUnits}">
                     <if:formOption value="${item.comboId}" label="${item.comboName}"/>
                 </c:forEach>
             </if:formSelect>
-            </li>
         </ol>
     </div>
 
     <fieldset class="submit">
-        <input class="regular_button_01" type="button" name="back"
+        <input class="regular_button_01 btn btn-default" type="button" name="back"
             value="<%=messages.getString("button.back")%>"
             onClick="tabber_right(4, '<%=response.encodeURL("Admin/flow_schedule_list")%>','ts=<%=ts %>');"
         /> 
-        <input class="regular_button_01" type="button" name="add" 
+        <input class="regular_button_01 btn btn-default" type="button" name="add" 
             value="<%=messages.getString("button.add")%>"
             onClick="tabber_right(4, '<%=response.encodeURL("Admin/flow_schedule_add_new")%>', get_params(document.flow_schedule_add));"
         />

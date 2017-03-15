@@ -50,7 +50,7 @@ public interface UserManager {
    */
   public IErrorHandler createUser( UserInfoInterface userInfo,String username,String gender,String unit,String emailAddress,String firstName,String lastName,String phoneNumber,String faxNumber,String mobileNumber,String companyPhone,String orgId, String orgAdm, String password, String[] listExtraProperties, String[] listExtraValues);
   
-  
+  public abstract IErrorHandler createUser(UserInfoInterface paramUserInfoInterface, String paramString1, String paramString2, String paramString3, String paramString4, String paramString5, String paramString6, String paramString7, String paramString8, String paramString9, String paramString10, String paramString11, String paramString12, String paramString13, String[] paramArrayOfString1, String[] paramArrayOfString2, String paramString14);
   /**
    * Invite a new user, generating an activation code
    * @param userInfo - The administrator creating a new user
@@ -94,6 +94,8 @@ public interface UserManager {
     * @return - true if organizational unit was created successfully
     */
    public boolean createOrganizationalUnit( UserInfoInterface userInfo,String organizationid,String name,String description,String parentid,String managerid );
+   
+   public abstract boolean createOrganizationalUnit(UserInfoInterface paramUserInfoInterface, String paramString1, String paramString2, String paramString3, String paramString4, String paramString5, String paramString6);
 
    /**
     * Add a new Profile.
@@ -126,6 +128,7 @@ public interface UserManager {
       String companyPhone, String orgAdm, String orgAdmUsers, String orgAdmFlows, String orgAdmProcesses, String orgAdmResources,
       String orgAdmOrg, String newPassword, String[] listExtraProperties, String[] listExtraValues);
 
+  public abstract IErrorHandler modifyUserAsAdmin(UserInfoInterface paramUserInfoInterface, String paramString1, String paramString2, String paramString3, String paramString4, String paramString5, String paramString6, String paramString7, String paramString8, String paramString9, String paramString10, String paramString11, String paramString12, String paramString13, String paramString14, String paramString15, String paramString16, String paramString17, String[] paramArrayOfString1, String[] paramArrayOfString2, String paramString18);
    /**
     * Modify an existing user
     * @param userInfo - The administrator creating a new user
@@ -165,6 +168,7 @@ public interface UserManager {
     * @return - true if organizational unit was created successfully
     */
    public boolean modifyOrganizationalUnit( UserInfoInterface userInfo,String unitId,String organizationid,String name,String description,String parentid,String managerid );
+   public abstract boolean modifyOrganizationalUnit(UserInfoInterface paramUserInfoInterface, String paramString1, String paramString2, String paramString3, String paramString4, String paramString5, String paramString6, String paramString7);
 
    /**
     * Modify an existing Profile.
@@ -176,6 +180,8 @@ public interface UserManager {
     * @return true if profile was created successfully
     */
    public boolean modifyProfile(UserInfoInterface userInfo, ProfilesTO profile);
+   
+   public abstract String getOrgUnitCalendarId(String paramString1, String paramString2);
 
    /**
     * Add a user to a profile
@@ -471,5 +477,11 @@ public interface UserManager {
    
    public List<String> getSystemUsers(UserInfoInterface userInfo);
    
-   public int changePasswordAdmin(String username, String oldPassword, String password); 
+   public int changePasswordAdmin(String username, String oldPassword, String password);
+   
+   public abstract List<String[]> getCalendars(UserInfoInterface paramUserInfoInterface);
+   
+   public abstract String getOrgCalendar(UserInfoInterface paramUserInfoInterface, String paramString);
+   
+   public abstract String getUserCalendarId(String paramString1, String paramString2);
 }

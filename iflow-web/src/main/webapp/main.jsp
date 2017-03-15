@@ -9,7 +9,7 @@
 <%
     if (userInfo.isGuest() || session.getAttribute("login_error") != null) {
         session.invalidate();
-        ServletUtils.sendEncodeRedirect(response, "loginBanco.jsp");
+        ServletUtils.sendEncodeRedirect(response, "login.jsp");
         return;
     }
     String sPage = "main";

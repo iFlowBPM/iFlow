@@ -28,10 +28,6 @@ if (StringUtils.isNotEmpty(fdFormData.getParameter(DUMMY))) {
 boolean cbRequest = StringUtils.equals("true",fdFormData.getParameter("cb_request"));
 String [] cbFlowids = fdFormData.getParameterValues("cb_flowid");
 if(null == cbFlowids) cbFlowids = new String[0];
-for(int i=0; i<cbFlowids.length; i++)
-	cbFlowids[i] = StringEscapeUtils.unescapeHtml(cbFlowids[i]);
-
-
 
 {
 ArrayList<String> alHelper = new ArrayList<String>();
@@ -131,12 +127,12 @@ if(cbRequest && cbFlowids.length == 0) {
 
 		    if (sbError.length() > 0) {
 %>
-  <div class="<%=(recordInserted)?"info_msg":"error_msg"%>">
+  <div class="<%=(recordInserted)?"alert alert-warning":"alert alert-danger"%>">
     <%=sbError.toString()%>
   </div>
 <% if(recordInserted) {%>
   <div class="button_box">
-    <input class="regular_button_01" type="button" name="continue" value="<%=messages.getString("button.go")%>" onClick="javascript:tabber_right(5, '<%= response.encodeURL("gestao_tarefas.jsp") %>', 'ts=<%= ts %>&action=<%=sAction%>');"/>
+    <input class="regular_button_01 btn btn-default" type="button" name="continue" value="<%=messages.getString("button.go")%>" onClick="javascript:tabber_right(5, '<%= response.encodeURL("gestao_tarefas.jsp") %>', 'ts=<%= ts %>&action=<%=sAction%>');"/>
   </div>
 <%
 }
@@ -243,7 +239,7 @@ if(cbRequest && cbFlowids.length == 0) {
 
 		    if (sbError.length() > 0) {
 %>
-<div class="error_msg">
+<div class="alert alert-danger">
 <%=sbError%>
 </div>
 <%
@@ -251,7 +247,7 @@ if(cbRequest && cbFlowids.length == 0) {
 
 		    if (sbMsg.length() > 0) {
 		      %>
-		      <div class="info_msg">
+		      <div class="alert alert-info">
 		      <%=sbMsg%>
 		      </div>
 		      <%
@@ -259,7 +255,7 @@ if(cbRequest && cbFlowids.length == 0) {
 		    
 if(recordsInserted) {%>
 <div class="button_box">
-<input class="regular_button_01" type="button" name="continue" value="<%=messages.getString("button.go")%>" onClick="javascript:tabber_right(5, '<%= response.encodeURL("gestao_tarefas.jsp") %>', 'ts=<%= ts %>&action=<%=sAction%>');"/>
+<input class="regular_button_01 btn btn-default" type="button" name="continue" value="<%=messages.getString("button.go")%>" onClick="javascript:tabber_right(5, '<%= response.encodeURL("gestao_tarefas.jsp") %>', 'ts=<%= ts %>&action=<%=sAction%>');"/>
 </div>
 <%
 return;
@@ -273,7 +269,7 @@ return;
 			int flowid = Integer.parseInt(sflowid);
 			
 			TreeSet<String> users = new TreeSet<String>();
-			TreeSet<String> usersToDelegate = new TreeSet<String>();
+			ArrayList<String> usersToDelegate = new ArrayList<String>();
 			Map<Character, Boolean> allprivs = new HashMap<Character, Boolean>();
 			allprivs.put(FlowRolesTO.CREATE_PRIV, false);
 			allprivs.put(FlowRolesTO.READ_PRIV, false);
@@ -335,7 +331,13 @@ return;
 						String userid = ud.getUsername();
 						if (userInfo.getUtilizador().equals(userid) || sownerid.equals(userid)) continue;
 						usersToDelegate.add(userid);
-					}				
+					}	
+					for(int i=0; i<(usersToDelegate.size()-1); i++)
+						if(usersToDelegate.get(i).compareTo(usersToDelegate.get(i+1))>0){
+							String aux1=usersToDelegate.get(i);
+							usersToDelegate.set(i, usersToDelegate.get(i+1));
+							usersToDelegate.set(i+1, aux1);
+						}
 				}
 			}
 
@@ -359,7 +361,7 @@ return;
 
 %>
 
-<form name="flowForm" method="post">
+<form name="flowForm" method="post" class="form-horizontal">
   <input type="hidden" name="action" value="<%=sAction%>"/>
   <input type="hidden" name="flowid" value="<%=flowid%>"/>
   <input type="hidden" name="flowname" value="<%= sflowname %>"/>
@@ -375,7 +377,6 @@ return;
     } %>
 
 	<div style="vertical-align: middle;">
-		<img src="images/icon_tab_delegations.png" class="icon_item"/>
 		<h1><%=title%></h1>
 	</div>
   
@@ -410,14 +411,25 @@ return;
 		  		</if:formSelect>
 			<% } %>
 	    <% } %>
-
+		
 	      <% if (!bHidden) { %>
 	      
 		  <% if (bRequest) { %>
             <% Collection<UserData> iflowUsers = BeanFactory.getAuthProfileBean().getAllUsers(userInfo.getOrganization());
+            ArrayList<UserData> iflowUsersOrdered = new ArrayList<UserData>();
+            for (UserData item : iflowUsers)
+            	iflowUsersOrdered.add(item);
+            
+            for(int j=0; j<(iflowUsersOrdered.size()-1); j++)
+            for(int i=0; i<(iflowUsersOrdered.size()-1); i++)
+            	if(iflowUsersOrdered.get(i).getName().compareTo(iflowUsersOrdered.get(i+1).getName())>0){
+            		UserData aux = iflowUsersOrdered.get(i);
+            		iflowUsersOrdered.set(i, iflowUsersOrdered.get(i+1));
+            		iflowUsersOrdered.set(i+1, aux);
+            	}
                if (iflowUsers != null && iflowUsers.size() > 0) { %>
                 <if:formSelect name="user" edit="true" labelkey="requisitar_agendamento.msg.3" value="" required="true" onchange="">
-                    <% for (UserData item : iflowUsers) { %>
+                    <% for (UserData item : iflowUsersOrdered) { %>
                         <if:formOption value="<%=item.getUsername() %>" label="<%=item.getName() %>"/>
                     <% } %>
                 </if:formSelect>
@@ -427,7 +439,7 @@ return;
 		  <% } else { %>
 	      <li>
 	        <label for="user"><%=messages.getString("requisitar_agendamento.msg.3")%><em>*</em></label>
-			<select name="user" id="user" onchange="if ($('user').value == '<%=MANUAL_OPTION%>') { $('manualuser').setStyle('display', ''); } else { $('manualuser').setStyle('display', 'none'); }">
+			<select name="user" id="user" onchange="if (document.getElementById('user').value == '<%=MANUAL_OPTION%>') { document.getElementById('manualuser').setStyle('display', ''); } else { document.getElementById('manualuser').setStyle('display', 'none'); }">
 				<option value=""><%=messages.getString("const.choose")%></option>
 				<option value="<%=MYSELF_OPTION%>" <%=(MYSELF_OPTION.equals(delegatedUserid) ? "selected" : "")%>><%=messages.getString("requisitar_agendamento.msg.myself")%></option>
 				<% for (String userid : usersToDelegate) { %>
@@ -435,7 +447,7 @@ return;
 				<% } %>
 				<option value="<%=MANUAL_OPTION%>" <%=(MANUAL_OPTION.equals(delegatedUserid) ? "selected" : "")%>><%=messages.getString("requisitar_agendamento.msg.manual")%></option>
 	      	</select>
-			<input type="text" name="manualuser" id="manualuser" value="<%=manualUserid%>" style="display:none"/> 
+			<input type="text" name="manualuser" id="manualuser" Style="display:none" value="<%=manualUserid%>" /> 
 	      </li>			
  		  <% } %>
  		  <% if(!cbRequest) { %>
@@ -465,8 +477,8 @@ return;
   	</fieldset>
 
 	<fieldset class="submit">
-		<input class="regular_button_02" type="button" name="cancel" value="<%=messages.getString("button.cancel")%>" onClick="tabber_right(5, '<%= response.encodeURL("gestao_tarefas.jsp") %>', 'ts=<%= ts %>&action=<%=sAction %>');"/>
-		<input class="regular_button_02" type="button" name="request" value="<%=messages.getString("button.request")%>" onClick="tabber_right(5, '<%= response.encodeURL("requisitar_agendamento.jsp") %>', get_params(document.flowForm));"/>
+		<input class="regular_button_02 btn btn-default" type="button" name="cancel" value="<%=messages.getString("button.cancel")%>" onClick="tabber_right(5, '<%= response.encodeURL("gestao_tarefas.jsp") %>', 'ts=<%= ts %>&action=<%=sAction %>');"/>
+		<input class="regular_button_02 btn btn-default" type="button" name="request" value="<%=messages.getString("button.request")%>" onClick="tabber_right(5, '<%= response.encodeURL("requisitar_agendamento.jsp") %>', get_params(document.flowForm));"/>
 	</fieldset>
 </form>
 <%

@@ -56,7 +56,7 @@ UserInfoInterface ui = (UserInfoInterface) session.getAttribute(Const.USER_INFO)
 <% } else { %>
 
       <div class="table_inc">  
-        <table class="item_list">
+        <table class="item_list table">
           <tr class="tab_header">
 				<td/>
 				<td>

@@ -63,7 +63,8 @@
 </ul>
 <%
   }
-  boolean isClassic = StringUtils.equals("classic", BeanFactory.getOrganizationThemeBean().getOrganizationTheme(userInfo).getThemeName());
+String theme = BeanFactory.getOrganizationThemeBean().getOrganizationTheme(userInfo).getThemeName();
+boolean isClassic = StringUtils.equals("classic", theme);
 %>
 
 
@@ -161,6 +162,10 @@
 		title="<%=messages.getString("admin_nav.section.processes.tooltip.cancel")%>"
 		class="toolTipItemLink li_link"
 		href="javascript:selectedItem('admin', <%=AdminNavConsts.PROCESS_CANCEL%>);tabber_save(4,'','sel=<%=AdminNavConsts.PROCESS_CANCEL%>','<%=response.encodeURL("Admin/ProcManagement/proc_cancel.jsp") %>','ts=<%=ts%>&cancel=true');"><%=messages.getString("admin_nav.section.processes.link.cancel")%></a></li>
+	<li><a id="li_a_admin_<%=AdminNavConsts.PROCESS_HIDE%>"
+		title="<%=messages.getString("admin_nav.section.processes.tooltip.hide")%>"
+		class="toolTipItemLink li_link"
+		href="javascript:selectedItem('admin', <%=AdminNavConsts.PROCESS_HIDE%>);tabber_save(4,'','sel=<%=AdminNavConsts.PROCESS_HIDE%>','<%=response.encodeURL("Admin/ProcManagement/proc_hide.jsp") %>','ts=<%=ts%>&cancel=true&first=true');"><%=messages.getString("admin_nav.section.processes.link.hide")%></a></li>
 	<li><a id="li_a_admin_<%=AdminNavConsts.PROCESS_TASK_MANAGEMENT%>"
 		title="<%=messages.getString("admin_nav.section.processes.tooltip.task")%>"
 		class="toolTipItemLink li_link"
@@ -170,6 +175,24 @@
 <%
   }
 %>
+
+<h2><%=messages.getString("admin_nav.section.processes.title")%></h2>
+
+<% if (userInfo.isSysAdmin()) { %>
+<ul>
+<li>
+<a id="li_a_admin_<%=AdminNavConsts.SYSTEM_PROPERTIES%>"
+		title="<%=messages.getString("admin_nav.section.system.tooltip.alterprocdata")%>"
+		class="toolTipItemLink li_link"
+		href="javascript:selectedItem('admin',<%=AdminNavConsts.SYSTEM_PROPERTIES%>);tabber_save(4,'<%=response.encodeURL("Admin/admin_nav.jsp") %>','sel=<%=AdminNavConsts.SYSTEM_PROPERTIES%>','<%=response.encodeURL("Admin/alterProcdata.jsp") %>','ts=<%=ts%>');"><%=messages.getString("admin_nav.section.system.tooltip.alterprocdata")%></a></li>
+
+<li>
+<a id="li_a_admin_<%=AdminNavConsts.SYSTEM_PROPERTIES%>"
+		title="<%=messages.getString("admin_nav.section.system.tooltip.encryptprocdata")%>"
+		class="toolTipItemLink li_link"
+		href="javascript:selectedItem('admin',<%=AdminNavConsts.SYSTEM_PROPERTIES%>);tabber_save(4,'<%=response.encodeURL("Admin/admin_nav.jsp") %>','sel=<%=AdminNavConsts.SYSTEM_PROPERTIES%>','<%=response.encodeURL("Admin/encryptProcdata.jsp") %>','ts=<%=ts%>');"><%=messages.getString("admin_nav.section.system.tooltip.encryptprocdata")%></a></li>
+</ul>
+<%} %>
 
 <%
   if (userInfo.isOrgAdmin() && userInfo.isOrgAdminResources()) {
@@ -194,6 +217,10 @@
 		title="<%=messages.getString("admin_nav.section.resources.tooltip.public")%>"
 		class="toolTipItemLink li_link"
 		href="javascript:selectedItem('admin',<%=AdminNavConsts.RESOURCES_PUBLIC%>);tabber_save(4,'','sel=<%=AdminNavConsts.RESOURCES_PUBLIC%>','<%=response.encodeURL("Admin/Resources/dolist.jsp") %>','type=<%=ResourceNavConsts.PUBLIC_FILES%>&ts=<%=ts%>');"><%=messages.getString("admin_nav.section.resources.link.public")%></a></li>
+	<li><a id="li_a_admin_<%=AdminNavConsts.RESOURCES_CALEND%>"
+		title="<%=messages.getString("admin_nav.section.resources.tooltip.calend")%>"
+		class="toolTipItemLink li_link"
+		href="javascript:selectedItem('admin',<%=AdminNavConsts.RESOURCES_CALEND%>);tabber_save(4,'','sel=<%=AdminNavConsts.RESOURCES_CALEND%>','<%=response.encodeURL("Admin/Resources/iflowcalendar.jsp") %>','type=<%=ResourceNavConsts.CALEND%>&ts=<%=ts%>');"><%=messages.getString("admin_nav.section.resources.link.calend")%></a></li>
 	<%
   }
 	  if (userInfo.isSysAdmin()) {
@@ -226,13 +253,13 @@
 		href="javascript:selectedItem('admin',<%=AdminNavConsts.ORGANIZATION_LICENSE%>);tabber_save(4,'','sel=<%=AdminNavConsts.ORGANIZATION_LICENSE%>','<%=response.encodeURL("Admin/Organization/license.jsp") %>','ts=<%=ts%>');"><%=messages
                   .getString("admin_nav.section.organization.link.license")%></a></li>
    	<%if (!userInfo.isSysAdmin()){%>
-    <!-- link de Organização.Interfaces -->
+    <!-- link de OrganizaÃ§Ã£o.Interfaces -->
 	<li><a id="li_a_admin_<%=AdminNavConsts.ORGANIZATION_INTERFACES%>"
 		title="<%=messages.getString("admin_nav.section.system.tooltip.interface")%>"
 		class="toolTipItemLink li_link <%=(nSel == AdminNavConsts.ORGANIZATION_INTERFACES)?"li_selected":""%>"
 		href="javascript:selectedItem('admin',<%=AdminNavConsts.ORGANIZATION_INTERFACES%>);tabber_save(4,'','sel=<%=AdminNavConsts.ORGANIZATION_INTERFACES%>','<%=response.encodeURL("Admin/UserManagement/interfaceadm.jsp") %>','ts=<%=ts%>');"><%=messages
                   .getString("admin_nav.section.organization.link.interfaces")%></a></li>
-                      <!-- link de Organização.Profiles -->
+                      <!-- link de OrganizaÃ§Ã£o.Profiles -->
 	<li><a id="li_a_admin_<%=AdminNavConsts.ORGANIZATION_PROFILES%>"
 		title="<%=messages.getString("admin_nav.section.system.tooltip.profiles")%>"
 		class="toolTipItemLink li_link <%=(nSel == AdminNavConsts.ORGANIZATION_PROFILES)?"li_selected":""%>"

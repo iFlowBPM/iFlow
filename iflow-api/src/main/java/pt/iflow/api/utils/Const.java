@@ -416,6 +416,10 @@ public class Const {
   
   private static List<String> ALLOWED_LOCALES = new ArrayList<String>();
 
+  public static String sFLOW_INITIALS_DESC = "Iniciais do Fluxo em Tarefas";
+  public static final String sFLOW_INITIALS = "FLOW_INITIALS";
+  
+  
   static {
     ALLOWED_LOCALES.add(sDEFAULT_LOCALE_PT_PT);
     ALLOWED_LOCALES.add(sDEFAULT_LOCALE_EN_US);

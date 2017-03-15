@@ -24,7 +24,7 @@
 %>
 
 <if:checkUserAdmin type="both">
-	<div class="error_msg"><if:message string="admin.error.unauthorizedaccess"/></div>
+	<div class="alert alert-danger"><if:message string="admin.error.unauthorizedaccess"/></div>
 </if:checkUserAdmin>
 
 <h1 id="title_admin"><if:message string="organization.licenseform.title"/></h1>
@@ -33,29 +33,39 @@
 <if:generateHelpBox context="license"/>
 </div>
 
-<form id="licenseform" name="licenseform">
+<form id="licenseform" name="licenseform" class="form-horizontal">
   <fieldset>
 	<legend>Info</legend>
 	<ol>
-		<li>
-			<label for="licenceType">Licence Type</label>
+		<li class="form-group">
+			<label class="control-label col-sm-2" for="licenceType">Licence Type</label>
+			<div class="col-sm-5">
 			<%=null == licType ? "unavailable" : licType%>
+			</div>
 		</li>
-		<li>
-			<label for="flow">Flow limit</label>
+		<li class="form-group">
+			<label class="control-label col-sm-2" for="flow">Flow limit</label>
+			<div class="col-sm-5">
 			<%=-1 == maxFlows ? "unlimited" : intFmt.format(maxFlows)%>
+			</div>
 		</li>
-		<li>
-			<label for="process">Block limit</label>
+		<li class="form-group">
+			<label class="control-label col-sm-2" for="process">Block limit</label>
+			<div class="col-sm-5">
 			<%=-1 == maxBlocks ? "unlimited" : intFmt.format(maxBlocks)%>
+			</div>
 		</li>
-		<li>
-			<label for="cpu">CPU limit</label>
+		<li class="form-group">
+			<label class="control-label col-sm-2" for="cpu">CPU limit</label>
+			<div class="col-sm-5">
 			<%=-1 == maxCPU ? "unlimited" : intFmt.format(maxCPU)%>
+			</div>
 		</li>
-		<li>
-			<label for="support">Support level</label>
+		<li class="form-group">
+			<label class="control-label col-sm-2" for="support">Support level</label>
+			<div class="col-sm-5">
 			<%=null == support ? "unavailable" : support%>
+			</div>	
 		</li>
 	</ol>
   </fieldset>
@@ -65,30 +75,42 @@
 	<%
 	  if (available >= 0L) {
 	%>
-		<li>
-			<label for="credit">Available Credit</label>
+		<li class="form-group">
+			<label class="control-label col-sm-2" for="credit">Available Credit</label>
+			<div class="col-sm-5">
 			<%=moneyFmt.format(available / 1000.0)%> €
+			</div>
 		</li>
 
-		<li>
-			<label for="credit">Credit Spent</label>
+		<li class="form-group">
+			<label class="control-label col-sm-2" for="credit">Credit Spent</label>
+			<div class="col-sm-5">
+			<div class=" control-label">
 			<%=moneyFmt.format(consumed / 1000.0)%> €
+			</div>
+			</div>
 		</li>
 
-		<li>
-			<label for="availableBlocks">Available</label>
+		<li class="form-group">
+			<label class="control-label col-sm-2" for="availableBlocks">Available</label>
+			<div class="col-sm-5">
 			<%=intFmt.format(available)%> block units
+			</div>
 		</li>
 	<%
 	  }
 	%>
-		<li>
+		<li class="form-group">
 			<label for="usedBlocks">Processed</label>
+			<div class="col-sm-5">
 			<%=intFmt.format(consumed)%> block units
+			</div>
 		</li>
-		<li>
+		<li class="form-group">
 			<label for="upgrade">Next upgrade in (4.500.000~10.500.000)</label>
-			4.296.422 block units - TODO
+			<div class="col-sm-5">
+				Não disponível
+			</div>
 		</li>
 	</ol>
   </fieldset>
@@ -101,7 +123,7 @@
 %>
 	<%-- <input class="regular_button_02" type="button" onclick="javascript:alert('This functionality is not yet implemented!')" value="Request Voucher" alt="Request a credit voucher from your service provider" /> --%>
 	<if:formInput edit="true" name="voucher" type="text" value="" label="Voucher" required="false" maxlength="16" />
-	<input class="regular_button_02" type="button" onclick="javascript:tabber_right(4, '<%=response.encodeURL(charge) %>', <%=params %>);" value="Use Voucher" alt="Use a voucher to increase the available credit ammount" />
+	<input class="regular_button_02 btn btn-default" type="button" onclick="javascript:tabber_right(4, '<%=response.encodeURL(charge) %>', <%=params %>);" value="Use Voucher" alt="Use a voucher to increase the available credit ammount" />
   </fieldset>
   <% } %>
 </form>

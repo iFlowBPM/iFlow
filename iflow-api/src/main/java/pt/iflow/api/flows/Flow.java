@@ -173,8 +173,7 @@ public interface Flow {
      * @param userInfo
      * @param afsaSettings
      */
-    public abstract void saveFlowSettings(UserInfoInterface userInfo,
-            FlowSetting[] afsaSettings);
+    public abstract void saveFlowSettings(UserInfoInterface paramUserInfoInterface, FlowSetting[] paramArrayOfFlowSetting, String paramString);
     
     /**
      * 
@@ -184,6 +183,10 @@ public interface Flow {
      * @param flowid
      * @param apsOut
      */
+    
+    
+    public abstract String getFlowCalendarId(UserInfoInterface paramUserInfoInterface, int paramInt);
+    
     public abstract void exportFlowSettings(UserInfoInterface userInfo,
             int flowid, PrintStream apsOut);
     

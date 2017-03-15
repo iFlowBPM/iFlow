@@ -47,13 +47,18 @@
 	  
 	  
 	%>
-	<form method="post" name="formulario" id="formulario">
 	<h1 id="title_admin"><%=title%></h1>
+	<form method="post" name="formulario" id="formulario" class="form-horizontal">
 	<fieldset><legend></legend>
 	
 	<ol>
-		<li><label for="profileid"><%=messages.getString("profilesinterfaceform.field.user")%></label>
-		<select name="profileid"
+		<li class="form-group">
+			<label class="control-label col-sm-2" for="interfaceid">
+			<%=messages.getString("profilesinterfaceform.field.user")%>
+			</label>
+			<div class="col-sm-5">
+		<select name="interfaceid"
+			class="form-control"
 			onchange="tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profilesinterfaceform.jsp")%>',get_params(document.formulario));">
 			<option value="0"
 				<%=profileId == null || "".equals(profileId) ? "selected" : ""%>>
@@ -69,18 +74,19 @@
 			<%
 			  }			
 			%>
-		</select></li>
+		</select>
+		</div></li>
 	</ol>
 	</fieldset>
 	
-	<fieldset>
-	<ol>
-		<li><label for="unit"><%=messages.getString("profilesinterfaceform.field.profiles")%></label>
-		<div class="ft_main">
+	<div class="ft_main form-group" style="height:200px">
 		<div class="ft_left">
-		<div class="ft_caption"><%=messages.getString("profilesinterfaceform.field.available")%>
-		</div>
-		<div class="ft_select"><select size="10" name="inactive" MULTIPLE>
+		<div class="ft_left">
+			<div class="ft_caption control-label col-sm-2">
+		<%=messages.getString("profilesinterfaceform.field.available")%>
+			</div>
+			<div class="ft_select col-sm-2">
+				<select size="10" name="inactive" MULTIPLE class="form-control">
 			<%
 			  for (int i = 0; i < interfaces.length; i++) {
 			    if (interfacesAux.contains(interfaces[i].getInterfaceId()))
@@ -91,22 +97,26 @@
 			<%
 			  }
 			%>
-		</select></div>
+				</select>
+			</div>
 		</div>
-		<div class="ft_middle">
-		<div class="ft_button"><input class="regular_button_000"
+		<div class="ft_middle col-sm-1">
+			<div class="ft_button">
+				<input class="regular_button_000 btn btn-default"
 			type="button" name="add" value="=&gt;"
 			onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/addprofilesinterface.jsp")%>', get_params(document.formulario));" />
 		</div>
-		<div class="ft_button"><input class="regular_button_000"
+		<div class="ft_button"><input class="regular_button_000 btn btn-default"
 			type="button" name="add" value="&lt;="
 			onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/delprofilesinterface.jsp")%>', get_params(document.formulario));" />
 		</div>
 		</div>
 		<div class="ft_right">
-		<div class="ft_caption"><%=messages.getString("profilesinterfaceform.field.assigned")%>
+			<div class="ft_select col-sm-2">
+		<%=messages.getString("profilesinterfaceform.field.assigned")%>
 		</div>
-		<div class="ft_select"><select size="10" name="active" MULTIPLE>
+		<div class="ft_select">
+		<select size="10" name="active" MULTIPLE>
 			<%
 			  for (int i = 0; i < interfaces.length; i++) {
 			    if (!interfacesAux.contains( interfaces[i].getInterfaceId()))
@@ -120,14 +130,14 @@
 		</select></div>
 		</div>
 		</div>
-		</li>
+		</div>
 	</ol>
 	</fieldset>
-	<fieldset class="submit"><input class="regular_button_00"
+	<fieldset class="submit"><input class="regular_button_00 btn btn-default"
 		type="button" name="back"
 		value="<%=messages.getString("button.back")%>"
 		onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profilesadm.jsp")%>', get_params(document.formulario));" />
-		<input class="regular_button_01" type="submit" name="save" value="<if:message string="button.save"/>" />
+		<input class="regular_button_01 btn btn-default" type="submit" name="save" value="<if:message string="button.save"/>" />
 	</fieldset>
 	
 	

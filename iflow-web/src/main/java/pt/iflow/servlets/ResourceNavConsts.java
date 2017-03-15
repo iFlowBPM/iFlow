@@ -7,6 +7,7 @@ public abstract class ResourceNavConsts {
   public static final String PRINT_TEMPLATES="print";
   public static final String PUBLIC_FILES="public";
   public static final String LOGS="log";
+  public static final String CALEND = "calendar";
   
   
   

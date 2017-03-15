@@ -4,7 +4,7 @@
 <%@ include file="../../inc/defs.jsp"%>
 
 <if:checkUserAdmin type="both">
-	<div class="error_msg">
+	<div class="alert alert-error">
 		<if:message string="admin.error.unauthorizedaccess"/>
 	</div>
 </if:checkUserAdmin>
@@ -20,18 +20,18 @@
 %>
 
 <c:if test="${not empty actionResult}">
-	<div class="info_msg">
+	<div class="alert alert-info">
 		<c:out value="${actionResult}"></c:out>
 	</div>
 </c:if>
 
 <% if(fileList == null || fileList.length < 1) { %>
-	<div class="info_msg">
+	<div class="alert alert-info">
 		<if:message string="resources.table.empty"></if:message>
 	</div>
 <% } else { %>
 	<div class="table_inc">  
-		<table class="item_list">
+		<table class="item_list table">
 			<tr class="tab_header">
 				<td><if:message string="resources.table.list.header"></if:message></td>
 				<td/>
@@ -84,6 +84,6 @@
 <% } %>
 
 <div class="button_box">
-   	<input class="regular_button_02" type="button" name="add" value="<if:message string="button.add"></if:message>" onClick="javascript:tabber_right(4, '<c:url value="Admin/Resources/uploadform.jsp"></c:url>','type=${param.type}');"></input>
+   	<input class="regular_button_02 btn btn-default" type="button" name="add" value="<if:message string="button.add"></if:message>" onClick="javascript:tabber_right(4, '<c:url value="Admin/Resources/uploadform.jsp"></c:url>','type=${param.type}');"></input>
 	<if:generateHelpBox context="dolist"/>
 </div>

@@ -52,11 +52,11 @@
 <%
   if (sbError.length() > 0) {
 %>
-<div class="error_msg"><%=sbError.toString()%></div>
+<div class="alert alert-danger"><%=sbError.toString()%></div>
 <%
   }
 %>
-<div class="button_box"><input class="regular_button_02"
+<div class="button_box"><input class="regular_button_02 btn btn-default"
 	type="button" name="continue"
 	value="<%=messages.getString("button.continue")%>"
 	onClick="javascript:tabber_right(5, '<%=response.encodeURL("gestao_tarefas.jsp")%>', 'sel=2&action=reject');" />

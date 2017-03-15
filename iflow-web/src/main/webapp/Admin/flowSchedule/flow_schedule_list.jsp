@@ -4,23 +4,23 @@
 <%@ include file="../../inc/defs.jsp"%>
 
 <if:checkUserAdmin type="org">
-    <div class="error_msg"><if:message string="admin.error.unauthorizedaccess" /></div>
+    <div class="alert alert-danger"><if:message string="admin.error.unauthorizedaccess" /></div>
 </if:checkUserAdmin>
 
 <c:set var="presentationMsg" value="${flowScheduleMsgListMsgToUser}" scope="request"/>
 <c:set var="listOfEvents" value="${sessionScope.flow_events_list}" />
 
-<form method="post" name="flow_schedule_list_form">
 <h1 id="title_admin"><if:message string="flow_schedule.list.title" /></h1>
+<form method="post" name="flow_schedule_list_form">
 
 <c:if test="${not empty presentationMsg}">
-    <div class="error_msg">
+    <div class="alert alert-danger">
         <c:out value="${presentationMsg}" />
     </div>
 </c:if>
 
 <div class="table_inc">
-<table class="item_list">
+<table class="item_list table">
     <tr class="tab_header">
         <td align="center" ><if:message string="flow_schedule.list.field.scheduleName" /></td>
         <td align="center" ><if:message string="flow_schedule.list.field.flow" /></td>
@@ -65,7 +65,7 @@
 </table>
 
 <fieldset class="submit">
-    <input class="regular_button_01" type="button" name="add_flow_schedule"
+    <input class="regular_button_01 btn btn-default" type="button" name="add_flow_schedule"
         value="<if:message string="button.add"/>"
         onClick="tabber_right(4, '<%=response.encodeURL("Admin/flow_schedule_add")%>','ts=<%=ts%>');"/>
     </fieldset>

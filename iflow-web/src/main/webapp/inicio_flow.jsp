@@ -139,7 +139,7 @@ try {
 	  nextURL = null;
   }
   
-  if (nextURL == null) {
+  if (nextURL == null || "".equals(nextURL)) {
     ServletUtils.sendEncodeRedirect(response, "flow_error.jsp");
   }
   else {

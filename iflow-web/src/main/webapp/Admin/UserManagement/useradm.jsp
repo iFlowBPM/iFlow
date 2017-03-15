@@ -87,28 +87,31 @@ if (users.length == 0) {
       else {
 %>
       <div class="table_inc">  
-        <table class="item_list">
+        <table class="item_list table">
+		<thead>
           <tr class="tab_header">
 <% if (canModify) { %>
-				<td />
+				<th />
 <% } %>
-				<td />
-				<td>
+				<th />
+				<th>
 					<%=messages.getString("useradm.field.username.name")%>
-				</td>
-				<td>
+				</th>
+				<th>
 					<%=messages.getString("useradm.field.name.name")%>
-				</td>
-				<td>
+				</th>
+				<th>
 					<%=messages.getString("useradm.field.orgunit.name")%>
-				</td>
+				</th>
 				<% if (Const.bUSE_EMAIL && canPassword) { %>
-				<td/>
+				<th/>
 				<% } %>
 				<% if (canDelete) { %>
-				<td/>
+				<th/>
 				<% } %>
 			</tr>
+		</thead>
+		<tbody>
 			<%
         for (int i = 0; i < users.length; i++) {
           UserViewInterface userv = users[i];
@@ -160,14 +163,14 @@ if (users.length == 0) {
       }
 
     %>
-    
+    </tbody>
 		</table>
 	</div>
 <% if (canModify) { %>
 	<div class="button_box">
-    	<input class="regular_button_01" type="button" name="add_user" value="<%=messages.getString("button.add")%>" onClick="javascript:tabber_right('admin', '<%=response.encodeURL("Admin/UserManagement/userform.jsp")%>','operation=create');"/>
+    	<input class="regular_button_01 btn btn-default" type="button" name="add_user" value="<%=messages.getString("button.add")%>" onClick="javascript:tabber_right('admin', '<%=response.encodeURL("Admin/UserManagement/userform.jsp")%>','operation=create');"/>
 <% if(Const.bUSE_EMAIL) { %>
-    	<input class="regular_button_01" type="button" name="invite_user" value="<%=messages.getString("button.invite")%>" onClick="javascript:tabber_right('admin', '<%=response.encodeURL("Admin/UserManagement/userform.jsp")%>','operation=invite');"/>
+    	<input class="regular_button_01 btn btn-default" type="button" name="invite_user" value="<%=messages.getString("button.invite")%>" onClick="javascript:tabber_right('admin', '<%=response.encodeURL("Admin/UserManagement/userform.jsp")%>','operation=invite');"/>
 <% } %>
 	</div>
 <% } %>

@@ -62,7 +62,7 @@ if (flow != null) {
   }
 
   sFlowHtml = Utils.genHtmlSelect("flowid",
-				  "onchange=\"javascript:tabber_right(4, '"+response.encodeURL("Admin/ProcManagement/flow_states.jsp")+"', get_params(document.flowstates));\"",
+				  "class=\"form-control\" onchange=\"javascript:tabber_right(4, '"+response.encodeURL("Admin/ProcManagement/flow_states.jsp")+"', get_params(document.flowstates));\"",
 				  "" + flowid,
 				  altmp,
 				  altmp2);
@@ -118,22 +118,24 @@ if (flow != null) {
 %>
 
 
-<form name="flowstates" method="POST">
+<form name="flowstates" method="POST" class="form-horizontal">
 
   <h1 id="title_admin"><%=title%></h1>
 
 <% if (sbError != null && sbError.length() > 0) { %>
-  <div class="error_msg">
+  <div class="alert alert-danger">
     <%=sbError.toString()%>
   </div>
 <% } %>
 
   <fieldset>
-    <legend><%=messages.getString("flow_states.msg.selectFlow")%></legend>
+    <div class="alert"><%=messages.getString("flow_states.msg.selectFlow")%></div>
     <ol>
-      <li>
-        <label for="flowid"><%=messages.getString("flow_states.field.flow")%></label>
+      <li class="form-group">
+        <label class="control-label col-sm-2" for="flowid"><%=messages.getString("flow_states.field.flow")%></label>
+		<div class="col-sm-5">
         <%=sFlowHtml%>
+		</div>
       </li>
     </ol>
   </fieldset>
@@ -143,7 +145,7 @@ if (flow != null) {
 
 <% if (alData != null) { %>
   <div class="table_inc">  
-    <table class="item_list">
+    <table class="item_list table">
       <tr class="tab_header">
         <td><%=messages.getString("flow_states.field.id")%></td>
         <td><%=messages.getString("flow_states.field.type")%></td>

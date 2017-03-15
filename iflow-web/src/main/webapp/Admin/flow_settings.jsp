@@ -2,10 +2,9 @@
 <%@ taglib uri="http://jakarta.apache.org/taglibs/core" prefix="c" %>
 <%@ taglib uri="http://www.iknow.pt/jsp/jstl/iflow" prefix="if" %>
 <%@ include file = "../inc/defs.jsp" %>
-
 <%
 UserInfoInterface ui = userInfo;
-	String title = messages.getString("flow_settings.title"); 
+String title = messages.getString("flow_settings.title"); 
 String sPage = "Admin/flow_settings";
 
 StringBuffer sbError = new StringBuffer();
@@ -28,38 +27,41 @@ String deployResult = (String)request.getAttribute("deployResult");
 	<h1 id="title_admin"><%=title%></h1>
 
 <% if (sbError.length() > 0) { %>
-	<div class="error_msg">
+	<div class="alert alert-danger">
 		<%=sbError.toString()%>
 	</div>
 <% } %>
 <% if (StringUtils.isNotEmpty(deployResult)) { %>
-	<div class="error_msg">
+	<div class="alert alert-danger">
 		<%=deployResult%>
 	</div>
 <% } %>
 	<div class="table_inc">  
 
 <% if (fda != null && fda.length > 0) { %>
-		<table class="item_list">
+		<table class="item_list table">
+		<thead>
 			<tr class="tab_header">
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-				<td/>
-                <td/>
-				<td>
+				<th/>
+				<th/>
+				<th/>
+				<th/>
+				<th/>
+                <th/>
+				<th>
 					<%=messages.getString("flow_settings.header.flow")%>
-				</td>
-				<td>
+				</th>
+				<th>
 					<%=messages.getString("flow_settings.header.file")%>
-				</td>
-				<td/>
-				<td>
+				</th>
+				<th/>
+				<th>
 					<%=messages.getString("flow_settings.header.status")%>
-				</td>
-				<td/>
+				</th>
+				<th/>
 			</tr>
+		</thead>
+		<tbody>
 			<%  for (int i=0; i < fda.length; i++) {
 				  IFlowData fData = fda[i];
 				  String params = DataSetVariables.FLOWID + "=" + fda[i].getId() + "&flowname="  + fda[i].getName() + "&ts=" + ts;
@@ -81,7 +83,7 @@ String deployResult = (String)request.getAttribute("deployResult");
                   }
 			%>
 
-				<tr class="<%=i%2==0?"tab_row_even":"tab_row_odd"%>">
+				<tr class="<%=i%2==0?"tab_row_even":"tab_row_odd"%>" style="<%=(fData.isOnline())?"":"color:#aaa;background-color:#fafafa;"%>">
 					<td class="itemlist_icon">
 						<a href="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_settings_edit.jsp") %>', '<%=params%>');"><img class="toolTipImg" src="images/icon_modify.png" border="0" title="<%=messages.getString("flow_settings.tooltip.edit") %>"></a>
 					</td>
@@ -126,16 +128,17 @@ String deployResult = (String)request.getAttribute("deployResult");
 					</td>
 				</tr>
 			<% } %>
+		</tbody>
 		</table>
 	</div>
 <% } else { %>
-	<div class="info_msg">
+	<div class="alert alert-info">
 		<%=messages.getString("flow_settings.error.noflowsdef")%>
 	</div>
 <% } %>
 
 <div class="button_box">
-   	<input class="regular_button_02" type="button" name="add" value="<if:message string="button.import"></if:message>" onClick="javascript:tabber_right(4, '<c:url value="Admin/uploadflow.jsp"></c:url>','ts=<%=ts%>');"></input>
+   	<input class="regular_button_02 btn btn-default" type="button" name="add" value="<if:message string="button.import"></if:message>" onClick="javascript:tabber_right(4, '<c:url value="Admin/uploadflow.jsp"></c:url>','ts=<%=ts%>');"></input>
 </div>
 
 <if:generateHelpBox context="flow_settings"/>

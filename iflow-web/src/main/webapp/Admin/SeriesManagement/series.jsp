@@ -45,11 +45,10 @@ Timestamp tsNow = new Timestamp((new java.util.Date()).getTime());
 String valueDate = DateUtility.formatTimestamp(userInfo, tsNow);
 %>
 
+<h1 id="title_admin"><%=title%></h1>
 <form method="post" name="series">
-	<h1 id="title_admin"><%=title%></h1>
-
 	<div class="table_inc">
-    	<table class="item_list">
+    	<table class="item_list table">
       		<tr class="tab_header">
           		<td></td>
           		<td><if:message string="series.name" /></td>
@@ -68,7 +67,7 @@ String valueDate = DateUtility.formatTimestamp(userInfo, tsNow);
 		String stateKey = MessageFormat.format(SeriesProcessor.STATE_DESCRIPTION_KEY_FORMAT, String.valueOf(sp.getState()));
 		String state = userInfo.getMessages().getString(stateKey);
 %>
-    		<tr class="<%=i%2==0?"tab_row_even":"tab_row_odd"%>" style="<%=(sp.isEnabled())?"":"color:red;"%>">
+    		<tr class="<%=i%2==0?"tab_row_even":"tab_row_odd"%>" style="<%=(sp.isEnabled())?"":"color:#666;background-color:#fafafa;"%>">
     			<td class="itemlist_icon">
     				<%if (sp.isEnabled()) { %>
 						<a href="javascript:tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series_flows.jsp")%>','id=<%=sp.getId()%>&ts=<%=ts%>');">
@@ -96,7 +95,7 @@ String valueDate = DateUtility.formatTimestamp(userInfo, tsNow);
 %>
 		</table>
 		<fieldset class="submit">
-			<input class="regular_button_01" type="button" name="add_series" value="<if:message string="button.add"/>" onClick="tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series_add.jsp")%>','ts=<%=ts%>');"/>
+			<input class="regular_button_01 btn btn-default" type="button" name="add_series" value="<if:message string="button.add"/>" onClick="tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series_add.jsp")%>','ts=<%=ts%>');"/>
 		</fieldset>
 	</div>
 </form>

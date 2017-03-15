@@ -9,12 +9,12 @@ String sPage = "Admin/flow_menu_edit";
 %>
 
 <%@ include file = "auth.jspf" %>
-<form name="flows" method="post">
+<h1 id="title_admin"><%=title%></h1>
 
-	<h1 id="title_admin"><%=title%></h1>
+<form name="flows" method="post" class="form-horizontal">
 
 	<c:if test="${not empty err_msg}">
-		<div class="error_msg">
+		<div class="alert alert-danger">
 			<c:out value="${err_msg}" escapeXml="false"/>
 		</div>
 	</c:if>

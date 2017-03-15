@@ -155,7 +155,7 @@
 		</ol>
 	</fieldset>
 	<fieldset class="submit">
-		<input class="regular_button_00" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="tabber_right(4, '<%=response.encodeURL(sPage+".jsp") %>', 'ts=<%=ts%>');"/>
+		<input class="regular_button_00 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="tabber_right(4, '<%=response.encodeURL(sPage+".jsp") %>', 'ts=<%=ts%>');"/>
 	</fieldset>
 	
 </form>

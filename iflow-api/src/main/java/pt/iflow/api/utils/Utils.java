@@ -20,6 +20,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.GregorianCalendar;
+import java.sql.Time;
 
 import javax.naming.Binding;
 import javax.naming.Context;
@@ -34,11 +36,15 @@ import javax.sql.DataSource;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
+import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.presentation.DateUtility;
 import pt.iflow.api.processdata.EvalException;
 import pt.iflow.api.processdata.ProcessData;
 import pt.iknow.utils.crypt.CryptUtils;
+import pt.iflow.api.core.CalendarManager;
+
+
 
 public class Utils {
 
@@ -838,7 +844,204 @@ public class Utils {
 
     return retObj;
   }
+  
+  
+  public static long getDurationCalendar(Timestamp d1, Timestamp d2, pt.iflow.api.calendar.Calendar cal, UserInfoInterface userInfo)
+  {
+    long resultado = 0L;
+    
+    Timestamp tsStart = new Timestamp(d1.getTime());
+    Timestamp tsStop = new Timestamp(d2.getTime());
+    if ((tsStart == null) || (tsStop == null)) {
+      return 0L;
+    }
+    long countToRemove = 0L;
+    
+    CalendarManager cmb = BeanFactory.getCalendarManagerBean();
+    
+    ArrayList<Integer> daysToRemove = cal.getDaysNotToCount();
+    
+    ArrayList<Timestamp> holidays = cmb.getHolidaysCalendar(userInfo, cal.getCalendar_id(), tsStart, tsStop);
+    
+    ArrayList<Time> periods = cmb.getPeriodsCalendar(userInfo, cal.getCalendar_id());
+    for (int i = 0; i < daysToRemove.size(); i++) {
+      countToRemove += getNumberOfWeekDays(tsStart, tsStop, ((Integer)daysToRemove.get(i)).intValue());
+    }
+    GregorianCalendar calDay = (GregorianCalendar)java.util.Calendar.getInstance();
+    for (int i = 0; i < holidays.size(); i++) {
+      for (int j = 0; j < daysToRemove.size(); j++)
+      {
+        calDay.setTime((Date)holidays.get(i));
+        if (calDay.get(7) == ((Integer)daysToRemove.get(j)).intValue())
+        {
+          holidays.remove(i);
+          j = daysToRemove.size();
+        }
+      }
+    }
+    long horasTemp = 0L;
+    if ((tsStart.getDate() == tsStop.getDate()) && ((tsStop.getTime() - tsStart.getTime()) / 86400000L == 0L))
+    {
+      if (!isDayHolidayOrNotWeekDay(tsStart, holidays, daysToRemove)) {
+        horasTemp = getNumberOfHoursSameDay(tsStart, tsStop, periods);
+      }
+    }
+    else
+    {
+      if (!isDayHolidayOrNotWeekDay(tsStart, holidays, daysToRemove)) {
+        horasTemp = getNumberOfHoursDay(tsStart, periods, true);
+      }
+      if (!isDayHolidayOrNotWeekDay(tsStop, holidays, daysToRemove)) {
+        horasTemp += getNumberOfHoursDay(tsStop, periods, false);
+      }
+    }
+    if ((tsStart.getDate() == tsStop.getDate()) && ((tsStop.getTime() - tsStart.getTime()) / 86400000L == 0L))
+    {
+      if (isDayHoliday(tsStart, holidays)) {
+        holidays.remove(0);
+      }
+    }
+    else
+    {
+      if (isDayHoliday(tsStart, holidays)) {
+        holidays.remove(0);
+      }
+      if (isDayHoliday(tsStop, holidays)) {
+        holidays.remove(0);
+      }
+    }
+    try
+    {
+      tsStart.setHours(23);
+      tsStart.setMinutes(59);
+      tsStart.setSeconds(59);
+      
+      tsStop.setHours(0);
+      tsStop.setMinutes(0);
+      tsStop.setSeconds(1);
+      long dias = (tsStop.getTime() - tsStart.getTime()) / 86400000L;
+      dias = dias - countToRemove - holidays.size();
+      
 
+      long horas = horasTemp / 3600000L;
+      horasTemp %= 3600000L;
+      long minutos = horasTemp / 60000L;
+      horasTemp %= 60000L;
+      long segundos = horasTemp / 1000L;
+      
+
+      long temp = 0L;
+      if (horas >= cal.getDay_hours())
+      {
+        temp = horas / cal.getDay_hours();
+        horas -= temp * cal.getDay_hours();
+        dias += temp;
+      }
+      resultado = dias * 86400000L + horas * 3600000L + minutos * 60000L + segundos * 1000L;
+    }
+    catch (Exception e)
+    {
+      resultado = 0L;
+    }
+    return resultado;
+  }
+  
+  public static boolean isDayHolidayOrNotWeekDay(Timestamp tsDay, ArrayList<Timestamp> holidays, ArrayList<Integer> daysToRemove)
+  {
+    for (int i = 0; i < holidays.size(); i++) {
+      if ((((Timestamp)holidays.get(i)).getDate() == tsDay.getDate()) && ((((Timestamp)holidays.get(i)).getTime() - tsDay.getTime()) / 86400000L == 0L)) {
+        return true;
+      }
+    }
+    for (int j = 0; j < daysToRemove.size(); j++) {
+      if (tsDay.getDay() + 1 == ((Integer)daysToRemove.get(j)).intValue()) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public static boolean isDayHoliday(Timestamp tsDay, ArrayList<Timestamp> holidays)
+  {
+    for (int i = 0; i < holidays.size(); i++) {
+      if ((((Timestamp)holidays.get(i)).getDate() == tsDay.getDate()) && ((((Timestamp)holidays.get(i)).getTime() - tsDay.getTime()) / 86400000L == 0L)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public static long getNumberOfWeekDays(Timestamp tsStart, Timestamp tsStop, int weekDay)
+  {
+    long number = 0L;
+    
+    GregorianCalendar calStart = (GregorianCalendar)java.util.Calendar.getInstance();
+    calStart.setTime(tsStart);
+    
+    GregorianCalendar calStop = (GregorianCalendar)java.util.Calendar.getInstance();
+    calStop.setTime(tsStop);
+    calStop.add(5, -1);
+    calStop.set(10, calStart.get(10));
+    calStop.set(12, calStart.get(12));
+    calStop.set(13, calStart.get(13));
+    while (!calStart.after(calStop))
+    {
+      int day = calStart.get(7);
+      if ((day == weekDay) && (!tsStart.equals(new Timestamp(calStart.getTimeInMillis())))) {
+        number += 1L;
+      }
+      calStart.add(5, 1);
+    }
+    return number;
+  }
+  
+  public static long getNumberOfHoursDay(Timestamp tsDay, ArrayList<Time> periods, boolean first)
+  {
+    long number = 0L;
+    
+    Time t = new Time(tsDay.getHours(), tsDay.getMinutes(), tsDay.getSeconds());
+    for (int i = 0; i < periods.size(); i += 2)
+    {
+      Time start = (Time)periods.get(i);
+      Time stop = (Time)periods.get(i + 1);
+      if (first)
+      {
+        if ((t.before(start)) || (t.equals(start))) {
+          number += stop.getTime() - start.getTime();
+        } else if ((t.after(start)) && (t.before(stop))) {
+          number += stop.getTime() - t.getTime();
+        }
+      }
+      else if ((t.after(stop)) || (t.equals(stop))) {
+        number += stop.getTime() - start.getTime();
+      } else if ((t.after(start)) && (t.before(stop))) {
+        number += t.getTime() - start.getTime();
+      }
+    }
+    return number;
+  }
+  
+  public static long getNumberOfHoursSameDay(Timestamp tsStart, Timestamp tsStop, ArrayList<Time> periods)
+  {
+    long number = 0L;
+    long periodsToremove = 0L;
+    if (periods.size() == 0) {
+      return tsStop.getTime() - tsStart.getTime();
+    }
+    Time tstart = new Time(tsStart.getHours(), tsStart.getMinutes(), tsStart.getSeconds());
+    Time tstop = new Time(tsStop.getHours(), tsStop.getMinutes(), tsStop.getSeconds());
+    for (int i = 1; i < periods.size() - 1; i += 2)
+    {
+      Time stop = (Time)periods.get(i);
+      Time start = (Time)periods.get(i + 1);
+      if ((stop.after(tstart)) && (start.before(tstop))) {
+        periodsToremove += start.getTime() - stop.getTime();
+      }
+    }
+    number = tsStop.getTime() - tsStart.getTime() - periodsToremove;
+    
+    return number;
+  }
 
   /**
    * Gets the difference between two dates in minutes

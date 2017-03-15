@@ -21,7 +21,8 @@ try {
     title = title + " block" + bBlockDetail.getId();
   }
 
-  if (bBlockDetail.getClass().getName().indexOf("BlockProcDetail") == -1) {
+  if (bBlockDetail.getClass().getName().indexOf("BlockProcDetail") == -1 && bBlockDetail.getClass().getName().indexOf("BlockFormulario") == -1) {
+	Logger.error(login, this, "before", procData.getSignature() + "Not a BlockProcDetail!!");
     throw new Exception("Not BlockProcDetail!");
   }
 }
@@ -29,6 +30,7 @@ catch (Exception e) {
   // send to main page...
   // not able to get flow or process is not in jsp state (if
   // a casting exception occurs..)
+  Logger.error(login, this, "before", procData.getSignature() + "Error receiving request in detail" + e.getMessage(), e );
   ServletUtils.sendEncodeRedirect(response, sURL_PREFIX+"flow_error.jsp");
   return;
 }

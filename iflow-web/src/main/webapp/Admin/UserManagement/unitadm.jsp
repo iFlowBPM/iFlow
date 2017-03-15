@@ -55,23 +55,21 @@ UserManager manager = BeanFactory.getUserManagerBean();
       }
 %>
 
-
+<h1 id="title_admin"><%=title%></h1>
 <form method="post" name="formulario" id="formulario">
-
-	<h1 id="title_admin"><%=title%></h1>
 	
 <% if (units.length == 0) { %>
-	<div class="info_msg">
+	<div class="alert alert-info">
 		<if:message string="unitadm.msg.noUnits"/>
 	</div>
 <% } else { %>
 	<%  if (!asDel) { %>
-		<div class="error_msg">
+		<div class="alert alert-danger">
 		  <%=messages.getString("admin_nav.section.users.notdeleted")%>
 		</div>
 	<%} %>
       <div class="table_inc">  
-        <table class="list_item">
+        <table class="list_item table">
           <tr class="tab_header">
 				<td/>
 				<td>
@@ -157,7 +155,7 @@ UserManager manager = BeanFactory.getUserManagerBean();
 		</table>
 	</div>
 	<div class="button_box">
-    	<input class="regular_button_01" type="button" name="add_unit" value="<%=messages.getString("button.add")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/unitform.jsp")%>','');"/>
+    	<input class="regular_button_01 btn btn-default" type="button" name="add_unit" value="<%=messages.getString("button.add")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/unitform.jsp")%>','');"/>
      </div>
 
      <if:generateHelpBox context="unitadm"/>

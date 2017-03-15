@@ -95,7 +95,7 @@ if (flow != null) {
 
   
   sFlowHtml = Utils.genHtmlSelect("flowid",
-				  sLocked,
+				  sLocked + " class=\"form-control\"",
 				  "" + flowid,
 				  altmp,
 				  altmp2);
@@ -116,44 +116,51 @@ if (sbError.length() == 0 && flowid > 0 && pid > 0 && subpid > 0) {
 %>
 
 
-<form name="procusers" method="POST">
+<form name="procusers" method="POST" class="form-horizontal">
   <input type="hidden" name="state" value="<%=state%>" />
   <input type="hidden" name="show" value="true" />
 
   <h1 id="title_admin"><%=title%></h1>
       
 <% if ((it == null || !it.hasNext()) && flowid > 0) { %>
-  <div class="info_msg">
+  <div class="alert alert-info">
     <%=messages.getString("proc_users.error.noUsersForProc")%>
   </div>
 <% } %>
 
   <fieldset>
     <ol>
-      <li>
-        <label for="flowid"><%=messages.getString("proc_users.field.flow") %></label>
-        <%=sFlowHtml%>
+      <li class="form-group">
+        <label class="control-label col-sm-2" for="flowid"><%=messages.getString("proc_users.field.flow") %></label>
+		<div class="col-sm-5">
+			<%=sFlowHtml%>
+		</div>
       </li>
-      <li>
-        <label for="pid"><%=messages.getString("proc_users.field.pid") %></label>
-        <input type="text" name="pid" value="<%=(pid > -1 ? pid : "") %>" size="10" maxlength="10" <%=sLocked%>>
+      <li class="form-group">
+        <label class="control-label col-sm-2" for="pid"><%=messages.getString("proc_users.field.pid") %></label>
+		<div class="col-sm-5">
+          <input type="text" class="form-control" name="pid" value="<%=(pid > -1 ? pid : "") %>" size="10" maxlength="10" <%=sLocked%>>
+		</div>
       </li>
-      <li>
-        <label for="subpid"><%=messages.getString("proc_users.field.subpid") %></label>
-        <input type="text" name="subpid" value="<%=(subpid > -1 ? subpid : "") %>" size="10" maxlength="10" <%=sLocked%>>
+      <li class="form-group">
+        <label class="control-label col-sm-2" for="subpid"><%=messages.getString("proc_users.field.subpid") %></label>
+		<div class="col-sm-5">
+          <input type="text" class="form-control" name="subpid" value="<%=(subpid > -1 ? subpid : "") %>" size="10" maxlength="10" <%=sLocked%>>
+		</div>
       </li>
     </ol>
   </fieldset>
   <fieldset class="submit">
 <% if (state < 0) { %>
-      <input class="regular_button_00" type="button" name="show" value="<%=messages.getString("button.show")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_users.jsp")%>', get_params(document.procusers));"/>
+      <input class="regular_button_00 btn btn-default" type="button" name="show" value="<%=messages.getString("button.show")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_users.jsp")%>', get_params(document.procusers));"/>
 <% } %>
   </fieldset>
   
  
 <% if (it != null && it.hasNext()) { %>
+  <div class="alert">Lista de tarefas</div>
   <div class="table_inc">  
-    <table class="item_list">
+    <table class="item_list table">
       <tr class="tab_header">
         <td />
         <td><%=messages.getString("proc_users.field.pnumber")%></td>
@@ -204,11 +211,11 @@ if (sbError.length() == 0 && flowid > 0 && pid > 0 && subpid > 0) {
 <% if (state > 0 || !bEmpty) { %>
   <div class="button_box">
     <% if (state > 0) { %>
- 	  <input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.back")%>" 
+ 	  <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" 
       onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/flow_state_procs.jsp")%>', get_params(document.procusers));"/>
     <% } %>
     <% if (!bEmpty && flowid > 0 && pid > 0 && subpid > 0) { %>
-    <input class="regular_button_00" type="button" name="add" value="<%=messages.getString("button.add")%>" 
+    <input class="regular_button_00 btn btn-default" type="button" name="add" value="<%=messages.getString("button.add")%>" 
       onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_users_edit.jsp")%>', '<%=sParamsAdd%>');"/>
     <% } %>            
   </div>

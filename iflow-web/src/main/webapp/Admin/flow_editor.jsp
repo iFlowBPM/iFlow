@@ -5,23 +5,29 @@
 <%@ page import="pt.iflow.api.utils.UserInfoInterface"%>
 
 <h1 id="title_admin"><if:message string="flow_editor.title"/></h1>
-
-  <p class="info_msg"><if:message string="flow_editor.msg.welcome"/></p>
+<form class="form-horizontal">
+  <p class="alert"><if:message string="flow_editor.msg.welcome"/></p>
   <fieldset>
     <ol>
-      <li>
-        <label><if:message string="flow_editor.label.editorJar"/></label>
-        <a href="<%=response.encodeURL("PublicFiles/FlowEditor.jar")%>">floweditor.jar</a>
+      <li class="form-group">
+        <label class="control-label col-sm-2"><if:message string="flow_editor.label.editorJar"/></label>
+		<div class="col-sm-5">
+        <a class="control-label" href="<%=response.encodeURL("PublicFiles/FlowEditor.jar")%>">floweditor.jar</a>
+		</div>
       </li>
-      <li>
-        <label><if:message string="flow_editor.label.editorWin"/></label>
-        <a href="<%=response.encodeURL("PublicFiles/FlowEditor.exe")%>">floweditor.exe</a>
+      <li class="form-group">
+        <label class="control-label col-sm-2"><if:message string="flow_editor.label.editorWin"/></label>
+		<div class="col-sm-5">
+        <a class="control-label" href="<%=response.encodeURL("PublicFiles/FlowEditor.exe")%>">floweditor.exe</a>
+		</div>
       </li>
-      <li>
-        <label><if:message string="flow_editor.label.editorDoc"/></label>
-        <a href="<%=response.encodeURL("PublicFiles/floweditormanual.pdf")%>">floweditormanual.pdf</a>
+      <li class="form-group">
+        <label class="control-label col-sm-2"><if:message string="flow_editor.label.editorDoc"/></label>
+		<div class="col-sm-5">
+        <a class="control-label" href="<%=response.encodeURL("PublicFiles/floweditormanual.pdf")%>">floweditormanual.pdf</a>
+		</div>
       </li>
-      <li>
+      <li class="form-group">
       <%
         String pre = "<span style=\"white-space: nowrap; color: black; font-weight: bold; \">";
         String pos = "</span>";
@@ -39,11 +45,14 @@
           message = userInfo.getMessages().getString("flow_editor.label.editorDsc", name, url);
         }
       %>
-        <p><%=message %></p>
-        <img src="images/iflow4.login.png" alt="Flow Editor" style="width: auto;" />
-      </li>
+        <div class="alert"><%=message %></label>
+	   </li>
+       <li class="form-group">
+         <img class="control-label" src="images/iflow4.login.png" alt="Flow Editor" style="margin-left:20px;width: auto;" />
+	   </li>
 	  </ol>
   </fieldset>
   <fieldset class="submit"/>
   <if:generateHelpBox context="flow_editor"/>
+  </form>
   

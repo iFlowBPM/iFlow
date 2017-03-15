@@ -52,19 +52,19 @@ InterfacesManager manager = BeanFactory.getInterfacesManager();
 %>
       <h1 id="title_admin"><%=title%></h1>
 <% if (bError) { %>
-			<div class="error_msg">
+			<div class="alert alert-danger">
 			    <%=sErrorMsg%>
 			</div>
 <% } %>
 
 <% if (interfaces.length == 0) { %>
-			<div class="info_msg">
+			<div class="alert alert-info">
 			    <if:message string="organization.interfaceadm.msg.noInterfaces" />
 			</div>
 <% } else { %>
 
       <div class="table_inc">  
-        <table class="item_list">
+        <table class="item_list table">
           <tr class="tab_header">
 				<td/>
 				<td>

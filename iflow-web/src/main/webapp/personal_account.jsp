@@ -132,7 +132,7 @@
 
 %>
 
-<%@page import="pt.iflow.api.userdata.views.UserViewInterface"%><form method="post" name="userform">
+<%@page import="pt.iflow.api.userdata.views.UserViewInterface"%><form method="post" name="userform" class="form-horizontal">
 
   <h1 id="title_account"><c:out value="${title}" escapeXml="false"/></h1>
 
@@ -176,7 +176,7 @@
   	<if:formInput type="text" name="companyPhone" value="${user.companyPhone}" labelkey="userform.field.companyPhone" edit="${bEdit}" maxlength="20"/>
 	<% } %>
 	<% for (int i = 0; i < listExtraValues.length; i++) { %>
-	  <if:formInput name="<%=\"extra_\"+listExtraProperties[i]%>" labelkey='<%="userform.field."+listExtraProperties[i]%>' type="text" value='<%=listExtraValues[i]%>' edit="<%=bEdit%>" required="false" maxlength="50" />
+	  <if:formInput name="<%=\"extra_\"+listExtraProperties[i]%>" label="<%=listExtraProperties[i]%>" type="text" value='<%=listExtraValues[i]%>' edit="<%=bEdit%>" required="false" maxlength="50" />
 	<% } %>
   </c:when>
   <c:otherwise>
@@ -188,7 +188,7 @@
   </c:choose>
   </ol>
   </fieldset>
-  <% if ((!bEdit || canTimezone)&& !ui.isSysAdmin()) { %>
+  <% if (false && (!bEdit || canTimezone)&& !ui.isSysAdmin()) { %>
     <fieldset>
       <legend><if:message string="personal_account.userSettings" /></legend>
       <ol>
@@ -207,18 +207,18 @@
   <fieldset class="submit">
     <c:choose>
     <c:when test="${bEdit or bEditTimezone}">
-      <input class="regular_button_02" type="button" name="modify" value="<if:message string="button.cancel" />" 
+      <input class="regular_button_02 btn btn-default" type="button" name="modify" value="<if:message string="button.cancel" />" 
           onClick="javascript:tabber_right(<%=leftMenu %>, '<%= response.encodeURL("personal_account.jsp") %>', 'oper=cancel&' + get_params(document.userform));"/>
-      <input class="regular_button_02" type="button" name="modify" value="<if:message string="button.save" />" 
+      <input class="regular_button_02 btn btn-default" type="button" name="modify" value="<if:message string="button.save" />" 
           onClick="javascript:tabber_right(<%=leftMenu %>, '<%= response.encodeURL("personal_account.jsp") %>', 'oper=save&' + get_params(document.userform));"/>
     </c:when>
     <c:otherwise>
       <c:if test="${bShowModify or bShowTimezone}">
-      <input class="regular_button_02" type="button" name="modify" value="<if:message string="button.modify" />" 
+      <input class="regular_button_02 btn btn-default" type="button" name="modify" value="<if:message string="button.modify" />" 
           onClick="javascript:tabber_right(<%=leftMenu %>, '<%= response.encodeURL("personal_account.jsp") %>', 'oper=edit&' + get_params(document.userform));"/>
       </c:if>
       <c:if test="${bShowPass}">
-      <input class="regular_button_03" type="button" name="modify" value="<if:message string="button.change_password" />" 
+      <input class="regular_button_03 btn btn-default" type="button" name="modify" value="<if:message string="button.change_password" />" 
           onClick="javascript:tabber_right(<%=leftMenu %>, '<%= response.encodeURL("personal_account_password.jsp") %>', 'oper=pass&' + get_params(document.userform));"/>
       </c:if>
     </c:otherwise>

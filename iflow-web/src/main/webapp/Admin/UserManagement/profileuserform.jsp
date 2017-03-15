@@ -75,19 +75,21 @@
       }
 %>
 
-<form method="post" name="formulario" id="formulario">
-
-    <h1 id="title_admin"><%=title%></h1>
-    <label class="error_msg"><%=errorMsg.toString()%></label>
+<h1 id="title_admin"><%=title%></h1>
+<form method="post" name="formulario" id="formulario" role="form" class="form-horizontal">
+    <% if (errorMsg != null && errorMsg.length() > 0) { %>
+    <div class="alert alert-danger"><%=errorMsg.toString()%></div>
+	<% } %>
     <input type="hidden" name="profile_name" id="profile_name" value="<%=profile.getName()%>">
     <input type="hidden" name="profile_size" id="profile_size" value="<%=profileUsers.size()%>">
 
-  	<fieldset>
-  		<legend></legend>
-	    <ol>
-	      <li>
-	        <label for="userid"><%=messages.getString("profileuserform.field.profile")%></label>
-			<select name="profileid" onchange="tabber_right(4, 'Admin/UserManagement/profileuserform.jsp',get_params(document.formulario));">
+	<div class="form-group" style="height:40px;">
+		<label for="userid" class="control-label col-sm-2">
+	        <%=messages.getString("profileuserform.field.profile")%>
+		</label>
+		<div class="col-sm-5">
+
+			<select name="profileid" class="form-control" onchange="tabber_right(4, 'Admin/UserManagement/profileuserform.jsp',get_params(document.formulario));">
 				<option value="" <%=profileId == null ||"".equals(profileId)?"selected":""%>>
 					<%=messages.getString("const.choose")%>
 				</option>
@@ -100,20 +102,16 @@
 					</option>
 				<%}%>
 			</select>
-	      </li>
-		</ol>
-	</fieldset>
-	<fieldset>
-	    <ol>
-	      <li>
-			<label for="unit"><%=messages.getString("profileuserform.field.users")%></label>
-			<div class="ft_main">
-				<div class="ft_left">
-					<div class="ft_caption">
+		</div>
+	</div>
+	
+	<div class="ft_main form-group" style="height:200px">
+		<div class="ft_left">
+			<div class="ft_caption control-label col-sm-2">
 						<%=messages.getString("profileuserform.field.available")%>
-					</div>
-					<div class="ft_select">
-						<select size="10" name="inactive" MULTIPLE>
+			</div>
+			<div class="ft_select col-sm-2">
+				<select size="10" name="inactive" MULTIPLE class="form-control">
 							<% for (int i = 0; i < users.length; i++) {
 								if(profileUsers.contains(users[i].getUserId())) continue; %>
 							<option value="<%= users[i].getUserId()%>">
@@ -123,20 +121,19 @@
 						</select>
 					</div>
 				</div>
-				<div class="ft_middle">
-					<div class="ft_button">
-				    	<input class="regular_button_000" type="button" name="add_profile_users" value="=&gt;" onClick="javascript:tabber_right(4, 'Admin/UserManagement/profileuserform.jsp', 'oper=add&' + get_params(document.formulario));"/>
-					</div>
-					<div class="ft_button">
-				    	<input class="regular_button_000" type="button" name="del_profile_users" value="&lt;=" onClick="javascript:tabber_right(4, 'Admin/UserManagement/profileuserform.jsp','oper=del&' + get_params(document.formulario));"/>
-					</div>
-				</div>
-				<div class="ft_right">
-					<div class="ft_caption">
-			    		<%=messages.getString("profileuserform.field.assigned")%>
-					</div>
-					<div class="ft_select">
-						<select size="10" name="active" MULTIPLE>
+		<div class="ft_middle col-sm-1">
+			<div class="ft_button">
+				<input class="regular_button_000 btn btn-default" type="button" name="add" value="=&gt;" 
+						onClick="javascript:tabber_right(4, 'Admin/UserManagement/profileuserform.jsp', 'oper=add&' + get_params(document.formulario));"/>
+			</div>
+			<div class="ft_button">
+				<input class="regular_button_000 btn btn-default" type="button" name="add" value="&lt;=" 
+						onClick="javascript:tabber_right(4, 'Admin/UserManagement/profileuserform.jsp','oper=del&' + get_params(document.formulario));"/>
+			</div>
+		</div>
+		<div class="ft_right">
+			<div class="ft_select col-sm-2">
+				<select size="10" name="active" MULTIPLE class="form-control">
 							<% for (int i = 0; i < users.length; i++) {
 								if(!profileUsers.contains(users[i].getUserId())) continue; %>
 								<option value="<%= users[i].getUserId()%>">
@@ -144,22 +141,25 @@
 								</option>
 							<%}%>
 						</select>
-					</div>
-				</div>
 			</div>
-	      </li>
-		</ol>
-	</fieldset>
+			<div class="ft_caption control-label col-sm-2">
+			    		<%=messages.getString("profileuserform.field.assigned")%>
+			</div>
+		</div>
+	</div>
+
 	<fieldset>
 		<ol>
-			<li>
-				<label for="act_process"><%=messages.getString("profileuserform.actprocess")%></label>
-				<input type="checkbox" title="<%=messages.getString("profileuserform.actprocess")%>" value="set" id="act_process" name="act_process" <%=(actProcess == null) || !"".equals(actProcess) ? "CHECKED" : ""%>/>
+			<li class="form-group">
+				<label class="control-label col-sm-2" for="act_process"><%=messages.getString("profileuserform.actprocess")%></label>
+				<div class="col-sm-1">
+				<input type="checkbox" class="form-control" title="<%=messages.getString("profileuserform.actprocess")%>" value="set" id="act_process" name="act_process" <%=(actProcess == null) || !"".equals(actProcess) ? "CHECKED" : ""%>/>
+				</div>
 			</li>
 		</ol>
 	</fieldset>
 	<fieldset class="submit">
-		<input class="regular_button_00" type="button" name="back" value="<%=messages.getString("button.back")%>" 
+		<input class="regular_button_00 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" 
     		onClick="javascript:tabber_right(4, 'Admin/UserManagement/profileadm.jsp', get_params(document.formulario));"/>
 	</fieldset>
 </form>

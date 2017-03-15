@@ -100,16 +100,17 @@ if (op == 2) {
 %>
 
 
-<form name="flows" method="post">
+<h1 id="title_admin"><%=title%></h1>
+<form name="flows" method="post" role="form" class="form-horizontal">
 
   <input type="hidden" name="flowid" value="<%= flowid %>">
   <input type="hidden" name="flowname" value="<%=response.encodeURL(sFlowName)%>">
   <input type="hidden" name="op" value="0">
 
-  <h1 id="title_admin"><%=title%></h1>
+ 
 
 <% if (sbError != null && sbError.length() > 0) { %>
-  <div class="error_msg">
+  <div class="alert alert-danger">
     <%=sbError.toString()%>
   </div>
 <% } else if (sSave != null && sSave.length() > 0) { %>
@@ -121,18 +122,22 @@ if (op == 2) {
   <fieldset>
     <legend><%=messages.getString("flow_resync_edit.header.flow",sFlowName)%></legend>
     <ol>
-      <li>
-        <label for="oldstate"><%=messages.getString("flow_resync_edit.field.oldState")%></label>
-        <input type="text" name="oldstate" value="<%=sOldState%>">
+       <li class="form-group">
+        <label class="control-label col-sm-2" for="oldstate"><%=messages.getString("flow_resync_edit.field.oldState")%></label>
+        <div class="col-sm-2">
+			<input type="text" class="form-control" name="oldstate" value="<%=sOldState%>">
+		</div>
       </li>
-      <li>
-        <label for="newstate"><%=messages.getString("flow_resync_edit.field.newState")%></label>
-        <input type="text" name="newstate" value="<%=sNewState%>">
+      <li class="form-group">
+        <label class="control-label col-sm-2" for="newstate"><%=messages.getString("flow_resync_edit.field.newState")%></label>
+        <div class="col-sm-2">
+			<input type="text" class="form-control" name="newstate" value="<%=sNewState%>">
+		</div>
       </li>
     </ol>
   </fieldset>
   <fieldset class="submit">
-	<input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_settings.jsp") %>');"/>
-    <input class="regular_button_01" type="button" name="sync" value="<%=messages.getString("button.sync")%>" onClick="javascript:document.flows.op.value='2';javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_resync_edit.jsp") %>', get_params(document.flows));"/>
+	<input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_settings.jsp") %>');"/>
+    <input class="regular_button_01 btn btn-default" type="button" name="sync" value="<%=messages.getString("button.sync")%>" onClick="javascript:document.flows.op.value='2';javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_resync_edit.jsp") %>', get_params(document.flows));"/>
   </fieldset>
 </form>

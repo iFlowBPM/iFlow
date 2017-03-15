@@ -65,7 +65,7 @@ if ("del".equals(sOper)){
 <% } else { %>
 
       <div class="table_inc">  
-        <table class="item_list">
+        <table class="item_list table">
           <tr class="tab_header">
 				<td/>
 				<td/>
@@ -111,6 +111,6 @@ if ("del".equals(sOper)){
 		</table>
 	</div>
 	<div class="button_box">
-    	<input class="regular_button_01" type="button" name="add" value="<%=messages.getString("button.add")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profileform.jsp")%>','');"/>
+    	<input class="regular_button_01 btn btn-default" type="button" name="add" value="<%=messages.getString("button.add")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profileform.jsp")%>','');"/>
 	</div>
 	<if:generateHelpBox context="profileadm"/>

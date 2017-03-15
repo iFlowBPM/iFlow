@@ -11,7 +11,7 @@
 <%@ page import="pt.iflow.userdata.views.*" %>
 <%@ include file = "../../inc/defs.jsp" %>
 <if:checkUserAdmin type="org">
-	<div class="error_msg">
+	<div class="alert alert-danger">
 		<if:message string="admin.error.unauthorizedaccess" />
 	</div>
 </if:checkUserAdmin>
@@ -30,14 +30,13 @@
     return sErrorMsg;
   }
 %><%
-
 	boolean bEdit = false;
   boolean bEditUsername = false;
-  boolean bEditAdminStuff = userInfo.isOrgAdmin() && userInfo.isOrgAdminFlows() && userInfo.isOrgAdminOrg() && userInfo.isOrgAdminProcesses() && userInfo.isOrgAdminResources() && userInfo.isOrgAdminUsers() ;
   IErrorHandler errorHandler = null;
   String sOper = fdFormData.getParameter("operation");
   boolean success = false;
   UserInfoInterface ui = userInfo;
+  String cal = fdFormData.getParameter("calendar");
   
   String infoMsg = null;
 
@@ -64,6 +63,7 @@
   String orgadmOrg = "";
   String password = "";
   String repeatPass = "";
+  String calendId = "";
 
   List<String> lst = AccessControlManager.getUserDataAccess().getListExtraProperties();
   String[] listExtraProperties = lst.toArray(new String[lst.size()]);
@@ -141,8 +141,9 @@
       }
       else { 
         errorHandler = manager.createUser(ui, username, gender, unitId, emailAddress, firstName, lastName, phoneNumber,
-            faxNumber, mobileNumber, companyPhone, orgID, orgadm, password, listExtraProperties, listExtraValues);
+            faxNumber, mobileNumber, companyPhone, orgID, orgadm, password, listExtraProperties, listExtraValues, cal);
       }
+     
     }
    
     ErrorCode errCode = (errorHandler != null)?errorHandler.getErrorCode():null;
@@ -162,7 +163,7 @@
     }
     else { 
       errorHandler = manager.modifyUserAsAdmin(ui, userId, gender, unitId, emailAddress, firstName, lastName, phoneNumber,
-          faxNumber, mobileNumber, companyPhone, orgadm, orgadmUsers, orgadmFlows, orgadmProcesses, orgadmResources, orgadmOrg, password, listExtraProperties, listExtraValues);
+          faxNumber, mobileNumber, companyPhone, orgadm, orgadmUsers, orgadmFlows, orgadmProcesses, orgadmResources, orgadmOrg, password, listExtraProperties, listExtraValues, fdFormData.getParameter("calendar"));
       ErrorCode errCode = (errorHandler != null)?errorHandler.getErrorCode():null;
       
       if (UserErrorCode.SUCCESS.equals(errCode)) {
@@ -192,12 +193,31 @@
   catch (Exception e) {
     Logger.errorJsp(userInfo.getUtilizador(), "userform", "unable to get all organizational units", e);
   }
+  
+  List<String[]> calendar = new ArrayList<String[]>(); 
 
   if(StringUtils.isEmpty(userId)) {
     userId = "";
+
+    calendId = "-1";
+    try {
+    	calendar = manager.getCalendars(ui);
+    }
+    catch (Exception e) {
+    	e.printStackTrace();
+    }
   } else {
+    try {
+  	calendar = manager.getCalendars(ui);
+  }
+  catch (Exception e) {
+  	e.printStackTrace();
+  }
+  //get calendar id from db
+    
     userView = manager.getUser(ui, userId);
     username = userView.getUsername();
+  	calendId = manager.getUserCalendarId(username, userId);
     gender = userView.getGender();
     unitId = userView.getUnitId();
     emailAddress = userView.getEmail();
@@ -240,22 +260,23 @@
     bEdit = true;
     jspBack = "userform.jsp";
   }
+
+  
 %>
 
 
 
-<form method="post" name="formulario" id="formulario">
+<h1 id="title_admin"><%=title%></h1>
+<form method="post" name="formulario" id="formulario" role="form" class="form-horizontal">
   <input type="hidden" name="userid" value="<%=userId%>" />
   <input type="hidden" name="operation" value="<%=newAction%>" /> 
 
-  <h1 id="title_admin"><%=title%></h1>
-
-<% if (!success) { %>
-<div class="error_msg"><%=sErrorMsg%></div>
+<% if (!success && sErrorMsg != null && sErrorMsg.length() > 0) { %>
+<div class="alert alert-danger"><%=sErrorMsg%></div>
 <% } %>
 
 <% if (null != infoMsg) { %>
-<div class="info_msg"><%=infoMsg%></div>
+<div class="alert alert-info"><%=infoMsg%></div>
 <% } %>
 
 <fieldset><legend></legend>
@@ -277,23 +298,33 @@
     <if:formOption value="F" labelkey="userform.field.gender.female"/>
   </if:formSelect>
   <if:formSelect name="unit" edit="<%=bEdit%>" value='<%=unitId%>' labelkey="userform.field.orgunit" required="true">
+  
   <% for (int i = 0; i < units.length; i++) { %>
     <if:formOption value='<%=units[i].getUnitId()%>' label="<%=units[i].getDescription()%>"/>
   <% } %>
   </if:formSelect>
   
-  <if:formInput name="orgadm" onchange="if ($('orgadm').checked==true) $('orgadmSubPanel').style.display=''; else $('orgadmSubPanel').style.display='none';" labelkey="userform.field.orgadm" type="checkbox" value='<%=orgadm%>' edit="<%=bEdit && bEditAdminStuff%>" required="false" />
+  <if:formSelect name="calendar" edit="<%=bEdit%>" value='<%=calendId%>' labelkey="admin_nav.section.resources.tooltip.calend" >
+ 
+  <if:formOption value=' ' label= '<%= messages.getString("actividades.folder.change")%>'/>
+  <% for (int i = 0; i < calendar.size(); i++) { %>
+    <if:formOption value='<%=calendar.get(i)[0]%>' label="<%=calendar.get(i)[1]%>"/>
+  <% } %>
+  </if:formSelect>
+  
+  <if:formInput name="orgadm" onchange="if ($('orgadm').checked==true) $('orgadmSubPanel').style.display=''; else $('orgadmSubPanel').style.display='none';" labelkey="userform.field.orgadm" type="checkbox" value='<%=orgadm%>' edit="<%=bEdit%>" required="false" />
+
   
     <div id="orgadmSubPanel" style="<%= "true".equals(orgadm)?"":"display : none" %>" >
-      <if:formInput name="orgadmUsers" labelkey="userform.field.orgadmusers" type="checkbox" value='<%=orgadmUsers%>' edit="<%=bEdit && bEditAdminStuff%>" required="false" />
+      <if:formInput name="orgadmUsers" labelkey="userform.field.orgadmusers" type="checkbox" value='<%=orgadmUsers%>' edit="<%=bEdit%>" required="false" />
       
-      <if:formInput name="orgadmFlows" labelkey="userform.field.orgadmflows" type="checkbox" value='<%=orgadmFlows%>' edit="<%=bEdit && bEditAdminStuff%>" required="false" />
+      <if:formInput name="orgadmFlows" labelkey="userform.field.orgadmflows" type="checkbox" value='<%=orgadmFlows%>' edit="<%=bEdit%>" required="false" />
       
-      <if:formInput name="orgadmProcesses" labelkey="userform.field.orgadmprocesses" type="checkbox" value='<%=orgadmProcesses%>' edit="<%=bEdit && bEditAdminStuff%>" required="false" />
+      <if:formInput name="orgadmProcesses" labelkey="userform.field.orgadmprocesses" type="checkbox" value='<%=orgadmProcesses%>' edit="<%=bEdit%>" required="false" />
       
-      <if:formInput name="orgadmResources" labelkey="userform.field.orgadmresources" type="checkbox" value='<%=orgadmResources%>' edit="<%=bEdit && bEditAdminStuff%>" required="false" />
+      <if:formInput name="orgadmResources" labelkey="userform.field.orgadmresources" type="checkbox" value='<%=orgadmResources%>' edit="<%=bEdit%>" required="false" />
       
-      <if:formInput name="orgadmOrg" labelkey="userform.field.orgadmorg" type="checkbox" value='<%=orgadmOrg%>' edit="<%=bEdit && bEditAdminStuff%>" required="false" />
+      <if:formInput name="orgadmOrg" labelkey="userform.field.orgadmorg" type="checkbox" value='<%=orgadmOrg%>' edit="<%=bEdit%>" required="false" />
   </div>
   
   <if:formInput name="emailAddress" labelkey="userform.field.emailaddress" type="text" value='<%=emailAddress%>' edit="<%=bEdit%>" required="<%= Const.bUSE_EMAIL %>" maxlength="100" />
@@ -324,10 +355,10 @@
 </ol>
 </fieldset>
 <fieldset class="submit">
-  <input class="regular_button_01" type="button" name="back" value='<%=messages.getString("button.back")%>' onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/"+jspBack)%>','userid=<%=userId%>');" />
+  <input class="regular_button_01 btn btn-default" type="button" name="back" value='<%=messages.getString("button.back")%>' onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/"+jspBack)%>','userid=<%=userId%>');" />
 <% if(bEdit) { %>
-  <input class="regular_button_01" type="button" name="clear" value='<%=messages.getString("button.clear")%>' onClick="javascript:document.formulario.reset();" />
+  <input class="regular_button_01 btn btn-default" type="button" name="clear" value='<%=messages.getString("button.clear")%>' onClick="javascript:document.formulario.reset();" />
 <% } %>
-  <input class="regular_button_01" type="button" name="add" value="<%=botao%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/userform.jsp")%>', get_params(document.formulario));" />
+  <input class="regular_button_01 btn btn-default" type="button" name="add" value="<%=botao%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/userform.jsp")%>', get_params(document.formulario));" />
 </fieldset>
 </form>

@@ -104,7 +104,7 @@ if (flow != null) {
   }
 
   sFlowHtml = Utils.genHtmlSelect("flowid",
-				  sLocked,
+				  sLocked + " class=\"form-control\"",
 				  "" + flowid,
 				  altmp,
 				  altmp2);
@@ -115,51 +115,55 @@ ListIterator<Activity> it = null;
 if (sCancel.equals("false") && sbError.length() == 0 && flowid > 0 && fromPage) {
   it = pm.getProcessActivities(userInfo, flowid, pid, subpid);
 }
-
-if(fromPage && sHtml==null && (it==null || !it.hasNext()) )
-	sbError.append(messages.getString("user_procs.msg.noProcs"));
 %>
 
 
-<form name="proccancel" method="POST">
+<form name="proccancel" method="POST" class="form-horizontal">
   <input type="hidden" name="show" value="true" />
 
   <h1 id="title_admin"><%=title%></h1>
 <% if (sbError.length() > 0) { %>
-  <div class="error_msg">
+  <div class="alert alert-danger">
     <%=sbError.toString()%>
   </div>
 <% } %>
 
 <% if (sHtml != null) { %>
-  <div class="info_msg">
+  <div class="alert alert-info">
     <%=sHtml%>
   </div>
 <% } %>
 
   <fieldset>
     <ol>
-      <li>
-        <label for="flowid"><%=messages.getString("proc_cancel.field.flow")%></label>
+      <li class="form-group">
+        <label class="control-label col-sm-2" for="flowid"><%=messages.getString("proc_cancel.field.flow")%></label>
+		<div class="col-sm-5">
         <%=sFlowHtml%>
+		</div>
       </li>
-      <li>
-        <label for="pid"><%=messages.getString("proc_cancel.field.pid")%></label>
-        <input type="text" name="pid" class="txt" value="<%=(pid > -1 ? pid : "") %>" size="10" maxlength="10" <%=sLocked%> />
+      <li class="form-group">
+        <label class="control-label col-sm-2" for="pid"><%=messages.getString("proc_cancel.field.pid")%></label>
+		<div class="col-sm-5">
+        <input type="text" name="pid" class="txt form-control" value="<%=(pid > -1 ? pid : "") %>" size="10" maxlength="10" <%=sLocked%> />
+		</div>
       </li>
-      <li>
-        <label for="subpid"><%=messages.getString("proc_cancel.field.subpid")%></label>
-        <input type="text" name="subpid" class="txt" value="<%=(subpid > -1 ? subpid : "") %>" size="10" maxlength="10" <%=sLocked%>>
+      <li class="form-group">
+        <label class="control-label col-sm-2" for="subpid"><%=messages.getString("proc_cancel.field.subpid")%></label>
+		<div class="col-sm-5">
+        <input type="text" name="subpid" class="txt form-control" value="<%=(subpid > -1 ? subpid : "") %>" size="10" maxlength="10" <%=sLocked%>>
+		</div>
       </li>
     </ol>
   </fieldset>
   <fieldset class="submit">
-  	 <input class="regular_button_00" type="button" name="show" value="<%=messages.getString("button.show")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_cancel.jsp") %>', get_params(document.proccancel));"/>
+  	 <input class="regular_button_00 btn btn-default" type="button" name="show" value="<%=messages.getString("button.show")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_cancel.jsp") %>', get_params(document.proccancel));"/>
   </fieldset>
   
 <% if (it != null && it.hasNext()) { %>
+  <div class="alert">Resultados</div>
   <div class="table_inc">  
-    <table class="item_list">
+    <table class="item_list table">
       <tr class="tab_header">
         <td><%=messages.getString("proc_cancel.table.flow")%></td>
         <td><%=messages.getString("proc_cancel.table.pnumber")%></td>
