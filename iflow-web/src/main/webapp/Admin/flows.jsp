@@ -99,8 +99,10 @@ if (flow != null) {
     if (saSubFlows != null && saSubFlows.length > 0) {
 
       Set<String> hsFlows2ReDeploy = new HashSet<String>();
+      
+      // Não funciona
       IFlowData[] fda = BeanFactory.getFlowHolderBean().listFlowsOnline(userInfo, null, FlowType.SEARCH);
-
+	  //
       for (int i=0; saSubFlows != null && i < saSubFlows.length; i++) {
         String subflow = saSubFlows[i];
         for (int f=0; f < fda.length; f++) {

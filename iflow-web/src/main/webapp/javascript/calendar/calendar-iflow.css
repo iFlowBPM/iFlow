@@ -11,7 +11,7 @@ div.calendar { position: relative;}
   cursor: default;
   background: #f0f0f0;
   font-family: tahoma,verdana,sans-serif;
-  z-index: 100;
+  z-index: 1000;
 }
 
 /* Header part -- contains navigation buttons and day names. */
@@ -88,7 +88,8 @@ div.calendar { position: relative;}
 .calendar table .wn {
   padding: 2px 3px 2px 2px;
   border-right: 1px solid gray;
-  background: #ABCB4E;
+  background: #2e8b42;
+  /* background: #ABCB4E; */
   /*background: #AEE239;*/
   color:white;
 }

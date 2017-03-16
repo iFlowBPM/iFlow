@@ -34,7 +34,11 @@ try {
   }
   else {
     procHeader = new ProcessHeader(flowid, pid, subpid);
-    procData = pm.getProcessData(userInfo, procHeader, isInDetail?Const.nALL_PROCS:Const.nOPENED_PROCS);
+    for(int i=0; i<5; i++){
+    	procData = pm.getProcessData(userInfo, procHeader, isInDetail?Const.nALL_PROCS:Const.nOPENED_PROCS);
+    	if (procData!=null)
+    		break;
+    }    
     // procData = pm.getProcessData(userInfo,flowid,pid,subpid,session);
     // clean session dataset just in case...
     session.removeAttribute(Const.SESSION_PROCESS + flowExecType);

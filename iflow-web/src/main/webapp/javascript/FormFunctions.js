@@ -159,18 +159,12 @@ function sum(var1, var2, vardest) {
 }
 
 function disableForm() {
-	disableForm(false);
-}
-
-function disableForm(keepScrollOnLoad) {
 	if (document.getElementById('_formLoadingDiv')) {
 		document.getElementById('_formLoadingDiv').style.display='';
 		if (document.forms && document.forms.length > 0 && document.forms[0])
-			document.forms[0].style.display='';
+			document.forms[0].style.display='none';
 	}
-	
-	if (!keepScrollOnLoad)
-		backToTop();
+	backToTop();
 }
 
 function enableForm() {
@@ -188,7 +182,7 @@ function camouflageForm() {
 	var el = document.getElementById('_formLoadingDiv');
 	if (el) {
 		el.style.display='';
-		el.style.backgroundColor='';
+		el.style.backgroundColor='lightBlue';
 		el.style.border='2px outset lightBlue';
 		el.style.opacity='0.5';
 		SetOpacity(el, 50);

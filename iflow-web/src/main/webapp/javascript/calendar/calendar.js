@@ -105,7 +105,7 @@ Calendar.getAbsolutePos = function(el) {
 		SL = el.scrollLeft;
 	if (is_div && el.scrollTop)
 		ST = el.scrollTop;
-	var r = { x: el.offsetLeft - SL, y: el.offsetTop - ST };
+	var r = { x: el.offsetLeft - SL - 50, y: el.offsetTop - ST};
 	if (el.offsetParent) {
 		var tmp = this.getAbsolutePos(el.offsetParent);
 		r.x += tmp.x;

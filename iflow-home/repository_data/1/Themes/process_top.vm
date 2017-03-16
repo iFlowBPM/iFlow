@@ -4,9 +4,10 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="Pragma" content="no-cache">
   <title>$title</title>
-  <link rel="stylesheet" href="$url_prefix/Themes/${orgTheme}/css/iflow_main.css" type="text/css">
+  <!--link rel="stylesheet" href="$url_prefix/Themes/${orgTheme}/css/iflow_main.css" type="text/css"-->
   <script type="text/javascript" src="$url_prefix/javascript/ajax_processing.js"></script>
   <script type="text/javascript" src="$url_prefix/javascript/tabs.js"></script>
+  <link href="$url_prefix/javascript/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>

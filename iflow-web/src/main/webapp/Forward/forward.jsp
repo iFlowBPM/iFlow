@@ -57,7 +57,7 @@ String popupReturnBlockId = null;
 
     String sDescription = block.getDescription(userInfo, procData);
     String url = Block.getDefaultUrl(userInfo, procData);
-    Activity a = new Activity(login, flowid, pid, subpid, 0, 0, sDescription, url, 0);
+    Activity a = new Activity(login, login, flowid, pid, subpid, 0, 0, sDescription, url, 0);
 	a.setRead();
     pm.updateActivity(userInfo, a);
     pm.modifyProcessData(userInfo, procData);

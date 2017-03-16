@@ -1,3 +1,31 @@
+#if ($orgTheme == "newflow")
+
+#if(${procMenuVisible} == "visible")
+<ul class="menu">
+	#foreach( $appflow in $appflows )
+	<li>
+		<a href="#">${appflow.get("appname")}</a>
+		<ul>
+		#foreach($flow in $appflow.get("flows"))
+			<li>
+				<a id="li_a_${tabnr}_${flow.id}" title='$appflow.get("tooltip_flow")' href="javascript:selectedItem(${tabnr}, ${flow.id});openProcess(${flow.id}, 'inicio_flow.jsp', 'flowid=${flow.id}&sel=${flow.id}', false, ${tabnr})">${flow.name}</a>
+			</li>
+		#end
+		#foreach($link in $appflow.get("links"))
+			<li>
+				<a title="$appflow.get("tooltip_link")" href="$response.encodeURL(${link.url})">${link.text}</a>
+			</li>
+		#end
+		</ul>
+	</li>      
+	#end
+</ul>
+#end
+
+#* OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD OLD *#
+
+#else
+
 #if(${procMenuVisible} == "visible")
 
   <script type="text/javascript">
@@ -129,3 +157,4 @@
 #end
   
   
+#end

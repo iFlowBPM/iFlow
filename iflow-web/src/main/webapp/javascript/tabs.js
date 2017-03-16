@@ -29,8 +29,7 @@
       section = document.getElementById('tabsection' + tabnr + '_div');
       mytab = document.getElementById('tabbutton' + tabnr);
       mybutton.className = 'tab_button_pressed';
-      document.getElementById('_tabholder_selected' + tabholder).value = tabnr;
-      
+
       mybutton.blur();          
       
       mytab.style.verticalAlign = 'top';

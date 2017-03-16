@@ -1527,6 +1527,11 @@ public class FlowBean implements Flow {
   public FlowSetting[] getFlowSettings(UserInfoInterface userInfo, int flowid) {
     return BeanFactory.getFlowSettingsBean().getFlowSettings(userInfo, flowid);
   }
+  
+  public void saveFlowSettings(UserInfoInterface userInfo, FlowSetting[] afsaSettings, String calendId)
+  {
+    BeanFactory.getFlowSettingsBean().saveFlowSettings(userInfo, afsaSettings, calendId);
+  }
 
   public IFlowData getFlow(UserInfoInterface userInfo, int anFlowId) {
     return BeanFactory.getFlowHolderBean().getFlow(userInfo, anFlowId);
@@ -1534,6 +1539,11 @@ public class FlowBean implements Flow {
 
   public boolean checkFlowEnabled(UserInfoInterface userInfo, int anFlowId) {
     return BeanFactory.getFlowHolderBean().isOnline(userInfo, anFlowId);
+  }
+  
+  public String getFlowCalendarId(UserInfoInterface userInfo, int flowid)
+  {
+    return BeanFactory.getFlowSettingsBean().getFlowCalendarId(userInfo, flowid);
   }
 
   public FlowRolesTO[] getFlowRoles(UserInfoInterface userInfo, int anFlowId) {

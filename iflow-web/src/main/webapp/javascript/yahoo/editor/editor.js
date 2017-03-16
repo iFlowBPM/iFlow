@@ -3183,7 +3183,7 @@ var Dom = YAHOO.util.Dom,
                 doc = null;
 
             if (value === '') {
-                value = '<br>';
+                value = '';
             }
 
             var html = Lang.substitute(this.get('html'), {
@@ -4737,8 +4737,8 @@ var Dom = YAHOO.util.Dom,
                         { type: 'separator' },
                         { group: 'insertitem', label: 'Insert Item',
                             buttons: [
-                                { type: 'push', label: 'HTML Link CTRL + SHIFT + L', value: 'createlink', disabled: true },
-                                { type: 'push', label: 'Insert Image', value: 'insertimage' }
+                                { type: 'push', label: 'HTML Link CTRL + SHIFT + L', value: 'createlink', disabled: true }
+                                //{ type: 'push', label: 'Insert Image', value: 'insertimage' }
                             ]
                         }
                     ]
@@ -7723,8 +7723,8 @@ var Dom = YAHOO.util.Dom,
                                 { type: 'color', label: 'Font Color', value: 'forecolor', disabled: true },
                                 { type: 'color', label: 'Background Color', value: 'backcolor', disabled: true },
                                 { type: 'separator' },
-                                { type: 'push', label: 'Remove Formatting', value: 'removeformat', disabled: true },
-                                { type: 'push', label: 'Show/Hide Hidden Elements', value: 'hiddenelements' }
+                                { type: 'push', label: 'Remove Formatting', value: 'removeformat'},
+                                { type: 'push', label: 'Show/Hide Hidden Elements', value: 'hiddenelements'}
                             ]
                         },
                         { type: 'separator' },
@@ -7773,8 +7773,8 @@ var Dom = YAHOO.util.Dom,
                         { type: 'separator' },
                         { group: 'insertitem', label: 'Insert Item',
                             buttons: [
-                                { type: 'push', label: 'HTML Link CTRL + SHIFT + L', value: 'createlink', disabled: true },
-                                { type: 'push', label: 'Insert Image', value: 'insertimage' }
+                                { type: 'push', label: 'HTML Link CTRL + SHIFT + L', value: 'createlink', disabled: true }
+                                //{ type: 'push', label: 'Insert Image', value: 'insertimage' }
                             ]
                         }
                     ]

@@ -1,254 +1,587 @@
 
-#if("$Tab2" != "no")
-    <h1 id="title_tasks">$title</h1>
-	<div class="yui-skin-sam">
-	<div id ="view_proc_annotation_dashboard" ></div>
-	</div>
-
-
-	<div class="table_inc">
-      	<div class="tab_title">
-      		$most_recent
-      	</div>
-      	<p>$tasksMostRecentMsg</p>
-		<p>$label_label
-
-	     #foreach($label in $labels)
-	         <a href="#" onclick="filterActivity($label.getId(), 1);" title="$label.getName()" >
-	         	#if($label.getId() == 1)
-	         		($label1CountUnread/$label1Count)
-	         	#end
-	         	#if($label.getId() == 2)
-	         		($label2CountUnread/$label2Count)
-	         	#end
-	         	#if($label.getId() == 3)
-	         		($label3CountUnread/$label3Count)
-	         	#end
-	         	<img width="16px" height="16px" src="AnnotationIconsServlet?label_name=$label.getName()">	         	
-	         </a>		     
-		  #end
-		  
-		<a href="#" onclick="filterActivity(6, 2);">
-			($label4CountUnread/$label4Count)
-			<img width="16px" height="16px" src="AnnotationIconsServlet?icon_name=label_clock.png">	         	
-	    </a>
-	    
-	    <a href="#" onclick="filterActivity(1, 4);">
-			($label5CountUnread/$label5Count)
-			<img width="16px" height="16px" src="AnnotationIconsServlet?icon_name=label_comment_blue.png">	         	
-	    </a>	    
-
-		#if($hasFolder > 0)
-			$folder_label
-		    <select name="folderpainel" id="folderpainel" onchange="filterActivity(document.getElementById('folderpainel').value , 3);" >		    
-		    #if($selectedFolder == 0)
-		    	<option value="0" selected="selected">$folder_default</option>
-		    #else
-		    	<option value="0">$folder_default</option>
-		    #end 
-		      #foreach($folder in $folders)
-			      #if($selectedFolder == $folder.getFolderid())
-			         <option value="$folder.getFolderid()" selected="selected">$folder.getName()</option>
-			      #else
-			      	<option value="$folder.getFolderid()">$folder.getName()</option>
-			      #end 
-			  #end
-		     </select>
-		#end
-		
-		<a href="javascript:cleanFilter()">$button_cleanfilter</a>
-		
-	#if($hasActivities)		
-		</p>		
-        <table class="item_list">
-          <tr class="tab_header">
-            <td></td>
-            <td></td>
-		#if($has_appname)
-			<td>$application</td>
-		#end
-			<td>$flow</td>
-			<td>$pnumber</td>
-			<td>$subject</td>#*
-			<td>$arrived</td>*#
-			<td>$waiting</td>
-			<td></td>
-		  </tr>
-		  #set($odd=1)
-		  #foreach($act in $newact)
-			#if($odd == 0)
-				#set($class_type="even")
-				#set($odd=1)
-			#else
-				#set($class_type="odd")
-				#set($odd=0)
-			#end
-			#set($style_read="")
-			#if($act.get("read") == 0)
-				#set($style_read="style='font-weight:bold;'")
-			#end
-
-			<tr class="tab_row_$class_type">
-             <td title='$act.get("task_annotation_color_title")'  style="background-color:$act.get("task_annotation_color_backgroundColor")" ></td>
-             
-	       #if($hasFolder > 0)         
-	        <td onclick="javascript:menuonoff('atribuir$row')" title="$action_move">
-	        <img class="toolTipImg" src="AnnotationIconsServlet?icon_name=action.png&ts='$iconTime' border="0">
-		   	<div id="atribuir$row" style="display:none;position:absolute;z-index:1;background:none repeat scroll 0 0 #FFFFFF;border-color:#888888;border-style:solid;border-width:1px 1px 2px;text-align:left;padding:2px 5px"><table>
-		    	#foreach($folder in $folders)
-		    	  <tr><td style="background:$folder.getColor();width:4px;"></td>
-		    	  <td><input type="button" class="apt_regular_button" style="width:15em;text-align:left;margin:0px" value="$folder.getName()" id="$folder.getFolderid()" name="$folder.getName()" onclick="assignActivity('$folder.getFolderid()','$act.get("flowid")_$act.get("pid")_$act.get("subpid")')"></td></tr>
-		  		#end
-		  		
-		  		<tr><td style="background:#CCCCCC;width:4px;"></td>
-		        <td><input type="button" class="apt_regular_button" style="width:15em;text-align:left;margin:0px" value="$removeact" id="-1" name="$removeact" onclick="removeActivityFolder('$act.get("flowid")_$act.get("pid")_$act.get("subpid")')"></td></tr>
-		  		
-		    	</tr></table><input class="apt_regular_button" type="button" value="$action_close" id="bt_close2" name="$action_close" style="width:6em;text-align:center" onclick=""></div></td>
-			#else
-				<td></td>
-			#end
-			#set($row=$row+1)
-             
-            #if($has_appname)
-			 <td align="center"><a $style_read href="javascript:open_process(2, $act.get("flowid"), '$response.encodeURL($url_prefix,$act.get("uri"))','flowid=$act.get("flowid")&pid=$act.get("pid")&subpid=$act.get("subpid")&ts=$ts', $act.get("runMax"));">$act.get("appname")</a></td>
-			#end
-			 <td align="center"><a $style_read href="javascript:open_process(2, $act.get("flowid"), '$response.encodeURL($url_prefix,$act.get("uri"))','flowid=$act.get("flowid")&pid=$act.get("pid")&subpid=$act.get("subpid")&ts=$ts', $act.get("runMax"));">
-			 #if($act.get("delegated") == "1")
-			   <img src="$response.encodeURL($url_prefix,'images/icon_delegations.png')" alt="$act.get("delegated_alt")" style="border:none; float:left;" />
-			 #end
-			   $act.get("flowname")
-			 </a></td>
-			 <td align="center"><a $style_read href="javascript:open_process(2, $act.get("flowid"), '$response.encodeURL($url_prefix,$act.get("uri"))','flowid=$act.get("flowid")&pid=$act.get("pid")&subpid=$act.get("subpid")&ts=$ts', $act.get("runMax"));">$act.get("pnumber")</a></td>
-			 <td align="center"><a $style_read href="javascript:open_process(2, $act.get("flowid"), '$response.encodeURL($url_prefix,$act.get("uri"))','flowid=$act.get("flowid")&pid=$act.get("pid")&subpid=$act.get("subpid")&ts=$ts', $act.get("runMax"));">$act.get("desc")</a></td>#*
-			 <td align="center"><a $style_read href="javascript:open_process(2, $act.get("flowid"), '$response.encodeURL($url_prefix,$act.get("uri"))','flowid=$act.get("flowid")&pid=$act.get("pid")&subpid=$act.get("subpid")&ts=$ts', $act.get("runMax"));">$act.get("created")</a></td>*#
-			 <td align="center"><a $style_read href="javascript:open_process(2, $act.get("flowid"), '$response.encodeURL($url_prefix,$act.get("uri"))','flowid=$act.get("flowid")&pid=$act.get("pid")&subpid=$act.get("subpid")&ts=$ts', $act.get("runMax"));">$act.get("duration")</a></td>
-			<td>$act.get("task_annotation_icon")</td>
-			</tr>
-		  #end
-  		</table>	
-	</div>
-	#if($hasMoreActivities)
-	    <div class="button_box">
-	    	<input class="regular_button_00" type="button" name="more" value="$button_more" 
-			onClick="javascript:tabber(2, '$response.encodeURL($url_prefix,'actividades_filtro.jsp')','clean=true','$response.encodeURL($url_prefix,'actividades.jsp')','ts=$ts&clean=true');"
-			/>
-		</div>
-	#end
+<style type="text/css">
+	ul.dropdown-menu li {
+		text-align: left;
+		padding-left: 10px;
+		padding-top:2px;
+		padding-bottom:2px;
+		height: 18px;	
+		padding-right:10px;
+	}
 	
- #else
- 	#if($actsize<=0 && $selectedFolder == 0 && $selectedLabel == 0 && $selectedDays==0)
-	<div class="info_msg">${no_tasks}</div>
-	#else
-	<div class="info_msg">${no_tasks_filter}</div>
-	#end
-#end
-#end
+	ul.dropdown-menu li .btn-group {
+		padding-right:10px;
+	}
 
-#if("$Tab12" != "no")
-     <h1 id="title_msgs">$notes_title</h1>
-	 
-   #if($notifications.size() > 0)
-	 #set($msg_display="")
-	 #set($msg_empty_display="none")
-   #else
-	 #set($msg_display="none")
-	 #set($msg_empty_display="")
-   #end
-	<div class="table_inc" id="msg_table" style="display:$msg_display">
-		<p>$notificationsMsg</p>
-        <table class="item_list">
-          <tr class="tab_header">
-			<td></td>
-			<td>$notes_from</td>
-			<td>$notes_message</td>
-			<td>$notes_date</td>
-			<td>$notificationtitle</td>
-		  </tr>
-		  #set($odd=1)
-		  #foreach($note in $notifications)
-			#if($odd == 0)
-				#set($class_type="even")
-				#set($odd=1)
-			#else
-				#set($class_type="odd")
-				#set($odd=0)
-			#end
-			<tr class="tab_row_$class_type" id="msg_tr_$note.get("id")">
-			 <td class="itemlist_icon">
-				<a href="javascript:markNotification($note.get("id"), 'M');" >
-					<img class="toolTipImg" src="images/icon_unread.png" id="msg_img_$note.get("id")"width="16" height="16" border="0" title="$notes_tooltip">
-				</a>
-			  </td>
-			 <td>$note.get("from")</td>
-			 <td>$note.get("message")</td>
-			 <td>$note.get("date")</td>
-			
-			#if($note.get("link")=="false")
-				<td></td>
-			#else
-				<td class="itemlist">
-				<a href="javascript:process_detail($note.get("link"));" > $notificationitem </a>	
-				</td>
-			#end
-			</tr>
-		  #end
-	  </table>
-		#if($hasMoreNotifications)
-	    <div class="button_box">
-	    	<input class="regular_button_00" type="button" name="more" value="$button_more" 
-			onClick="javascript:tabber(6, '','','$response.encodeURL($url_prefix,'inbox.jsp')','ts=$ts');"
-			/>
-		</div>    
+	ul.topt-menu li {
+		padding-left:0px;
+		padding-right:0px;
+		padding-bottom: 25px;
+	}
+	ul.topt-menu li a {
+		text-decoration:none;
+		padding-left:10px;
+		padding-right:10px;
+		padding-
+	}
+	ul.topt-menu {
+		text-decoration:none;
+	}
+
+</style>
+
+	#if($layout==0)
+
+<input id="usersStr" type="hidden" value="$allUsers"></input>
+<input id="datesStr" type="hidden" value="$allDates"></input>
+
+	<div id ="view_proc_annotation_dashboard"></div>
+
+<div id="taskbar" class="slide02">
+
+	<div style=" border-bottom: 1px Solid #cccccc; padding: 5px 2px 5px 2px; text-align: left;">
+		<form style="display:inline">
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Ordenar<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
+			<ul class="dropdown-menu" role="menu" style="width:250px; top:110px; left: 190px;">
+				<li class="form-group">
+					<label></label>
+					<button type="button" class="close pull-right" onclick="">&times;</button>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Nº de processo
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=pid&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=pid&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+					</span>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Utilizador prévio
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=previousUserId&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=previousUserId&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Data de envio
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=created&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=created&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Descrição
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=description&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=description&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+			</ul>  
+		</form>
+		<form style="display:inline" class="dropdown keep-open">
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Filtrar<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
+			<ul class="dropdown-menu" role="menu" style="width:350px; top:20px; left: 0px;; padding-top: 10px">
+				<li class="form-group">
+					<label></label>
+					<button type="button" class="close pull-right" onclick="">&times;</button>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Selecionar fluxo
+					</label>
+					<select id="filterflowid" name="filterflowid" class="form-control donotclosemenu pull-right" style="width:150px;height:25px;font-size:0.8em;padding: 0 0 0 5px">
+						<option value="-1">$selectFlow</option>
+						$filterFlowOptions
+					</select>
+
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Utilizador prévio
+					</label>
+					<input type="text" class="form-control donotclosemenu pull-right" id="previousUseridText" title="Utilizador Anterior" value="$filterPreviousUserid"
+							style="display: inline; width: 150px; height: 20px; padding: 0;">
+					</input>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Descrição
+					</label>
+					<input type="text" class="form-control donotclosemenu pull-right" id="filterSubject" title="Descrição" value="$filterSubject"
+							style="display: inline; width: 150px; height: 20px; padding: 0;">
+					</input>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Data de
+					</label>
+					<span class="pull-right">
+						<input type="text" class="form-control donotclosemenu" id="dataCriacaoText" title="Data de"  value="$filterDate"
+								onmouseover="caltasks(this.id, '%d/%m/%Y');this.onmouseover=null;" style="display: inline; width: 150px; height: 20px; padding: 0;">
+						</input>
+						<!--img class="toolTipImg" border="0" title="Apagar" src="images/icon_delete.png" onClick="javascript: alert($jquery('dataCriacaoText').value)"-->
+					</span>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Data até
+					</label>
+					<span class="pull-right">
+						<input type="text" class="form-control donotclosemenu" id="dataUltMovText" title="Data ate"  value="$filterLastMoveDate"
+								 onmouseover="caltasks(this.id, '%d/%m/%Y');this.onmouseover=null;" style="display: inline; width: 150px; height: 20px; padding: 0;">						
+						</input>
+						<!--img class="toolTipImg" border="0" title="Apagar" src="images/icon_delete.png" onClick="javascript: tabber_right(2, 'main_content.jsp', 'filterLastMoveDate='); return false; "-->
+					</span>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Nº processo
+					</label>
+					<input type="text" class="form-control donotclosemenu pull-right" id="filterProcessNumber" title="N processo" value="$filterProcessNumber"
+							style="display: inline; width: 150px; height: 20px; padding: 0;">
+					</input>
+				</li>
+				<li class="form-group">
+					<button id="layout1" type="button" class="btn btn-default btn-sm pull-right" onclick="javascript: tabber_right(2, 'main_content.jsp', 
+					 'filterLastMoveDate=' + document.getElementById('dataUltMovText').value
+					+'&filterProcessNumber=' + document.getElementById('filterProcessNumber').value
+					+'&filterDate=' + document.getElementById('dataCriacaoText').value
+					+'&filterSubject=' + document.getElementById('filterSubject').value
+					+'&filterPreviousUserid=' + document.getElementById('previousUseridText').value
+					+'&showflowid=' + document.getElementById('filterflowid').value					
+					); return false; ">Aplicar</button>
+					<button type="button" class="btn btn-default btn-sm pull-right" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1&startindex=0');">Limpar</button>
+				</li>
+				
+			</ul>  
+		</form>
+		<div class="btn-group">
+		<div> &nbsp;&nbsp; Pré-visualização:
+			<button id="layout1" title="Desligar Pré-visualização" type="button" class="btn btn-default btn-sm" onclick="javascript:tabber_right(2, 'main_content.jsp', 'layout=1');">ON</button>
+		</div>
+		</div>
+
+
+		<form style="display:inline">
+			<div class="btn-group ">
+		#if($previousIndex != "-1")
+				<button type="button" class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$previousIndex');">&lt;</button> 
+		#else
+				<button type="button" disabled="disabled" class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$previousIndex');">&lt;</button>
 		#end
+		#if($nextIndex != "0")
+				<button type="button"  class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$nextIndex');">&gt;</button>
+		#else
+				<button type="button" disabled="disabled" class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$nextIndex');">&gt;</button>
+		#end
+			</div>
+		</form>
+		<div class="btn-group pull-right">
+			<div style="padding-top:10px;padding-right:4px;">$startTask - $endTask </div>
+		</div>
+		
+		#if(!$cleanFilter)
+				
+		<div style="height:30px;clear:both;padding-right: 10px;">
+			<div class="left" style="padding-top:10px;text-align:left;font-size:1em;color:#aaa;">
+				Filtros: $selectedFlow $selectedFolderName $selectedDate $selectedPreviousUser $selectedProcessNumber<button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1');">&times;</button>
+			</div>
+		</div>
+		#end
+		
 	</div>
-  	<div class="info_msg" id="msg_empty_div" style="display:$msg_empty_display">
-	 ${notes_empty}.<a class="toolTipImg" href="javascript:tabber('inbox','','',inboxJSP,'ts=$ts');" title="$tooltip_inbox">$notes_empty_link_text</a>.
-  	</div>
-#end
 
-#if("$Tab5" != "no")
-    <h1 id="title_delegations">$delegs_title</h1>
-	  
-#if($hasDelegs)
-	<div class="table_inc">	  
-		<div class="tab_title">
-      		$delegs_received_requests
-      	</div>
-	    <p>$delegationsMsg</p>
-		<table class="item_list">
-			<tr class="tab_header">
-				<td>$delegs_title_responsible</td>
-				<td>$delegs_title_flow</td>
-				<td>$delegs_title_endDate</td>
-				<td></td>
-				<td></td>
-			</tr>
-			#set($odd=1)
-			#foreach( $received in $receivedDelegs )
-				#if($odd == 0)
-					#set($class_type="even")
-					#set($odd=1)
+
+		#if($hasActivities)
+
+			#set($maxLen = 70)
+			#foreach($act in $newact)
+				#set($style_read="")
+				#set($display_read="")
+				#set($display_unread="")
+				#if($act.get("read") == 0)
+					#set($style_read="font-weight:bold;")
+					#set($display_unread="display:none")
 				#else
-					#set($class_type="odd")
-					#set($odd=0)
+					#set($style_read="color:#888888;")
+					#set($display_read="display:none")
 				#end
-				<tr class="tab_row_$class_type">
-					<td>$received.get("OwnerID")</td>
-					<td>$received.get("FlowName")</td>
-					<td>$received.get("Expires")</td>
-					<td><a class="cell_button" href="javascript:tabber(5, gestaoTarefasNavJSP, '', '$response.encodeURL($url_prefix,'confirmar_agendamento.jsp')', 'id=$received.get("HierarchyID")&owner=$received.get("OwnerID")&dkey=$received.get("AcceptKey")&ts=$ts');">$delegs_title_accept</a>
-					<td><a class="cell_button" href="javascript:tabber(5, gestaoTarefasNavJSP, '', '$response.encodeURL($url_prefix,'confirmar_agendamento.jsp')', 'id=$received.get("HierarchyID")&owner=$received.get("OwnerID")&dkey=$received.get("RejectKey")&ts=$ts');">$delegs_title_refuse</a>
-				</tr>
+				#set($valToAssign=$act.get("flowid")+"_"+$act.get("pid")+"_"+$act.get("subpid"))
+
+		<div id="ptc_$act.get("pid")" class="process activity" 
+			onclick='javascript:process_detail_new("user_proc_preview.jsp", "div_process_preview", $act.get("flowid"), $act.get("pid"), $act.get("subpid"), -4, "$act.get("uri")");changeColor(this);'
+			 style="$style_read">
+			<div id="cube_$act.get("pid")" class="cube draggable" valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
+				$act.get("pinitials") 
+			</div>
+			<div class="left">
+				$act.get("pnumber")
+				#if($act.get("previousUserid") != "")
+				&nbsp;de:<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterPreviousUserid=$act.get("previousUserid")')">$act.get("previousUserid")</a>
+				
+				#end
+				<br/>
+				#set($descr = $act.get("desc"))
+				#if ($descr.length() > $maxLen)
+					<span id="span_short_$act.get("pnumber")">
+						$descr.substring(0, $maxLen)
+						<span style="color:blue" onClick="javascript:cancelMenu=true;document.getElementById('span_short_$act.get("pnumber")').style.display='none';document.getElementById('span_long_$act.get("pnumber")').style.display='inline';">&nbsp;...</span>
+					</span>
+					<span id="span_long_$act.get('pnumber')" style="display:none">
+						$descr
+						<span style="color:blue" onClick="javascript:cancelMenu=true;document.getElementById('span_short_$act.get("pnumber")').style.display='block';document.getElementById('span_long_$act.get("pnumber")').style.display='none';">&nbsp;[.]</span>
+					</span>
+				#else
+					$descr
+				#end
+			</div>
+			<div class="right">
+				<div>
+					<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterDate=$act.get("createdDate")&filterLastMoveDate=$act.get("createdDate")')">$act.get("createdDate")</a>
+				</div>
+				<div class="dropdown">
+					<div class="dropdown-toggle" data-toggle="dropdown" id="dropdownmenu_$act.get('pnumber')" data-toggle="dropdown" onClick="cancelMenu=true;"><img src="Themes/newflow/images/V.png"/></div>
+					<ul class="dropdown-menu topt-menu" role="menu" aria-labelledby="dropdownmenu_$act.get('pnumber')" style="top:10px;left:30px">
+						<li id="mread_$act.get("pid")" style="$display_read" role="presentation">
+							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(1, $act.get("flowid"), $act.get("pid"));return false;">Marcar como lido</a>
+						</li>
+						<li id="munread_$act.get("pid")" style="$display_unread" role="presentation">
+							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(0, $act.get("flowid"), $act.get("pid"));return false;">Marcar como não lido</a>
+						</li>
+						<li role="presentation"  style="text-transform: uppercase;">
+							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true; MarkCategory('$valToAssign', $act.get("pid"), '');return false;">
+								<div class="cube" style="background-color:#666;width:20px;height:20px">&nbsp;</div>
+								&nbsp;&nbsp;Retirar da categoria &nbsp;&nbsp;&nbsp;&nbsp;
+							</a>
+						</li>
+				#foreach($folder in $folders)
+					#set($folderName = $folder.getName())
+					#if($folderName.length() > 16)
+						#set($folderName=$folderName.substring(0, 13)+"...")
+					#end
+						<li role="presentation" style="text-transform: uppercase;">
+							<a role="menuitem" title="$folder.getName()" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;MarkCategory('$valToAssign', $act.get("pid"), $folder.getFolderid());return false;">
+								<div class="cube" style="background-color:$folder.getColor();width:20px;height:20px">&nbsp;</div>
+								&nbsp;&nbsp;$folderName
+							</a>
+						</li>
+				#end
+					</ul>
+				</div>	
+				<div style="text-align: center">
+					#if($act.get("delegated") == "1")
+			   			<img src="$response.encodeURL($url_prefix,'images/icon_delegations.png')" alt="$act.get("delegated_alt")"  />
+			 		#end
+			 		$act.get("task_annotation_icon") 
+				</div>
+			</div>
+		</div>
+	
 			#end
-		</table>
-	</div>    
- #else
-	<div class="info_msg">
-		${no_delegs}.<a class="toolTipImg" href="javascript:tabber(5, gestaoTarefasNavJSP, '', gestaoTarefasJSP, 'ts=$ts');" title="$tooltip_delegs">$no_delegs_link_text</a>.
+
+		#else
+
+			#if($actsize <= 0 && $selectedFolder == 0 && $selectedLabel == 0 && $selectedDays==0)
+	
+	<div class="alert alert-info">${no_tasks}</div>
+	
+			#else
+	
+	<div class="alert alert-info">${no_tasks_filter}</div>
+	
+			#end
+
+		#end
+	
+</div>
+<div id="div_process_preview" class="content_template1">
+</div>
+	
+	#else
+<div id ="view_proc_annotation_dashboard"></div>	
+<div class="content_template3" style="width:100%">
+	<div class="process_t3" style=" border-bottom: 1px Solid #cccccc; padding: 5px 2px 5px 2px; height:40px;">
+		<form style="display:inline">
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Ordenar<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
+			<ul class="dropdown-menu" role="menu" style="width:250px; top:110px; left: 190px;">
+				<li class="form-group">
+					<label></label>
+					<button type="button" class="close pull-right" onclick="">&times;</button>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Nº de processo
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=pid&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=pid&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+					</span>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Utilizador prévio
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=previousUserId&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=previousUserId&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Data de envio
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=created&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=created&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Descrição
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=description&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=description&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+			</ul>  
+		</form>
+		<form style="display:inline" class="dropdown keep-open">
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Filtrar<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
+			<ul class="dropdown-menu" role="menu" style="width:350px; top:10px; left: 0px; margin-top:10px">
+				<li class="form-group">
+					<label></label>
+					<button type="button" class="close pull-right" onclick="">&times;</button>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Selecionar fluxo
+					</label>
+					<select id="filterflowid" name="filterflowid" class="form-control donotclosemenu pull-right" style="width:150px;height:25px;font-size:0.8em;padding: 0 0 0 5px">
+						<option value="-1">$selectFlow</option>
+						$filterFlowOptions
+					</select>
+
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Utilizador prévio
+					</label>
+					<input type="text" class="form-control donotclosemenu pull-right" id="previousUseridText" title="Utilizador Anterior" value="$filterPreviousUserid"
+							style="display: inline; width: 150px; height: 20px; padding: 0;">
+					</input>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Descrição
+					</label>
+					<input type="text" class="form-control donotclosemenu pull-right" id="filterSubject" title="Descrição" value="$filterSubject"
+							style="display: inline; width: 150px; height: 20px; padding: 0;">
+					</input>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Data de
+					</label>
+					<span class="pull-right">
+						<input type="text" class="form-control donotclosemenu" id="dataCriacaoText" title="Data de"  value="$filterDate"
+								onmouseover="caltasks(this.id, '%d/%m/%Y');this.onmouseover=null;" style="display: inline; width: 150px; height: 20px; padding: 0;">
+						</input>
+						<!--img class="toolTipImg" border="0" title="Apagar" src="images/icon_delete.png" onClick="javascript: tabber_right(2, 'main_content.jsp', 'filterDate='); return false;"-->
+					</span>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Data até
+					</label>
+					<span class="pull-right">
+						<input type="text" class="form-control donotclosemenu" id="dataUltMovText" title="Data ate"  value="$filterLastMoveDate"
+								onmouseover="caltasks(this.id, '%d/%m/%Y');this.onmouseover=null;" style="display: inline; width: 150px; height: 20px; padding: 0;">						
+						</input>
+						<!--img class="toolTipImg" border="0" title="Apagar" src="images/icon_delete.png" onClick="javascript: tabber_right(2, 'main_content.jsp', 'filterLastMoveDate='); return false; "-->
+					</span>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						Nº processo
+					</label>
+					<input type="text" class="form-control donotclosemenu pull-right" id="filterProcessNumber" title="N processo" value="$filterProcessNumber"
+							style="display: inline; width: 150px; height: 20px; padding: 0;">
+					</input>
+				</li>
+				<li class="form-group">
+					<button id="layout1" type="button" class="btn btn-default btn-sm pull-right" onclick="javascript: tabber_right(2, 'main_content.jsp', 
+					 'filterLastMoveDate=' + document.getElementById('dataUltMovText').value
+					+'&filterProcessNumber=' + document.getElementById('filterProcessNumber').value
+					+'&filterDate=' + document.getElementById('dataCriacaoText').value
+					+'&filterSubject=' + document.getElementById('filterSubject').value
+					+'&filterPreviousUserid=' + document.getElementById('previousUseridText').value
+					+'&showflowid=' + document.getElementById('filterflowid').value					
+					); return false; ">Aplicar</button>
+					<button type="button" class="btn btn-default btn-sm pull-right" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1&startindex=0');">Limpar</button>
+				</li>
+			</ul>
+		</form>
+		<div class="btn-group">
+		<div> &nbsp;&nbsp; Pré-visualização:
+			<button id="layout0" title="Ligar Pré-visualização" type="button" class="btn btn-default btn-sm" onclick="javascript:tabber_right(2, 'main_content.jsp', 'layout=0');">OFF</button> 
+		</div>
+		</div>
+
+		<form style="display:inline">
+			<div class="btn-group">
+				
+		#if($previousIndex != "-1")
+				<button type="button" class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$previousIndex');">&lt;</button> 
+		#else
+				<button type="button" disabled="disabled" class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$previousIndex');">&lt;</button>
+		#end
+		#if($nextIndex != "0")
+				<button type="button"  class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$nextIndex');">&gt;</button>
+		#else
+				<button type="button" disabled="disabled" class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$nextIndex');">&gt;</button>
+		#end
+			</div>
+
+		</form>
+		<div class="btn-group">
+<div>$startTask - $endTask</div>
+		</div>		
+
 	</div>
-#end
-#end
 
-		    		
+				#if(!$cleanFilter)
+				
+		<div class="process_t3" style=" border-bottom: 1px Solid #cccccc; padding: 0 2px 5px 2px;height:30px;">
+		<div style="height:30px;margin-bottom:20px;padding-right: 10px;">
+			<div class="left" style="padding-top:10px;text-align:left;font-size:1em;color:#aaa;width:200px;">
+				Filtros: $selectedFlow $selectedFolderName $selectedDate $selectedPreviousUser $selectedProcessNumber<button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1');">&times;</button>
+			</div>       
+		</div>
+		</div>
+		#end
 
-<!--FIM  TABELA DE TAREFAS -->
+
+		#if($hasActivities)
+
+	<div  class="process_t3">
+		<div class="pr01" style="text-align: left;width:40px;font-weight:bold"></div>
+		<div class="pr01" style="text-align: left;width:15%;font-weight:bold">Nº processo</div>
+		<div class="pr02" style="text-align: left;width:10%;font-weight:bold">Vindo de</div>
+		<div class="pr04" style="text-align: left;width:40%; font-weight:bold">Descrição</div>
+		<div class="pr05" style="text-align: left;width:6%; font-weight:bold"></div>
+		<div class="pr06" style="text-align: left;width:10%; font-weight:bold">Pendente há</div>
+		<div class="pr07" style="text-align: left;width:10%;font-weight:bold">Data de envio</div>
+	</div>
+
+	#set($maxLen = 70)
+	#foreach($act in $newact)
+				#set($style_read="")
+				#set($display_read="")
+				#set($display_unread="")
+				#if($act.get("read") == 0)
+					#set($style_read="font-weight:bold;")
+					#set($display_unread="display:none")
+				#else
+					#set($style_read="color:#888888;")
+					#set($display_read="display:none")
+				#end
+				#set($valToAssign=$act.get("flowid")+"_"+$act.get("pid")+"_"+$act.get("subpid"))
+
+	<div id="pte_$act.get("pid")" class="process_t3" onclick="javascript:changeColor(this); openProcess($act.get("flowid"), '$response.encodeURL($url_prefix, $act.get("uri"))', 'flowid=$act.get("flowid")&pid=$act.get("pid")&subpid=$act.get("subpid")', false, 3);"
+		style="$style_read;">
+		<div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
+			$act.get("pinitials") 
+		</div>
+		<div class="pr01" style="width:15%">$act.get("pnumber") </div>
+		<div class="pr02" style="width:10%">
+			<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterPreviousUserid=$act.get("previousUserid")')">$act.get("previousUserid")</a>
+		</div>
+		<div class="pr04" style="width:40%">
+				#set($descr = $act.get("desc"))
+				#if ($descr.length() > $maxLen)
+					<span id="span_short_$act.get("pnumber")">
+						$descr.substring(0, $maxLen)
+						<span style="color:blue" onClick="javascript:cancelMenu=true;document.getElementById('span_short_$act.get("pnumber")').style.display='none';document.getElementById('span_long_$act.get("pnumber")').style.display='inline';">&nbsp;...</span>
+					</span>
+					<span id="span_long_$act.get('pnumber')" style="display:none">
+						$descr
+						<span style="color:blue" onClick="javascript:cancelMenu=true;document.getElementById('span_short_$act.get("pnumber")').style.display='block';document.getElementById('span_long_$act.get("pnumber")').style.display='none';">&nbsp;[.]</span>
+					</span>
+				#else
+					$descr
+				#end
+		</div>
+		<div class="pr05" style="text-align: left;width:6%; font-weight:bold"></div>
+		<div  class="pr06" style="width:10%;"><div>$act.get("duration")</div>
+<!--div style="height:2px;width:$act.get("diffDays")px;background-color:$act.get("durationColor")"></div-->
+		</div>
+		<div class="pr07" style="width:10%;">
+			<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterDate=$act.get("createdDate")&filterLastMoveDate=$act.get("createdDate")')">$act.get("createdDate")</a>
+			<br>
+			<div class="dropdown">
+				<div class="dropdown-toggle" style="text-align:right;margin-right:40px" id="dropdownmenu_$act.get('pnumber')" data-toggle="dropdown" onClick="cancelMenu=true;"><img src="Themes/newflow/images/V.png"/></div>
+				<ul class="dropdown-menu topt-menu" role="menu" aria-labelledby="dropdownmenu_$act.get('pnumber')" style="top:10px;left:-72px">
+					<li id="mread_$act.get("pid")" style="$display_read" role="presentation">
+						<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(1, $act.get("flowid"), $act.get("pid"));return false;">Marcar como lido</a>
+					</li>
+					<li id="munread_$act.get("pid")" style="$display_unread" role="presentation">
+						<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(0, $act.get("flowid"), $act.get("pid"));return false;">Marcar como não lido</a>
+					</li>
+						<li role="presentation"  style="text-transform: uppercase;">
+							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true; MarkCategory('$valToAssign', $act.get("pid"), '');return false;">
+								<div class="cube" style="background-color:#666;width:20px;height:20px">&nbsp;</div>
+								&nbsp;&nbsp;Retirar da categoria &nbsp;&nbsp;&nbsp;&nbsp;
+							</a>
+						</li>
+				#foreach($folder in $folders)
+					#set($folderName = $folder.getName())
+					#if($folderName.length() > 16)
+						#set($folderName=$folderName.substring(0, 13)+"...")
+					#end
+						<li role="presentation" style="text-transform: uppercase;">
+							<a role="menuitem" title="$folder.getName()" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;MarkCategory('$valToAssign', $act.get("pid"), $folder.getFolderid());return false;">
+								<div class="cube" style="background-color:$folder.getColor();width:20px;height:20px">&nbsp;</div>
+								&nbsp;&nbsp;$folderName
+							</a>
+						</li>
+				#end
+				</ul>
+			</div>	
+			<div style="text-align: center" onclick="event.cancelBubble = true; if(event.stopPropagation) { event.stopPropagation(); }">
+				#if($act.get("delegated") == "1")
+		   			<img src="$response.encodeURL($url_prefix,'images/icon_delegations.png')" alt="$act.get("delegated_alt")" />
+				#end
+				$act.get("task_annotation_icon") 
+			</div>
+		</div>
+	</div>
+	
+			#end
+
+		#else
+
+			#if($actsize <= 0 && $selectedFolder == 0 && $selectedLabel == 0 && $selectedDays==0)
+	
+	<div class="alert alert-info">${no_tasks}</div>
+	
+			#else
+	
+	<div class="alert alert-info">${no_tasks_filter}</div>
+	
+			#end
+
+		#end
+
+</div>
+	
+	#end

@@ -43,15 +43,15 @@
     showflowidselection = Utils.genEventAppendex(showflowidselection, expandTagExtra, expandExtra);
     
     String collapseTag = "onblur";
-    String collapse = "setFocus(this, false); this.style.width='112px';";
+    String collapse = "setFocus(this, false); this.style.width='150px';";
     showflowidselection = Utils.genEventAppendex(showflowidselection, collapseTag, collapse);
     
     String collapseTagExtra = "onmouseout";
-    String collapseExtra = "if(!this.focused) { this.style.width='112px'; }";
+    String collapseExtra = "if(!this.focused) { this.style.width='150px'; }";
     showflowidselection = Utils.genEventAppendex(showflowidselection, collapseTagExtra, collapseExtra);
 %>
-<select id="showflowid" name="showflowid" style="width:112px" <%=showflowidselection %>>
-	<option value="-1"><%=messages.getString("grouped_flow_list.field.all")%></option>
+<select id="showflowid" name="showflowid" class="form-control" style="width:150px;height:25px;font-size:0.8em;padding: 0 0 0 5px" <%=showflowidselection %>>
+	<option value="-1"><if:message string="user_procs_filtro.field.select"/></option>
 	<% for(Map<Object,Object> appflow : appFlows) { 
 		String label = appflow.get("appname").toString();
 		if(StringUtils.isBlank(label)) {

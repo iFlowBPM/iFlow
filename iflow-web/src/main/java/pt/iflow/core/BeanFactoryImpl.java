@@ -170,5 +170,10 @@ public class BeanFactoryImpl extends BeanFactory {
   protected CodeTemplateManager doGetCodeTemplateManager() {
     return CodeTemplateManagerBean.getInstance();
   }
+  
+  protected CalendarManagerBean doGetCalendarManagerBean()
+  {
+    return CalendarManagerBean.getInstance();
+  }
 
 }

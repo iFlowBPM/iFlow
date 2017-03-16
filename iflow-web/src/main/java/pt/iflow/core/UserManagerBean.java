@@ -91,8 +91,195 @@ public class UserManagerBean implements UserManager {
       String orgId, String orgAdm, String password, String[] listExtraProperties, String[] listExtraValues) {
     return createUser(userInfo, username, gender, unit, emailAddress, firstName, lastName, phoneNumber, faxNumber, mobileNumber, companyPhone, orgId, orgAdm, false, password, listExtraProperties, listExtraValues);
   }
+  
+  
+  public IErrorHandler createUser(UserInfoInterface userInfo, String username, String gender, String unit, String emailAddress, String firstName, String lastName, String phoneNumber, String faxNumber, String mobileNumber, String companyPhone, String orgId, String orgAdm, String password, String[] listExtraProperties, String[] listExtraValues, String cal)
+  {
+    return createUser(userInfo, username, gender, unit, emailAddress, firstName, lastName, phoneNumber, faxNumber, mobileNumber, companyPhone, orgId, orgAdm, false, password, listExtraProperties, listExtraValues, cal);
+  }
+
+  
+  private IErrorHandler createUser(UserInfoInterface userInfo, String username, String gender, String unit, String emailAddress, String firstName, String lastName, String phoneNumber, String faxNumber, String mobileNumber, String companyPhone, String orgId, String orgAdm, boolean invite, String password, String[] listExtraProperties, String[] listExtraValues, String cal)
+  {
+    boolean result = false;
+    
+    DataSource ds = null;
+    Connection db = null;
+    
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    if (Const.bUSE_EMAIL)
+    {
+      password = RandomStringUtils.random(8, true, true);
+    }
+    else if (null == password)
+    {
+      Logger.warning(userInfo.getUtilizador(), this, "createUser", "no password and no email, exiting");
+      new ErrorHandler(UserErrorCode.FAILURE);
+    }
+    String activationCode = RandomStringUtils.random(40, true, true);
+    
+    Logger.debug(userInfo.getUtilizador(), this, "createUser", "Creating user " + username);
+    if ((!userInfo.isSysAdmin()) && (!userInfo.isOrgAdmin()))
+    {
+      Logger.error(userInfo.getUtilizador(), this, "createUser", "not sys admin nor org admin, exiting");
+      return new ErrorHandler(UserErrorCode.FAILURE);
+    }
+    int iOrgAdm = 0;
+    if (null != orgAdm) {
+      if (ArrayUtils.contains(new String[] { "1", "true", "yes" }, orgAdm.trim().toLowerCase())) {
+        iOrgAdm = 1;
+      }
+    }
+    try
+    {
+      ds = Utils.getDataSource();
+      db = ds.getConnection();
+      db.setAutoCommit(false);
+      
+      pst = db.prepareStatement("select count(*) from users where username = ?");
+      pst.setString(1, username);
+      rs = pst.executeQuery();
+      ErrorHandler localErrorHandler;
+      if ((rs.next()) && 
+        (rs.getInt(1) > 0)) {
+        return new ErrorHandler(UserErrorCode.FAILURE_DUPLICATE_USER);
+      }
+      rs.close();
+      pst.close();
+      if (Const.bUSE_EMAIL)
+      {
+        pst = db.prepareStatement("select count(*) from users u, organizational_units ou where u.email_address=? and u.unitid=ou.unitid and ou.organizationid=?");
+        pst.setString(1, emailAddress);
+        pst.setString(2, userInfo.isSysAdmin() ? orgId : userInfo.getOrganization());
+        rs = pst.executeQuery();
+        if ((rs.next()) && 
+          (rs.getInt(1) > 0)) {
+          return new ErrorHandler(UserErrorCode.FAILURE_DUPLICATE_EMAIL);
+        }
+        rs.close();
+        pst.close();
+      }
+      else if (null == emailAddress)
+      {
+        emailAddress = "";
+      }
+      String sQuery = "insert into users (GENDER,UNITID,USERNAME,USERPASSWORD,EMAIL_ADDRESS,FIRST_NAME,LAST_NAME,PHONE_NUMBER,FAX_NUMBER,MOBILE_NUMBER,COMPANY_PHONE,ACTIVATED,PASSWORD_RESET,ORGADM#EP#) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?#EV#)";
+      String auxEP = "";
+      String auxEV = "";
+      if ((listExtraProperties != null) && (listExtraProperties.length > 0))
+      {
+        Map<String, String> mapExtra = AccessControlManager.getUserDataAccess().getMappingExtra();
+        for (int i = 0; i < listExtraProperties.length; i++)
+        {
+          auxEP = auxEP + "," + (String)mapExtra.get(listExtraProperties[i]);
+          auxEV = auxEV + ",'" + listExtraValues[i] + "'";
+        }
+      }
+      sQuery = sQuery.replace("#EP#", auxEP).replace("#EV#", auxEV);
+      
+      pst = db.prepareStatement(sQuery, new String[] { "userid" });
+      pst.setString(1, gender);
+      pst.setString(2, unit);
+      pst.setString(3, username);
+      pst.setString(4, Utils.encrypt(password));
+      pst.setString(5, emailAddress);
+      pst.setString(6, firstName);
+      pst.setString(7, lastName);
+      pst.setString(8, phoneNumber);
+      pst.setString(9, faxNumber);
+      pst.setString(10, mobileNumber);
+      pst.setString(11, companyPhone);
+      if (Const.bUSE_EMAIL)
+      {
+        if (invite) {
+          pst.setInt(12, 0);
+        } else {
+          pst.setInt(12, 1);
+        }
+        pst.setInt(13, 0);
+      }
+      else
+      {
+        pst.setInt(12, 1);
+        pst.setInt(13, 0);
+      }
+      pst.setInt(14, iOrgAdm);
+      
 
 
+
+      pst.executeUpdate();
+      rs = pst.getGeneratedKeys();
+      
+      int userId = 0;
+      if (rs.next()) {
+        userId = rs.getInt(1);
+      }
+      rs.close();
+      result = true;
+      if ((Const.bUSE_EMAIL) && (invite))
+      {
+        pst = db.prepareStatement("insert into user_activation (USERID,ORGANIZATIONID,UNITID,CODE) values (?,?,?,?)");
+        pst.setInt(1, userId);
+        pst.setString(2, orgId);
+        pst.setString(3, unit);
+        pst.setString(4, activationCode);
+        pst.executeUpdate();
+        pst.close();
+      }
+      db.commit();
+      if (!cal.equals(" ")) {
+        result = assUserCalend(userInfo, cal, userId);
+      } else {
+        result = true;
+      }
+    }
+    catch (SQLException e)
+    {
+      result = false;
+      Logger.warning(userInfo.getUtilizador(), this, "createUser", "User not inserted!", e);
+      e.printStackTrace();
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, pst });
+    }
+    if (!result) {
+      return new ErrorHandler(ErrorCode.FAILURE);
+    }
+    if (Const.bUSE_EMAIL)
+    {
+      String mailTemplate = "";
+      
+      Hashtable<String, String> ht = new Hashtable();
+      if (invite)
+      {
+        ht.put("url", "http://" + Const.APP_HOST + ":" + Const.APP_PORT + "/iFlow/confirm?activation=invite&code=" + activationCode);
+        mailTemplate = "new_invite";
+      }
+      else
+      {
+        ht.put("url", "http://" + Const.APP_HOST + ":" + Const.APP_PORT + "/iFlow/login.jsp");
+        mailTemplate = "new_user";
+      }
+      ht.put("username", username);
+      ht.put("password", password);
+      ht.put("inviter", userInfo.getUserFullName());
+      ht.put("organization", userInfo.getCompanyName());
+      
+
+      Email email = EmailManager.buildEmail(ht, EmailManager.getEmailTemplate(BeanFactory.getUserInfoFactory().newGuestUserInfo(), mailTemplate));
+      email.setTo(emailAddress);
+      result = email.sendMsg();
+      if (!result) {
+        return new ErrorHandler(ErrorCode.SEND_EMAIL);
+      }
+    }
+    return new ErrorHandler(ErrorCode.SUCCESS);
+  }
+  
+  
   /**
    * Add a new user
    * 
@@ -1242,6 +1429,63 @@ public class UserManagerBean implements UserManager {
 
     return result;
   }
+  
+  public String getOrgCalendar(UserInfoInterface userInfo, String orgid)
+  {
+    Connection db = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    int id = 0;
+    try
+    {
+      db = Utils.getDataSource().getConnection();
+      st = db.prepareStatement("select calendid from organizations where organizationid = " + orgid + "");
+      rs = st.executeQuery();
+      if (rs.next()) {
+        id = rs.getInt("calendid");
+      }
+      rs.close();
+    }
+    catch (Exception e)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "readFlow", "exception caught", e);
+      e.printStackTrace();
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { rs, db, st });
+    }
+    return id + "";
+  }
+  
+  public List<String[]> getCalendars(UserInfoInterface userInfo)
+  {
+    List<String[]> calendars = new ArrayList();
+    
+    Connection db = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    try
+    {
+      db = Utils.getDataSource().getConnection();
+      st = db.prepareStatement("select id, name from calendar");
+      rs = st.executeQuery();
+      while (rs.next()) {
+        calendars.add(new String[] { "" + rs.getInt("id"), rs.getString("name") });
+      }
+      rs.close();
+    }
+    catch (Exception e)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "readFlow", "exception caught", e);
+      e.printStackTrace();
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { rs, db, st });
+    }
+    return calendars;
+  }
 
   /**
    * Lock an existing Organization
@@ -1281,6 +1525,73 @@ public class UserManagerBean implements UserManager {
     }
 
     return dolockOrganization(userInfo, organizationId, false);
+  }
+  
+  public boolean createOrganizationalUnit(UserInfoInterface userInfo, String organizationid, String name, String description, String parentid, String managerid, String calid)
+  {
+    boolean result = false;
+    
+    DataSource ds = null;
+    Connection db = null;
+    ResultSet rs = null;
+    PreparedStatement pst = null;
+    
+    Logger.debug(userInfo.getUtilizador(), this, "createOrganizationalUnit", "name=" + name);
+    Logger.debug(userInfo.getUtilizador(), this, "createOrganizationalUnit", "description=" + description);
+    Logger.debug(userInfo.getUtilizador(), this, "createOrganizationalUnit", "organizationid=" + organizationid);
+    Logger.debug(userInfo.getUtilizador(), this, "createOrganizationalUnit", "parentid=" + parentid);
+    Logger.debug(userInfo.getUtilizador(), this, "createOrganizationalUnit", "managerid=" + managerid);
+    if ((parentid == null) || ("".equals(parentid))) {
+      parentid = "-1";
+    }
+    Logger.debug(userInfo.getUtilizador(), this, "createOrganizationalUnit", "Creating organizational unit " + name);
+    if (!userInfo.isOrgAdmin())
+    {
+      Logger.debug(userInfo.getUtilizador(), this, "createOrganizationalUnit", "not administrator, exiting");
+      return false;
+    }
+    try
+    {
+      ds = Utils.getDataSource();
+      db = ds.getConnection();
+      db.setAutoCommit(false);
+      if (calid.equals(" ")) {
+        calid = "0";
+      }
+      pst = db.prepareStatement("insert into organizational_units (ORGANIZATIONID,PARENT_ID,NAME,DESCRIPTION,calendid) values (?,?,?,?," + calid + ")", new String[] { "unitid" });
+      
+      pst.setString(1, organizationid);
+      pst.setString(2, parentid);
+      pst.setString(3, name);
+      pst.setString(4, description);
+      pst.executeUpdate();
+      rs = pst.getGeneratedKeys();
+      int unitid = -1;
+      if (rs.next()) {
+        unitid = rs.getInt(1);
+      }
+      rs.close();
+      pst.close();
+      
+
+      pst = db.prepareStatement("insert into unitmanagers (USERID, UNITID) values (?,?)");
+      pst.setString(1, managerid);
+      pst.setInt(2, unitid);
+      pst.executeUpdate();
+      db.commit();
+      
+      result = true;
+    }
+    catch (SQLException e)
+    {
+      result = false;
+      Logger.warning(userInfo.getUtilizador(), this, "createOrganizationalUnit", "Organizational Unit not inserted!", e);
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, pst });
+    }
+    return result;
   }
 
   /**
@@ -1347,6 +1658,34 @@ public class UserManagerBean implements UserManager {
     }
 
     return result;
+  }
+  
+  public String getUserCalendarId(String user, String usId)
+  {
+    Connection db = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    int id = 0;
+    try
+    {
+      db = Utils.getDataSource().getConnection();
+      st = db.prepareStatement("select calendar_id from user_calendar where userid = " + usId + "");
+      rs = st.executeQuery();
+      if (rs.next()) {
+        id = rs.getInt("calendar_id");
+      }
+      rs.close();
+    }
+    catch (Exception e)
+    {
+      Logger.error(user, this, "readFlow", "exception caught", e);
+      e.printStackTrace();
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { rs, db, st });
+    }
+    return "" + id;
   }
 
   /**
@@ -1686,6 +2025,35 @@ public class UserManagerBean implements UserManager {
 
   public OrganizationalUnitViewInterface[] getAllOrganizationalUnits(UserInfoInterface userInfo) throws IllegalAccessException {
     return getAllOrganizationalUnits(userInfo, null);
+  }
+  
+  //Adicionar getOrgUnitCalendarId
+  public String getOrgUnitCalendarId(String username, String unitId)
+  {
+    Connection db = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    int id = 0;
+    try
+    {
+      db = Utils.getDataSource().getConnection();
+      st = db.prepareStatement("select calendid from organizational_units where unitid = " + unitId + "");
+      rs = st.executeQuery();
+      if (rs.next()) {
+        id = rs.getInt("calendid");
+      }
+      rs.close();
+    }
+    catch (Exception e)
+    {
+      Logger.error(username, this, "readFlow", "exception caught", e);
+      e.printStackTrace();
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { rs, db, st });
+    }
+    return "" + id;
   }
   
   public OrganizationalUnitViewInterface[] getAllOrganizationalUnits(UserInfoInterface userInfo, String orgId) throws IllegalAccessException {
@@ -2156,8 +2524,290 @@ public class UserManagerBean implements UserManager {
 
     return result;
   }
+  
+  
+  // modifyUserAsAdmin
+  
+  public IErrorHandler modifyUserAsAdmin(UserInfoInterface userInfo, String userId, String gender, String unit, String emailAddress, String firstName, String lastName, String phoneNumber, String faxNumber, String mobileNumber, String companyPhone, String orgAdm, String orgAdmUsers, String orgAdmFlows, String orgAdmProcesses, String orgAdmResources, String orgAdmOrg, String newPassword, String[] listExtraProperties, String[] listExtraValues, String calendarId)
+  {
+    IErrorHandler result = new ErrorHandler(ErrorCode.FAILURE);
+    if ((!userInfo.isOrgAdmin()) && (!userInfo.isSysAdmin()))
+    {
+      Logger.debug(userInfo.getUtilizador(), this, "modifyUserAsAdmin", "not administrator, exiting");
+      return new ErrorHandler(UserErrorCode.FAILURE_NOT_AUTHORIZED);
+    }
+    DataSource ds = null;
+    Connection db = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+    
+    Logger.debug(userInfo.getUtilizador(), this, "modifyUserAsAdmin", "Modify user id " + userId);
+    
 
+    int iOrgAdm = 0;
+    if (null != orgAdm) {
+      if (ArrayUtils.contains(new String[] { "1", "true", "yes" }, orgAdm.trim().toLowerCase())) {
+        iOrgAdm = 1;
+      }
+    }
+    if ((!Const.bUSE_EMAIL) && (emailAddress == null)) {
+      emailAddress = "";
+    }
+    boolean isWebAdmin = ("web".equals(Const.INSTALL_TYPE)) && (iOrgAdm == 1);
+    String oldEmail = null;
+    String newEmail = emailAddress;
+    String key = null;
+    try
+    {
+      ds = Utils.getDataSource();
+      db = ds.getConnection();
+      db.setAutoCommit(false);
+      if (Const.bUSE_EMAIL)
+      {
+        pst = db.prepareStatement("select count(*) from users u, organizational_units ou where u.email_address=? and u.unitid=ou.unitid and ou.organizationid=? and u.userid<>?");
+        pst.setString(1, emailAddress);
+        pst.setString(2, userInfo.getOrganization());
+        pst.setString(3, userId);
+        rs = pst.executeQuery();
+        if ((rs.next()) && 
+          (rs.getInt(1) > 0))
+        {
+          result = new ErrorHandler(UserErrorCode.FAILURE_DUPLICATE_EMAIL);
+          throw new SQLException("Email already exists");
+        }
+        rs.close();
+        pst.close();
+      }
+      if ((isWebAdmin) && 
+        (Const.bUSE_EMAIL))
+      {
+        pst = db.prepareStatement("select email_address from users where userid=?");
+        pst.setString(1, userId);
+        rs = pst.executeQuery();
+        if (rs.next()) {
+          oldEmail = rs.getString(1);
+        }
+        rs.close();
+        pst.close();
+        if (!newEmail.equals(oldEmail))
+        {
+          emailAddress = oldEmail;
+          key = RandomStringUtils.random(40, true, true);
+          
 
+          pst = db.prepareStatement("delete from email_confirmation where userid=? and organizationid=?");
+          pst.setString(1, userId);
+          pst.setString(2, userInfo.getOrganization());
+          pst.executeUpdate();
+          pst.close();
+          
+
+          pst = db.prepareStatement("insert into email_confirmation (userid,organizationid,email,code) values (?,?,?,?)");
+          pst.setString(1, userId);
+          pst.setString(2, userInfo.getOrganization());
+          pst.setString(3, newEmail);
+          pst.setString(4, key);
+          pst.executeUpdate();
+          pst.close();
+        }
+      }
+      String setUnitId = "";
+      if (StringUtils.isNotEmpty(unit)) {
+        setUnitId = ",UNITID=?";
+      }
+      String setPassword = "";
+      String password = null;
+      if ((!Const.bUSE_EMAIL) && (StringUtils.isNotEmpty(newPassword)))
+      {
+        password = Utils.encrypt(newPassword);
+        setPassword = ",PASSWORD_RESET=0,USERPASSWORD=?";
+      }
+      String setExtras = "";
+      if ((listExtraProperties != null) && (listExtraProperties.length > 0))
+      {
+        Map<String, String> mapExtra = AccessControlManager.getUserDataAccess().getMappingExtra();
+        for (int i = 0; i < listExtraProperties.length; i++) {
+          setExtras = setExtras + "," + (String)mapExtra.get(listExtraProperties[i]) + "=?";
+        }
+      }
+      int pos = 0;
+      pst = db.prepareStatement("update users set GENDER=?,EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,FAX_NUMBER=?,MOBILE_NUMBER=?,COMPANY_PHONE=?,ORGADM=?,ORGADM_USERS=?,ORGADM_FLOWS=?,ORGADM_PROCESSES=?,ORGADM_RESOURCES=?,ORGADM_ORG=?" + setUnitId + setExtras + setPassword + " where USERID=?");
+      
+      pst.setString(++pos, gender);
+      pst.setString(++pos, emailAddress);
+      pst.setString(++pos, firstName);
+      pst.setString(++pos, lastName);
+      pst.setString(++pos, phoneNumber);
+      pst.setString(++pos, faxNumber);
+      pst.setString(++pos, mobileNumber);
+      pst.setString(++pos, companyPhone);
+      pst.setInt(++pos, iOrgAdm);
+      pst.setInt(++pos, StringUtils.equals(orgAdmUsers, "true") ? 1 : 0);
+      pst.setInt(++pos, StringUtils.equals(orgAdmFlows, "true") ? 1 : 0);
+      pst.setInt(++pos, StringUtils.equals(orgAdmProcesses, "true") ? 1 : 0);
+      pst.setInt(++pos, StringUtils.equals(orgAdmResources, "true") ? 1 : 0);
+      pst.setInt(++pos, StringUtils.equals(orgAdmOrg, "true") ? 1 : 0);
+      if (StringUtils.isNotEmpty(unit)) {
+        pst.setString(++pos, unit);
+      }
+      if ((listExtraValues != null) && (listExtraValues.length > 0)) {
+        for (int i = 0; i < listExtraValues.length; i++) {
+          pst.setString(++pos, listExtraValues[i]);
+        }
+      }
+      if ((!Const.bUSE_EMAIL) && (StringUtils.isNotEmpty(newPassword))) {
+        pst.setString(++pos, password);
+      }
+      pst.setString(++pos, userId);
+      pst.executeUpdate();
+      db.commit();
+      boolean b = updateCalendId(userInfo, userId, calendarId);
+      result = new ErrorHandler(ErrorCode.SUCCESS);
+    }
+    catch (SQLException e)
+    {
+      Logger.warning(userInfo.getUtilizador(), this, "modifyUserAsAdmin", "User not updated!", e);
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, pst });
+    }
+    if ((Const.bUSE_EMAIL) && (isWebAdmin) && (!newEmail.equals(oldEmail)))
+    {
+      notifyEmailChange(userInfo, oldEmail, newEmail, key);
+      result = new ErrorHandler(UserErrorCode.PENDING_ORG_ADM_EMAIL);
+    }
+    return result;
+  }
+
+  private boolean updateCalendId(UserInfoInterface UserInfo, String userId, String calendId)
+  {
+    Connection db = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    boolean b = false;
+    int id = 0;
+    try
+    {
+      db = Utils.getDataSource().getConnection();
+      if (calendId.equals(" "))
+      {
+        st = db.prepareStatement("delete from user_calendar where userid=" + userId + "");
+        st.executeUpdate();
+        b = true;
+      }
+      else
+      {
+        st = db.prepareStatement("UPDATE user_calendar SET calendar_id=" + calendId + " WHERE userid=" + userId + "");
+        int i = st.executeUpdate();
+        if (i == 0) {
+          b = assUserCalend(UserInfo, calendId, Integer.parseInt(userId));
+        }
+        b = true;
+      }
+    }
+    catch (Exception e)
+    {
+      b = false;
+      Logger.error(UserInfo.getUtilizador(), this, "readFlow", "exception caught", e);
+      e.printStackTrace();
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { rs, db, st });
+    }
+    return b;
+  }
+  
+  private boolean assUserCalend(UserInfoInterface userInfo, String cal, int userId)
+  {
+    Connection db = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    boolean c = false;
+    try
+    {
+      db = Utils.getDataSource().getConnection();
+      st = db.prepareStatement("Insert into user_calendar (userid,calendar_id)values (?," + cal + ")");
+      st.setInt(1, userId);
+      st.execute();
+      c = true;
+    }
+    catch (Exception e)
+    {
+      c = false;
+      Logger.error(userInfo.getUtilizador(), this, "readFlow", "exception caught", e);
+      e.printStackTrace();
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { rs, db, st });
+    }
+    return c;
+  }
+  
+  public boolean modifyOrganizationalUnit(UserInfoInterface userInfo, String unitId, String organizationid, String name, String description, String parentid, String managerid, String calid)
+  {
+    boolean result = false;
+    
+    DataSource ds = null;
+    Connection db = null;
+    PreparedStatement pst = null;
+    
+    Logger.debug("", this, "", "name=" + name);
+    Logger.debug("", this, "", "description=" + description);
+    Logger.debug("", this, "", "organizationid=" + organizationid);
+    Logger.debug("", this, "", "parentid=" + parentid);
+    Logger.debug("", this, "", "managerid=" + managerid);
+    if ((parentid == null) || ("".equals(parentid))) {
+      parentid = "-1";
+    }
+    Logger.debug(userInfo.getUtilizador(), this, "modifyOrganizationalUnit", "Updating organizational unit " + name);
+    if ((!userInfo.isSysAdmin()) && (!userInfo.isOrgAdmin()))
+    {
+      Logger.debug(userInfo.getUtilizador(), this, "modifyOrganizationalUnit", "not administrator, exiting");
+      return false;
+    }
+    try
+    {
+      ds = Utils.getDataSource();
+      db = ds.getConnection();
+      db.setAutoCommit(false);
+      if (calid.equals(" ")) {
+        calid = "0";
+      }
+      pst = db.prepareStatement("update organizational_units set ORGANIZATIONID=?,PARENT_ID=?,NAME=?,DESCRIPTION=?, calendid = " + calid + " where UNITID=?");
+      
+
+      pst.setString(1, organizationid);
+      pst.setString(2, parentid);
+      pst.setString(3, name);
+      pst.setString(4, description);
+      pst.setString(5, unitId);
+      pst.executeUpdate();
+      pst.close();
+      
+
+      pst = db.prepareStatement("update unitmanagers set USERID=? where UNITID=?");
+      pst.setString(1, managerid);
+      pst.setString(2, unitId);
+      pst.executeUpdate();
+      db.commit();
+      
+      result = true;
+    }
+    catch (SQLException e)
+    {
+      result = false;
+      Logger.warning(userInfo.getUtilizador(), this, "modifyOrganizationalUnit", "Organizational Unit not updated!", e);
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, pst });
+    }
+    return result;
+  }
+  
   /**
    * Register a new user and organization
    * 

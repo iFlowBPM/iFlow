@@ -14,6 +14,7 @@ public class NotificationImpl implements Serializable, Notification {
   private String message;
   private boolean read;
   private String link = "";
+  private String openFlowid;
   
   public NotificationImpl() {
     
@@ -103,4 +104,14 @@ public String toString() {
     sb.append(this.sender).append(" ").append(this.created).append(": ").append(this.message);
     return sb.toString();
   }
+
+public String getOpenFlowid()
+{
+  return this.openFlowid;
+}
+
+public void setOpenFlowid(String openFlowid)
+{
+  this.openFlowid = openFlowid;
+}
 }

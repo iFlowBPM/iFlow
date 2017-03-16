@@ -225,4 +225,50 @@ public class ProcessPresentation {
     
     return result;
   }
+  
+  public static Map<String, String> getProcessDetailVarnames(UserInfoInterface userInfo, ProcessData procData)
+  {
+    if (userInfo == null)
+    {
+      Logger.error(null, "ProcessPresentation", "getProcessDetail", "Invalid user");
+      return null;
+    }
+    if (procData == null)
+    {
+      Logger.error(userInfo.getUtilizador(), "ProcessPresentation", "getProcessDetail", "Invalid process");
+      return null;
+    }
+    Flow flow = BeanFactory.getFlowBean();
+    if (flow == null)
+    {
+      Logger.error(userInfo.getUtilizador(), "ProcessPresentation", "getProcessDetail", "Could not fetch flow " + procData.getFlowId());
+      return null;
+    }
+    if (!BeanFactory.getProcessManagerBean().canViewProcess(userInfo, procData))
+    {
+      Logger.warning(userInfo.getUtilizador(), "ProcessPresentation", "getProcessDetail", "User not authorized to access process detail");
+      return null;
+    }
+    ProcessCatalogue catalog = flow.getFlowCatalogue(userInfo, procData.getFlowId());
+    Map<String, String> result = new HashMap();
+    
+
+    List<String> simpleVars = catalog.getSimpleVariableNames();
+    for (String varname : simpleVars) {
+      if (catalog.hasPublicName(varname))
+      {
+        result.put(catalog.getPublicName(varname), varname);
+        Logger.debug(userInfo.getUtilizador(), "ProcessPresentation", "getProcessDetail", "Added variable " + varname + "; Desciption: " + catalog.getPublicName(varname));
+      }
+    }
+    List<String> listVars = catalog.getListVariableNames();
+    for (String varname : listVars) {
+      if (catalog.hasPublicName(varname))
+      {
+        result.put(catalog.getPublicName(varname), varname);
+        Logger.debug(userInfo.getUtilizador(), "ProcessPresentation", "getProcessDetail", "Added variable " + varname + "; Desciption: " + catalog.getPublicName(varname));
+      }
+    }
+    return result;
+  }
 }

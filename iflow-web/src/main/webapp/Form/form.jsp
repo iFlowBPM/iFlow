@@ -53,7 +53,12 @@ String popupReturnBlockId = null;
         if (Const.nMODE == Const.nDEVELOPMENT) {
             title = title + " block" + bBlockJSP.getId();
         }
-        
+         if (bBlockJSP.getClass().getName().indexOf("BlockProcDetail") > -1 ){ 
+        	String pseudoDetailFlowid = procData.transform(userInfo, bBlockJSP.getAttribute("flowid"));
+        	bBlockJSP = new pt.iflow.blocks.BlockFormulario(bBlockJSP.getFlowId(), bBlockJSP.getId(), bBlockJSP.getSubFlowBlockId(), bBlockJSP.getSubFlowFilename());
+        	bBlockJSP.addAttribute(new pt.iflow.api.blocks.Attribute("pseudoDetail","true"));
+        	bBlockJSP.addAttribute(new pt.iflow.api.blocks.Attribute("pseudoDetailFlowid",pseudoDetailFlowid));
+        }
         if (bBlockJSP.getClass().getName().indexOf("BlockFormulario") == -1) {
             throw new Exception("Not BlockFormulario!");
         }
@@ -108,7 +113,7 @@ String popupReturnBlockId = null;
 	    try {
 	      // Get the ProcessManager EJB
 
-	      activity = new Activity(login, flowid, pid, subpid, 0, 0, description, Block.getDefaultUrl(userInfo, procData), 1);
+	      activity = new Activity(login, login, flowid, pid, subpid, 0, 0, description, Block.getDefaultUrl(userInfo, procData), 1);
 	      activity.setRead();
 	      activity.mid = procData.getMid();
 	      pm.updateActivity(userInfo, activity);
@@ -141,7 +146,7 @@ String popupReturnBlockId = null;
         
       String formMid = fdFormData.getParameter(Const.sMID_ATTRIBUTE);
       request.setAttribute(Const.sMID_ATTRIBUTE, formMid);
-      boolean procAccessOk = StringUtils.isBlank(formMid) || StringUtils.equals(currMid, formMid);
+      boolean procAccessOk = StringUtils.isBlank(formMid) || StringUtils.equals(currMid, formMid) || StringUtils.equals(currMid, "1") || StringUtils.equals(currMid, "0");
       
       if (procAccessOk) {
             oa = new Object[5];

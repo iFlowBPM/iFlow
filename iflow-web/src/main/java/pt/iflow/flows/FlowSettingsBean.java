@@ -217,6 +217,256 @@ public class FlowSettingsBean implements FlowSettings {
     }
     
   }
+  
+  public void saveFlowSettings(UserInfoInterface userInfo, FlowSetting[] afsaSettings, String calendId)
+  {
+    saveFlowSettings(userInfo, afsaSettings, false, calendId);
+  }
+  
+  public String getFlowCalendarId(UserInfoInterface userInfo, int flowid)
+  {
+    Connection db = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    int id = 0;
+    try
+    {
+      db = Utils.getDataSource().getConnection();
+      st = db.prepareStatement("select calendar_id from flow_calendar where flowid = ?");
+      st.setInt(1, flowid);
+      rs = st.executeQuery();
+      if (rs.next()) {
+        id = rs.getInt("calendar_id");
+      }
+      rs.close();
+    }
+    catch (Exception e)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "readFlow", "exception caught", e);
+      e.printStackTrace();
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { rs, db, st });
+    }
+    return "" + id;
+  }
+  
+  public void saveFlowSettings(UserInfoInterface userInfo, FlowSetting[] afsaSettings, boolean abInitSettings, String calendId)
+  {
+    DataSource ds = null;
+    Connection db = null;
+    Statement st = null;
+    CallableStatement cst = null;
+    ResultSet rs = null;
+    String sLogin = userInfo.getUtilizador();
+    int nMid = 0;
+    FlowSetting fs = null;
+    
+    Logger.trace(this, "saveFlowSettings", sLogin + " call");
+    if ((null == afsaSettings) || (afsaSettings.length == 0))
+    {
+      Logger.info(userInfo.getUtilizador(), this, "saveFlowSettings", "Empty settings array. exiting....");
+      
+      return;
+    }
+    Set<Integer> flowids = new HashSet();
+    try
+    {
+      String sQuery = DBQueryManager.getQuery("FlowSettings.UPDATEFLOWSETTING");
+      ds = Utils.getDataSource();
+      db = ds.getConnection();
+      db.setAutoCommit(false);
+      st = db.createStatement();
+      cst = db.prepareCall(sQuery);
+      if (Const.DB_TYPE.equalsIgnoreCase("SQLSERVER"))
+      {
+        st.execute(DBQueryManager.getQuery("FlowSettings.getNextMid"));
+        if (st.getMoreResults()) {
+          rs = st.getResultSet();
+        }
+      }
+      else
+      {
+        rs = st.executeQuery(DBQueryManager.getQuery("FlowSettings.getNextMid"));
+      }
+      if ((rs != null) && (rs.next()))
+      {
+        nMid = rs.getInt(1);
+      }
+      else
+      {
+        nMid = 33;
+        Logger.warning(userInfo.getUtilizador(), this, "saveFlowSettings", "Unable to get next flow setting mid");
+      }
+      rs.close();
+      for (int set = 0; set < afsaSettings.length; set++)
+      {
+        fs = afsaSettings[set];
+        
+
+        StringBuffer debugValues = new StringBuffer();
+        
+        cst.setInt(1, fs.getFlowId());
+        cst.setInt(2, nMid);
+        cst.setString(3, fs.getName());
+        cst.setString(4, fs.getDescription());
+        if (Logger.isDebugEnabled())
+        {
+          debugValues.append(fs.getFlowId()).append(", ");
+          debugValues.append(nMid).append(", ");
+          debugValues.append(fs.getName()).append(", ");
+          debugValues.append(fs.getDescription()).append(", ");
+        }
+        cst.setString(5, abInitSettings ? null : fs.getValue());
+        if (Logger.isDebugEnabled()) {
+          debugValues.append(abInitSettings ? null : fs.getValue()).append(", ");
+        }
+        cst.setInt(6, 0);
+        if (abInitSettings)
+        {
+          cst.setInt(7, 2);
+          if (Logger.isDebugEnabled()) {
+            debugValues.append("0, 2");
+          }
+        }
+        else
+        {
+          cst.setInt(7, 0);
+          if (Logger.isDebugEnabled()) {
+            debugValues.append("0, 0");
+          }
+        }
+        if (Logger.isDebugEnabled()) {
+          Logger.debug(sLogin, this, "saveFlowSettings", "QUERY1=updateFlowSettings(" + debugValues + ")");
+        }
+        cst.execute();
+        if ((!abInitSettings) && (fs.isListSetting()))
+        {
+          String[] asValues = fs.getValuesToSave();
+          for (int i = 0; i < asValues.length; i++)
+          {
+            String sName = Utils.genListVar(fs.getName(), i);
+            
+
+            cst.setInt(1, fs.getFlowId());
+            cst.setInt(2, nMid);
+            cst.setString(3, sName);
+            cst.setString(4, fs.getDescription());
+            if (Logger.isDebugEnabled())
+            {
+              debugValues = new StringBuffer();
+              debugValues.append(fs.getFlowId()).append(", ");
+              debugValues.append(nMid).append(", ");
+              debugValues.append(sName).append(", ");
+              debugValues.append(fs.getDescription())
+                .append(", ");
+            }
+            cst.setString(5, 
+              StringUtils.isEmpty(asValues[i]) ? null : asValues[i]);
+            if (Logger.isDebugEnabled()) {
+              debugValues.append(StringUtils.isEmpty(asValues[i]) ? null : asValues[i]).append(", ");
+            }
+            cst.setInt(6, fs.isQueryValue(i) ? 1 : 0);
+            cst.setInt(7, 1);
+            if (Logger.isDebugEnabled())
+            {
+              debugValues.append(fs.isQueryValue(i) ? 1 : 0).append(", 1");
+              
+              Logger.debug(sLogin, this, "saveFlowSettings", "QUERY2=updateFlowSettings(" + debugValues + ")");
+            }
+            cst.execute();
+          }
+        }
+        flowids.add(Integer.valueOf(fs.getFlowId()));
+      }
+      db.commit();
+      
+
+      boolean b = false;
+      boolean a = false;
+      int id = fs.getFlowId();
+      if ((!calendId.equals("")) || (!calendId.isEmpty()))
+      {
+        b = deleteFlowCalendar(userInfo, id);
+        
+        a = assFlowCalendar(userInfo, id, calendId);
+      }
+    }
+    catch (Exception e)
+    {
+      try
+      {
+        if (db != null) {
+          db.rollback();
+        }
+      }
+      catch (Exception localException1) {}
+      Logger.error(sLogin, this, "saveFlowSettings", "exception caught: " + e
+        .getMessage(), e);
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, cst, rs });
+    }
+  }
+  
+  private boolean assFlowCalendar(UserInfoInterface userInfo, int id, String calendId)
+  {
+    if (StringUtils.isEmpty(calendId)) {
+      return false;
+    }
+    Connection db = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    boolean c = false;
+    try
+    {
+      db = Utils.getDataSource().getConnection();
+      st = db.prepareStatement("Insert into flow_calendar (flowid,calendar_id) values (?," + calendId + ")");
+      st.setInt(1, id);
+      st.execute();
+      c = true;
+    }
+    catch (Exception e)
+    {
+      c = false;
+      Logger.error(userInfo.getUtilizador(), this, "readFlow", "exception caught", e);
+      e.printStackTrace();
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { rs, db, st });
+    }
+    return c;
+  }
+  
+  private boolean deleteFlowCalendar(UserInfoInterface userInfo, int id)
+  {
+    Connection db = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    boolean b = false;
+    try
+    {
+      db = Utils.getDataSource().getConnection();
+      st = db.prepareStatement("delete from flow_calendar where flowid = ?");
+      st.setInt(1, id);
+      st.execute();
+      b = true;
+    }
+    catch (Exception e)
+    {
+      b = false;
+      Logger.error(userInfo.getUtilizador(), this, "readFlow", "exception caught", e);
+      e.printStackTrace();
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { rs, db, st });
+    }
+    return b;
+  }
 
   public void exportFlowSettings(UserInfoInterface userInfo, int flowid,
       PrintStream apsOut) {
