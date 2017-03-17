@@ -27,7 +27,7 @@
   }
 %>
 <if:checkUserAdmin type="spv">
-	<div class="error_msg"><if:message
+	<div class="alert alert-danger"><if:message
 		string="admin.error.unauthorizedaccess" /></div>
 </if:checkUserAdmin>
 <%
@@ -40,11 +40,11 @@ fda = BeanFactory.getFlowHolderBean().listFlowsOnline(userInfo, FlowType.WORKFLO
 
   Map<String, String> displayDesc = AuditChartServlet.getDisplayParams(userInfo);
 %>
-<form name="procstats" method="POST" onsubmit="return false;">
-	<h1 id="title_reports"><%=title%></h1>
-	<div class="info_msg"><%=messages.getString("proc_stats.introMsg")%></div>
+<form name="procstats" method="POST" onsubmit="return false;" class="form-horizontal">
+	<h1 id="title_admin"><%=title%></h1>
+	<div class="alert alert-info"><%=messages.getString("proc_stats.introMsg")%></div>
 	<% if (sbError.length() > 0) { %>
-	<div class="error_msg"><%=sbError.toString()%></div>
+	<div class="alert alert-danger"><%=sbError.toString()%></div>
 	<% } %>
 
 	<div class="chart">
@@ -53,12 +53,14 @@ fda = BeanFactory.getFlowHolderBean().listFlowsOnline(userInfo, FlowType.WORKFLO
 	
 	<fieldset>
 	<ol>
-	<li>
-      <label for="stats_offline"><%=messages.getString("proc_stats.field.show_offline") %></label>
-      <input class="" type="checkbox" id="stats_offline" value="set" title="<%=messages.getString("proc_stats.field.show_offline") %>" 
+	<li class="form-group">
+      		<label class="control-label col-sm-2" for="stats_offline"><%=messages.getString("proc_stats.field.show_offline") %></label>
+		<div class="col-sm-1">
+      		<input class="" type="checkbox" id="stats_offline" value="set" title="<%=messages.getString("proc_stats.field.show_offline") %>" 
       	onclick="proc_rpt_offline(this,proc_stats_execute)">
+		</div>
  	</li>
-		<li>
+		<li class="form-group">
 		<if:formSelect name="flowid" edit="true" value='<%=sFlowId%>' labelkey="proc_stats.field.flow"
 				onchange="proc_stats_execute('<%=ts %>')"  noli="true">
 			<if:formOption value="-1" labelkey="const.all" />

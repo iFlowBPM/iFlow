@@ -41,15 +41,15 @@ if (fda == null) fda = new IFlowData[0];
 
 Map<String,String> displayDesc = AuditChartServlet.getDisplayParams(userInfo);
 %>
-<form name="slaperf" method="POST" onsubmit="return false;">
+<form name="slaperf" method="POST" onsubmit="return false;" class="form-horizontal">
 
-  <h1 id="title_reports"><%=title%></h1>
-  <div class="info_msg">
+  <h1 id="title_admin"><%=title%></h1>
+  <div class="alert alert-info">
 	  <%=messages.getString("proc_sla.introMsg")%>
   </div>
 
 <% if (sbError.length() > 0) { %>
-  <div class="error_msg">
+  <div class="alert alert-danger">
     <%=sbError.toString()%>
   </div>
 <% } %>
@@ -61,17 +61,22 @@ Map<String,String> displayDesc = AuditChartServlet.getDisplayParams(userInfo);
 
   <fieldset>
     <ol>
-    <li>
-      <label for="sla_include"><%=messages.getString("proc_sla.field.checkbox") %></label>
+    <li class="form-group">
+      <label class="control-label col-sm-2" for="sla_include"><%=messages.getString("proc_sla.field.checkbox") %></label>
+  	
+      <div class="col-sm-1">
       <input class="" type="checkbox" id="sla_include" value="set" title="<%=messages.getString("proc_sla.field.checkbox") %>" 
       	onclick="proc_sla_execute('<%=ts %>')">
+     </div>
     </li>
-    <li>
-      <label for="sla_offline"><%=messages.getString("proc_sla.field.show_offline") %></label>
+    <li class="form-group">
+      <label class="control-label col-sm-2" for="sla_offline"><%=messages.getString("proc_sla.field.show_offline") %></label>
+      <div class="col-sm-1">
       <input class="" type="checkbox" id="sla_offline" value="set" title="<%=messages.getString("proc_sla.field.show_offline") %>" 
       	onclick="proc_rpt_offline(this,proc_sla_execute)">
+      </div>
     </li>
-    <li>
+    <li class="form-group">
       <if:formSelect name="flowid" edit="true" value='<%=sFlowId%>' labelkey="proc_sla.field.flow"
       	 	onchange="toggleDisplayTimeUnits();proc_sla_execute('<%=ts %>')" noli="true">
 	      <if:formOption value="-1" labelkey="const.all"/>

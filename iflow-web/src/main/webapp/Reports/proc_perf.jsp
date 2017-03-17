@@ -41,15 +41,15 @@ if (fda == null) fda = new IFlowData[0];
 
 Map<String,String> displayDesc = AuditChartServlet.getDisplayParams(userInfo);
 %>
-<form name="procperf" method="POST" onsubmit="return false;">
+<form name="procperf" method="POST" onsubmit="return false;" class="form-horizontal">
 
-  <h1 id="title_reports"><%=title%></h1>
-  <div class="info_msg">
+  <h1 id="title_admin"><%=title%></h1>
+  <div class="alert alert-info">
 	  <%=messages.getString("proc_perf.introMsg")%>
   </div>
 
 <% if (sbError.length() > 0) { %>
-  <div class="error_msg">
+  <div class="alert alert-danger">
     <%=sbError.toString()%>
   </div>
 <% } %>
@@ -60,12 +60,14 @@ Map<String,String> displayDesc = AuditChartServlet.getDisplayParams(userInfo);
 
   <fieldset>
     <ol>
-    <li>
-      <label for="perf_offline"><%=messages.getString("proc_perf.field.show_offline") %></label>
+    <li class="form-group">
+      <label class="control-label col-sm-2" for="perf_offline"><%=messages.getString("proc_perf.field.show_offline") %></label>
+    <div class="col-sm-1">
       <input class="" type="checkbox" id="perf_offline" value="set" title="<%=messages.getString("proc_perf.field.show_offline") %>" 
       	onclick="proc_rpt_offline(this,proc_perf_execute)">
+	</div>
     </li>
-    <li>
+    <li class="form-group">
       <if:formSelect name="flowid" edit="true" value='<%=sFlowId%>' labelkey="proc_perf.field.flow"
       		onchange="toggleDisplayTimeUnits();proc_perf_execute('<%=ts %>')" noli="true">
 	      <if:formOption value="-1" labelkey="const.all"/>

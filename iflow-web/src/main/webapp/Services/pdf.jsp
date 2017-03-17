@@ -114,7 +114,7 @@ int subpid = -1;
   }
 
   if (pdfGen != null) {
-    
+    //bsh.Interpreter bsh = process.getInterpreter(userInfo);
     InputStream in = null;
     try {
       File tmpPdf = File.createTempFile("print_", ".pdf");

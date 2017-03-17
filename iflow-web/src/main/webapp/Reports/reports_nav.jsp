@@ -19,8 +19,10 @@
 
   UserDataAccess userDataAccess = AccessControlManager.getUserDataAccess();
   boolean canUserAdmin = userDataAccess.canUserAdmin();
-  
-  boolean isClassic = StringUtils.equals("classic", BeanFactory.getOrganizationThemeBean().getOrganizationTheme(userInfo).getThemeName());
+
+  String theme = BeanFactory.getOrganizationThemeBean().getOrganizationTheme(userInfo).getThemeName();
+  boolean isClassic = StringUtils.equals("classic", theme);
+  boolean isNewflow = StringUtils.equals("newflow", theme);
 %>
 
 <%
@@ -32,7 +34,7 @@
 <h2 onclick="javascript:toggleItemBox('reports', $('reports_section'));"
 ><%=messages.getString("reports_nav.section.title")%><img
 	id="reports_section" class="item_title_show"
-	src="images/minus.png" <%if(isClassic){%>style="display: none;"<%}%>/></h2>
+	src="images/minus.png" <%if(isClassic || isNewflow){%>style="display: none;"<%}%>/></h2>
 	
 	<ul id="reports_section_body">
 		<li><a id="li_a_reports_<%=ReportsNavConsts.PERFORMANCE_CHARTS%>"
@@ -53,7 +55,7 @@
 <h2 onclick="javascript:toggleItemBox('reports', $('reports_personalized_section'));"
 ><%=messages.getString("reports_nav.personalized_section.title")%><img
 	id="reports_personalized_section" class="item_title_show"
-	src="images/minus.png" <%if(isClassic){%>style="display: none;"<%}%>/></h2>
+	src="images/minus.png" <%if(isClassic || isNewflow){%>style="display: none;"<%}%>/></h2>
 	<ul id="reports_personalized_section_body">
 		<form name="reports_personalized_section_form" method="post">
 			<%
@@ -87,6 +89,7 @@
 			      appFlows.add(hm);
 			  	}
 			    String tabnr = (String) fdFormData.getParameter("navtabnr");
+			    if (tabnr == null) tabnr ="10"; 
 			    String pageContent = "proc_list";
 			    java.util.Hashtable<String,Object> hsSubstLocal = new java.util.Hashtable<String,Object>();
 			    hsSubstLocal.put("appflows", appFlows);

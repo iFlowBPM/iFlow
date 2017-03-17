@@ -35,20 +35,35 @@ if (sHideButtonId == null || "".equals(sHideButtonId)){
 }
 %>
 
+<style>
+	#apt_popup_div {
+		background-color:white;	
+		position:relative;
+		left:250px;
+		padding: 10px;
+		border: 1px solid #aaa;
+			box-shadow: 1px 0px 5px 0px #999999;
+	-webkit-box-shadow: 1px 0px 5px 0px #999999;
+	
+		
+	}
+</style>
+
+
 <div id="apt_popup_div">
-    <h2>Processo: <%=pid %></h2>
+    <h4>Processo: <%=pid %></h4>
     <ul class="apt_reg">
-    	<li style="font-size:1.2em;color:black;margin-left:0px;margin-bottom:10px"><if:message string="process_annotations.field.comment" /></li>
+    	<li style="font-size:1em;color:black;margin-left:0px;margin-bottom:10px"><if:message string="process_annotations.field.comment" /></li>
         <li><%=comment.getComment()%></li>
     </ul>
 
     <hr class="apt_sep"/>
     <ul class="apt_reg">
-    	<li style="font-size:1.2em;color:black;margin-left:0px;margin-bottom:10px"><if:message string="process_annotations.field.labels" /></li>
+    	<li style="font-size:1em;color:black;margin-left:0px;margin-bottom:10px"><if:message string="process_annotations.field.labels" /></li>
         <li>
         <% for(int i=0; i < labels.size(); i++){ 
              if(labels.get(i).getCheck()){%>
-             <img src="AnnotationIconsServlet?label_name=<%=labels.get(i).getName()%>&ts='+<%=System.currentTimeMillis() %>+'" width="16px" height="16px"/>
+             <img src="AnnotationIconsServlet?label_name='<%=labels.get(i).getName()%>'&ts='+<%=System.currentTimeMillis() %>+'" width="16px" height="16px"/>
                 <%=labels.get(i).getName()%><br/>
         <%   }
            }%>
@@ -56,8 +71,8 @@ if (sHideButtonId == null || "".equals(sHideButtonId)){
     </ul>
     <hr class="apt_sep"/>
     <ul class="apt_reg">
-    	<li style="font-size:1.2em;color:black;margin-left:0px;margin-bottom:10px"><if:message string="process_annotations.field.deadline" /></li>
+    	<li style="font-size:1em;color:black;margin-left:0px;margin-bottom:10px"><if:message string="process_annotations.field.deadline" /></li>
         <li><%=sDeadline%></li>
     </ul>
-    <input type="button" class="apt_regular_button" value="<if:message string="button.close"/>" id="<%=sHideButtonId%>"/>
+    <input type="button" class="apt_regular_button btn btn-default" value="<if:message string="button.close"/>" id="<%=sHideButtonId%>">
 </div>
