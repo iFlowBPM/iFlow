@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>Login IflowBPM</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta http-equiv="Pragma" content="no-cache"/>
+		
+		
+	    <link rel="shortcut icon" href="images/favicon.ico" />
+	
+	
+	<link href="Themes/newflow/cssNew/main.css" rel="stylesheet" type="text/css">
+	<link href="Themes/newflow/cssNew/style_login.css" rel="stylesheet" type="text/css" >
+	<link href="javascript/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+
+	
+	  <script type="text/javascript" src="javascript/messages.js"> </script><!-- default messages -->
+	  <script type="text/javascript" src="javascript/messages_${lang}.js"> </script><!-- default messages -->
+	  <script type="text/javascript" src="javascript/mootools.js"></script>
+	  <script type="text/javascript" src="javascript/ajax_processing.js"></script>
+	  <script type="text/javascript" src="javascript/iflow_main.js"></script>
+	  <script type="text/javascript" src="javascript/login.js"></script>
+	</head>
+	
+	<body style="background: #e2e4eb" class="${maintenance}" >
+	
+		<form name="dados" method="post" action="${dados.action}" class="form-signin" role="form">
+			<input type="hidden" name="url" value="${dados.url}"/>
+			<input type="hidden" name="${dados.ufidName}" value="${dados.ufidValue}"/>
+			<input type="hidden" name="source" value="internet"/>
+			<input type="hidden" name="is_system" value="false"/>
+			<input type="hidden" name="do_redirect" value="true"/>
+			<input type="hidden" name="url" value="main.jsp"/>
+
+			
+			
+			<div class="login_bartop"> 
+				#if (!$isInstallLocal)
+				<div  class="loginbar_left"><a href="http://www.iflowbpm.com/" target="_blank"  class="linklogin">iflowbpm.com</a> 
+				| <a href="register"  class="linklogin">$msg.get('login.link.register')</a> 
+				#if ($useEmail)
+				| <a href="register"  class="linklogin">$msg.get('login.link.passwordRecover')</a> 
+				#end
+				#if ($isInstallDemo)
+				| <a href="Admin/login.jsp"  class="linklogin">Administrar</a>
+				</div>
+				#end
+				#end
+				<div class="loginbar_right" >
+					#foreach ($localeKey in $localeKeys)
+						<a class="linklogin" href="login.jsp" onclick="setCookie('${localeKey.langCookie}', '${localeKey.loc}');" title="${localeKey.language}" ${localeKey.selected}>
+							${localeKey.language}
+						</a>
+							${localeKey.append}
+					#end
+
+				</div>
+			</div>
+
+			#if ($isInMaintenance)
+				<div>
+					<span class="maintenance_login_message">$msg.get('maintenance.loginMessage')</span>
+				</div>
+			#end
+
+			<div  class="bos_login" >
+    <div class="img"  > <img src="Themes/newflow/images/iflowbpm_logo.png" width="196" height="68" alt=""/> </div>
+    <!--<h3 class="form-signin-heading">Please sign in</h3>-->
+	<div class="error_msg lp_error_msg">
+			        #if ($hasError)
+			        	${loginError}
+			        #end
+			    </div>
+    <input type="text" name="login" id="login" value="${login}" class="form-control" placeholder="$msg.get('login.field.user')" required autofocus>
+	<div class="user_info lp_field_label">
+					<span id="capsWarn" class="error_msg" style="display:none">Caps&nbsp;ON&nbsp;</span>&nbsp;
+				</div>
+    <input type="password" name="password" id="password" class="form-control" placeholder="$msg.get('login.field.password')" required>
+    <label class="checkbox">
+      <input type="checkbox" name="keep_session" id="keep_logged" >
+      $msg.get('login.field.keepSession') </label>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+  </form>
+  <div class="loginfooter" >iFlowBPM 5.1.0 $msg.get('iflow.copyright')<br>
+    <!--iFlow Version ${version}-->
+	
+	</div>
+</div>
+
+
+
+			
+		</form>
+		<script type="text/javascript">
+			register(document.dados, document.dados.login, document.dados.password);
+		</script>
+	</body>
+</html>
