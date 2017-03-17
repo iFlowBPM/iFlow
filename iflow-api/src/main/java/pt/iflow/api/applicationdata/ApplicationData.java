@@ -17,7 +17,7 @@ package pt.iflow.api.applicationdata;
 
 public interface ApplicationData {
 
-  public String getId();
-  public String getName();
-  public String getDescription();
+  public abstract String getId();
+  public abstract String getName();
+  public abstract String getDescription();
 }
