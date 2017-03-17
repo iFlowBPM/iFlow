@@ -83,16 +83,7 @@
       <in_out>out</in_out>
       <position>
         <x>105</x>
-        <y>15</y>
-      </position>
-    </XmlPort>
-    <XmlPort>
-      <name>portError</name>
-      <description>portError</description>
-      <in_out>out</in_out>
-      <position>
-        <x>105</x>
-        <y>45</y>
+        <y>27</y>
       </position>
     </XmlPort>
     <className>pt.iknow.floweditor.blocks.AlteraAtributosBeanShell</className>
@@ -163,7 +154,7 @@
 		<description>Condition</description>
 		<i18n>library.basic.block.condition</i18n>
 	</XmlBlock>
-	<XmlBlock>
+		<XmlBlock>
 		<class>BlockMultiCondition</class>
 		<XmlPort>
 			<name>portIn</name>
@@ -179,7 +170,7 @@
 			<description>portTrueC1</description>
 			<in_out>out</in_out>
 			<position>
-				<x>105</x>
+				<x>55</x>
 				<y>5</y>
 			</position>
 		</XmlPort>
@@ -188,7 +179,7 @@
 			<description>portTrueC2</description>
 			<in_out>out</in_out>
 			<position>
-				<x>105</x>
+				<x>55</x>
 				<y>15</y>
 			</position>
 		</XmlPort>
@@ -197,7 +188,7 @@
 			<description>portTrueC3</description>
 			<in_out>out</in_out>
 			<position>
-				<x>105</x>
+				<x>55</x>
 				<y>25</y>
 			</position>
 		</XmlPort>
@@ -206,7 +197,7 @@
 			<description>portTrueC1</description>
 			<in_out>out</in_out>
 			<position>
-				<x>105</x>
+				<x>55</x>
 				<y>35</y>
 			</position>
 		</XmlPort>
@@ -215,7 +206,7 @@
 			<description>portFalse</description>
 			<in_out>out</in_out>
 			<position>
-				<x>105</x>
+				<x>55</x>
 				<y>50</y>
 			</position>
 		</XmlPort>
@@ -239,11 +230,11 @@
 			<description>Senão, Verifica Se</description>
 			<value></value>
 		</XmlAttribute>
-		<image>bpmn_multi_condicao.png</image>
+		<image>condicao.png</image>
 		<description>MultiCondition</description>
 		<i18n>library.basic.block.multi_condition</i18n>
 	</XmlBlock>
-  <!--  XmlBlock>
+  <XmlBlock>
     <class>BlockBifurcacao</class>
     <XmlPort>
       <name>portIn</name>
@@ -275,8 +266,8 @@
     <image>bpmn_gateway_paralel.png</image>
     <description>Fork</description>
     <i18n>library.utils.block.fork</i18n>
-  </XmlBlock -->
-  <!-- XmlBlock>
+  </XmlBlock>
+  <XmlBlock>
     <class>BlockSincronizacao</class>
     <XmlPort>
       <name>portIn</name>
@@ -309,8 +300,8 @@
     <image>bpmn_gateway_paralel.png</image>
     <description>Join</description>
     <i18n>library.utils.block.sync</i18n>
-  </XmlBlock -->
-  <!-- XmlBlock>
+  </XmlBlock>
+  <XmlBlock>
     <class>BlockJuncaoExclusiva</class>
     <XmlPort>
       <name>portIn</name>
@@ -342,5 +333,5 @@
     <image>bpmn_gateway_exclusive.png</image>
     <description>Merge</description>
     <i18n>library.utils.block.merge</i18n>
-  </XmlBlock -->
+  </XmlBlock>
 </XmlLibrary>

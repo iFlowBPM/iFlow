@@ -51,6 +51,11 @@
       <value />
     </XmlAttribute>
     <XmlAttribute>
+      <name>TRANSFORMTODB</name>
+      <description>TRANSFORMTODB</description>
+      <value />
+    </XmlAttribute>
+    <XmlAttribute>
       <name>Select</name>
       <description>Select</description>
       <value />
@@ -131,6 +136,11 @@
     <XmlAttribute>
       <name>JNDIName</name>
       <description>JNDIName</description>
+      <value />
+    </XmlAttribute>
+    <XmlAttribute>
+      <name>TRANSFORMTODB</name>
+      <description>TRANSFORMTODB</description>
       <value />
     </XmlAttribute>
     <XmlAttribute>
@@ -262,6 +272,11 @@
     <XmlAttribute>
       <name>JNDIName</name>
       <description>JNDIName</description>
+      <value />
+    </XmlAttribute>
+        <XmlAttribute>
+      <name>TRANSFORMTODB</name>
+      <description>TRANSFORMTODB</description>
       <value />
     </XmlAttribute>
     <XmlAttribute>

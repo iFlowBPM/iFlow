@@ -613,4 +613,38 @@
         <description>Listar Code Templates</description>
         <i18n>library.dms.block.vfs_list_code_template</i18n>
     </XmlBlock>
+  <XmlBlock>
+		<class>BlockToSignDocs</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>portIn</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portTrue</name>
+			<description>portTrue</description>
+			<in_out>out</in_out>
+			<position>
+				<x>55</x>
+				<y>10</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portFalse</name>
+			<description>portFalse</description>
+			<in_out>out</in_out>
+			<position>
+				<x>55</x>
+				<y>40</y>
+			</position>
+		</XmlPort>
+		<className>pt.iknow.floweditor.blocks.AlteraAtributosDocumentToSign</className>
+		<image>flowdocs_tosign.png</image>
+		<description>ToSignDocs</description>
+		<i18n>library.dms.block.tosigndocs</i18n>
+	</XmlBlock>
 </XmlLibrary>

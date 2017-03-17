@@ -31,7 +31,7 @@
 			<name>Report</name>
 			<description>Report code</description>
 			<value></value>
-		</XmlAttribute>
+		</XmlAttribute>			
 		<XmlAttribute>
 			<name>TTL</name>
 			<description>Expected time to completion</description>
@@ -40,6 +40,16 @@
 		<XmlAttribute>
 			<name>Deadline</name>
 			<description>Deadline</description>
+			<value></value>
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>Insert</name>
+			<description>Enter multiple entries for the same code</description>
+			<value></value>
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>StopBetween</name>
+			<description>Stop reporting between blocks</description>
 			<value></value>
 		</XmlAttribute>
 		<image>report.png</image>
