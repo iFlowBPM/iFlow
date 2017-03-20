@@ -1,0 +1,471 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<fop:root xmlns:fop="http://www.w3.org/1999/XSL/Format"
+          xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0">
+   <fop:layout-master-set>
+      <fop:simple-page-master master-name="pm1" margin-top="1.249cm" margin-bottom="2.499cm"
+                              margin-left="2.5cm"
+                              margin-right="2.5cm"
+                              page-width="21.001cm"
+                              page-height="29.7cm"
+                              border="">
+         <fop:region-body margin-top="1.15cm" margin-bottom="0.499cm"/>
+         <fop:region-before display-align="before" min-height="1.251cm" space-after="1.15cm"
+                            margin-left="0cm"
+                            margin-right="0cm"
+                            extent="0.55cm"/>
+         <fop:region-after display-align="after" min-height="0cm" space-before="0.499cm" extent="0.55cm"/>
+      </fop:simple-page-master>
+   </fop:layout-master-set>
+   <fop:page-sequence master-reference="pm1">
+      <fop:static-content flow-name="xsl-region-before">
+         <fop:block space-before="0.423cm" space-after="0cm" line-height="110%"
+                    hyphenation-ladder-count="no-limit"
+                    hyphenate="false"
+                    language="pt"
+                    country="PT"
+                    font-size="14pt"
+                    font-family="Arial,sans-serif"
+                    keep-with-next="always">
+            <fop:leader/>
+         </fop:block>
+      </fop:static-content>
+      <fop:static-content flow-name="xsl-region-after">
+         <fop:block space-before="0cm" space-after="0cm" line-height="100%"
+                    hyphenation-ladder-count="no-limit"
+                    hyphenate="false"
+                    language="pt"
+                    country="PT"
+                    font-size="7pt"
+                    font-family="Calibri,serif"
+                    padding="0cm"
+                    border="none"
+                    background-color="#ffffff"
+					text-align="justify">
+            <fop:block>#if: (!"Informado pela chefia".equals(accao_resultado))#</fop:block>
+            <fop:inline font-family="Arial,sans-serif">O presente documento representa a autenticidade de uma acção de decisão no processo digital. Salvaguardam-se eventuais vicissitudes que a mesma possa sofrer, podendo não consubstanciar a decisão final. Não dispensa a consulta de todo o processo.<fop:block/>
+            </fop:inline>
+            <fop:block>#else#</fop:block>
+            <fop:inline font-family="Arial,sans-serif">O presente documento representa a autenticidade de uma informação no processo digital. Salvaguardam-se eventuais vicissitudes que a mesma possa sofrer, podendo não consubstanciar a decisão final. Não dispensa a consulta de todo o processo.<fop:block/>
+            </fop:inline>
+            <fop:block>#end#</fop:block>
+            <fop:inline>
+               <fop:inline color="#000000" font-family="Arial,sans-serif">Documento assinado digitalmente, </fop:inline>
+            </fop:inline>
+            <fop:inline color="#000000" font-family="Arial,sans-serif">ao abrigo do </fop:inline>
+            <fop:inline font-family="Arial,sans-serif">Decreto-Lei nº 290-D/99, de 2 de Agosto, na actual redacção</fop:inline>
+            <fop:inline color="#000000" font-family="Arial,sans-serif">, de igual </fop:inline>
+            <fop:inline>
+               <fop:inline color="#000000" font-family="Arial,sans-serif">
+			       valor probatório dos congéneres em papel com assinatura manuscrita.</fop:inline>
+               </fop:inline>
+         </fop:block>
+      </fop:static-content>
+      <fop:static-content flow-name="xsl-footnote-separator">
+         <fop:block>
+            <fop:leader leader-pattern="rule" leader-length="100%" rule-style="solid"
+                        rule-thickness="0.5pt"/>
+         </fop:block>
+      </fop:static-content>
+      <fop:flow flow-name="xsl-region-body">
+         <fop:block>
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif"
+                       text-align="justify">
+               <fop:leader/>
+            </fop:block>
+            <fop:table>
+               <fop:table-column column-width="6.5cm"/>
+               <fop:table-column column-width="8.5cm"/>
+               <fop:table-body>
+                  <fop:table-row keep-together.within-column="always">
+                     <fop:table-cell>
+                        <fop:block space-before="0cm" space-after="0.353cm" line-height="110%"
+                                   hyphenation-ladder-count="no-limit"
+                                   hyphenate="false"
+                                   language="pt"
+                                   country="PT"
+                                   font-size="10pt"
+                                   font-family="Calibri,serif"
+                                   margin-left="0cm"
+                                   margin-right="0.912cm"
+                                   text-indent="0cm">#image:136:60:"logo.jpg"#</fop:block>
+                     </fop:table-cell>
+                     <fop:table-cell>
+                        <fop:block space-before="0cm" space-after="0.353cm" line-height="110%"
+                                   hyphenation-ladder-count="no-limit"
+                                   hyphenate="false"
+                                   language="pt"
+                                   country="PT"
+                                   font-size="10pt"
+                                   font-family="Calibri,serif">
+                           <fop:leader/>
+                        </fop:block>
+                     </fop:table-cell>
+                  </fop:table-row>
+               </fop:table-body>
+            </fop:table>
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif">
+               <fop:leader/>
+            </fop:block>
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif">
+               <fop:leader/>
+            </fop:block>
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="150%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       text-align="end"
+                       font-weight="bold">Registo de Processo/Documento Nº $numero_processo:t$:$pid:t$</fop:block>
+            <fop:block space-before="0.049cm" space-after="0.049cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif"
+                       padding="0cm"
+                       border="none"
+                       background-color="#ffffff"
+                       text-align="end">
+               <fop:inline font-weight="bold" font-family="Arial,serif">Data de Criação:</fop:inline>
+               <fop:inline font-weight="normal" font-family="Arial,serif"> $data_criacao_txt:t$</fop:inline>
+               <fop:inline font-family="Arial,serif"/>
+            </fop:block>
+            <fop:block space-before="0.049cm" space-after="0.049cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif"
+                       padding="0cm"
+                       border="none"
+                       background-color="#ffffff"
+                       text-align="end">
+               <fop:inline font-weight="bold" font-family="Arial,serif">Processos associados: </fop:inline>
+               <fop:inline color="#444444" font-size="10pt" font-weight="bold" font-family="Arial,serif">$lista_procs_associados:t$</fop:inline>
+            </fop:block>
+            <fop:block space-before="0.049cm" space-after="0.049cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       padding="0cm"
+                       border="none"
+                       background-color="#ffffff">
+               <fop:leader/>
+            </fop:block>
+            <fop:block space-before="0.049cm" space-after="0.15cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif"
+                       padding="0cm"
+                       border="none"
+                       background-color="#ffffff">
+               <fop:inline font-size="10pt" font-weight="bold" font-family="Arial,serif">Área: </fop:inline>
+               <fop:inline font-size="10pt" font-weight="normal" font-family="Arial,serif">$area:t$ </fop:inline>
+            </fop:block>
+            <fop:block space-before="0.049cm" space-after="0.15cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       padding="0cm"
+                       border="none"
+                       background-color="#ffffff"
+                       font-weight="bold">Subárea: <fop:inline font-weight="normal">$subarea:t$ </fop:inline>
+            </fop:block>
+            <fop:block space-before="0.049cm" space-after="0.15cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       padding="0cm"
+                       border="none"
+                       background-color="#ffffff"
+                       font-weight="bold">Assunto: <fop:inline font-weight="normal">$assunto:t$ </fop:inline>
+            </fop:block>
+            <fop:block>#if: (!"".equals(nome_cliente))#</fop:block>
+            <fop:block space-before="0.049cm" space-after="0.15cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       padding="0cm"
+                       border="none"
+                       background-color="#ffffff"
+                       font-weight="bold">Cliente Municipal: <fop:inline font-weight="normal">$nome_cliente:t$ </fop:inline>
+            </fop:block>
+            <fop:block>#end#</fop:block>
+            <fop:block space-before="0.049cm" space-after="0.049cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif"
+                       padding-left="0cm"
+                       padding-right="0cm"
+                       padding-top="0cm"
+                       padding-bottom="0.071cm"
+                       border-left="none"
+                       border-right="none"
+                       border-top="none"
+                       
+                       background-color="#ffffff">
+               <fop:inline font-size="10pt" font-weight="bold" font-family="Arial,serif">Enquadramento:</fop:inline>
+               <fop:inline color="#444444" font-size="10pt" font-family="Arial,serif"/>
+            </fop:block>
+            <fop:block space-before="0.049cm" space-after="0.049cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       margin-left="3.747cm"
+                       margin-right="0cm"
+                       padding-left="0cm"
+                       padding-right="0cm"
+                       padding-top="0cm"
+                       padding-bottom="0.071cm"
+                       border-left="none"
+                       border-right="none"
+                       border-top="none"
+                       
+                       background-color="#ffffff"
+                       text-indent="0cm"
+                       text-align="justify"
+                       color="#444444">$comentario_inicial:t$</fop:block>
+            <fop:block space-before="0.049cm" space-after="0.049cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       padding="0cm"
+                       border="none"
+                       background-color="#ffffff"
+                       font-weight="bold">
+               <fop:leader/>
+            </fop:block>
+            <fop:block>#if: ("Informado pela chefia".equals(accao_resultado))#</fop:block>
+            <fop:block space-before="0.049cm" space-after="0.049cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       padding-left="0cm"
+                       padding-right="0cm"
+                       padding-top="0cm"
+                       padding-bottom="0.071cm"
+                       border-left="none"
+                       border-right="none"
+                       border-top="none"
+                       border-bottom="0.026cm solid #cccccc"
+                       background-color="#ffffff"
+                       font-weight="bold">Informação:</fop:block>
+            <fop:block>#end#</fop:block>
+            <fop:block>#if: (!"Informado pela chefia".equals(accao_resultado) &amp;&amp; lista_informacao_despacho.length&gt;0)#</fop:block>
+            <fop:block space-before="0.049cm" space-after="0.049cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       padding-left="0cm"
+                       padding-right="0cm"
+                       padding-top="0cm"
+                       padding-bottom="0.071cm"
+                       border-left="none"
+                       border-right="none"
+                       border-top="none"
+                       border-bottom="0.026cm solid #cccccc"
+                       background-color="#ffffff"
+                       font-weight="bold">Informação sujeita a despacho:</fop:block>
+            <fop:block>#foreach:informacao_despacho:lista_informacao_despacho#</fop:block>
+            <fop:block space-before="0.049cm" space-after="0.15cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       margin-left="3.747cm"
+                       margin-right="0cm"
+                       padding="0cm"
+                       border="none"
+                       background-color="#ffffff"
+                       text-indent="0cm"
+                       text-align="justify"
+                       color="#444444">$informacao_despacho:t$</fop:block>
+            <fop:block>#end#</fop:block>
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       font-weight="bold">
+               <fop:leader/>
+            </fop:block>
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="150%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif">
+               <fop:inline>
+                  <fop:leader/>
+               </fop:inline>
+            </fop:block>
+            <fop:block>#end#</fop:block>
+            <fop:block>#if: (!"Informado pela chefia".equals(accao_resultado))#</fop:block>
+            <fop:block>#if: (!"".equals(accao_resultado) &amp;&amp; !"Definidos termos do despacho".equals(accao_resultado))#</fop:block>
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif">
+               <fop:inline font-size="10pt" font-weight="bold" font-family="Arial,serif">Ação: </fop:inline>$accao_resultado:t$</fop:block>
+            <fop:block>#else#</fop:block>
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="150%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       font-weight="bold">Ação: </fop:block>
+            <fop:block>#end#</fop:block>
+            <fop:block>#end#</fop:block>
+            $comentario:t$
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="150%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Arial,serif"
+                       margin-left="1.249cm"
+                       margin-right="0cm"
+                       text-indent="0cm">
+               <fop:leader/>
+            </fop:block>
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="150%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif">
+               <fop:inline font-size="10pt" font-weight="bold" font-family="Arial,serif">Nome: </fop:inline>
+               <fop:inline font-size="10pt" font-family="Arial,serif">$nome_utilizador:t$</fop:inline>
+            </fop:block>
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="150%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif">
+               <fop:inline font-size="10pt" font-weight="bold" font-family="Arial,serif">Cargo: </fop:inline>
+               <fop:inline font-size="10pt" font-family="Arial,serif">$cargo_utilizador:t$</fop:inline>
+            </fop:block>
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="150%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif">
+               <fop:inline font-size="10pt" font-weight="bold" font-family="Arial,serif">Data: </fop:inline>
+               <fop:inline color="#444444" font-size="10pt" font-family="Arial,serif">$data_actual_txt:t$</fop:inline>
+            </fop:block>
+            <fop:block space-before="0cm" space-after="0.353cm" line-height="110%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif">
+               <fop:leader/>
+            </fop:block>
+            <fop:block space-before="0.049cm" space-after="0.049cm" line-height="150%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif"
+                       padding="0cm"
+                       border="none"
+                       background-color="#ffffff">
+               <fop:inline font-weight="bold">
+                  <fop:inline color="#000000" font-size="8pt" font-weight="bold"
+                              font-family="Arial,sans-serif">
+                     <fop:leader/>
+                  </fop:inline>
+               </fop:inline>
+            </fop:block>
+            <fop:block space-before="0.049cm" space-after="0.049cm" line-height="150%"
+                       hyphenation-ladder-count="no-limit"
+                       hyphenate="false"
+                       language="pt"
+                       country="PT"
+                       font-size="10pt"
+                       font-family="Calibri,serif"
+                       padding="0cm"
+                       border="none"
+                       background-color="#ffffff">
+               <fop:inline font-weight="bold">
+                  <fop:inline color="#000000" font-size="8pt" font-weight="bold"
+                              font-family="Arial,sans-serif">
+                     <fop:leader/>
+                  </fop:inline>
+               </fop:inline>
+            </fop:block>
+         </fop:block>
+         <fop:block id="last-page"/>
+      </fop:flow>
+   </fop:page-sequence>
+</fop:root>
