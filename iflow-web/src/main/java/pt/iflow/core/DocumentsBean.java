@@ -16,6 +16,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 
 import pt.iflow.api.connectors.DMSConnectorUtils;
 import pt.iflow.api.core.BeanFactory;
+import pt.iflow.api.core.Activity;
 import pt.iflow.api.db.DBQueryManager;
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.documents.DMSDocumentIdentifier;
@@ -1006,7 +1008,7 @@ public class DocumentsBean implements Documents {
   }
 
   //File System
-  private String getDocumentFilePath(int docID, String fileName) {
+  protected String getDocumentFilePath(int docID, String fileName) {
     String strDocIdUrl = "0000000000" + docID;
     strDocIdUrl = strDocIdUrl.substring(strDocIdUrl.length()-10, strDocIdUrl.length());
     String docIdUrl = strDocIdUrl.substring(0, 2) + "\\" + strDocIdUrl.substring(2, 4) + "\\" + 
@@ -1023,6 +1025,9 @@ public class DocumentsBean implements Documents {
     }
     return null;
   }
+  
+  
+
 
   public byte[] mergePDFs(UserInfoInterface userInfo, ProcessData procData, String[] docsVar) {
     return AppendDocuments.mergePDFs(userInfo, procData, docsVar);
@@ -1123,4 +1128,87 @@ public class DocumentsBean implements Documents {
      Logger.debug(userInfo.getUtilizador(), this, "markDocsToSign", "Update to not sign "+queryUpdate0+" and to sign "+queryUpdate1);
      return true;
   }
+  
+  public Boolean markDocGenerationSuccess(UserInfoInterface userInfo, Document adoc, Boolean success)
+  {
+    Logger.trace(this, "markDocGenerationSuccess", userInfo.getUtilizador() + " call.");
+    Boolean result = Boolean.TRUE;
+    Connection db = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    LinkedList<Activity> l = new LinkedList();
+    StringBuilder sQuery = new StringBuilder(DBQueryManager.processQuery("Documents.markDocGenerationSuccess", new Object[] { Integer.valueOf(adoc.getDocId()), success, success }));
+    try
+    {
+      db = DatabaseInterface.getConnection(userInfo);
+      db.setAutoCommit(true);
+      
+      st = db.prepareStatement(sQuery.toString());
+      st.execute();
+      DatabaseInterface.closeResources(new Object[] { st, rs });
+    }
+    catch (SQLException sqle)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "markDocGenerationSuccess", "sql exception: " + sqle.getMessage() + sQuery, sqle);
+      result = Boolean.FALSE;
+    }
+    catch (Exception e)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "markDocGenerationSuccess", "exception: " + e.getMessage(), e);
+      result = Boolean.FALSE;
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, st, rs });
+    }
+    return result;
+  }
+  
+  public Boolean checkDocGenerationSuccess(UserInfoInterface userInfo, Document adoc)
+  {
+    Logger.trace(this, "checkDocGenerationSuccess", userInfo.getUtilizador() + " call.");
+    Boolean result = Boolean.TRUE;
+    Connection db = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    LinkedList<Activity> l = new LinkedList();
+    StringBuilder sQuery = new StringBuilder(DBQueryManager.processQuery("Documents.checkDocGenerationSuccess", new Object[] { Integer.valueOf(adoc.getDocId()) }));
+    try
+    {
+      db = DatabaseInterface.getConnection(userInfo);
+      db.setAutoCommit(true);
+      Logger.debug(userInfo.getUtilizador(), this, "checkDocGenerationSuccess", "will execute query: " + sQuery.toString());
+      st = db.prepareStatement(sQuery.toString());
+      rs = st.executeQuery();
+      Boolean localBoolean1;
+      if (!rs.next()) {
+        return Boolean.valueOf(true);
+      }
+      if (rs.getInt(1) == 1) {
+        return Boolean.valueOf(true);
+      }
+      return Boolean.valueOf(false);
+    }
+    catch (SQLException sqle)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "checkDocGenerationSuccess", "sql exception: " + sqle.getMessage() + sQuery, sqle);
+      result = Boolean.FALSE;
+    }
+    catch (Exception e)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "checkDocGenerationSuccess", "exception: " + e.getMessage(), e);
+      result = Boolean.FALSE;
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, st, rs });
+    }
+    return null;
+  }
+  
+  public String writeDocumentDataToExternalRepos(UserInfoInterface userInfo, ProcessData procData, Document doc)
+		    throws Exception
+		  {
+		    return null;
+		  }
 }

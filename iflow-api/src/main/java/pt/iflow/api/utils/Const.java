@@ -270,6 +270,8 @@ public class Const {
   public static String ORGANIZATION_DATA_IMPL_CLASS = null;
   public static String ORGANIZATION_DATA_CONFIG = null;
   public static String APPLICATION_DATA_IMPL_CLASS = null;
+  
+  public static boolean ENCRYPT_XML_TO_DB = false;
 
   public static String FEED_GEN_IMPLEMENTATION = null;
   public static String FEED_FORMAT = null;
@@ -471,6 +473,13 @@ public class Const {
     try {
       SEARCH_ALL_USER_PROCS_BY_DEFAULT = Boolean.parseBoolean(Setup.getProperty("SEARCH_ALL_USER_PROCS_BY_DEFAULT"));
     } catch (Exception e) {}
+    
+    try
+    {
+      ENCRYPT_XML_TO_DB = Boolean.parseBoolean(Setup.getProperty("ENCRYPT_XML_TO_DB"));
+    }
+    catch (Exception e) {}
+    
     PROFILESYNC_ORGID = Setup.getProperty("PROFILESYNC_ORGID");
     sMAIL_ADM_ERROR_NOTIFY = Setup.getProperty("MAIL_ADM_ERROR_NOTIFY");
     sMAIL_SERVER = Setup.getProperty("MAIL_SERVER");

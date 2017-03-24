@@ -25,7 +25,7 @@ import pt.iflow.api.utils.UserInfoInterface;
  * Remote interface for ProcessManager.
  * 
  */
-public interface ProcessManager extends UserProcsConst {
+public abstract interface ProcessManager extends UserProcsConst {
 
   public abstract ProcessData createProcess(UserInfoInterface userInfo, int flowid) throws Exception;
 
@@ -622,4 +622,19 @@ public interface ProcessManager extends UserProcsConst {
   public abstract ListIterator<Activity> getUserActivitiesOrderFilters(UserInfoInterface userInfo, int anFlowId, FlowFilter filter);
   
   public abstract ListIterator<Activity> getUserAndSubordinatesActivities(UserInfoInterface ui);
+  
+  public abstract String getProcdataString(UserInfoInterface paramUserInfoInterface, String paramString1, String paramString2);
+  
+  public abstract String setProcdataString(UserInfoInterface paramUserInfoInterface, String paramString1, String paramString2, String paramString3)
+    throws Throwable;
+  
+  public abstract String getMinPidNonEncrypted(UserInfoInterface paramUserInfoInterface);
+  
+  public abstract String getMaxPidNonEncrypted(UserInfoInterface paramUserInfoInterface);
+  
+  public abstract String ProcessEncryptEB(UserInfoInterface paramUserInfoInterface, String paramString1, String paramString2);
+  
+  public abstract void ProcessEncryptEBUpdate(UserInfoInterface paramUserInfoInterface, String paramString1, String paramString2, String paramString3, int paramInt);
+  
+  public abstract void markActivityReadFlag(UserInfoInterface userInfo, String paramString1, String paramString2, String paramString3);
 }

@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URLDecoder;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -5979,4 +5980,335 @@ public class ProcessManagerBean implements ProcessManager {
 	    }
 	    return result;
 	  }
+  
+  public void markActivityReadFlag(UserInfoInterface userInfo, String flowid, String pid, String readFlag)
+  {
+    Connection db = null;
+    Statement st = null;
+    
+    String userid = userInfo.getUtilizador();
+    try
+    {
+      db = DatabaseInterface.getConnection(userInfo);
+      db.setAutoCommit(false);
+      
+      String query = DBQueryManager.processQuery("ProcessManager.update_activity_read", new Object[] { readFlag, userid, flowid, pid });
+      
+      st = db.createStatement();
+      st.executeUpdate(query);
+      
+      DatabaseInterface.commitConnection(db);
+    }
+    catch (Exception e)
+    {
+      Logger.error(userid, this, "markActivityReadFlag", e.getMessage(), e);
+      try
+      {
+        DatabaseInterface.rollbackConnection(db);
+      }
+      catch (SQLException e1)
+      {
+        Logger.error(userid, this, "moveUserProcess", "Exception rolling back" + e.getMessage(), e1);
+      }
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, st });
+    }
+  }
+  
+  public void ProcessEncryptEBUpdate(UserInfoInterface userInfo, String pid, String procdata, String subpid, int table)
+  {
+    Connection db = null;
+    PreparedStatement pst = null;
+    String userid = userInfo.getUtilizador();
+    StringBuilder sbQuery = new StringBuilder();
+    if (table == 0) {
+      sbQuery.append("update process set procdata=? Where pid=" + pid + " and subpid=" + subpid);
+    } else if (table == 1) {
+      sbQuery.append("update process_history set procdata=? Where pid=" + pid + " and subpid=" + subpid);
+    }
+    try
+    {
+      db = DatabaseInterface.getConnection(userInfo);
+      db.setAutoCommit(false);
+      pst = db.prepareStatement(sbQuery.toString());
+      pst.setString(1, procdata);
+      pst.setCharacterStream(1, new StringReader(procdata), procdata.length());
+      pst.executeUpdate();
+      DatabaseInterface.commitConnection(db);
+      pst.close();
+      pst = null;
+    }
+    catch (Exception se)
+    {
+      try
+      {
+        DatabaseInterface.rollbackConnection(db);
+      }
+      catch (Exception e)
+      {
+        Logger.error(userInfo.getUtilizador(), this, "ProcessEncryptEBUpdate", "unable to encrypt " + e.getMessage(), e);
+      }
+      Logger.error(userid, this, "ProcessEncryptEBUpdate", "exception: " + se.getMessage(), se);
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, pst });
+    }
+  }
+  
+  public String getProcdataString(UserInfoInterface userInfo, String pidS, String SubpidS)
+  {
+    Connection db = null;
+    PreparedStatement pst = null;
+    String userid = userInfo.getUtilizador();
+    ResultSet rs = null;
+    StringBuilder sbQuery = new StringBuilder();
+    sbQuery.append("Select procdata From process Where pid=" + pidS + " and subpid=" + SubpidS);
+    try
+    {
+      db = DatabaseInterface.getConnection(userInfo);
+      db.setAutoCommit(false);
+      pst = db.prepareStatement(sbQuery.toString());
+      rs = pst.executeQuery();
+      if (!rs.next()) {
+        return "";
+      }
+      if ((!rs.isFirst()) || (!rs.isLast())) {
+        return "### Mais que um registo obtido ###";
+      }
+      String aux = rs.getString("procdata");
+      if (!aux.startsWith("<?xml")) {
+        aux = Utils.decrypt(aux);
+      }
+      pst.close();
+      pst = null;
+      return aux;
+    }
+    catch (Exception e)
+    {
+      Logger.error(userid, this, "getProcdataString", "exception: " + e.getMessage(), e);
+    }
+    return "### Erro ao obter o Procdata ###";
+  }
+  
+  public String setProcdataString(UserInfoInterface userInfo, String pidS, String SubpidS, String procdata)
+		    throws Throwable
+		  {
+		    Connection dbb = null;
+		    PreparedStatement pstt = null;
+		    StringBuilder sbQueryy = new StringBuilder();
+		    ResultSet rss = null;
+		    String flowid = null;
+		    sbQueryy.append("Select flowid From process Where pid=" + pidS + " and subpid=" + SubpidS);
+		    try
+		    {
+		      dbb = DatabaseInterface.getConnection(userInfo);
+		      dbb.setAutoCommit(false);
+		      pstt = dbb.prepareStatement(sbQueryy.toString());
+		      rss = pstt.executeQuery();
+		      if (!rss.next()) {
+		        return "";
+		      }
+		      if ((!rss.isFirst()) || (!rss.isLast())) {
+		        return "### Mais que um registo obtido ###";
+		      }
+		      flowid = rss.getString("flowid");
+		      pstt.close();
+		      pstt = null;
+		    }
+		    catch (SQLException e)
+		    {
+		      Logger.error(userInfo.getUtilizador(), this, "setProcdataString", "unable to get flowid " + e.getMessage(), e);
+		    }
+		    Flow flow = BeanFactory.getFlowBean();
+		    ProcessXml reader = null;
+		    try
+		    {
+		      reader = new ProcessXml(flow.getFlowCatalogue(userInfo, Integer.parseInt(flowid)), new StringReader(procdata));
+		      if (reader.getProcessData() == null) {
+		        return "fail";
+		      }
+		      if ((reader.getProcessData().getPid() != Integer.parseInt(pidS)) || (reader.getProcessData().getFlowId() != Integer.parseInt(flowid)) || (reader.getProcessData().getSubPid() != Integer.parseInt(SubpidS))) {
+		        return "fail";
+		      }
+		    }
+		    catch (Exception e)
+		    {
+		      Logger.error(userInfo.getUtilizador(), this, "setProcdataString", "unable to compare " + e.getMessage(), e);
+		      return "erro";
+		    }
+		    try
+		    {
+		      procdata = URLDecoder.decode(procdata, "UTF-8");
+		    }
+		    catch (Exception e)
+		    {
+		      Logger.error(userInfo.getUtilizador(), this, "setProcdataString", "unable to decode " + e.getMessage(), e);
+		    }
+		    Connection db = null;
+		    PreparedStatement pst = null;
+		    String userid = userInfo.getUtilizador();
+		    StringBuilder sbQuery = new StringBuilder();
+		    if (Const.ENCRYPT_XML_TO_DB) {
+		      procdata = Utils.encrypt(procdata);
+		    }
+		    sbQuery.append("update process set procdata=? Where pid=" + pidS + " and subpid=" + SubpidS);
+		    try
+		    {
+		      db = DatabaseInterface.getConnection(userInfo);
+		      db.setAutoCommit(false);
+		      pst = db.prepareStatement(sbQuery.toString());
+		      pst.setCharacterStream(1, new StringReader(procdata), procdata.length());
+		      pst.executeUpdate();
+		      DatabaseInterface.commitConnection(db);
+		      pst.close();
+		      pst = null;
+		    }
+		    catch (Exception se)
+		    {
+		      try
+		      {
+		        DatabaseInterface.rollbackConnection(db);
+		      }
+		      catch (Exception e)
+		      {
+		        Logger.error(userInfo.getUtilizador(), this, "setProcdataString", "unable to rollback " + e.getMessage(), e);
+		      }
+		      Logger.error(userid, this, "setProcdataString", "exception: " + se.getMessage(), se);
+		    }
+		    finally
+		    {
+		      DatabaseInterface.closeResources(new Object[] { db, pst });
+		    }
+		    return "Sucess";
+		  }
+  
+  public String ProcessEncryptEB(UserInfoInterface userInfo, String pidB, String pidE)
+  {
+    if (!Const.ENCRYPT_XML_TO_DB) {
+      return "Encrypt Mode is Disable";
+    }
+    Connection db = null;
+    PreparedStatement pst = null;
+    PreparedStatement pstt = null;
+    StringBuilder sbQueryy = new StringBuilder();
+    StringBuilder sbQuery = new StringBuilder();
+    ResultSet rs = null;
+    ResultSet rss = null;
+    String procdata = null;
+    String pid = null;
+    String subpid = null;
+    sbQueryy.append("select procdata,pid,subpid from process where SUBSTRING(procdata,1,5)='<?xml'");
+    if ((pidB != null) && ("".equals(pidE))) {
+      sbQueryy.append(" and pid>=" + pidB);
+    } else if (("".equals(pidB)) && (pidE != null)) {
+      sbQueryy.append(" and pid<=" + pidE);
+    } else if ((!"".equals(pidB)) && (!"".equals(pidE))) {
+      sbQueryy.append(" and pid<=" + pidE + " and pid>=" + pidB);
+    }
+    try
+    {
+      db = DatabaseInterface.getConnection(userInfo);
+      db.setAutoCommit(false);
+      pst = db.prepareStatement(sbQueryy.toString());
+      rs = pst.executeQuery();
+      while (rs.next())
+      {
+        procdata = rs.getString("procdata");
+        pid = rs.getString("pid");
+        subpid = rs.getString("subpid");
+        procdata = Utils.encrypt(procdata);
+        ProcessEncryptEBUpdate(userInfo, pid, procdata, subpid, 0);
+      }
+      sbQuery.append("select procdata,pid,subpid from process_history where SUBSTRING(procdata,1,5)='<?xml'");
+      if ((pidB != null) && ("".equals(pidE))) {
+        sbQuery.append(" and pid>=" + pidB);
+      } else if (("".equals(pidB)) && (pidE != null)) {
+        sbQuery.append(" and pid<=" + pidE);
+      } else if ((!"".equals(pidB)) && (!"".equals(pidE))) {
+        sbQuery.append(" and pid<=" + pidE + " and pid>=" + pidB);
+      }
+      pstt = db.prepareStatement(sbQuery.toString());
+      rss = pstt.executeQuery();
+      while (rss.next())
+      {
+        procdata = rss.getString("procdata");
+        pid = rss.getString("pid");
+        subpid = rss.getString("subpid");
+        procdata = Utils.encrypt(procdata);
+        ProcessEncryptEBUpdate(userInfo, pid, procdata, subpid, 1);
+      }
+      pst.close();
+      pst = null;
+    }
+    catch (SQLException e)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "getMinPidNonEncrypted", "unable to encrypt " + e.getMessage(), e);
+    }
+    return "Sucess";
+  }
+  
+  public String getMinPidNonEncrypted(UserInfoInterface userInfo)
+  {
+    Connection db = null;
+    PreparedStatement pst = null;
+    StringBuilder sbQueryy = new StringBuilder();
+    ResultSet rs = null;
+    String pid = null;
+    sbQueryy.append("Select min(a.pid) from (SELECT pid FROM process where SUBSTRING(procdata,1,5) ='<?xml' UNION SELECT pid FROM process_history where SUBSTRING(procdata,1,5) ='<?xml') as a");
+    try
+    {
+      db = DatabaseInterface.getConnection(userInfo);
+      db.setAutoCommit(false);
+      pst = db.prepareStatement(sbQueryy.toString());
+      rs = pst.executeQuery();
+      if (!rs.next()) {
+        return "";
+      }
+      if ((!rs.isFirst()) || (!rs.isLast())) {
+        return "### Mais que um registo obtido ###";
+      }
+      pid = rs.getString("min(a.pid)");
+      pst.close();
+      pst = null;
+    }
+    catch (SQLException e)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "getMinPidNonEncrypted", "unable to get minpid " + e.getMessage(), e);
+    }
+    return pid;
+  }
+  
+  public String getMaxPidNonEncrypted(UserInfoInterface userInfo)
+  {
+    Connection db = null;
+    PreparedStatement pst = null;
+    StringBuilder sbQueryy = new StringBuilder();
+    ResultSet rs = null;
+    String pid = null;
+    sbQueryy.append("Select max(a.pid) from (SELECT pid FROM process where SUBSTRING(procdata,1,5) ='<?xml' UNION SELECT pid FROM process_history where SUBSTRING(procdata,1,5) ='<?xml') as a");
+    try
+    {
+      db = DatabaseInterface.getConnection(userInfo);
+      db.setAutoCommit(false);
+      pst = db.prepareStatement(sbQueryy.toString());
+      rs = pst.executeQuery();
+      if (!rs.next()) {
+        return "";
+      }
+      if ((!rs.isFirst()) || (!rs.isLast())) {
+        return "### Mais que um registo obtido ###";
+      }
+      pid = rs.getString("max(a.pid)");
+      pst.close();
+      pst = null;
+    }
+    catch (SQLException e)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "getMaxPidNonEncrypted", "unable to get maxpid " + e.getMessage(), e);
+    }
+    return pid;
+  }
 }

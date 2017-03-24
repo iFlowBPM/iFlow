@@ -269,7 +269,7 @@ if(userInfo.isLogged()){
         }
         sbProfiles.append("'))");
         sqlQuery = "SELECT tabid FROM profiles_tabs" 
-          + " WHERE profileid in (SELECT profileid FROM profiles WHERE name in ('p1','p2','))" + sbProfiles.toString()
+          + " WHERE profileid in (SELECT profileid FROM profiles WHERE name in" + sbProfiles.toString()
           + " UNION SELECT tabid FROM organizations_tabs WHERE organizationid=" + userInfo.getOrganization();
       }
       

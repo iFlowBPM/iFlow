@@ -138,4 +138,11 @@ public interface Documents {
   public boolean isToSign(UserInfoInterface userInfo, int docid);
   
   public boolean markDocsToSign(UserInfoInterface userInfo, ProcessListVariable docs, ProcessListVariable values);
+  
+public abstract Boolean markDocGenerationSuccess(UserInfoInterface paramUserInfoInterface, Document paramDocument, Boolean paramBoolean);
+  
+  public abstract Boolean checkDocGenerationSuccess(UserInfoInterface paramUserInfoInterface, Document paramDocument);
+  
+  public abstract String writeDocumentDataToExternalRepos(UserInfoInterface paramUserInfoInterface, ProcessData paramProcessData, Document paramDocument)
+    throws Exception;
 }
