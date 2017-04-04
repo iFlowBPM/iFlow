@@ -35,6 +35,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
 import pt.iflow.api.blocks.FormProps;
+import pt.iknow.floweditor.FlowEditorAdapter;
 import pt.iflow.api.datatypes.DataTypeInterface;
 import pt.iflow.api.utils.NameValuePair;
 import pt.iflow.api.xml.ConnectorMarshaller;
@@ -3169,6 +3170,19 @@ public class JSPFieldData {
           break;
         case JSPFieldData.nPROP_VAR_NAME:
           stmp = (String) (((JComboBox) jValue).getSelectedItem());
+          
+          if(i==2){
+        	  String valorx = stmp;
+        	  
+        	  Object[] elements = getCatalogue();
+        	          	          	  
+        	  for(int v =0; elements.length < v; v++ ) {
+        		    String item = elements.toString();
+        		    System.out.println(item);
+        		}
+        	  
+          }
+          
           break;
         case JSPFieldData.nPROP_PP_PASS_TO_LINK:
         case JSPFieldData.nPROP_USE_LINKS:

@@ -13,13 +13,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
+import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -31,12 +32,16 @@ import pt.iflow.api.db.DBQueryManager;
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.documents.DMSDocumentIdentifier;
 import pt.iflow.api.documents.DocumentData;
+import pt.iflow.api.documents.DocumentDataStream;
 import pt.iflow.api.documents.DocumentIdentifier;
 import pt.iflow.api.documents.Documents;
 import pt.iflow.api.documents.IFlowDocumentIdentifier;
 import pt.iflow.api.documents.NullDocumentIdentifier;
 import pt.iflow.api.flows.Flow;
+import pt.iflow.api.flows.FlowSetting;
+import pt.iflow.api.flows.FlowSettings;
 import pt.iflow.api.processdata.ProcessData;
+import pt.iflow.api.processdata.ProcessListItem;
 import pt.iflow.api.processdata.ProcessListVariable;
 import pt.iflow.api.transition.FlowRolesTO;
 import pt.iflow.api.utils.Const;
@@ -162,7 +167,7 @@ public class DocumentsBean implements Documents {
             dmsid += rs.getInt("dmsid");
           }
         }
-        DatabaseInterface.closeResources(pst, rs);
+        DatabaseInterface.closeResources(new Object[] { pst, rs });
         if (doc.getDocId() > 0) {
           this.persistData(userInfo, procData, db, doc, dmsid, found);
         }
@@ -331,7 +336,7 @@ public class DocumentsBean implements Documents {
       if (!docDataInDB && ((filePath = getDocumentFilePath(adoc.getDocId(), adoc.getFileName())) != null)) {
         try
         {
-          DatabaseInterface.closeResources(pst);
+          DatabaseInterface.closeResources(new Object[] { pst });
           query = DBQueryManager.getQuery("Documents.UPDATE_DOCUMENT_DOCURL");
           pst = db.prepareStatement(query, generatedKeyNames);
           pst.setString(1, filePath);

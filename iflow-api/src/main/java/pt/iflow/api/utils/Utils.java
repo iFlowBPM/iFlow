@@ -343,6 +343,7 @@ public class Utils {
 
     retObj.append("<select name=\"").append(asName).append("\"");
     retObj.append(" id=\"").append(asName).append("\"");
+    retObj.append(" class=\"form-control\"");
     retObj.append(" ").append(asSelectExtra).append(">");
     for (int i=0; i < aalValues.size(); i++) {
       retObj.append("<option value=\"").append(aalValues.get(i)).append("\"");
@@ -1531,15 +1532,16 @@ public class Utils {
     if (adtDate != null) {
       sDate = DateUtility.formatFormDate(userInfo, adtDate);
     }
-
-    retObj.append("<input class=\"calendaricon\" type=\"text\" size=\"12\"");
+    retObj.append("<div class=\"col-sm-2\">");
+    retObj.append("<input class=\"calendaricon form-control\" type=\"text\" size=\"12\"");
     retObj.append(" id=\"").append(asFieldID).append("\"");
     retObj.append(" name=\"").append(asRequestName).append("\"");
     retObj.append(" value=\"").append(sDate).append("\"");
-    retObj.append(" onmouseover=\"caltasks(this.id);this.onmouseover=null;\"/>");
-
+    retObj.append(" onmouseover=\"caltasks(this.id);this.onmouseover=null;\"/></div>");
+    
+    retObj.append("<div class=\"col-sm-1\" style=\"padding-left: 0px;\">");
     retObj.append("<img class=\"icon_clear\" src=\"images/icon_delete.png\"");
-    retObj.append(" onclick=\"javascript:document.getElementById('" + asFieldID + "').value='';\"/>");
+    retObj.append(" onclick=\"javascript:document.getElementById('" + asFieldID + "').value='';\"/></div>");
 
     return retObj.toString();
   }

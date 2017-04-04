@@ -140,18 +140,18 @@ else {
     <%=sHtml%>
   </div>
 
-  <div class="table_inc">
+  <div class="table_inc" style="padding: 2%;">
 
 <% if (alProcs != null && alProcs.size() > 0) { %>
     <table class="list_item"> 
        <tr class="tab_header">
-          <td />
-          <td />
-          <td><%=messages.getString("flow_state_procs.field.process")%></td>
-          <td><%=messages.getString("flow_state_procs.field.subprocess")%></td>
-          <td><%=messages.getString("flow_state_procs.field.description")%></td>
-          <td><%=messages.getString("flow_state_procs.field.start")%></td>
-          <td />        
+          <td style="width: 5%;" />
+          <td style="width: 5%;" />
+          <td style="width: 10%;"><%=messages.getString("flow_state_procs.field.process")%></td>
+          <td style="width: 10%;"><%=messages.getString("flow_state_procs.field.subprocess")%></td>
+          <td style="width: 20%;"><%=messages.getString("flow_state_procs.field.description")%></td>
+          <td style="width: 10%;"><%=messages.getString("flow_state_procs.field.start")%></td>
+          <td style="width: 10%;"/>        
        </tr>
        <% for (int i=0; i < alProcs.size(); i++) {
         hmtmp = alProcs.get(i);

@@ -608,9 +608,67 @@
 <body onload="reloadBootstrapElements(); initProcFrame();">
 <div style="margin:auto;">
 <form enctype="multipart/form-data" method="post" name="dados" style="width: 100%;margin:auto;" id="dados" action="form.jsp">
-<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="null"> <input type="hidden" name="op" id="op" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="subpid" id="subpid" value="-10"> <input type="hidden" name="pid" id="pid" value="-10"> <input type="hidden" name="_changed_form" id="_changed_form" value="null"> <input type="hidden" name="flowid" id="flowid" value="2"> <input type="hidden" name="curmid" id="curmid" value="0"> 
+<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="4"> <input type="hidden" name="op" id="op" value="0"> <input type="hidden" name="0_MAX_ROW" id="0_MAX_ROW" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="subpid" id="subpid" value="-10"> <input type="hidden" name="pid" id="pid" value="-10"> <input type="hidden" name="_changed_form" id="_changed_form" value="_changed_form"> <input type="hidden" name="flowid" id="flowid" value="132"> <input type="hidden" name="curmid" id="curmid" value="0"> 
 <div id="main">
-<div class="blockdivision"></div>
+<div class="blockdivision">
+<div class="columndivision">
+<ol class="fieldlist">
+<li class="file  field" id="N1000A">
+<table style="border:none;" width="100%" border="0" align="center">
+<tr align="center">
+<td>
+<table width="100%" border="0" class="table">
+<tr>
+<td width="100%" valign="middle" align="left" class="normal_text">Ficheiro</td><td align="left" class="normal_text">&nbsp;<a style="white-space:nowrap;" href="/iFlow/document?docid=782&amp;flowid=132&amp;pid=-10&amp;subpid=-10" target="_blank">Erro_555 (1).pdf</a></td><td valign="middle" align="center"><img title="Substituir o documento original" alt="Substituir" src="/iFlow//images/icon_resync.png" height="16" width="16" border="0" class="toolTipImg" onclick="replaceFile('ficheiro','782','PDF','false')"></td><td valign="middle" align="center"></td><td valign="middle" align="center"><input value="true" name="ficheiro_rem_[782]" type="checkbox" onclick="javascript:if (this.checked) { return confirm('Deseja marcar o ficheiro para remo&ccedil;&atilde;o?'); }"></td><td><img title="Este documento j&iuml;&iquest;&frac12; foi assinado" alt="Assinado" src="/iFlow//images/lock.png" height="16" style="display:none" width="16" border="0" id="lock_782" class="toolTipImg"></td>
+</tr>
+<tr>
+<td width="100%" valign="middle" align="left" class="normal_text" colspan="2"></td><td valign="middle" align="center" colspan="3">
+<div class="multiupload">
+<input class="button btn btn-default" value="Carregar" type="button" name="loadfile" id="loadfile" onclick="
+																		uploadFile('ficheiro',
+																			'PDF',
+																			'false',
+																			1)
+																	">
+<div class="list" id="list_ficheiro"></div>
+</div>
+<SCRIPT type="text/javascript" LANGUAGE="JavaScript">
+								var obj = $jQuery('#N1000A');
+								obj.on('drop', function (e) {
+									e.stopPropagation();
+									e.preventDefault();
+									var files = e.originalEvent.dataTransfer.files;
+									if (files == null || files.length == 0) {
+										alert('Arraste um ficheiro, por favor.');
+										return false;
+									} else if (files.length > 1) {
+										alert('Arraste apenas um ficheiro, por favor.');
+										return false;
+									}
+									var reader = new FileReader();
+									reader.onload = function (evt) {
+									var obj = evt.target.result;
+										
+									uploadFileFromDisk('ficheiro',
+										'PDF',
+										'false',
+										1,
+										files[0].name,
+										obj);
+									};
+									reader.readAsArrayBuffer(files[0]);
+								});
+								checkAppletButtons('ficheiro');
+							</SCRIPT></td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</li>
+</ol>
+</div>
+</div>
 <div class="blockdivision">
 <div class="columndivision columnholder">
 <div class="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_repor" value="Repor" onClick="disableForm(); document.dados.op.value=0;" title="Repor">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_guardar" value="Guardar" onClick="disableForm(); document.dados.op.value=2;" title="Guardar">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_avancar" value="Avan&ccedil;ar" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='4'; } else { return false; }" title="Avan&ccedil;ar">&nbsp;</div>

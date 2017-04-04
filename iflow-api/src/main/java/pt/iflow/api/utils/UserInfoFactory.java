@@ -4,18 +4,27 @@ import pt.iflow.api.blocks.Block;
 import pt.iflow.api.events.AbstractEvent;
 import pt.iflow.api.userdata.OrganizationData;
 
-public interface UserInfoFactory {
-
-  public UserInfoInterface newUserInfo();
-  public UserInfoInterface newUserInfo(String login, String password);
-  public UserInfoInterface newUserInfoDelegate(Block block, String user);
-  public UserInfoInterface newUserInfoDelegate(UserInfoInterface supervisor, String user);
-  public UserInfoInterface newUserInfoEvent(AbstractEvent evt, String user);
-  public UserInfoInterface newGuestUserInfo();
-  public UserInfoInterface newSystemUserInfo();
-  public UserInfoInterface newArchiverUserInfo();
-  public UserInfoInterface newClassManager(String managedClass);
-  public UserInfoInterface newOrganizationGuestUserInfo(String orgId);
-  public UserInfoInterface newOrganizationGuestUserInfo(OrganizationData orgData);
+public abstract interface UserInfoFactory
+{
+  public abstract UserInfoInterface newUserInfo();
   
+  public abstract UserInfoInterface newUserInfo(String paramString1, String paramString2);
+  
+  public abstract UserInfoInterface newUserInfoDelegate(Block paramBlock, String paramString);
+  
+  public abstract UserInfoInterface newUserInfoDelegate(UserInfoInterface paramUserInfoInterface, String paramString);
+  
+  public abstract UserInfoInterface newUserInfoEvent(AbstractEvent paramAbstractEvent, String paramString);
+  
+  public abstract UserInfoInterface newGuestUserInfo();
+  
+  public abstract UserInfoInterface newSystemUserInfo();
+  
+  public abstract UserInfoInterface newArchiverUserInfo();
+  
+  public abstract UserInfoInterface newClassManager(String paramString);
+  
+  public abstract UserInfoInterface newOrganizationGuestUserInfo(String paramString);
+  
+  public abstract UserInfoInterface newOrganizationGuestUserInfo(OrganizationData paramOrganizationData);
 }

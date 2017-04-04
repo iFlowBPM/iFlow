@@ -341,8 +341,14 @@
 		}
 	}
 </script>
+
+
+<!-- Não funciona este script nesta versão -->
+
 <script type="text/javascript">
+
 	if (typeof fs_mailconfig == 'undefined') {
+		
 		var fs_mailconfig = function(isOn) {
 
 			var trs = $$('tr.mailconfig');
@@ -809,7 +815,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 			</td>
 		</tr>		
 
-	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig" <%=hidden %>>
+	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig openMailConfig" <%=hidden %>>
 			<td><%=prefix+messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_HOST))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -817,7 +823,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 				value="<%=StringEscapeUtils.escapeHtml(mailConfig.getHost())%>" size="30" maxlength="100">
 			</td>
 		</tr>		
-	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig" <%=hidden %>>
+	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig openMailConfig" <%=hidden %>>
 			<td><%=prefix+messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_PORT))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -825,7 +831,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 				value='<%=mailConfig.getPort()>-1?StringEscapeUtils.escapeHtml(String.valueOf(mailConfig.getPort())):""%>' size="30" maxlength="100">
 			</td>
 		</tr>		
-	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig" <%=hidden %>>
+	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig openMailConfig" <%=hidden %>>
 			<td><%=prefix+messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_USER))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -833,7 +839,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 				value="<%=StringEscapeUtils.escapeHtml(mailConfig.getUser())%>" size="30" maxlength="100">
 			</td>
 		</tr>		
-	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig" <%=hidden %>>
+	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig openMailConfig" <%=hidden %>>
 			<td><%=prefix+messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_PASS))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -843,7 +849,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 			}%>
 			</td>
 		</tr>		
-	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig" <%=hidden %>>
+	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig openMailConfig" <%=hidden %>>
 			<td><%=prefix+messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_INBOX))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -851,7 +857,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 				value="<%=StringEscapeUtils.escapeHtml(mailConfig.getInbox())%>" size="30" maxlength="100">
 			</td>
 		</tr>		
-	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig" <%=hidden %>>
+	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig openMailConfig" <%=hidden %>>
 			<td><%=prefix+messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_SUBSCRIBED_FOLDERS))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -859,7 +865,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 				value="<%=StringEscapeUtils.escapeHtml(mailConfig.getSubsFoldersAsString())%>" size="30" maxlength="100">
 			</td>
 		</tr>		
-	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig" <%=hidden %>>
+	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig openMailConfig" <%=hidden %>>
 			<td><%=prefix+messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_CHECK_INTERVAL))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -867,7 +873,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 				value="<%=StringEscapeUtils.escapeHtml(String.valueOf(mailConfig.getCheckIntervalInSeconds()))%>" size="30" maxlength="100">
 			</td>
 		</tr>		
- 		<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig" <%=hidden %>>
+ 		<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig openMailConfig" <%=hidden %>>
 			<td><%=prefix+messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_SECURE))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -894,7 +900,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 				</select>
 			</td>
 		</tr>
-	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> dmsconfig" <%=hidden %>>
+	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> dmsconfig openDMS" <%=hidden %>>
 			<td><%=prefix + messages.getString(DMSConnectorUtils.configMessageKey(DMSConnectorUtils.CONFIG_DMS_USER)) %></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -902,7 +908,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 					value="<%=dmsUtils.getUserAsHtml() %>" size="30" maxlength="100">
 			</td>
 		</tr>
-	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> dmsconfig" <%=hidden %>>
+	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> dmsconfig openDMS" <%=hidden %>>
 			<td><%=prefix + messages.getString(DMSConnectorUtils.configMessageKey(DMSConnectorUtils.CONFIG_DMS_PASS)) %></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -921,13 +927,13 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 			<td><%=messages.getString(HotFolderConfig.configMessageKey("name"))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
-		  		<select class="txt" name="<%=HotFolderConfig.ONOFF %>" onChange="toggleFlowSettingDisplays('hotfolderconfig', (this.value=='<%=HotFolderConfig.CONFIG_OPTION_YES %>'));">
+		  		<select class="txt" name="<%=HotFolderConfig.ONOFF %>" onChange="toggleFlowSettingDisplays_hotfolder('hotfolderconfig', (this.value=='<%=HotFolderConfig.CONFIG_OPTION_YES %>'));">
 					<option value="<%=HotFolderConfig.CONFIG_OPTION_YES %>" <%=hotConfig.isOn() ? "selected" : "" %>><%=messages.getString(HotFolderConfig.configMessageKey(HotFolderConfig.CONFIG_OPTION_YES_DESC)) %></option>
 					<option value="<%=HotFolderConfig.CONFIG_OPTION_NO %>" <%=hotConfig.isOn() ? "" : "selected" %>><%=messages.getString(HotFolderConfig.configMessageKey(HotFolderConfig.CONFIG_OPTION_NO_DESC)) %></option>
 				</select>
 			</td>
 		</tr>
-		<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> hotfolderconfig" <%=hidden %>>
+		<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> hotfolderconfig openHotfolder" <%=hidden %>>
 			<td><%=prefix+messages.getString(HotFolderConfig.configMessageKey("subs_folders"))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -935,7 +941,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 				value="<%=StringEscapeUtils.escapeHtml(hotConfig.getSubsFoldersAsString())%>" size="30" maxlength="100">
 			</td>
 		</tr>		
-	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> hotfolderconfig" <%=hidden %>>
+	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> hotfolderconfig openHotfolder" <%=hidden %>>
 			<td><%=prefix+messages.getString(HotFolderConfig.configMessageKey("search_depth"))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -943,7 +949,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 				value='<%=hotConfig.getDepth()>-1?StringEscapeUtils.escapeHtml(String.valueOf(hotConfig.getDepth())):""%>' size="30" maxlength="100">
 			</td>
 		</tr>		
-		<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> hotfolderconfig" <%=hidden %>>
+		<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> hotfolderconfig openHotfolder" <%=hidden %>>
 			<td><%=prefix+messages.getString(HotFolderConfig.configMessageKey("doc_var"))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -951,7 +957,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 				value="<%=StringUtils.isEmpty(hotConfig.getDocVar()) ? "" : StringEscapeUtils.escapeHtml(hotConfig.getDocVar())%>" size="30" maxlength="100">
 			</td>
 		</tr>		
-		<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> hotfolderconfig" <%=hidden %>>
+		<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> hotfolderconfig openHotfolder" <%=hidden %>>
 			<td><%=prefix+messages.getString(HotFolderConfig.configMessageKey("in_user"))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">&nbsp;&nbsp;&nbsp;&nbsp;
@@ -1010,3 +1016,4 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 </div>
 
 </form>
+

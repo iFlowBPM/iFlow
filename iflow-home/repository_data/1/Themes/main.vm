@@ -86,6 +86,10 @@
 		<script src="javascript/iflow_main.js" type="text/javascript"></script>
 		<script src="javascript/jQueryAssets/jquery-ui-1.10.3/ui/minified/jquery-ui.min.js" type="text/javascript"></script>
 		<script src="javascript/sorttable.js" type="text/javascript"></script>
+		
+		
+		<script src="javascript/others.js" type="text/javascript"></script>
+		
 
 		<script language="JavaScript">
 
@@ -332,6 +336,17 @@
 				<div class="div_bannerright">
 
                                         <ul>
+                                            <li>
+                                            
+                                            <!--  Assinatura  -->
+                                            
+                                            
+                                            <div style="width: 35px;height: 32px;">
+                                            <a class="menu_link" style="color: #ffffff !important;text-decoration:none;vertical-align: -webkit-baseline-middle;" target="_blank" href="./AppletWebstart"  title="$tooltip_signature"><img src="images/signature.png" width="20" /></a>
+                                            </div>
+                                            </li>
+                                            
+                                            
                                             <li><a href ="javascript:tabber_right(11, 'inbox.jsp')"><img width="32" height="32" src="images/envelope.png"/></a></li>
                                             <li><a id="delegButton" onclick="javascript:$('#delegations-form').dialog('open');return false;"><img width="32" height="32" src="images/alertas.png"/></a><span class="spanAlerts"><a id="delegButtonCount">$nAlerts</a></span></li>
                                             <li><img width="32" height="32" src="images/user.png"/>

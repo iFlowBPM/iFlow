@@ -1,4 +1,6 @@
 
+
+
 	function addHTML (html) {
 		if (document.all) {
 			document.body.insertAdjacentHTML('beforeEnd', html);

@@ -71,7 +71,7 @@
       document.flows.selected.value = flows;
       document.flows.submit();
     } else {
-      alert("Tem de seleccionar pelo menos um fluxo");
+      alert("Tem de seleccionar pelo menos um fluxo"); //TODO - Traduzir
     }
   }
 
@@ -196,7 +196,7 @@
       }
       if (bfirst) {%>
       <table>
-        <tr><td class="alert alert_warning"><%=messages.getString("gestao_tarefas.msg.nodeleg")%></td></tr>
+        <tr><td class="alert alert-info"><%=messages.getString("gestao_tarefas.msg.nodeleg")%></td></tr>
       </table>
       <%} else {%>
       <div class="button_box"> 
@@ -327,7 +327,7 @@
 
       if (bfirst) {%>
       <table>
-        <tr><td class="info_msg"><%=messages.getString("gestao_tarefas.msg.nodelegothers")%></td></tr>
+        <tr><td class="alert alert-info"><%=messages.getString("gestao_tarefas.msg.nodelegothers")%></td></tr>
       </table>
       <%} else {%>
       <div class="button_box"> 
@@ -436,7 +436,7 @@
       <%if (bfirst) {%>
       <table>
         <tr>
-          <td class="alert alert-warning"><%=messages.getString("gestao_tarefas.msg.nomorerequests")%></td>
+          <td class="alert alert-info"><%=messages.getString("gestao_tarefas.msg.nomorerequests")%></td>
         </tr>
       </table>
       <%} else {%>
@@ -520,7 +520,9 @@
       %>
       <table>
         <tr>
-          <td class="alert alert-warning"><%=messages.getString("gestao_tarefas.msg.nomorerequests")%></td>
+        
+        <!--   alteração na class - Warning para info -->
+          <td class="alert alert-info"><%=messages.getString("gestao_tarefas.msg.nomorerequests")%></td>
         </tr>
       </table>
     <%}%>

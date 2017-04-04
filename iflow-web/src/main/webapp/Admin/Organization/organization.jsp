@@ -40,7 +40,7 @@ OrganizationThemeData orgTheme = BeanFactory.getOrganizationThemeBean().getOrgan
 		onsubmit="javascript:AIM.submit(this, {'onStart' : getStartUploadCallback('the_logo'), 'onComplete' : getUploadCompleteCallback('Upload complete', 4, '<%=response.encodeURL("Admin/Organization/organization.jsp")%>', 'type=org')}); if(confirm('<%=messages.getString("organization.propertiesform.confirm.refresh")%>')) { setTimeout(function () { window.location.href = unescape(window.location.pathname); }, 1000) }">
 	
   	<fieldset>
-		<legend></legend>
+		
 		<ol>
 			<if:formInput edit="false" name="companyName" type="text" value='<%=userInfo.getCompanyName()%>' labelkey="organization.propertiesform.field.orgid" required="false"/>
 			<if:formSelect name="style" edit="<%= bEdit %>" value='<%=orgTheme.getThemeName() %>' labelkey="organization.propertiesform.field.style">
@@ -66,8 +66,8 @@ OrganizationThemeData orgTheme = BeanFactory.getOrganizationThemeBean().getOrgan
     				<if:formOption value='<%=calendar.get(i)[0]%>' label="<%=calendar.get(i)[1]%>"/>
   				<% } %>
   			</if:formSelect>
-			<if:formLocale name="organization_lang" edit="<%= bEdit %>" value='<%=orgLang%>' labelkey="organization.propertiesform.field.lang" />
-			<if:formTimeZone name="organization_timezone" edit="<%= bEdit %>" value='<%=timezone %>' labelkey="organization.propertiesform.field.timezone" />
+			<%--<if:formLocale name="organization_lang" edit="<%= bEdit %>" value='<%=orgLang%>' labelkey="organization.propertiesform.field.lang" /> --%>
+			<%-- <if:formTimeZone name="organization_timezone" edit="<%= bEdit %>" value='<%=timezone %>' labelkey="organization.propertiesform.field.timezone" />--%>
 			<if:formInput edit="<%= bEdit %>" name="logo" type="logo" value="" labelkey="organization.propertiesform.field.currentlogo" required="false"/>
 		</ol>
 	</fieldset>

@@ -21,8 +21,8 @@ import pt.iflow.api.applicationdata.ApplicationData;
 
 public interface ApplicationDataAccess {
 
-  public ApplicationData getApplication(String appId);
-  public Collection<String> getApplicationProfiles(String appId);
-  public Collection<String> getProfileApplications(String profileId);
-  public Collection<ApplicationData> getApplications();
+  public abstract ApplicationData getApplication(String appId);
+  public abstract Collection<String> getApplicationProfiles(String appId);
+  public abstract Collection<String> getProfileApplications(String profileId);
+  public abstract Collection<ApplicationData> getApplications();
 }

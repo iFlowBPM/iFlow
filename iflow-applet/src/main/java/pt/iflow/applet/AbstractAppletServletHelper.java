@@ -62,6 +62,7 @@ public abstract class AbstractAppletServletHelper {
       if(null == instance) {
         System.err.println("AbstractAppletServletHelper not created. Did someone forget to run 'mvn generate-source' in iflow-applet project?"); //$NON-NLS-1$
         new Exception().printStackTrace(System.err);
+        initComplete = false;
       }
     }
     

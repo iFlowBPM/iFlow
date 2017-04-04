@@ -3,42 +3,37 @@ package pt.iflow.api.flows;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Set;
-
 import pt.iflow.api.utils.UserInfoInterface;
 
-public interface FlowSettings {
-	
+public abstract interface FlowSettings
+{
   public abstract String getFlowCalendarId(UserInfoInterface paramUserInfoInterface, int paramInt);
-
-  public void saveFlowSettings(UserInfoInterface userInfo, FlowSetting[] afsaSettings);
-
-  public void saveFlowSettings(UserInfoInterface userInfo, FlowSetting[] afsaSettings, boolean abInitSettings);
   
   public abstract void saveFlowSettings(UserInfoInterface paramUserInfoInterface, FlowSetting[] paramArrayOfFlowSetting, String paramString);
   
   public abstract void saveFlowSettings(UserInfoInterface paramUserInfoInterface, FlowSetting[] paramArrayOfFlowSetting, boolean paramBoolean, String paramString);
   
-
-  public void exportFlowSettings(UserInfoInterface userInfo, int flowid, PrintStream apsOut);
-
-  public String importFlowSettings(UserInfoInterface userInfo, int flowid, byte[] file);
-
-  public FlowSetting[] getFlowSettings(UserInfoInterface userInfo, int flowid);
-
-  public void refreshFlowSettings(UserInfoInterface userInfo, int flowid);
+  public abstract void exportFlowSettings(UserInfoInterface paramUserInfoInterface, int paramInt, PrintStream paramPrintStream);
   
-  public FlowSetting getFlowSetting(int flowid, String settingVar);
-
-  public boolean removeFlowSetting(UserInfoInterface userInfo, int flowId, String name);
-
-  public FlowSetting[] getFlowSettings(int flowid);
+  public abstract String importFlowSettings(UserInfoInterface paramUserInfoInterface, int paramInt, byte[] paramArrayOfByte);
   
-  public List<FlowSetting> getDefaultSettings(int anFlowId);
+  public abstract FlowSetting[] getFlowSettings(UserInfoInterface paramUserInfoInterface, int paramInt);
   
-  public Set<String> getDefaultSettingsNames();
+  public abstract void refreshFlowSettings(UserInfoInterface paramUserInfoInterface, int paramInt);
   
-  public boolean isGuestAccessible(UserInfoInterface userInfo, int flowId);
+  public abstract FlowSetting getFlowSetting(int paramInt, String paramString);
   
-  public void addFlowSettingsListener(String id, FlowSettingsListener listener);
-  public void removeFlowSettingsListener(String id);
+  public abstract boolean removeFlowSetting(UserInfoInterface paramUserInfoInterface, int paramInt, String paramString);
+  
+  public abstract FlowSetting[] getFlowSettings(int paramInt);
+  
+  public abstract List<FlowSetting> getDefaultSettings(int paramInt);
+  
+  public abstract Set<String> getDefaultSettingsNames();
+  
+  public abstract boolean isGuestAccessible(UserInfoInterface paramUserInfoInterface, int paramInt);
+  
+  public abstract void addFlowSettingsListener(String paramString, FlowSettingsListener paramFlowSettingsListener);
+  
+  public abstract void removeFlowSettingsListener(String paramString);
 }

@@ -18,6 +18,38 @@
   int maxFlows = licService.getMaxFlows(userInfo);
   int maxBlocks = licService.getMaxBlocks(userInfo);
   int maxCPU = licService.getMaxCPU(userInfo);
+  
+  String maxFlows_="";
+  if(maxFlows <= 0)
+  {
+	  maxFlows_ = "None";
+  }
+  else {
+	  maxFlows_ = "" + maxFlows;
+	  
+  }
+  
+  String maxBlocks_ ="";
+  if(maxBlocks <= 0)
+  {
+	  maxBlocks_ = "None";
+  }
+  else {
+	  maxBlocks_ = "" + maxBlocks;
+	  
+  }
+  
+  String maxCPU_ ="";
+  if(maxCPU <= 0)
+  {
+	  maxCPU_ = "None";
+  }
+  else {
+	  maxCPU_ = "" + maxCPU;
+	  
+  }
+  
+    
 
   long available = licService.getAvailable(userInfo);
   long consumed = licService.getConsumed(userInfo, -1);
@@ -35,85 +67,22 @@
 
 <form id="licenseform" name="licenseform" class="form-horizontal">
   <fieldset>
-	<legend>Info</legend>
 	<ol>
-		<li class="form-group">
-			<label class="control-label col-sm-2" for="licenceType">Licence Type</label>
-			<div class="col-sm-5">
-			<%=null == licType ? "unavailable" : licType%>
-			</div>
-		</li>
-		<li class="form-group">
-			<label class="control-label col-sm-2" for="flow">Flow limit</label>
-			<div class="col-sm-5">
-			<%=-1 == maxFlows ? "unlimited" : intFmt.format(maxFlows)%>
-			</div>
-		</li>
-		<li class="form-group">
-			<label class="control-label col-sm-2" for="process">Block limit</label>
-			<div class="col-sm-5">
-			<%=-1 == maxBlocks ? "unlimited" : intFmt.format(maxBlocks)%>
-			</div>
-		</li>
-		<li class="form-group">
-			<label class="control-label col-sm-2" for="cpu">CPU limit</label>
-			<div class="col-sm-5">
-			<%=-1 == maxCPU ? "unlimited" : intFmt.format(maxCPU)%>
-			</div>
-		</li>
-		<li class="form-group">
-			<label class="control-label col-sm-2" for="support">Support level</label>
-			<div class="col-sm-5">
-			<%=null == support ? "unavailable" : support%>
-			</div>	
-		</li>
+	
+	<if:formInput edit="false" name="licenceType" type="text" value='<%=null == licType ? "unavailable" : licType%>' labelkey="license.propertiesform.field.licenseType" required="false"/>
+	
+	<if:formInput edit="false" name="flow" type="text" value='<%=null == maxFlows_ ? "unavailable" : maxFlows_%>' labelkey="license.propertiesform.field.flowLimit" required="false"/>
+	
+	<if:formInput edit="false" name="process" type="text" value='<%=null == maxBlocks_ ? "unavailable" : maxBlocks_%>' labelkey="license.propertiesform.field.blockLimit" required="false"/>
+	
+	<if:formInput edit="false" name="cpu" type="text" value='<%=null == maxCPU_ ? "unavailable" : maxCPU_%>' labelkey="license.propertiesform.field.cpuLimit" required="false"/>
+	
+	<if:formInput edit="false" name="support" type="text" value='<%=null == support ? "unavailable" : support%>' labelkey="license.propertiesform.field.supportLevel" required="false"/>
+	
+	
 	</ol>
   </fieldset>
-  <fieldset>
-	<legend>Credit</legend>
-	<ol>
-	<%
-	  if (available >= 0L) {
-	%>
-		<li class="form-group">
-			<label class="control-label col-sm-2" for="credit">Available Credit</label>
-			<div class="col-sm-5">
-			<%=moneyFmt.format(available / 1000.0)%> €
-			</div>
-		</li>
-
-		<li class="form-group">
-			<label class="control-label col-sm-2" for="credit">Credit Spent</label>
-			<div class="col-sm-5">
-			<div class=" control-label">
-			<%=moneyFmt.format(consumed / 1000.0)%> €
-			</div>
-			</div>
-		</li>
-
-		<li class="form-group">
-			<label class="control-label col-sm-2" for="availableBlocks">Available</label>
-			<div class="col-sm-5">
-			<%=intFmt.format(available)%> block units
-			</div>
-		</li>
-	<%
-	  }
-	%>
-		<li class="form-group">
-			<label for="usedBlocks">Processed</label>
-			<div class="col-sm-5">
-			<%=intFmt.format(consumed)%> block units
-			</div>
-		</li>
-		<li class="form-group">
-			<label for="upgrade">Next upgrade in (4.500.000~10.500.000)</label>
-			<div class="col-sm-5">
-				Não disponível
-			</div>
-		</li>
-	</ol>
-  </fieldset>
+  
   <% if (available >= 0L) { %>
   <fieldset class="submit">
 <%

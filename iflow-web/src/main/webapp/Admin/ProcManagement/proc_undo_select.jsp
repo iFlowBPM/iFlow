@@ -303,7 +303,7 @@ else {
 <% } %>  
 
   <fieldset>
-    <div class="alert"><%=messages.getString("proc_undo_select.header.criteria") %></div>
+    <div class="alert" style="box-shadow:none;"><%=messages.getString("proc_undo_select.header.criteria") %></div>
     <ol>
       <% if (!sShowFlowHtml.equals("")) { %>
         <li class="form-group">
@@ -315,9 +315,7 @@ else {
       <% } %>
         <li class="form-group">
         <label  class="control-label col-sm-2" for="dtafter"><%=messages.getString("proc_undo_select.crit.after") %>:</label>
-		<div class="col-sm-5">
         <%=sAfterHtml%>
-		  </div>
       </li>
       <li class="form-group">
         <label class="control-label col-sm-2" for="dtbefore"><%=messages.getString("proc_undo_select.crit.before") %>:</label>
@@ -368,7 +366,7 @@ else {
   </fieldset>
 
 <% if (bSearch) { %>
-  <div class="alert">Resultados</div>
+  <div class="alert"><%=messages.getString("proc_undo_select.proc_undo_select.result") %></div>
   <div class="table_inc">
 	
   <% if (alData.size() > 0) { %>

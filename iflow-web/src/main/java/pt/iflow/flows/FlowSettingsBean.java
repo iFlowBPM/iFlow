@@ -15,241 +15,46 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
-
 import javax.sql.DataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import pt.iflow.api.cluster.SharedObjectRefreshManager;
-import pt.iflow.api.connectors.DMSConnectorUtils;
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.db.DBQueryManager;
 import pt.iflow.api.db.DatabaseInterface;
+import pt.iflow.api.flows.FlowHolder;
 import pt.iflow.api.flows.FlowSetting;
 import pt.iflow.api.flows.FlowSettings;
 import pt.iflow.api.flows.FlowSettingsListener;
 import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
+import pt.iflow.api.utils.UserInfoFactory;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
-import pt.iflow.api.utils.hotfolder.HotFolderConfig;
-import pt.iflow.api.utils.mail.MailConfig;
 import pt.iknow.utils.StringUtilities;
 
-public class FlowSettingsBean implements FlowSettings {
-
-  private static FlowSettingsBean instance = null;  
+public class FlowSettingsBean
+  implements FlowSettings
+{
+  private static FlowSettingsBean instance = null;
+  private Hashtable<String, FlowSettingsListener> listeners = new Hashtable();
   
-  private Hashtable<String, FlowSettingsListener> listeners = new Hashtable<String, FlowSettingsListener>();
-  
-  public static FlowSettingsBean getInstance() {
-    if (null == instance)
+  public static FlowSettingsBean getInstance()
+  {
+    if (null == instance) {
       instance = new FlowSettingsBean();
+    }
     return instance;
-  }
-
-  public void saveFlowSettings(UserInfoInterface userInfo,
-      FlowSetting[] afsaSettings) {
-    saveFlowSettings(userInfo, afsaSettings, false);
-  }
-
-  public void saveFlowSettings(UserInfoInterface userInfo,
-      FlowSetting[] afsaSettings, boolean abInitSettings) {
-    DataSource ds = null;
-    Connection db = null;
-    Statement st = null;
-    CallableStatement cst = null;
-    ResultSet rs = null;
-    String sLogin = userInfo.getUtilizador();
-    int nMid = 0;
-    FlowSetting fs = null;
-    
-    Logger.trace(this, "saveFlowSettings", sLogin + " call");
-
-    if (null == afsaSettings || afsaSettings.length == 0) {
-      Logger.info(userInfo.getUtilizador(), this, "saveFlowSettings",
-      "Empty settings array. exiting....");
-      return;
-    }
-
-    Set<Integer> flowids = new HashSet<Integer>(); 
-    
-    try {
-      final String sQuery = DBQueryManager.getQuery("FlowSettings.UPDATEFLOWSETTING");
-      ds = Utils.getDataSource();
-      db = ds.getConnection();
-      db.setAutoCommit(false);
-      st = db.createStatement();
-      cst = db.prepareCall(sQuery);
-
-      if (Const.DB_TYPE.equalsIgnoreCase("SQLSERVER")) {
-        st.execute(DBQueryManager.getQuery("FlowSettings.getNextMid"));
-        if (st.getMoreResults())
-          rs = st.getResultSet();
-      } else {
-        rs = st.executeQuery(DBQueryManager.getQuery("FlowSettings.getNextMid"));
-      }
-      if (rs!=null && rs.next()) {
-        nMid = rs.getInt(1);
-      } else {
-        // oops..
-        // throw new Exception("Unable to get next flow setting mid");
-        nMid = 33;
-        Logger.warning(userInfo.getUtilizador(), this,
-            "saveFlowSettings",
-        "Unable to get next flow setting mid");
-      }
-      rs.close();
-
-      for (int set = 0; set < afsaSettings.length; set++) {
-
-        fs = afsaSettings[set];
-
-        // just to debug....
-        StringBuffer debugValues = new StringBuffer();
-
-        cst.setInt(1, fs.getFlowId());
-        cst.setInt(2, nMid);
-        cst.setString(3, fs.getName());
-        cst.setString(4, fs.getDescription());
-
-        if (Logger.isDebugEnabled()) {
-          debugValues.append(fs.getFlowId()).append(", ");
-          debugValues.append(nMid).append(", ");
-          debugValues.append(fs.getName()).append(", ");
-          debugValues.append(fs.getDescription()).append(", ");
-        }
-
-        cst.setString(5, abInitSettings ? null : fs.getValue());
-        if (Logger.isDebugEnabled())
-          debugValues.append(abInitSettings ? null : fs.getValue())
-          .append(", ");
-
-        // single settings are not allowed to hold query values
-        cst.setInt(6, 0);
-
-        if (abInitSettings) {
-          cst.setInt(7, 2);
-          if (Logger.isDebugEnabled())
-            debugValues.append("0, 2");
-        } else {
-          cst.setInt(7, 0);
-          if (Logger.isDebugEnabled())
-            debugValues.append("0, 0");
-        }
-
-        if (Logger.isDebugEnabled()) {
-          Logger.debug(sLogin, this, "saveFlowSettings",
-              "QUERY1=updateFlowSettings(" + debugValues + ")");
-        }
-
-        cst.execute();
-
-        if (!abInitSettings && fs.isListSetting()) {
-          String[] asValues = fs.getValuesToSave();
-
-          for (int i = 0; i < asValues.length; i++) {
-            String sName = Utils.genListVar(fs.getName(), i);
-
-            // update another setting
-            cst.setInt(1, fs.getFlowId());
-            cst.setInt(2, nMid);
-            cst.setString(3, sName);
-            cst.setString(4, fs.getDescription());
-
-            if (Logger.isDebugEnabled()) {
-              debugValues = new StringBuffer();
-              debugValues.append(fs.getFlowId()).append(", ");
-              debugValues.append(nMid).append(", ");
-              debugValues.append(sName).append(", ");
-              debugValues.append(fs.getDescription())
-              .append(", ");
-            }
-
-            cst.setString(5,
-                StringUtils.isEmpty(asValues[i]) ? null
-                    : asValues[i]);
-            if (Logger.isDebugEnabled())
-              debugValues.append(
-                  StringUtils.isEmpty(asValues[i]) ? null
-                      : asValues[i]).append(", ");
-
-            cst.setInt(6, fs.isQueryValue(i) ? 1 : 0);
-            cst.setInt(7, 1);
-
-            if (Logger.isDebugEnabled()) {
-              debugValues.append(fs.isQueryValue(i) ? 1 : 0)
-              .append(", 1");
-
-              Logger.debug(sLogin, this, "saveFlowSettings",
-                  "QUERY2=updateFlowSettings(" + debugValues
-                  + ")");
-            }
-
-            cst.execute();
-
-          } // for
-
-        } // if
-
-        flowids.add(fs.getFlowId());
-        
-      } // for
-      db.commit();
-    } catch (Exception e) {
-      try {
-        if (db != null)
-          db.rollback();
-      } catch (Exception ei) {
-      }
-      ;
-      Logger.error(sLogin, this, "saveFlowSettings", "exception caught: "
-          + e.getMessage(), e);
-    } finally {
-      DatabaseInterface.closeResources(db, cst, rs);
-    }
-    
   }
   
   public void saveFlowSettings(UserInfoInterface userInfo, FlowSetting[] afsaSettings, String calendId)
   {
     saveFlowSettings(userInfo, afsaSettings, false, calendId);
-  }
-  
-  public String getFlowCalendarId(UserInfoInterface userInfo, int flowid)
-  {
-    Connection db = null;
-    PreparedStatement st = null;
-    ResultSet rs = null;
-    int id = 0;
-    try
-    {
-      db = Utils.getDataSource().getConnection();
-      st = db.prepareStatement("select calendar_id from flow_calendar where flowid = ?");
-      st.setInt(1, flowid);
-      rs = st.executeQuery();
-      if (rs.next()) {
-        id = rs.getInt("calendar_id");
-      }
-      rs.close();
-    }
-    catch (Exception e)
-    {
-      Logger.error(userInfo.getUtilizador(), this, "readFlow", "exception caught", e);
-      e.printStackTrace();
-    }
-    finally
-    {
-      DatabaseInterface.closeResources(new Object[] { rs, db, st });
-    }
-    return "" + id;
   }
   
   public void saveFlowSettings(UserInfoInterface userInfo, FlowSetting[] afsaSettings, boolean abInitSettings, String calendId)
@@ -411,6 +216,35 @@ public class FlowSettingsBean implements FlowSettings {
     }
   }
   
+  public String getFlowCalendarId(UserInfoInterface userInfo, int flowid)
+  {
+    Connection db = null;
+    PreparedStatement st = null;
+    ResultSet rs = null;
+    int id = 0;
+    try
+    {
+      db = Utils.getDataSource().getConnection();
+      st = db.prepareStatement("select calendar_id from flow_calendar where flowid = ?");
+      st.setInt(1, flowid);
+      rs = st.executeQuery();
+      if (rs.next()) {
+        id = rs.getInt("calendar_id");
+      }
+      rs.close();
+    }
+    catch (Exception e)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "readFlow", "exception caught", e);
+      e.printStackTrace();
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { rs, db, st });
+    }
+    return "" + id;
+  }
+  
   private boolean assFlowCalendar(UserInfoInterface userInfo, int id, String calendId)
   {
     if (StringUtils.isEmpty(calendId)) {
@@ -467,33 +301,31 @@ public class FlowSettingsBean implements FlowSettings {
     }
     return b;
   }
-
-  public void exportFlowSettings(UserInfoInterface userInfo, int flowid,
-      PrintStream apsOut) {
-
+  
+  public void exportFlowSettings(UserInfoInterface userInfo, int flowid, PrintStream apsOut)
+  {
     String sLogin = userInfo.getUtilizador();
-
-    if (!(userInfo.isOrgAdmin() || userInfo.isSysAdmin())) {
-      Logger.warning(sLogin, this, "exportFlowSettings",
-      "User is not admin.");
+    if ((!userInfo.isOrgAdmin()) && (!userInfo.isSysAdmin()))
+    {
+      Logger.warning(sLogin, this, "exportFlowSettings", "User is not admin.");
+      
       return;
     }
-
     DataSource ds = null;
     Connection db = null;
     Statement st = null;
     ResultSet rs = null;
     String sQuery = null;
     String stmp = null;
-
+    
     Logger.trace(this, "exportFlowSettings", sLogin + " call");
-
-    try {
+    try
+    {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       st = db.createStatement();
       rs = null;
-
+      
       apsOut.println("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>");
       apsOut.print("<!DOCTYPE flowsettings [");
       apsOut.print(" <!ENTITY nbsp \"&#160;\">");
@@ -525,79 +357,83 @@ public class FlowSettingsBean implements FlowSettings {
       apsOut.print(" <!ENTITY Ccedil \"&#199;\">");
       apsOut.println("]>");
       apsOut.println("<flowsettings>");
-
+      
       sQuery = "select * from flow_settings where FLOWID=" + flowid + " order by name";
-
+      
       rs = st.executeQuery(sQuery);
-
-      while (rs.next()) {
+      while (rs.next())
+      {
         stmp = rs.getString("name");
-        if (stmp == null || stmp.equals(""))
-          continue;
-
-        apsOut.println("  <setting>");
-
-        apsOut.print("    <name>");
-        apsOut.print(stmp);
-        apsOut.println("</name>");
-
-        stmp = rs.getString("description");
-        if (stmp == null)
-          stmp = "";
-        apsOut.print("    <description>");
-        apsOut.print(stmp);
-        apsOut.println("</description>");
-
-        stmp = rs.getString("value");
-        if (stmp != null) {
-          apsOut.print("    <value>");
+        if ((stmp != null) && (!stmp.equals("")))
+        {
+          apsOut.println("  <setting>");
+          
+          apsOut.print("    <name>");
           apsOut.print(stmp);
-          apsOut.println("</value>");
+          apsOut.println("</name>");
+          
+          stmp = rs.getString("description");
+          if (stmp == null) {
+            stmp = "";
+          }
+          apsOut.print("    <description>");
+          apsOut.print(stmp);
+          apsOut.println("</description>");
+          
+          stmp = rs.getString("value");
+          if (stmp != null)
+          {
+            apsOut.print("    <value>");
+            apsOut.print(stmp);
+            apsOut.println("</value>");
+          }
+          apsOut.print("    <isQuery>");
+          apsOut.print(rs.getBoolean("isQuery"));
+          apsOut.println("</isQuery>");
+          
+          apsOut.println("  </setting>");
         }
-
-        apsOut.print("    <isQuery>");
-        apsOut.print(rs.getBoolean("isQuery"));
-        apsOut.println("</isQuery>");
-
-        apsOut.println("  </setting>");
-
       }
       rs.close();
       rs = null;
       apsOut.println("</flowsettings>");
-    } catch (Exception e) {
+    }
+    catch (Exception e)
+    {
       Logger.error(sLogin, this, "exportFlowSettings", "exception caught: " + e.getMessage(), e);
-    } finally {
-      DatabaseInterface.closeResources(db, st, rs);
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, st, rs });
       apsOut.close();
     }
   }
-
-  public String importFlowSettings(UserInfoInterface userInfo, int flowid, byte[] file) {
+  
+  public String importFlowSettings(UserInfoInterface userInfo, int flowid, byte[] file)
+  {
     String retObj = null;
-
+    
     String sLogin = userInfo.getUtilizador();
-
-    if (!(userInfo.isOrgAdmin() || userInfo.isSysAdmin())) {
+    if ((!userInfo.isOrgAdmin()) && (!userInfo.isSysAdmin()))
+    {
       retObj = "User is not administrator.";
-      Logger.warning(sLogin, this, "importFlowSettings",
-      "User is not admin.");
+      Logger.warning(sLogin, this, "importFlowSettings", "User is not admin.");
+      
       return retObj;
     }
-
-    try {
-
+    try
+    {
       DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-      // Obtain an instance of a DocumentBuilder from the factory.
+      
       DocumentBuilder db = dbf.newDocumentBuilder();
-      // Parse the document.
+      
       InputStream isInStream = new ByteArrayInputStream(file);
       Document doc = db.parse(isInStream);
-
+      
       ArrayList<FlowSetting> alSettings = null;
       FlowSetting[] fsa = null;
       FlowSetting fs = null;
-
+      
       String sName = null;
       String sDesc = null;
       String sValue = null;
@@ -605,131 +441,121 @@ public class FlowSettingsBean implements FlowSettings {
       boolean bIsQuery = false;
       String stmp = null;
       String stmp2 = null;
-
+      
       NodeList nl = doc.getElementsByTagName("setting");
       NodeList nl2 = null;
       NodeList nl3 = null;
       Node n = null;
       Node n2 = null;
       Node n3 = null;
-      alSettings = new ArrayList<FlowSetting>();
-
+      alSettings = new ArrayList();
+      
       retObj = "erro no processamento do ficheiro";
-
-      for (int setting = 0; setting < nl.getLength(); setting++) {
-        // process settings
+      for (int setting = 0; setting < nl.getLength(); setting++)
+      {
         n = nl.item(setting);
-
+        
         nl2 = n.getChildNodes();
-
+        
         sName = null;
         sDesc = null;
         sValue = null;
         sIsQuery = null;
-        for (int item = 0; item < nl2.getLength(); item++) {
+        for (int item = 0; item < nl2.getLength(); item++)
+        {
           n2 = nl2.item(item);
-
+          
           stmp = n2.getNodeName();
-          if (stmp == null)
-            continue;
-
-          nl3 = n2.getChildNodes();
-          n3 = nl3.item(0);
-
-          if (n3 == null)
-            continue;
-
-          stmp2 = n3.getNodeValue();
-
-          if (stmp.equals("name")) {
-            sName = stmp2;
-          } else if (stmp.equals("description")) {
-            sDesc = stmp2;
-          } else if (stmp.equals("value")) {
-            sValue = stmp2;
-          } else if (stmp.equals("isQuery")) {
-            sIsQuery = stmp2;
-          } else {
-            continue;
+          if (stmp != null)
+          {
+            nl3 = n2.getChildNodes();
+            n3 = nl3.item(0);
+            if (n3 != null)
+            {
+              stmp2 = n3.getNodeValue();
+              if (stmp.equals("name")) {
+                sName = stmp2;
+              } else if (stmp.equals("description")) {
+                sDesc = stmp2;
+              } else if (stmp.equals("value")) {
+                sValue = stmp2;
+              } else if (stmp.equals("isQuery")) {
+                sIsQuery = stmp2;
+              }
+            }
           }
         }
-
-        if (sIsQuery != null && sIsQuery.equalsIgnoreCase("true")) {
+        if ((sIsQuery != null) && (sIsQuery.equalsIgnoreCase("true"))) {
           bIsQuery = true;
         } else {
           bIsQuery = false;
         }
-
         Logger.debug(sLogin, this, "importFlowSettings", "Importing setting " + sName + "=" + sValue + " for flow " + flowid);
         fs = new FlowSetting(flowid, sName, sDesc, sValue, bIsQuery, null);
-
+        
         alSettings.add(fs);
-
-      } // for setting
-
+      }
       retObj = "erro ao processar propriedades importadas";
       fsa = getFlowSettings(userInfo, flowid, alSettings);
-
+      
       retObj = "erro ao guardar propriedades importadas";
-
-      saveFlowSettings(userInfo, fsa);
-
+      
+      saveFlowSettings(userInfo, fsa, "");
+      
       retObj = null;
-    } catch (Exception e) {
+    }
+    catch (Exception e)
+    {
       if (retObj == null) {
         retObj = "erro ao importar propriedades";
       }
-      retObj += ": " + e.getMessage();
-
+      retObj = retObj + ": " + e.getMessage();
+      
       Logger.error(sLogin, this, "importFlowSettings", retObj);
     }
-
     return retObj;
   }
-
-  public FlowSetting getFlowSetting(int flowid, String settingVar) {
-
+  
+  public FlowSetting getFlowSetting(int flowid, String settingVar)
+  {
     FlowSetting retObj = null;
-
+    
     DataSource ds = null;
     Connection db = null;
     Statement st = null;
     ResultSet rs = null;
     String sQuery = null;
-
-    try {
-
+    try
+    {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       st = db.createStatement();
       rs = null;
-
+      
       sQuery = "select * from flow_settings where FLOWID=" + flowid + " and name='" + settingVar + "'";
-
+      
       rs = st.executeQuery(sQuery);
-
       if (rs.next()) {
-        retObj = new FlowSetting(rs.getInt("flowid"), rs
-            .getString("name"), rs.getString("description"), rs
-            .getString("value"), rs.getBoolean("isQuery"), rs
-            .getTimestamp("mdate"));
+        retObj = new FlowSetting(rs.getInt("flowid"), rs.getString("name"), rs.getString("description"), rs.getString("value"), rs.getBoolean("isQuery"), rs.getTimestamp("mdate"));
       }
       rs.close();
       rs = null;
-
-    } catch (Exception e) {
-      Logger.error("", this, "getFlowSettings", "exception caught: " + e.getMessage(), e);
-    } finally {
-      DatabaseInterface.closeResources(db, st, rs);
     }
-
+    catch (Exception e)
+    {
+      Logger.error("", this, "getFlowSettings", "exception caught: " + e.getMessage(), e);
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, st, rs });
+    }
     return retObj;
   }
-
-  public FlowSetting[] getFlowSettings(UserInfoInterface userInfo, int flowid) {
-
+  
+  public FlowSetting[] getFlowSettings(UserInfoInterface userInfo, int flowid)
+  {
     FlowSetting[] retObj = null;
-
+    
     DataSource ds = null;
     Connection db = null;
     Statement st = null;
@@ -737,298 +563,316 @@ public class FlowSettingsBean implements FlowSettings {
     String sQuery = null;
     ArrayList<FlowSetting> altmp = null;
     FlowSetting fs = null;
-
-    try {
-
+    try
+    {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       st = db.createStatement();
       rs = null;
-
+      
       sQuery = "select * from flow_settings where FLOWID=" + flowid + " order by name";
-
+      
       rs = st.executeQuery(sQuery);
-
-      altmp = new ArrayList<FlowSetting>();
-      while (rs.next()) {
-        fs = new FlowSetting(
-            rs.getInt("flowid"),
-            rs.getString("name"),
-            rs.getString("description"),
-            rs.getString("value"),
-            rs .getBoolean("isQuery"),
-            rs.getTimestamp("mdate"));
+      
+      altmp = new ArrayList();
+      while (rs.next())
+      {
+        fs = new FlowSetting(rs.getInt("flowid"), rs.getString("name"), rs.getString("description"), rs.getString("value"), rs.getBoolean("isQuery"), rs.getTimestamp("mdate"));
         altmp.add(fs);
       }
-
       rs.close();
       rs = null;
-
+      
       ensureDefaultSettings(userInfo, flowid, altmp);
-
+      
       retObj = getFlowSettings(userInfo, flowid, altmp);
-    } catch (Exception e) {
-      Logger.error(userInfo.getUtilizador(), this, "getFlowSettings", "exception caught: " + e.getMessage(), e);
-    } finally {
-      DatabaseInterface.closeResources(db, st, rs);
     }
-
+    catch (Exception e)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "getFlowSettings", "exception caught: " + e.getMessage(), e);
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, st, rs });
+    }
     return retObj;
   }
-
-
-  private void ensureDefaultSettings(UserInfoInterface userInfo, int flowid, ArrayList<FlowSetting> settings) {
+  
+  private void ensureDefaultSettings(UserInfoInterface userInfo, int flowid, ArrayList<FlowSetting> settings)
+  {
     List<FlowSetting> defSettings = getDefaultSettings(flowid);
-    for (FlowSetting fs : defSettings) {
-      Object[] contains = this.contains(settings, fs);
-      if ((Boolean) contains[0]) {
-        settings.add(defSettings.indexOf(fs), settings.remove(((Integer) contains[1]).intValue()));
-      } else {
-        Logger.info(userInfo.getUtilizador(), this, "ensureDefaultSettings", 
-            "Adding new default setting " + fs.getName() + " for flow " + flowid);
+    for (FlowSetting fs : defSettings)
+    {
+      Object[] contains = contains(settings, fs);
+      if (((Boolean)contains[0]).booleanValue())
+      {
+        settings.add(defSettings.indexOf(fs), settings.remove(((Integer)contains[1]).intValue()));
+      }
+      else
+      {
+        Logger.info(userInfo.getUtilizador(), this, "ensureDefaultSettings", "Adding new default setting " + fs
+          .getName() + " for flow " + flowid);
         settings.add(fs);
       }
     }
   }
   
-  private Object[] contains(List<FlowSetting> list, FlowSetting item) {
-    Object[] result = new Object[] { false, -1 };
-    for (int i = 0; i < list.size(); i++) {
-      FlowSetting setting = list.get(i);
-      if (StringUtils.equals(item.getName(), setting.getName())) {
-        result = new Object[] { true, i };
+  private Object[] contains(List<FlowSetting> list, FlowSetting item)
+  {
+    Object[] result = { Boolean.valueOf(false), Integer.valueOf(-1) };
+    for (int i = 0; i < list.size(); i++)
+    {
+      FlowSetting setting = (FlowSetting)list.get(i);
+      if (StringUtils.equals(item.getName(), setting.getName()))
+      {
+        result = new Object[] { Boolean.valueOf(true), Integer.valueOf(i) };
         break;
       }
     }
     return result;
   }
-
-  public FlowSetting[] getFlowSettings(int flowid) {
+  
+  public FlowSetting[] getFlowSettings(int flowid)
+  {
     UserInfoInterface userInfo = BeanFactory.getUserInfoFactory().newGuestUserInfo();
     return getFlowSettings(userInfo, flowid);
   }
-
-  private FlowSetting[] getFlowSettings(UserInfoInterface userInfo, int flowid, ArrayList<FlowSetting> alSettings) {
+  
+  private FlowSetting[] getFlowSettings(UserInfoInterface userInfo, int flowid, ArrayList<FlowSetting> alSettings)
+  {
     FlowSetting[] retObj = null;
-
+    
     String sLogin = userInfo.getUtilizador();
     OrderedMap<String, FlowSetting> hmtmp = null;
     FlowSetting fs = null;
     FlowSetting fs2 = null;
-
-    try {
-
-      if (alSettings != null) {
-
-        hmtmp = new ListOrderedMap<String, FlowSetting>();
-        for (int i = 0; i < alSettings.size(); i++) {
-          fs = (FlowSetting) alSettings.get(i);
+    try
+    {
+      if (alSettings != null)
+      {
+        hmtmp = new ListOrderedMap();
+        for (int i = 0; i < alSettings.size(); i++)
+        {
+          fs = (FlowSetting)alSettings.get(i);
           hmtmp.put(fs.getName(), fs);
         }
-
         String stmp = null;
         String stmp2 = null;
         String stmp3 = null;
-        ArrayList<FlowSetting> altmp = new ArrayList<FlowSetting>();
-
-        for (int i = 0; i < alSettings.size(); i++) {
-          fs = (FlowSetting) alSettings.get(i);
-
+        ArrayList<FlowSetting> altmp = new ArrayList();
+        for (int i = 0; i < alSettings.size(); i++)
+        {
+          fs = (FlowSetting)alSettings.get(i);
+          
           stmp = fs.getName();
-          if (!hmtmp.containsKey(stmp)) {
-            continue;
-          }
-
-          if (Utils.isListVar(stmp)) {
-            stmp = Utils.getListVarName(fs.getName());
-
-            fs = hmtmp.get(stmp);
-            hmtmp.remove(stmp);
-
-            ArrayList<String> altmp2 = new ArrayList<String>();
-            ArrayList<Integer> altmp3 = new ArrayList<Integer>();
-            for (int idx = 0; true; idx++) {
-              stmp2 = Utils.genListVar(stmp, idx);
-
-              if (!hmtmp.containsKey(stmp2)) {
-                break;
+          if (hmtmp.containsKey(stmp))
+          {
+            if (Utils.isListVar(stmp))
+            {
+              stmp = Utils.getListVarName(fs.getName());
+              
+              fs = (FlowSetting)hmtmp.get(stmp);
+              hmtmp.remove(stmp);
+              
+              ArrayList<String> altmp2 = new ArrayList();
+              ArrayList<Integer> altmp3 = new ArrayList();
+              for (int idx = 0;; idx++)
+              {
+                stmp2 = Utils.genListVar(stmp, idx);
+                if (!hmtmp.containsKey(stmp2)) {
+                  break;
+                }
+                fs2 = (FlowSetting)hmtmp.get(stmp2);
+                stmp3 = fs2.getValue();
+                hmtmp.remove(stmp2);
+                
+                altmp2.add(stmp3);
+                if (fs2.isQueryValue()) {
+                  altmp3.add(Integer.valueOf(idx));
+                }
               }
-
-              fs2 = (FlowSetting) hmtmp.get(stmp2);
-              stmp3 = fs2.getValue();
-              hmtmp.remove(stmp2);
-
-              altmp2.add(stmp3);
-              if (fs2.isQueryValue()) {
-                altmp3.add(idx);
-              }
+              fs.setValues(altmp2, altmp3);
             }
-            fs.setValues(altmp2, altmp3);
+            altmp.add(fs);
           }
-          altmp.add(fs);
         }
-
         retObj = new FlowSetting[altmp.size()];
         for (int i = 0; i < altmp.size(); i++) {
-          retObj[i] = (FlowSetting) altmp.get(i);
+          retObj[i] = ((FlowSetting)altmp.get(i));
         }
       }
-    } catch (Exception e) {
+    }
+    catch (Exception e)
+    {
       Logger.error(sLogin, this, "getFlowSettings(private)", "exception caught: " + e.getMessage());
     }
-
     return retObj;
   }
-
-  public void refreshFlowSettings(UserInfoInterface userInfo, int flowid) {
-    Logger.debug(userInfo.getUtilizador(), this, "refreshFlowSettings", 
-        "refreshing flow " + flowid);    
-    BeanFactory.getFlowHolderBean().refreshFlow(userInfo, flowid);    
-    if (listeners.size() > 0) {
-      Logger.debug(userInfo.getUtilizador(), this, "refreshFlowSettings", 
-          "notifying settings listeners for flow " + flowid);
-      for (FlowSettingsListener listener : listeners.values()) {
+  
+  public void refreshFlowSettings(UserInfoInterface userInfo, int flowid)
+  {
+    Logger.debug(userInfo.getUtilizador(), this, "refreshFlowSettings", "refreshing flow " + flowid);
+    
+    BeanFactory.getFlowHolderBean().refreshFlow(userInfo, flowid);
+    if (this.listeners.size() > 0)
+    {
+      Logger.debug(userInfo.getUtilizador(), this, "refreshFlowSettings", "notifying settings listeners for flow " + flowid);
+      for (FlowSettingsListener listener : this.listeners.values()) {
         listener.settingsChanged(flowid);
       }
     }
   }
-
-  public boolean removeFlowSetting(UserInfoInterface userInfo, int flowId, String name) {
+  
+  public boolean removeFlowSetting(UserInfoInterface userInfo, int flowId, String name)
+  {
     String sLogin = userInfo.getUtilizador();
-    if (!(userInfo.isOrgAdmin() || userInfo.isSysAdmin())) {
+    if ((!userInfo.isOrgAdmin()) && (!userInfo.isSysAdmin()))
+    {
       Logger.warning(sLogin, this, "removeFlowSetting", "User is not admin.");
       return false;
     }
-
     DataSource ds = null;
     Connection db = null;
     PreparedStatement st = null;
     String sQuery = null;
     boolean result = false;
-
-    try {
-
+    try
+    {
       ds = Utils.getDataSource();
       db = ds.getConnection();
-
+      
       sQuery = "delete from flow_settings where flowid=? and name=?";
       st = db.prepareStatement(sQuery);
       st.setInt(1, flowId);
       st.setString(2, name);
-
-      result = (st.executeUpdate() != 0);
-
-    } catch (Exception e) {
-      Logger.error(sLogin, this, "removeFlowSetting", "exception caught: ", e);
-    } finally {
-      DatabaseInterface.closeResources(db, st);
+      
+      result = st.executeUpdate() != 0;
     }
-
+    catch (Exception e)
+    {
+      Logger.error(sLogin, this, "removeFlowSetting", "exception caught: ", e);
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, st });
+    }
     return result;
   }
-
-  public List<FlowSetting> getDefaultSettings(int anFlowId) {
-    List<FlowSetting> altmp = new ArrayList<FlowSetting>();
-    altmp.add(new FlowSetting(anFlowId, Const.sNOTIFY_USER, Const.sNOTIFY_USER_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sFORCE_NOTIFY_FOR_PROFILES, Const.sFORCE_NOTIFY_FOR_PROFILES_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sDENY_NOTIFY_FOR_PROFILES, Const.sDENY_NOTIFY_FOR_PROFILES_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sPROCESS_LOCATION, Const.sPROCESS_LOCATION_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sFLOW_ENTRY_PAGE_TITLE, Const.sFLOW_ENTRY_PAGE_TITLE_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sFLOW_ENTRY_PAGE_LINK, Const.sFLOW_ENTRY_PAGE_LINK_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sSHOW_SCHED_USERS, Const.sSHOW_SCHED_USERS_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sDIRECT_LINK_AUTHENTICATION, Const.sDIRECT_LINK_AUTHENTICATION_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sEMAIL_TEMPLATE_DIR, Const.sEMAIL_TEMPLATE_DIR_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sRUN_MAXIMIZED, Const.sRUN_MAXIMIZED_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sENABLE_HISTORY, Const.sENABLE_HISTORY_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sDEFAULT_STYLESHEET, Const.sDEFAULT_STYLESHEET_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sDETAIL_PRINT_STYLESHEET, Const.sDETAIL_PRINT_STYLESHEET_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sHASHED_DOCUMENT_URL, Const.sHASHED_DOCUMENT_URL_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sAUTO_ARCHIVE_PROCESS, Const.sAUTO_ARCHIVE_PROCESS_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sSHOW_ASSIGNED_TO, Const.sSHOW_ASSIGNED_TO_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sGUEST_ACCESSIBLE, Const.sGUEST_ACCESSIBLE_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sFLOW_FLOAT_FORMAT, Const.sFLOW_FLOAT_FORMAT_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sFLOW_INT_FORMAT, Const.sFLOW_INT_FORMAT_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sFLOW_DATE_FORMAT, Const.sFLOW_DATE_FORMAT_DESC));
-    altmp.add(new FlowSetting(anFlowId, Const.sSEARCHABLE_BY_INTERVENIENT, Const.sSEARCHABLE_BY_INTERVENIENT_DESC));
-
-    // accessible in menu
-    altmp.add(new FlowSetting(anFlowId, Const.sFLOW_MENU_ACCESSIBLE, Const.sFLOW_MENU_ACCESSIBLE_DESC));
-
-    // start with mail settings
-    altmp.add(new FlowSetting(anFlowId, MailConfig.CONFIG_ONOFF, "Inicio por mail"));
-    altmp.add(new FlowSetting(anFlowId, MailConfig.CONFIG_HOST, "Inicio por mail: 1.servidor"));
-    altmp.add(new FlowSetting(anFlowId, MailConfig.CONFIG_PORT, "Inicio por mail: 2.porto"));
-    altmp.add(new FlowSetting(anFlowId, MailConfig.CONFIG_USER, "Inicio por mail: 3.utilizador"));
-    altmp.add(new FlowSetting(anFlowId, MailConfig.CONFIG_PASS, "Inicio por mail: 4.password"));
-    altmp.add(new FlowSetting(anFlowId, MailConfig.CONFIG_SECURE, "Inicio por mail: 5.ligação segura"));
-    altmp.add(new FlowSetting(anFlowId, MailConfig.CONFIG_INBOX, "Inicio por mail: 6.Inbox"));
-    altmp.add(new FlowSetting(anFlowId, MailConfig.CONFIG_SUBSCRIBED_FOLDERS, "Inicio por mail: 7.folders a subscrever"));
-    altmp.add(new FlowSetting(anFlowId, MailConfig.CONFIG_CHECK_INTERVAL,"Inicio por mail: 8.intervalo de busca"));
-
-    //dms settings
-    altmp.add(new FlowSetting(anFlowId, DMSConnectorUtils.CONFIG_DMS, DMSConnectorUtils.CONFIG_DMS_DESC));
-    altmp.add(new FlowSetting(anFlowId, DMSConnectorUtils.CONFIG_DMS_USER, DMSConnectorUtils.CONFIG_DMS_USER_DESC));
-    altmp.add(new FlowSetting(anFlowId, DMSConnectorUtils.CONFIG_DMS_PASS, DMSConnectorUtils.CONFIG_DMS_PASS_DESC));
+  
+  public List<FlowSetting> getDefaultSettings(int anFlowId)
+  {
+    List<FlowSetting> altmp = new ArrayList();
+    altmp.add(new FlowSetting(anFlowId, "NOTIFY_USER", "Notificar Utilizador de Nova Tarefa"));
+    altmp.add(new FlowSetting(anFlowId, "FORCE_NOTIFY_FOR_PROFILE", "For&ccedil;ar Notifica&ccedil;&atilde;o para Perfis (quandoNOTIFY_USER=Nao)"));
+    altmp.add(new FlowSetting(anFlowId, "DENY_NOTIFY_FOR_PROFILE", "Abortar Notifica&ccedil;&atilde;o para Perfis (quando NOTIFY_USER=Sim)"));
+    altmp.add(new FlowSetting(anFlowId, "PROCESS_LOCATION", "Iniciar Processo em"));
+    altmp.add(new FlowSetting(anFlowId, "FLOW_ENTRY_PAGE_TITLE", "Title P&aacute;g. Entrada"));
+    altmp.add(new FlowSetting(anFlowId, "FLOW_ENTRY_PAGE_LINK", "Link P&aacute;g. Entrada"));
+    altmp.add(new FlowSetting(anFlowId, "SHOW_SCHED_USERS", "Mostra utilizador(es) para quem foi agendado processo"));
+    altmp.add(new FlowSetting(anFlowId, "DIRECT_LINK_AUTHENTICATION", "Permite ou n&atilde;o iniciar um fluxo sem autentica&ccedil;&atilde;o (link)"));
+    altmp.add(new FlowSetting(anFlowId, "EMAIL_TEMPLATE_DIR", "Directoria de templates de email"));
+    altmp.add(new FlowSetting(anFlowId, "OPEN_FLOW_IN_NOTIFICATION", "Fluxo a abrir na Notificação"));
+    altmp.add(new FlowSetting(anFlowId, "RUN_MAXIMIZED", "Executar fluxo maximizado"));
+    altmp.add(new FlowSetting(anFlowId, "ENABLE_HISTORY", "Permitir Visualizacao de Historicos"));
+    altmp.add(new FlowSetting(anFlowId, "DEFAULT_STYLESHEET", "Stylesheet default"));
+    altmp.add(new FlowSetting(anFlowId, "DETAIL_PRINT_STYLESHEET", "Template de Impressao de Detalhe"));
+    altmp.add(new FlowSetting(anFlowId, "HASHED_DOCUMENT_URL", "Gerar link de download de Documentos com hash"));
+    altmp.add(new FlowSetting(anFlowId, "AUTO_ARCHIVE_PROCESS", "Tempo de vida de um processo fechado (em dias)"));
+    altmp.add(new FlowSetting(anFlowId, "SHOW_ASSIGNED_TO", "Mostra utilizador(es) onde o processo est&aacute; agendado"));
+    altmp.add(new FlowSetting(anFlowId, "GUEST_ACCESSIBLE", "Permitir acesso a utilizadores nÃ£o registados."));
+    altmp.add(new FlowSetting(anFlowId, "FLOW_FLOAT_FORMAT", Const.sFLOW_FLOAT_FORMAT_DESC));
+    altmp.add(new FlowSetting(anFlowId, "FLOW_INT_FORMAT", Const.sFLOW_INT_FORMAT_DESC));
+    altmp.add(new FlowSetting(anFlowId, "FLOW_DATE_FORMAT", Const.sFLOW_DATE_FORMAT_DESC));
+    altmp.add(new FlowSetting(anFlowId, "SEARCHABLE_BY_INTERVENIENT", "PesquisÃ¡vel pelos intervenientes"));
+    altmp.add(new FlowSetting(anFlowId, "FLOW_INITIALS", Const.sFLOW_INITIALS_DESC));
     
-    // hotfolder settings
-    altmp.add(new FlowSetting(anFlowId, HotFolderConfig.ONOFF, HotFolderConfig.ONOFF_DESC));
-    altmp.add(new FlowSetting(anFlowId, HotFolderConfig.SUBS_FOLDERS, HotFolderConfig.SUBS_FOLDERS_DESC));
-    altmp.add(new FlowSetting(anFlowId, HotFolderConfig.SEARCH_DEPTH, HotFolderConfig.SEARCH_DEPTH_DESC));
-    altmp.add(new FlowSetting(anFlowId, HotFolderConfig.DOC_VAR, HotFolderConfig.DOC_VAR_DESC));
-    altmp.add(new FlowSetting(anFlowId, HotFolderConfig.IN_USER, HotFolderConfig.IN_USER_DESC));
+
+    altmp.add(new FlowSetting(anFlowId, "FLOW_MENU_ACCESSIBLE", "Permitir visualizar no menu."));
+    
+
+    altmp.add(new FlowSetting(anFlowId, "EMAIL_START_ONOFF", "Inicio por mail"));
+    altmp.add(new FlowSetting(anFlowId, "EMAIL_START_HOST", "Inicio por mail: 1.servidor"));
+    altmp.add(new FlowSetting(anFlowId, "EMAIL_START_PORT", "Inicio por mail: 2.porto"));
+    altmp.add(new FlowSetting(anFlowId, "EMAIL_START_USER", "Inicio por mail: 3.utilizador"));
+    altmp.add(new FlowSetting(anFlowId, "EMAIL_START_ENC_PASS", "Inicio por mail: 4.password"));
+    altmp.add(new FlowSetting(anFlowId, "EMAIL_START_SECURE", "Inicio por mail: 5.ligação segura"));
+    altmp.add(new FlowSetting(anFlowId, "EMAIL_START_INBOX", "Inicio por mail: 6.Inbox"));
+    altmp.add(new FlowSetting(anFlowId, "EMAIL_START_SUBS_FOLDERS", "Inicio por mail: 7.folders a subscrever"));
+    altmp.add(new FlowSetting(anFlowId, "EMAIL_START_INTERVAL", "Inicio por mail: 8.intervalo de busca"));
+    
+
+    altmp.add(new FlowSetting(anFlowId, "DMS_ACCESS_ONOFF", "Acesso centralizado ao DMS"));
+    altmp.add(new FlowSetting(anFlowId, "DMS_ACCESS_USER", "Acesso centralizado ao DMS: 1.utilizador"));
+    altmp.add(new FlowSetting(anFlowId, "DMS_ACCESS_PWD", "Acesso centralizado ao DMS: 2.password"));
+    
+
+    altmp.add(new FlowSetting(anFlowId, "HOT_FOLDER_ONOFF", "HotFolder"));
+    altmp.add(new FlowSetting(anFlowId, "HOT_FOLDER_FOLDERS", "Pastas onde pesquisar ficheiros novos"));
+    altmp.add(new FlowSetting(anFlowId, "HOT_FOLDER_DEPTH", "Profundidade da pesquisa"));
+    altmp.add(new FlowSetting(anFlowId, "HOT_FOLDER_DOCVAR", "Variável de novo processo para ficheiro encontrado"));
+    altmp.add(new FlowSetting(anFlowId, "HOT_FOLDER_IN_USER", "O utilizador a utilizar para criar o processo"));
     
     return Collections.unmodifiableList(altmp);
   }
   
-  public Set<String> getDefaultSettingsNames() {
-    Set<String> settingNames = new HashSet<String>();
+  public Set<String> getDefaultSettingsNames()
+  {
+    Set<String> settingNames = new HashSet();
     
     List<FlowSetting> settings = getDefaultSettings(-1);
-    for(FlowSetting s : settings)
+    for (FlowSetting s : settings) {
       settingNames.add(s.getName());
+    }
     return Collections.unmodifiableSet(settingNames);
   }
-
-  public boolean isGuestAccessible(UserInfoInterface userInfo, int flowId) {
+  
+  public boolean isGuestAccessible(UserInfoInterface userInfo, int flowId)
+  {
     boolean response = false;
     Connection db = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-
-    if (!userInfo.isGuest())
+    if (!userInfo.isGuest()) {
       return false;
-
-    try {
+    }
+    try
+    {
       db = Utils.getDataSource().getConnection();
       pst = db.prepareStatement("SELECT value FROM flow_settings WHERE flowid=? AND name=?");
       pst.setInt(1, flowId);
-      pst.setString(2, Const.sGUEST_ACCESSIBLE);
+      pst.setString(2, "GUEST_ACCESSIBLE");
       rs = pst.executeQuery();
-      if (rs.next()) {
+      if (rs.next())
+      {
         String value = rs.getString("value");
-        if (value != null && StringUtilities.isAnyOfIgnoreCase(value, new String[] { Const.sGUEST_ACCESSIBLE_YES, "sim", "yes", "true", "1" })) {
-          response = true;
+        if (value != null) {
+          if (StringUtilities.isAnyOfIgnoreCase(value, new String[] { "Sim", "sim", "yes", "true", "1" })) {
+            response = true;
+          }
         }
       }
       rs.close();
-    } catch (SQLException e) {
-      Logger.error(userInfo.getUtilizador(), this, "isGuestAccessible", "exception caught: ", e);
-    } finally {
-      DatabaseInterface.closeResources(db, pst, rs);
     }
-
+    catch (SQLException e)
+    {
+      Logger.error(userInfo.getUtilizador(), this, "isGuestAccessible", "exception caught: ", e);
+    }
+    finally
+    {
+      DatabaseInterface.closeResources(new Object[] { db, pst, rs });
+    }
     return response;
   }
-
-  public void addFlowSettingsListener(String id, FlowSettingsListener listener) {    
-	  
-	  listeners.put(id, listener);
-	  
+  
+  public void addFlowSettingsListener(String id, FlowSettingsListener listener)
+  {
+    this.listeners.put(id, listener);
   }
-
-  public void removeFlowSettingsListener(String id) {	
-    if (listeners.containsKey(id)) {
-      listeners.remove(id);
-    }    
+  
+  public void removeFlowSettingsListener(String id)
+  {
+    if (this.listeners.containsKey(id)) {
+      this.listeners.remove(id);
+    }
   }
 }

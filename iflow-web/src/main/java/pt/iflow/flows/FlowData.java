@@ -220,7 +220,7 @@ public class FlowData implements IFlowData,Serializable {
            // add property name to catalogue vars
            this.setFlowSettingVar(fsa[i]);
          }
-         flowSettings.saveFlowSettings(userInfo, fsa, true);
+         flowSettings.saveFlowSettings(userInfo, fsa, true,"");
 
          // found some properties, save them from a painfull death!
          for (FlowSetting setting : fsa)

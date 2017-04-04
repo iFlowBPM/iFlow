@@ -1259,7 +1259,7 @@ public class FlowHolderBean implements FlowHolder {
                   // now going for settings save
                   FlowSettings settingsBean = BeanFactory.getFlowSettingsBean();
                   FlowSetting[] fsa = settingsBean.getFlowSettings(userInfo, flowId);
-                  settingsBean.saveFlowSettings(userInfo, fsa);
+                  settingsBean.saveFlowSettings(userInfo, fsa,"");
 
                   Logger.debug(userInfo.getUtilizador(), this, "buildFlow", "Settings saved");
                   //saving max blockID and subflow mapping if they exist - useful for auditing subflows
