@@ -2,7 +2,7 @@ package pt.iflow.api.flows;
 
 import java.io.PrintStream;
 import java.util.List;
-
+import java.sql.SQLException;
 import javax.servlet.ServletRequest;
 
 import pt.iflow.api.blocks.Block;
@@ -443,5 +443,8 @@ public interface Flow {
      * @param dAYS_UNTIL_PURGE
      */
 	public abstract void purge(UserInfoInterface userInfo, Long dAYS_UNTIL_PURGE);
+	
+	public abstract void hideProc(UserInfoInterface paramUserInfoInterface, ProcessData paramProcessData, int paramInt)
+		    throws SQLException;
 
 }

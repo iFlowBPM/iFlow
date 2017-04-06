@@ -9,9 +9,7 @@
 		<link rel="stylesheet" type="text/css" media="all" href="javascript/calendar/calendar-iflow.css" title="cal-iflow" />
 		<link rel="stylesheet" type="text/css" href="javascript/yahoo/container/assets/skins/sam/container.css" />
 		<link rel="stylesheet" type="text/css" href="javascript/yahoo/button/assets/skins/sam/button.css" />
-		<link rel="stylesheet" href="Themes/${orgTheme}/css/tips.css" type="text/css" />
-		<link rel="stylesheet" href="Themes/${orgTheme}/css/tutorial.css" type="text/css" />
-		<link rel="stylesheet" href="Themes/${orgTheme}/css/tree.css" type="text/css" />
+
 		<link rel="stylesheet" type="text/css" href="javascript/yahoo/assets/skins/sam/skin.css" />
 		<link rel="stylesheet" type="text/css" href="javascript/yahoo/menu/assets/skins/sam/menu.css" />
 		<link rel="stylesheet" type="text/css" href="javascript/yahoo/button/assets/skins/sam/button.css" />
@@ -19,8 +17,26 @@
 		<link rel="stylesheet" type="text/css" href="javascript/yahoo/container/assets/skins/sam/container.css" />
 		<link rel="stylesheet" type="text/css" href="javascript/yahoo/editor/assets/skins/sam/editor.css" />
 		<!-- CSS novos-->
-		<link href="Themes/${orgTheme}/cssNew/main.css" rel="stylesheet" type="text/css" />
-		<link href="Themes/${orgTheme}/cssNew/reset.css" rel="stylesheet" type="text/css" />
+		
+		#if($sys_admin != "yes")
+			<link rel="stylesheet" href="Themes/${orgTheme}/css/tips.css" type="text/css" />
+			<link rel="stylesheet" href="Themes/${orgTheme}/css/tutorial.css" type="text/css" />
+			<link rel="stylesheet" href="Themes/${orgTheme}/css/tree.css" type="text/css" />
+			<link href="Themes/${orgTheme}/cssNew/main.css" rel="stylesheet" type="text/css" />
+			<link href="Themes/${orgTheme}/cssNew/reset.css" rel="stylesheet" type="text/css" />
+			
+		
+		#else
+			<link rel="stylesheet" href="Themes/newflow/css/tips.css" type="text/css" />
+			<link rel="stylesheet" href="Themes/newflow/css/tutorial.css" type="text/css" />
+			<link rel="stylesheet" href="Themes/newflow/css/tree.css" type="text/css" />
+			<link href="Themes/newflow/cssNew/main.css" rel="stylesheet" type="text/css" />
+			<link href="Themes/newflow/cssNew/reset.css" rel="stylesheet" type="text/css" />
+		
+		
+		
+		
+		#end
 		<link href="javascript/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
 		<link href="javascript/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
 		<link href="javascript/jQueryAssets/jquery-ui-smoothness.css" rel="stylesheet" type="text/css" />
@@ -151,7 +167,10 @@
 				setHistory(10,'', '', '', '');
 				//Input
 				setHistory(11,'', '', '','');
-
+				
+				
+				setHistory(12, '$response.encodeURL($url_prefix,'Admin/admin_nav.jsp')','sel=1','$response.encodeURL($url_prefix,'Admin/settings.jsp')','ts=$ts');
+				
 				getCtrlFill(taskLabelsJSP, '', containerLabels);
 				tabber_right(1, mainContentJSP, 'cleanFilter=1');
 				getCtrlFill(mainContentJSP, 'data=alerts', delegationsForm);
@@ -178,6 +197,7 @@
 
 				mainResize();
 				#if($sys_admin != "no")
+					getCtrlFill(sysadminNavJSP, '', containerMainSys);
 				#end
 				
 				#* Inject applet inside element body (right here...) *#
@@ -292,7 +312,9 @@
 			function removeFolder(activity) {
 				tabber_right(1, mainContentJSP, 'removeactivities=' + activity);
 			}
-
+			
+			
+			
 			$(function() {
 				$('#delegations-form').dialog({
                                         dialogClass:"cma_dialog",
@@ -333,13 +355,16 @@
 					</div>
 					
 				</div>
-				<div class="div_bannerright">
+				
+				
+					<div class="div_bannerright">
 
                                         <ul>
+                                        
+                                     	#if($sys_admin == "no")
                                             <li>
-                                            
+                            
                                             <!--  Assinatura  -->
-                                            
                                             
                                             <div style="width: 35px;height: 32px;">
                                             <a class="menu_link" style="color: #ffffff !important;text-decoration:none;vertical-align: -webkit-baseline-middle;" target="_blank" href="./AppletWebstart"  title="$tooltip_signature"><img src="images/signature.png" width="20" /></a>
@@ -348,10 +373,22 @@
                                             
                                             
                                             <li><a href ="javascript:tabber_right(11, 'inbox.jsp')"><img width="32" height="32" src="images/envelope.png"/></a></li>
-                                            <li><a id="delegButton" onclick="javascript:$('#delegations-form').dialog('open');return false;"><img width="32" height="32" src="images/alertas.png"/></a><span class="spanAlerts"><a id="delegButtonCount">$nAlerts</a></span></li>
+                                          #end
+                                          
+                                           <li>
+                                           <a id="delegButton" onclick="javascript:$('#delegations-form').dialog('open');return false;">
+                                           <img width="32" height="32" src="images/alertas.png"/>
+                                           </a><span class="spanAlerts">
+                                           <a id="delegButtonCount">$nAlerts</a>
+                                           </span></li>
+                                         
+                                         
+                                          #if($sys_admin == "no")
                                             <li><img width="32" height="32" src="images/user.png"/>
                                                         <td style="padding:5px;max-width:250px" title="$user">
 														<a style="color: #ffffff !important;text-decoration:none;" href="javascript:tabber_right(6, 'personal_account.jsp')">
+								
+								
 								#if($sys_admin != "yes")
 									#if($user.length()>50)
 										$user.substring(0,49)...
@@ -359,9 +396,11 @@
 										$user
 									#end
 								#end
-</a>								
+								</a>								
 							</td>
                                             </li>
+                                            #end
+				                                           
 							<li>
 								<form action="$response.encodeURL($url_prefix,'logout.jsp')?ts=$ts">
 									<input type="submit" class="btn btn-default btn-sm" style="margin: 0px;" name="Logout" id="Logout" value="Sair"/>
@@ -372,6 +411,8 @@
 					
 
 				</div>
+				
+				
 			</div>
 
 			#if($sys_admin == "no")
@@ -494,6 +535,8 @@
 			  rss = 9
 			  reports = 10
 			  inbox = 11
+			  
+			  SysAdmin = 12
 			-->
 			<div id="section_div_1" class="main" style="margin-left: 220px; display: none"></div>
 			<!--div id="section_div_2" class="main" style="margin-left: 220px; display: none"></div-->
@@ -550,13 +593,70 @@
 			</div>
 
 			#else
+			
+			<div id="main_sidebar" class="sidebar1">
+				<div id="Accordion1">
+					
+					<h3 class="Acor_01">
+						<a href="#" onclick="javascript:tabber_load(12,'');">
+						<img src="images/admin.png" width="24" height="24" alt="" />SysAdmin</a>
+					</h3>
+					<div class="Acor_02" style=" margin: 0 ; padding:20px 0 0 0 ;">
+						<div id="container_sysadmin">
+							
+						</div>
+					</div>
+				</div>
+				
+			</div>
 
-			<div id="div_menu">
-				<div id="div_tabs">
-					<span style="display:none;color:white; font-size: 14px; font-weight: bold;vertical-alignment:middle;">$main_admin_title</span>
-					<div id="button4_span" class="tab_button_span"><input type="button" id="button4" value="$field_admin" class="tab_button" onClick="tabber_load(4,adminNavJSP)" title="$tooltip_sysadmin" /></div>
+	
+			<div id="section_div_12" class="main" style="margin-left: 220px; display: none"></div>
+			
+
+			<div class="yui-skin-sam">
+				<div id="userdialog">
+				</div>
+				<div id="helpdialog">
+				</div>
+				<div id="tutorialdialog" style="display:none;">
+				</div>
+				<div id="popupdialog">
 				</div>
 			</div>
+
+			<div id="appletHolder" style="display:none"></div>
+
+			<div id="autoSaveMessage" style="display:none">
+				<form name="loginform">
+					<div style="margin:auto;align:center;height:200px;background-image:url('images/login_bg.gif');background-repeat:no-repeat;padding-top:1px;">
+						<div style="position: relative; top: 60px;">
+							<div style="margin: 5px 0px; padding: 0px; position: relative; text-align: center; height: 2em;" class="error_msg">
+								$login_msg
+							</div>	
+							<div style="margin: 2px 0pt; padding: 0pt; width: 140px; height: 18px; position: relative; text-align: right; float: left;" class="user_info">
+								$field_username
+							</div>
+							<div style="margin: 2px 0pt; padding: 0pt; width: 140px; height: 18px; position: relative; text-align: left; float: right;" class="item">
+								<input type="hidden" id="idlogin" name="login" value="${username}"/>
+								<input type="text" name="xxxxx" value="${username}" disabled="disabled" size="15">
+							</div>
+							<div style="margin: 2px 0pt; padding: 0pt; width: 140px; height: 18px; position: relative; text-align: right; float: left;" class="user_info">
+								$field_password
+							</div>
+							<div style="margin: 2px 0pt; padding: 0pt; width: 140px; height: 18px; position: relative; text-align: left; float: right;" class="item">
+								<input id="idpassword" type="password" name="password" size="15" maxlength="40" onblur="document.getElementById('idpassword').value=this.value;"/>
+							</div>
+							<div style="position: relative; width: 280px; float: left; text-align: right;" class="item">
+								<input style="" id="link_search_span" class="regular_button_01" type="button" name="filter" value="Login" onClick="javascript:doassynclogin();" />
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+
+
+
 
 			#end
 				

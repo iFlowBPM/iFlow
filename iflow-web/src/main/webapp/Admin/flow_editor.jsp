@@ -6,7 +6,7 @@
 
 <h1 id="title_admin"><if:message string="flow_editor.title"/></h1>
 <form class="form-horizontal">
-  <p class="alert"><if:message string="flow_editor.msg.welcome"/></p>
+  <p class="alert" style="-webkit-box-shadow:none;"><if:message string="flow_editor.msg.welcome"/></p>
   <fieldset>
     <ol>
       <li class="form-group">

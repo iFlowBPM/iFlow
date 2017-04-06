@@ -129,7 +129,7 @@ if (flow != null) {
 <% } %>
 
   <fieldset>
-    <div class="alert"><%=messages.getString("flow_states.msg.selectFlow")%></div>
+    <div class="alert" style="-webkit-box-shadow:none;"><%=messages.getString("flow_states.msg.selectFlow")%></div>
     <ol>
       <li class="form-group">
         <label class="control-label col-sm-2" for="flowid"><%=messages.getString("flow_states.field.flow")%></label>

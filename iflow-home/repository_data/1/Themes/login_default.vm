@@ -42,7 +42,7 @@
 				| <a href="register"  class="linklogin">$msg.get('login.link.passwordRecover')</a> 
 				#end
 				#if ($isInstallDemo)
-				| <a href="Admin/login.jsp"  class="linklogin">Administrar</a>
+				| <a href="Admin/login.jsp"  class="linklogin">$msg.get('login.link.admin')</a>
 				</div>
 				#end
 				#end
@@ -63,7 +63,7 @@
 				</div>
 			#end
 
-			<div  class="bos_login" >
+			<div class="bos_login" style="background:white;margin-top:50px;width:460px">
     <div class="img"  > <img src="Themes/newflow/images/iflowbpm_logo.png" width="196" height="68" alt=""/> </div>
     <!--<h3 class="form-signin-heading">Please sign in</h3>-->
 	<div class="error_msg lp_error_msg">
@@ -81,9 +81,8 @@
       $msg.get('login.field.keepSession') </label>
     <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
   </form>
-  <div class="loginfooter" >iFlowBPM 5.1.0 $msg.get('iflow.copyright')<br>
+  <div class="loginfooter" style="padding-top:20px">iFlowBPM ${version} $msg.get('iflow.copyright')<br>
     <!--iFlow Version ${version}-->
-	
 	</div>
 </div>
 

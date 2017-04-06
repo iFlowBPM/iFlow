@@ -902,9 +902,9 @@ public class DelegationManager extends Thread {
         String to = ownerId;
         int notifySuccess = notify(superUserInfo, to, subject, message, messageMail, ASSIGN);
         if (notifySuccess == SENT_BY_EMAIL || notifySuccess == SENT_BY_NOTIFICATION) {
-          sbError.append("<br>").append(messages.getString("requisitar_agendamento.super_error.6", saParams));
+          sbError.append("<br><div class=\"alert alert-info\">").append(messages.getString("requisitar_agendamento.super_error.6", saParams)).append("</div>");
         } else if (notifySuccess == SENT_BY_ERROR) {
-          sbError.append("<br>").append(messages.getString("requisitar_agendamento.super_error.5", saParams));              
+          sbError.append("<br><div class=\"alert alert-info\">").append(messages.getString("requisitar_agendamento.super_error.5", saParams)).append("</div>");              
         }
       }
     }
@@ -1037,13 +1037,13 @@ public class DelegationManager extends Thread {
           String to = delegatedId;
           int notifySuccess = notify(userInfo, to, subject, message, messageMail, REQUEST);
           if (notifySuccess == SENT_BY_EMAIL) {
-            sbError.append("<br>").append(messages.getString("requisitar_agendamento.error.1"));
+            sbError.append("<br><div class=\"alert alert-info\">").append(messages.getString("requisitar_agendamento.error.1")).append("</div>");
           } else if (notifySuccess == SENT_BY_NOTIFICATION) {
-            sbError.append("<br>").append(messages.getString("requisitar_agendamento.error.7"));
+            sbError.append("<br><div class=\"alert alert-info\">").append(messages.getString("requisitar_agendamento.error.7")).append("</div>");
           } else if (notifySuccess == SENT_BY_NONE) {
-            sbError.append("<br>").append(messages.getString("requisitar_agendamento.error.8"));
+            sbError.append("<br><div class=\"alert alert-info\">").append(messages.getString("requisitar_agendamento.error.8")).append("</div>");
           } else if (notifySuccess == SENT_BY_ERROR) {
-            sbError.append("<br>").append(messages.getString("requisitar_agendamento.error.2"));
+            sbError.append("<br><div class=\"alert alert-info\">").append(messages.getString("requisitar_agendamento.error.2")).append("</div>");
           }
           
           recordInserted = true;
@@ -1051,7 +1051,7 @@ public class DelegationManager extends Thread {
           sbError.append("<br>").append(messages.getString("requisitar_agendamento.error.3"));
         }
       } else {
-        sbError.append("<br>").append(messages.getString("requisitar_agendamento.error.4"));
+        sbError.append("<br><div class=\"alert alert-info\">").append(messages.getString("requisitar_agendamento.error.4")).append("</div>");
       }
 
     } catch (Exception e) {
@@ -1237,25 +1237,25 @@ public class DelegationManager extends Thread {
           subject = messages.getString("confirmar_agendamento.notification.accepted.subject");
           message = messages.getString("confirmar_agendamento.notification.accepted.message", saParams);
           messageMail = messages.getString("confirmar_agendamento.notification.accepted.messagemail", saParams);
-          sbError.append("<br>").append(messages.getString("confirmar_agendamento.msg.accepted", saParams));
+          sbError.append("<br><div class=\"alert alert-info\">").append(messages.getString("confirmar_agendamento.msg.accepted", saParams)).append("</div>");
         } else {
           subject = messages.getString("confirmar_agendamento.notification.rejected.subject");
           message = messages.getString("confirmar_agendamento.notification.rejected.message", saParams);
           messageMail = messages.getString("confirmar_agendamento.notification.rejected.messagemail", saParams);
-          sbError.append("<br>").append(messages.getString("confirmar_agendamento.msg.rejected", saParams));
+          sbError.append("<br><div class=\"alert alert-danger\">").append(messages.getString("confirmar_agendamento.msg.rejected", saParams)).append("</div>");
         }      
         String to = ownerid;    
         int notifySuccess = notify(userInfo, to, subject, message, messageMail, ACCEPT);
         if (notifySuccess == SENT_BY_EMAIL) {
-          sbError.append("<br>").append(messages.getString("confirmar_agendamento.notification.sentmail"));
-        } else if (notifySuccess == SENT_BY_NOTIFICATION) {
-          sbError.append("<br>").append(messages.getString("confirmar_agendamento.notification.sent"));
-        } else if (notifySuccess == SENT_BY_ERROR) {
-          sbError.append("<br>").append(messages.getString("confirmar_agendamento.notification.notsent"));
-        }
+            sbError.append("<br><div class=\"alert alert-info\">").append(messages.getString("confirmar_agendamento.notification.sentmail")).append("</div>");
+          } else if (notifySuccess == SENT_BY_NOTIFICATION) {
+            sbError.append("<br><div class=\"alert alert-info\">").append(messages.getString("confirmar_agendamento.notification.sent")).append("</div>");
+          } else if (notifySuccess == SENT_BY_ERROR) {
+            sbError.append("<br><div class=\"alert alert-warning\">").append(messages.getString("confirmar_agendamento.notification.notsent")).append("</div>");
+          }
       } else {
-        sbError.append("<br>").append(messages.getString("confirmar_agendamento.error.notfound"));
-      }
+          sbError.append("<br><div class=\"alert alert-danger\">").append(messages.getString("confirmar_agendamento.error.notfound")).append("</div>");
+        }
     } catch (Exception e) {
       Logger.error(userInfo.getUtilizador(), this, "acceptDelegation", "Error acceptin delegation", e);
       result = -1;

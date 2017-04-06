@@ -74,6 +74,16 @@ session.setAttribute(AuthenticationServlet.ADMIN_SESSION_NAME, Boolean.TRUE);
 
 //first of all, check license status.
 boolean notifyInvalid = !LicenseServiceFactory.getLicenseService().isLicenseOK();
+
+boolean isInstallLocal = Const.INSTALL_LOCAL.equals(Const.INSTALL_TYPE);
+boolean isInstallDemo = Const.INSTALL_DEMO.equals(Const.INSTALL_TYPE);
+boolean useEmail = Const.bUSE_EMAIL;
+
+
+boolean isInMaintenance = Const.isInMaintenance();
+String maintenance = Const.isInMaintenance() ? "maintenance" : "";
+
+
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -119,11 +129,22 @@ boolean notifyInvalid = !LicenseServiceFactory.getLicenseService().isLicenseOK()
 	<input type="hidden" name="do_redirect" value="true"/>
 	<input type="hidden" name="url" value="../main.jsp"/>
 
+<div class="login_bartop"> 
+				<%if (!isInstallLocal)  {%>
+				
+				<div class="loginbar_left"><a class="linklogin" href="../login.jsp"><if:message string="login.link.login"/></a>
+				<span style="visibility:hidden;">|</span> <a href="register"  class="linklogin"></a> 
+				</div>
+				 				
+				<%} %>
+				</div>
+				
+<div class="bos_login" style="background:beige;margin-top:50px;width:460px;">
 
-<div class="bos_login" style="border:1px solid #ccc!important; margin-top:10rem;">
+<div class="alert alert-info" style="text-align:center; padding: 4px; height:30px; margin: 10px 110px; background-color: gray; color:white; font-weight: bold;"><if:message string="login.admin.title"/></div>
+
     <div class="img"> <img src="../Themes/newflow/images/iflowbpm_logo.png" width="196" height="68" alt=""/></div>
-    <h3><if:message string="login.field.admin"/></h3>
-
+    
 	<div class="error_msg lp_error_msg">
 			       <% if(bError) { %>
         			<%=sLoginError%>
@@ -141,22 +162,10 @@ boolean notifyInvalid = !LicenseServiceFactory.getLicenseService().isLicenseOK()
      <!--  $msg.get('login.field.keepSession')  --></label>
     <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
   </form>
-<div class="lp_footer_nav" style="text-align:center; margin-top:2rem;">
-<span class="lp_top_nav_text">iFlow Version <%= Version.VERSION %></span><br>
-   <a class="lp_top_nav_link" style="color:#5D7891;" href="https://uniksystem.pt"><if:message string="iflow.copyright"/></a>
-    <p>
-    <% if(!Const.INSTALL_LOCAL.equals(Const.INSTALL_TYPE)) { %>
-<div class="lp_top_nav_pos">
-	<div class="lp_top_nav_text" >
-		<a class="lp_top_nav_link" href="http://www.iflowbpm.com/">iflowbpm.pt</a> 
-		: <a class="lp_top_nav_link" href="../login.jsp"><if:message string="login.link.login"/></a>
+  
+  <div class="loginfooter" style="padding-top:20px">iFlowBPM <%= Version.VERSION %>  <a class="lp_top_nav_link" style="color:#5D7891;" href="http://www.uniksystem.pt"><if:message string="iflow.copyright"/></a><br>
+    <!--iFlow Version ${version}-->
 	</div>
-</div>
-<% } %>
-    </p>
-</div>
-
-
 
 </form>
 

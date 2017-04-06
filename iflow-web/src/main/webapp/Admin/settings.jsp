@@ -19,6 +19,7 @@ String sOper = fdFormData.getParameter("oper");
 
 String sHtml = "&nbsp;";
 boolean bEdit = false;
+boolean sAdmin = true;
 
 if (null == sOper) {
   sHtml = messages.getString("admin-settings.msg.reload");  
@@ -65,11 +66,11 @@ else if (sOper.equals("edit")) { // TOGGLE EDIT
 
 %>
 
-<form name="props" method="post">
+<form name="props" method="post" class="form-horizontal">
 	<input type="hidden" name="oper" value="<%=sOper%>"/>
 
 	<h1 id="title_admin"><%=title%></h1>
-	
+
 	<div class="table_inc">  
 
 <% if (sbError.length() > 0) { %>
@@ -86,7 +87,7 @@ else if (sOper.equals("edit")) { // TOGGLE EDIT
 			    	 String sKey = (String) e.nextElement();
 					String value = Setup.getProperty(sKey);
 				%>
-				<if:formInput type="text" name="<%=sKey%>" value='<%=value%>' label="<%=sKey%>" edit="<%=bEdit%>"/>
+				<if:formInput type="text" name="<%=sKey%>" value='<%=value%>' label="<%=sKey%>" edit="<%=bEdit%>" />
 				<%
 				}
 				%>
@@ -96,20 +97,21 @@ else if (sOper.equals("edit")) { // TOGGLE EDIT
   <fieldset class="submit">
     <% if (bEdit) { %>
       <input class="regular_button_01" type="button" name="modify" value="<%=messages.getString("button.cancel")%>" 
-          onClick="javascript:tabber_right('admin', '<%=response.encodeURL("Admin/settings.jsp") %>', 'oper=cancel&' + get_params(document.props));"/>
+          onClick="javascript:tabber_right('sysadmin', '<%=response.encodeURL("Admin/settings.jsp") %>', 'oper=cancel&' + get_params(document.props));"/>
       <input class="regular_button_01" type="button" name="modify" value="<%=messages.getString("button.save")%>" 
-          onClick="javascript:tabber_right('admin', '<%=response.encodeURL("Admin/settings.jsp") %>', 'oper=save&' + get_params(document.props));"/>
+          onClick="javascript:tabber_right('sysadmin', '<%=response.encodeURL("Admin/settings.jsp") %>', 'oper=save&' + get_params(document.props));"/>
     <% } else { %>
           <input class="regular_button_01" type="button" name="reload" value="<%=messages.getString("button.reload")%>" 
-          onClick="javascript:tabber_right('admin', '<%=response.encodeURL("Admin/settings.jsp") %>', 'oper=reload&' + get_params(document.props));"/>
+          onClick="javascript:tabber_right('sysadmin', '<%=response.encodeURL("Admin/settings.jsp") %>', 'oper=reload&' + get_params(document.props));"/>
           
       <input class="regular_button_01" type="button" name="modify" value="<%=messages.getString("button.modify")%>" 
-          onClick="javascript:tabber_right('admin', '<%=response.encodeURL("Admin/settings.jsp") %>', 'oper=edit&' + get_params(document.props));"/>
+          onClick="javascript:tabber_right('sysadmin', '<%=response.encodeURL("Admin/settings.jsp") %>', 'oper=edit&' + get_params(document.props));"/>
           
     <% } %>
   </fieldset>
-
 	</div>
+	
+	
 </form>
 
 

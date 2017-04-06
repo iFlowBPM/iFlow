@@ -68,9 +68,9 @@ public class FormCalendarTag extends IknowTag {
     StringBuffer sb = new StringBuffer();
 
     sb.append("<li>");
-    sb.append("<label for=\"");
+    sb.append("<label for=\"" );
     sb.append(asName);
-    sb.append("\">"); 
+    sb.append("\"class=\"control-label col-sm-2\">"); 
 
     if(null != asLabelKey && asLabelKey.trim().length() > 0) {
       sb.append(msg.getString(asLabelKey));
@@ -85,16 +85,17 @@ public class FormCalendarTag extends IknowTag {
 
     if (abEdit) {
       sb
-      .append("<input type=\"text\" name=\"")
+      .append("<div class=\"col-sm-2\"><input class=\"calendaricon form-control\" type=\"text\" name=\"")
       .append(asName)
       .append("\" id=\"")
       .append(asName)
       .append("\" value=\"")
       .append(asValue)
-      .append("\" maxlength=\"12\" size=\"12\" onmouseover=\"caltasks(this.id);this.onmouseover=null;\"/>")
-      .append("<img border=\"0\" src=\"images/icon_delete.png\" onclick=\"javascript:document.getElementById('")
+      .append("\" maxlength=\"12\" size=\"12\" onmouseover=\"caltasks(this.id);this.onmouseover=null;\"/></div>")
+      .append(" <div class=\"col-sm-1\" style=\"padding-left: 0px;\"><img border=\"0\" src=\"images/icon_delete.png\" onclick=\"javascript:document.getElementById('")
       .append(asName)
-      .append("').value='';\"/>");
+      .append("').value='';\"/></div>");
+     
     }
     else {
       sb.append(asValue); 

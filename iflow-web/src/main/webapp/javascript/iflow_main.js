@@ -43,6 +43,7 @@ var sectionDiv = 'section_div_';
 var taskLabelsJSP = "TaskLabels/task_labels.jsp";
 var containerLabels = 'container_task_labels';
 var containerMain = 'container_admin';
+var containerMainSys = 'container_sysadmin';
 var containerSearch = 'container_search';
 var containerReportsAdmin = 'container_report_admin';
 var containerReportsSupervisor = 'container_report_supervisor';
@@ -72,6 +73,7 @@ var reportsNavJSP="Reports/reports_nav.jsp";
 var reportsNavNewJSP="Reports/reports_nav_new.jsp";
 var reportsJSP="Reports/proc_perf.jsp";
 var adminNavJSPNew = "Admin/admin_nav_new.jsp";
+var sysadminNavJSP = "Admin/admin_nav.jsp";
 
 var prev_item = new Array();
 GLOBAL_session_config.sel = new Array();
@@ -437,6 +439,8 @@ function convert_tabnr(tabnr) {
   else if (tabnr == 'rss') return 9;
   else if (tabnr == 'reports') return 10;
   else if (tabnr == '2') return 1;
+  else if (tabnr == 'sysadmin') return 12;
+ 
   else if (tabnr > 0 && tabnr <= GLOBAL_MAX_TABS) return tabnr;
   return 1;
 }
@@ -453,6 +457,7 @@ function parse_tabnr(tabnr) {
   else if (tabnr == 9) return 'rss';
   else if (tabnr == 10) return 'reports';
   else if (tabnr == 11) return 'inbox';
+  else if (tabnr == 12) return 'sysadmin';
   else return 'dashboard';
 }
 

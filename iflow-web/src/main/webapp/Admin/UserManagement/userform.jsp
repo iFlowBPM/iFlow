@@ -279,7 +279,7 @@
 <div class="alert alert-info"><%=infoMsg%></div>
 <% } %>
 
-<fieldset><legend></legend>
+<fieldset>
 <ol>
 <%
     if(bEdit && !Const.bUSE_EMAIL) {
@@ -339,10 +339,19 @@
   <if:formInput name="mobileNumber" labelkey="userform.field.mobileNumber" type="text" value='<%=mobileNumber%>' edit="<%=bEdit%>" required="false" maxlength="20" />
   <if:formInput name="companyPhone" labelkey="userform.field.companyPhone" type="text" value='<%=companyPhone%>' edit="<%=bEdit%>" required="false" maxlength="20" />
 <% } %>
+
+
+<%--  
+
+Vai buscar as propriedades extras existentes nas propriedades do utilizador
+
+
 <% for (int i = 0; i < listExtraValues.length; i++) { 
 	String fieldText = "userform.field."+listExtraProperties[i];%>
   <if:formInput name="<%=\"extra_\"+listExtraProperties[i]%>" labelkey="<%=fieldText%>" type="text" value='<%=listExtraValues[i]%>' edit="<%=bEdit%>" required="false" maxlength="50" />
 <% } %>
+
+--%>
 <% if(!Const.bUSE_EMAIL && bEdit) { %>
 <% if("add".equals(newAction)) { %>
   <if:formInput name="__xxxxx__" label="&nbsp;" type="text" value="" edit="false" required="false" />

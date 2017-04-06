@@ -239,7 +239,7 @@ if(cbRequest && cbFlowids.length == 0) {
 
 		    if (sbError.length() > 0) {
 %>
-<div class="alert alert-danger">
+<div class="alert alert-danger" style="padding:0px 10px 10px 10px; margin-top:15px; width:30%;">
 <%=sbError%>
 </div>
 <%
@@ -247,7 +247,7 @@ if(cbRequest && cbFlowids.length == 0) {
 
 		    if (sbMsg.length() > 0) {
 		      %>
-		      <div class="alert alert-info">
+		      <div class="alert alert-info" style="padding:0px 10px 10px 10px; margin-top:15px; width:30%;">
 		      <%=sbMsg%>
 		      </div>
 		      <%
@@ -453,7 +453,10 @@ return;
  		  <% if(!cbRequest) { %>
 	      <li>
 	      	<fieldset>  
-			  <legend><if:message string="requisitar_agendamento.msg.4"/></legend>  
+	      	<div style="vertical-align: middle;">
+			<h1><if:message string="requisitar_agendamento.msg.4"/> </h1>
+			</div>
+			  
 			  <ol>
 				<if:formInput name="read"   type="checkbox" labelkey="requisitar_agendamento.msg.7"  value='<%=bRead%>'   edit="<%=allprivs.get(FlowRolesTO.READ_PRIV) %>"/>
 				<if:formInput name="create" type="checkbox" labelkey="requisitar_agendamento.msg.8"  value='<%=bCreate%>' edit="<%=allprivs.get(FlowRolesTO.CREATE_PRIV) %>"/>
@@ -476,7 +479,7 @@ return;
 		</ol>
   	</fieldset>
 
-	<fieldset class="submit">
+	<fieldset class="submit" style="margin-top: 5rem;">
 		<input class="regular_button_02 btn btn-default" type="button" name="cancel" value="<%=messages.getString("button.cancel")%>" onClick="tabber_right(5, '<%= response.encodeURL("gestao_tarefas.jsp") %>', 'ts=<%= ts %>&action=<%=sAction %>');"/>
 		<input class="regular_button_02 btn btn-default" type="button" name="request" value="<%=messages.getString("button.request")%>" onClick="tabber_right(5, '<%= response.encodeURL("requisitar_agendamento.jsp") %>', get_params(document.flowForm));"/>
 	</fieldset>

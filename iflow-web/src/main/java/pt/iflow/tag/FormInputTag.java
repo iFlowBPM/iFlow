@@ -22,6 +22,7 @@ public class FormInputTag
   private String size;
   private String onchange;
   private String onblur;
+  private boolean admin;
   
   public FormInputTag()
   {
@@ -88,7 +89,7 @@ public class FormInputTag
     }
     else if ("checkbox".equals(asType))
     {
-      sb.append("<input type=\"checkbox\" class=\"form-control\" name=\"").append(asName);
+      sb.append("<input type=\"checkbox\" class=\"form-control\" style=\"width:25%;\" name=\"").append(asName);
       sb.append("\" id=\"").append(asName).append("\" value=\"true");
       if (StringUtils.equalsIgnoreCase("true", asValue)) {
         sb.append("\" checked=\"checked");

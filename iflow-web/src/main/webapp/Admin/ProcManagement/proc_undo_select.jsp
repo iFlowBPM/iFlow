@@ -308,7 +308,7 @@ else {
       <% if (!sShowFlowHtml.equals("")) { %>
         <li class="form-group">
           <label class="control-label col-sm-2" for="showflowid"><%=messages.getString("proc_undo_select.crit.flow") %>:</label>
-		  <div class="col-sm-5">
+		  <div class="col-sm-4">
           <%=sShowFlowHtml%>
 		  </div>
         </li>
@@ -319,19 +319,17 @@ else {
       </li>
       <li class="form-group">
         <label class="control-label col-sm-2" for="dtbefore"><%=messages.getString("proc_undo_select.crit.before") %>:</label>
-		<div class="col-sm-5">
         <%=sBeforeHtml%>
-		  </div>
       </li>
       <li class="form-group">
         <label class="control-label col-sm-2" for="itemspage"><%=messages.getString("proc_undo_select.crit.tasks") %>:</label>
-		<div class="col-sm-5">
+		<div class="col-sm-1">
         <input type="text" name="itemspage" value="<%=nItems%>" class="txt form-control" size="5" maxlength="2" />
 		  </div>
       </li>
       <li class="form-group">
         <label class="control-label col-sm-2" for="pid"><%=messages.getString("proc_undo_select.crit.process") %>:</label>
-		<div class="col-sm-5">
+		<div class="col-sm-2">
         <input type="text" name="pid" value="<%=sPid%>" class="txt form-control" size="8" />
 		  </div>
       </li>
