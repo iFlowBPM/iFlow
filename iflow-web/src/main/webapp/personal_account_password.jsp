@@ -67,7 +67,7 @@
       }
 
 %>
-<form method="post" name="userform">
+<form method="post" name="userform" class="form-horizontal">
   <input type="hidden" name="userid" value="<%=userId%>" />
 
   <h1 id="title_account"><%=title%></h1>
@@ -87,9 +87,9 @@
     </ol>
   </fieldset>
   <fieldset class="submit">
-      <input class="regular_button_02" type="button" name="modify" value="<%=messages.getString("button.cancel")%>" 
+      <input class="regular_button_03 btn btn-default" type="button" name="modify" value="<%=messages.getString("button.cancel")%>" 
           onClick="javascript:tabber_right(<%=leftMenu %>, '<%= response.encodeURL("personal_account.jsp") %>', 'oper=cancel&' + get_params(document.userform));"/>
-      <input class="regular_button_02" type="button" name="modify" value="<%=messages.getString("button.change_password")%>" 
+      <input class="regular_button_03 btn btn-default" type="button" name="modify" value="<%=messages.getString("button.change_password")%>" 
           onClick="javascript:tabber_right(<%=leftMenu %>, '<%= response.encodeURL("personal_account_password.jsp") %>', 'oper=savepass&' + get_params(document.userform));"/>
   </fieldset>
 </form>

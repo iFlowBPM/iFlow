@@ -78,7 +78,7 @@ OrganizationThemeData orgTheme = BeanFactory.getOrganizationThemeBean().getOrgan
     	<% } else { %>
 		<%--<input class="regular_button_01" type="button" name="clear" value="<if:message string="button.clear"/>" onClick="javascript:document.formulario.reset()"/>--%>
 		<input class="regular_button_01 btn btn-default" type="button" name="modify" value="<if:message string="button.modify"/>" onclick="javascript:tabber_right(4,'<%=response.encodeURL("Admin/Organization/organization.jsp")%>','oper=edit&ts=<%=ts%>');"/>
-		<input class="regular_button_02 btn btn-default" type="button" name="cache" value="<if:message string="admin-flows.button.reloadCache"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/Organization/organization.jsp")%>','oper=cache&ts=<%=ts%>');"/>
+		<input class="regular_button_02 btn btn-default" type="button" name="cache" value="<if:message string="admin-flows.button.reloadCache"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/Organization/organization.jsp")%>','ts=<%=ts%>');"/>
 		<% } %>
 	</fieldset>
 </form>

@@ -367,7 +367,7 @@
                                             <!--  Assinatura  -->
                                             
                                             <div style="width: 35px;height: 32px;">
-                                            <a class="menu_link" style="color: #ffffff !important;text-decoration:none;vertical-align: -webkit-baseline-middle;" target="_blank" href="./AppletWebstart"  title="$tooltip_signature"><img src="images/signature.png" width="20" /></a>
+                                            <a class="menu_link" style="color: #ffffff !important;text-decoration:none;vertical-align: -webkit-baseline-middle;" target="_blank" href="./AppletWebstart"  title="$tooltip_signature"><img src="images/signature1.png"  /></a>
                                             </div>
                                             </li>
                                             
@@ -375,19 +375,21 @@
                                             <li><a href ="javascript:tabber_right(11, 'inbox.jsp')"><img width="32" height="32" src="images/envelope.png"/></a></li>
                                           #end
                                           
+                                          
                                            <li>
-                                           <a id="delegButton" onclick="javascript:$('#delegations-form').dialog('open');return false;">
+                                           <a id="delegButton" onclick="javascript:$('#delegations-form').dialog('open');return false">
                                            <img width="32" height="32" src="images/alertas.png"/>
-                                           </a><span class="spanAlerts">
-                                           <a id="delegButtonCount">$nAlerts</a>
-                                           </span></li>
+                                           </a>
+                                           <span class="spanAlerts"><a id="delegButtonCount">$nAlerts</a></span>
+                                           </li>
                                          
                                          
                                           #if($sys_admin == "no")
                                             <li><img width="32" height="32" src="images/user.png"/>
-                                                        <td style="padding:5px;max-width:250px" title="$user">
-														<a style="color: #ffffff !important;text-decoration:none;" href="javascript:tabber_right(6, 'personal_account.jsp')">
-								
+                                            <td style="padding:5px;max-width:250px" title="$user">
+                                             <td style="padding:5px;max-width:250px" title="SysAdmin">
+                                             <a style="color: #ffffff !important;text-decoration:none;" href="javascript:tabber_right(6, 'personal_account.jsp')">
+											#end
 								
 								#if($sys_admin != "yes")
 									#if($user.length()>50)
@@ -399,7 +401,7 @@
 								</a>								
 							</td>
                                             </li>
-                                            #end
+                                            
 				                                           
 							<li>
 								<form action="$response.encodeURL($url_prefix,'logout.jsp')?ts=$ts">

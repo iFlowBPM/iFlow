@@ -42,11 +42,14 @@ div.sexy div.icon {
 
 
 div.sexy div.list-wrapper {
+		
     border: 1px solid #D9D9D9;
     background-color: #FFFFFF;
     padding: 0;
     margin: 0;
-    /*width: 252px;*/
+    
+    /*Dropbox
+    width: 252px; */
     bottom: auto;
     text-align: left;
 
