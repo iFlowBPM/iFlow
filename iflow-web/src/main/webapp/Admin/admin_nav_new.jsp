@@ -62,6 +62,39 @@
 	</li>
 <% } else if (canUserAdmin && userInfo.isSysAdmin()) { %>
 	<li>
+		<a href="#"><%=messages.getString("admin_nav.section.system.title")%></a>
+		<ul>
+			<li>
+				<a id="li_a_admin_<%=AdminNavConsts.SYSTEM_PROPERTIES%>"
+					title="<%=messages.getString("admin_nav.section.system.tooltip.properties")%>"
+					class="toolTipItemLink li_link"
+					href="javascript:selectedItem('admin',<%=AdminNavConsts.SYSTEM_PROPERTIES%>);tabber_save(4,'<%=response.encodeURL("Admin/admin_nav.jsp") %>','sel=<%=AdminNavConsts.SYSTEM_PROPERTIES%>','<%=response.encodeURL("Admin/settings.jsp") %>','ts=<%=ts%>');"><%=messages.getString("admin_nav.section.system.link.properties")%>
+				</a>
+			</li>
+			<li>
+				<a id="li_a_admin_<%=AdminNavConsts.VERSIONS%>"
+					title="<%=messages.getString("admin_nav.section.system.tooltip.versions")%>"
+					class="toolTipItemLink li_link"
+					href="javascript:selectedItem('admin',<%=AdminNavConsts.VERSIONS%>);tabber_save(4,'','sel=<%=AdminNavConsts.VERSIONS%>','<%=response.encodeURL("Admin/versions.jsp")%>','ts=<%=ts%>');"><%=messages.getString("admin_nav.section.system.link.versions")%>
+				</a>
+			</li>
+			<li>
+				<a id="li_a_admin_<%=AdminNavConsts.LOGS%>"
+					title="<%=messages.getString("admin_nav.section.system.tooltip.logs")%>"
+					class="toolTipItemLink li_link"
+					href="javascript:selectedItem('admin',<%=AdminNavConsts.LOGS%>);tabber_save(4,'','sel=<%=AdminNavConsts.LOGS%>','<%=response.encodeURL("Admin/logs/logs.jsp")%>','ts=<%=ts%>');"><%=messages.getString("admin_nav.section.system.link.logs")%>
+				</a>
+			</li>
+    		<li>
+    			<a id="li_a_admin_<%=AdminNavConsts.DATASOURCES%>"
+			        title="<%=messages.getString("admin_nav.section.system.tooltip.datasources")%>"
+			        class="toolTipItemLink li_link"
+			        href="javascript:selectedItem('admin',<%=AdminNavConsts.DATASOURCES%>);tabber_save(4,'','sel=<%=AdminNavConsts.DATASOURCES%>','<%=response.encodeURL("Admin/db/datasources.jsp")%>','ts=<%=ts%>');"><%=messages.getString("admin_nav.section.system.link.datasources")%>
+		        </a>
+	        </li>			
+		</ul>
+	</li>
+	<li>
 		<a href="#"><%=messages.getString("admin_nav.section.users.title")%></a>
 		<ul>
 			<li>
@@ -207,7 +240,7 @@
 <% } %>
 
 
-<% if (userInfo.isSysAdmin()) { %>
+<% if (userInfo.isSysAdmin() && false /*deprecated*/) { %>
 <ul>
 <li>
 <a id="li_a_admin_<%=AdminNavConsts.SYSTEM_PROPERTIES%>"
