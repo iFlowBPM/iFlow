@@ -25,9 +25,11 @@ String closeReleaseNotes = messages.getString("admin-versions.closeReleaseNotes"
 %>
 	<h1 id="title_admin"><%=title%></h1>
 	
-	<div class="table_inc">  
+	
+	<div class="col-md-7" style="margin-top:4rem;">
+	<div class="table_inc ">  
 
-		<table>
+		<table class="item_list table">
 			<tr>
 			  <td class="info_msg" width="50%"><%=version %></td>
 			  <td class="info_msg" width="20%"><%=Version.VERSION %></td>
@@ -84,3 +86,5 @@ String closeReleaseNotes = messages.getString("admin-versions.closeReleaseNotes"
 			</tr>
 		</table>
 	</div>
+	</div>
+	<div class="col-md-5"></div>

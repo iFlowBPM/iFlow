@@ -1041,3 +1041,10 @@ border-radius: 0px !important;
     font-weight: bold;
     border-radius: 0px !important;
 }
+
+
+/* Centrar botões */
+
+.centrarBotoes {
+	text-align:center; margin:3rem 0rem;
+}

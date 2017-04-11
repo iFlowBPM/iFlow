@@ -10,8 +10,8 @@
   if (param == null)
     param = "";
   else
-	   // param = URLEncoder.encode(param);
-     	  param = URLDecoder.decode(param);
+	    //param = URLEncoder.encode(param);
+     	//  param = URLDecoder.decode(param);
 %>
 <div id="div_proc_menu_colapsed" class="proc_menu_colapsed" style="display:block;">
 	

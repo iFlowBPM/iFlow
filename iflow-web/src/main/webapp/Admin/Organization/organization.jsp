@@ -71,7 +71,7 @@ OrganizationThemeData orgTheme = BeanFactory.getOrganizationThemeBean().getOrgan
 			<if:formInput edit="<%= bEdit %>" name="logo" type="logo" value="" labelkey="organization.propertiesform.field.currentlogo" required="false"/>
 		</ol>
 	</fieldset>
-    <fieldset class="submit">
+    <fieldset class="submit centrarBotoes">
     	<% if(bEdit) { %>
 		<input class="regular_button_01 btn btn-default" type="button" name="cancel" value="<if:message string="button.cancel"/>" onclick="javascript:tabber_right(4,'<%=response.encodeURL("Admin/Organization/organization.jsp")%>','ts=<%=ts%>');"/>
 		<input class="regular_button_01 btn btn-default" type="submit" name="save" value="<if:message string="button.save"/>" />

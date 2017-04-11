@@ -35,7 +35,6 @@
 		
 		
 		
-		
 		#end
 		<link href="javascript/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
 		<link href="javascript/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
@@ -384,13 +383,13 @@
                                            </li>
                                           #end
                                           
-                                          
+                                          <!--
                                            <li>
                                            <a id="delegButton" onclick="javascript:$('#delegations-form').dialog('open');return false">
                                            <img width="32" height="32" src="images/alertas.png"/>
                                            </a>
                                            <span class="spanAlerts"><a id="delegButtonCount">$nAlerts</a></span>
-                                           </li>
+                                           </li>-->
                                          
 
                                           #if($sys_admin == "yes")
