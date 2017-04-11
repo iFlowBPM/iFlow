@@ -172,7 +172,9 @@
 				setHistory(12, '$response.encodeURL($url_prefix,'Admin/admin_nav.jsp')','sel=1','$response.encodeURL($url_prefix,'Admin/settings.jsp')','ts=$ts');
 				
 				getCtrlFill(taskLabelsJSP, '', containerLabels);
-				tabber_right(1, mainContentJSP, 'cleanFilter=1');
+				#if($sys_admin == "no")
+					tabber_right(1, mainContentJSP, 'cleanFilter=1');
+				#end
 				getCtrlFill(mainContentJSP, 'data=alerts', delegationsForm);
 				getCtrlFill(mainContentJSP, 'data=procs', containerFlowList);
 				#if("$Tab8" != "no")
@@ -314,7 +316,6 @@
 			}
 			
 			
-			
 			$(function() {
 				$('#delegations-form').dialog({
                                         dialogClass:"cma_dialog",
@@ -373,6 +374,14 @@
                                             
                                             
                                             <li><a href ="javascript:tabber_right(11, 'inbox.jsp')"><img width="32" height="32" src="images/envelope.png"/></a></li>
+                                          	<li>
+                                           	<a id="delegButton" onclick="javascript:$('#delegations-form').dialog('open');return false;">
+                                           		<img width="32" height="32" src="images/alertas.png"/>
+                                           	</a>
+                                           	<span class="spanAlerts">
+                                           		<a id="delegButtonCount">$nAlerts</a>
+                                           	</span>
+                                           </li>
                                           #end
                                           
                                           
@@ -383,6 +392,14 @@
                                            <span class="spanAlerts"><a id="delegButtonCount">$nAlerts</a></span>
                                            </li>
                                          
+
+                                          #if($sys_admin == "yes")
+	                                          <li>
+	                                       		<!--<img width="32" height="32" src="images/admin.png"/>-->
+	                                       		ADMIN                                      	
+	                                          </li> 
+                                         #end
+
                                          
                                           #if($sys_admin == "no")
                                             <li><img width="32" height="32" src="images/user.png"/>
@@ -509,7 +526,7 @@
 						#end
 					#end
 
-					#if($org_admin == "yes")
+					#if($org_admin == "yes" || $sys_admin=="yes")
 					<h3 class="Acor_01">
 						<a href="#" onclick="javascript:tabber_load(4, '');">
 						<img src="images/admin.png" width="24" height="24" alt="" /> Admin</a>
@@ -595,26 +612,46 @@
 			</div>
 
 			#else
-			
 			<div id="main_sidebar" class="sidebar1">
-				<div id="Accordion1">
-					
+				<div id="Accordion1">					
 					<h3 class="Acor_01">
-						<a href="#" onclick="javascript:tabber_load(12,'');">
-						<img src="images/admin.png" width="24" height="24" alt="" />SysAdmin</a>
+						<a href="#" onclick="javascript:tabber_load(4, '');">
+						<img src="images/admin.png" width="24" height="24" alt="" /> Admin</a>
 					</h3>
 					<div class="Acor_02" style=" margin: 0 ; padding:20px 0 0 0 ;">
-						<div id="container_sysadmin">
-							
+						<div id="container_admin">
 						</div>
-					</div>
-				</div>
-				
+					</div>					
+				</div>								
 			</div>
 
-	
-			<div id="section_div_12" class="main" style="margin-left: 220px; display: none"></div>
-			
+			<!-- 
+			  dashboard = 1
+			  tasks = 2
+			  processes = 3
+			  admin = 4
+			  delegations = 5
+			  account = 6
+			  help = 7
+			  search = 8
+			  rss = 9
+			  reports = 10
+			  inbox = 11
+			  
+			  SysAdmin = 12
+			-->
+			<div id="section_div_1" class="main" style="margin-left: 220px; display: none"></div>
+			<!--div id="section_div_2" class="main" style="margin-left: 220px; display: none"></div-->
+			<div id="section_div_3" class="main" style="margin-left: 220px; display: none"></div>
+			<div id="section_div_4" class="main" style="margin-left: 220px; display: none"></div>
+			<div id="section_div_5" class="main" style="margin-left: 220px; display: none"></div>
+			<div id="section_div_6" class="main" style="margin-left: 220px; display: none"></div>
+			<!--div id="section_div_7" class="main" style="margin-left: 220px; display: none"></div-->
+			<div id="section_div_8" class="main" style="margin-left: 220px; display: none"></div>
+			<!--div id="section_div_9" class="main" style="margin-left: 220px; display: none"></div-->
+			<div id="section_div_10" class="main" style="margin-left: 220px; display: none"></div>
+			<div id="section_div_11" class="main" style="margin-left: 220px; display: none"></div>
+			<div id="delegations-form" class="cma_dialog" title="Alertas" style="display:none"></div>
 
 			<div class="yui-skin-sam">
 				<div id="userdialog">
@@ -656,10 +693,6 @@
 					</div>
 				</form>
 			</div>
-
-
-
-
 			#end
 				
 		</div>

@@ -2136,6 +2136,8 @@ function updateNotifications(){
 }
 
 function updateNotificationsCallback(response){
+	if(document.getElementById('delegButtonCount')==null)
+		return;
 	document.getElementById('delegButtonCount').text = response.trim();
 	window.setTimeout(updateNotifications, 60000);
 }

@@ -9,6 +9,8 @@ public abstract interface FlowSettings
 {
   public abstract String getFlowCalendarId(UserInfoInterface paramUserInfoInterface, int paramInt);
   
+  public abstract void saveFlowSettings(UserInfoInterface paramUserInfoInterface, FlowSetting[] paramArrayOfFlowSetting);
+  
   public abstract void saveFlowSettings(UserInfoInterface paramUserInfoInterface, FlowSetting[] paramArrayOfFlowSetting, String paramString);
   
   public abstract void saveFlowSettings(UserInfoInterface paramUserInfoInterface, FlowSetting[] paramArrayOfFlowSetting, boolean paramBoolean, String paramString);

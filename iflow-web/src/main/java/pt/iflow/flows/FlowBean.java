@@ -2696,4 +2696,62 @@ public class FlowBean implements Flow {
 	      }
   }
 
-}
+  public void hideProc(UserInfoInterface userInfo, ProcessData procData, int hidden)
+		    throws SQLException
+		  {
+		    int flowid = procData.getFlowId();
+		    int pid = procData.getPid();
+		    int subpid = procData.getSubPid();
+		    
+		    String userid = userInfo.getUtilizador();
+		    
+		    Logger.trace(this, "hide process", "Call for user=" + userid + ", flowid=" + flowid + " and pid=" + pid + " and subpid=" + 
+		      subpid);
+		    if (pid == -10)
+		    {
+		      Logger.debug(userid, this, "hide process", "Process still in session... returning");
+		      return;
+		    }
+		    Connection db = null;
+		    Statement st = null;
+		    String stmp = null;
+		    try
+		    {
+		      db = DatabaseInterface.getConnection(userInfo);
+		      db.setAutoCommit(false);
+		      st = db.createStatement();
+		      
+
+		      stmp = "update process set hidden = " + hidden + " where flowid=" + flowid + " and pid=" + pid + " and subpid=" + subpid;
+		      Logger.debug(userid, this, "hide process", "Query=" + stmp);
+		      st.executeUpdate(stmp);
+		      
+		      DatabaseInterface.commitConnection(db);
+		    }
+		    catch (SQLException sqle)
+		    {
+		      Logger.error(userid, this, "hide process", procData.getSignature() + "sql exception: " + sqle.getMessage(), sqle);
+		      try
+		      {
+		        DatabaseInterface.rollbackConnection(db);
+		      }
+		      catch (Exception localException1) {}
+		      throw sqle;
+		    }
+		    catch (Exception e)
+		    {
+		      Logger.error(userid, this, "hide process", procData.getSignature() + "exception: " + e.getMessage(), e);
+		      try
+		      {
+		        DatabaseInterface.rollbackConnection(db);
+		      }
+		      catch (Exception localException2) {}
+		      throw new SQLException(e.getMessage());
+		    }
+		    finally
+		    {
+		      DatabaseInterface.closeResources(new Object[] {db, st });
+		    }
+		  }
+		}
+
