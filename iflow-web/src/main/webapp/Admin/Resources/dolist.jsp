@@ -83,7 +83,7 @@
 	</div>
 <% } %>
 
-<div class="button_box">
+<div class="button_box centrarBotoes">
    	<input class="regular_button_02 btn btn-default" type="button" name="add" value="<if:message string="button.add"></if:message>" onClick="javascript:tabber_right(4, '<c:url value="Admin/Resources/uploadform.jsp"></c:url>','type=${param.type}');"></input>
 	<if:generateHelpBox context="dolist"/>
 </div>

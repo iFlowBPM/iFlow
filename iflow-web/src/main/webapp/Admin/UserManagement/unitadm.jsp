@@ -154,7 +154,7 @@ UserManager manager = BeanFactory.getUserManagerBean();
     %>
 		</table>
 	</div>
-	<div class="button_box">
+	<div class="button_box centrarBotoes">
     	<input class="regular_button_01 btn btn-default" type="button" name="add_unit" value="<%=messages.getString("button.add")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/unitform.jsp")%>','');"/>
      </div>
 

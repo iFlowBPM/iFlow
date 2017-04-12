@@ -2187,3 +2187,8 @@ function isDownloadLinkAvailable(link){
 	else
 		return true;
 }
+
+
+function changeLogType(value){
+	
+}

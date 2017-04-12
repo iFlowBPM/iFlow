@@ -86,7 +86,7 @@
     	<if:formInput type="password" name="repeatpass" value="" labelkey="userform.field.repeatpass" edit="true" required="true" maxlength="125"/>
     </ol>
   </fieldset>
-  <fieldset class="submit">
+  <fieldset class="submit centrarBotoes">
       <input class="regular_button_03 btn btn-default" type="button" name="modify" value="<%=messages.getString("button.cancel")%>" 
           onClick="javascript:tabber_right(<%=leftMenu %>, '<%= response.encodeURL("personal_account.jsp") %>', 'oper=cancel&' + get_params(document.userform));"/>
       <input class="regular_button_03 btn btn-default" type="button" name="modify" value="<%=messages.getString("button.change_password")%>" 

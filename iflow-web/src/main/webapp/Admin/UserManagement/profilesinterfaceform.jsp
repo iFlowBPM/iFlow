@@ -133,7 +133,7 @@
 		</div>
 	</ol>
 	</fieldset>
-	<fieldset class="submit"><input class="regular_button_00 btn btn-default"
+	<fieldset class="submit centrarBotoes"><input class="regular_button_00 btn btn-default"
 		type="button" name="back"
 		value="<%=messages.getString("button.back")%>"
 		onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profilesadm.jsp")%>', get_params(document.formulario));" />

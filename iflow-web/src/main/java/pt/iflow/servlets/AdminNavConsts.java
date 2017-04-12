@@ -23,6 +23,8 @@ public abstract class AdminNavConsts {
   public static final int USER_ORGANICAL_UNITS = 23;
   public static final int USER_THEMES = 24;
   public static final int USER_ADMIN_PERSONAL_INFO = 25;
+  public static final int USER_USERS_ADMIN = 26;
+  
   
   public static final int FLOW_DEPLOYMENT = 30;
   public static final int FLOW_DELETE = 31;

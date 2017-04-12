@@ -104,6 +104,16 @@
 					<%=messages.getString("admin_nav.section.users.link.organizations")%>
 				</a>
 			</li>
+			
+			<!-- Alterar palavra passe - Admin -->
+			
+			<li>
+				<a id="li_a_admin_<%=AdminNavConsts.USER_USERS_ADMIN%>"
+				class="toolTipItemLink li_link"				
+				title="<%=messages.getString("admin_nav.section.users.tooltip.users")%>" href="javascript:selectedItem('admin', <%=AdminNavConsts.USER_USERS_ADMIN%>);tabber_save(4, '', '', 'personal_account_password.jsp');">
+					<%=messages.getString("admin_nav.section.users.link.account")%>
+				</a>
+			</li>
 		</ul>
 	</li>
 <% } %>

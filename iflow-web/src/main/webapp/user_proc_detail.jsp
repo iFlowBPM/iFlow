@@ -27,7 +27,7 @@ if(scroll != null)
 <iframe onload="calcFrameHeight('iframe_proc_detail');" name="proc_detail" id="iframe_proc_detail" scrolling="auto" height="1" style="<%= ("-4".equals(status))?"position: fixed":"" %>" frameborder="0" src="<%=detailURL%>">
 </iframe>
 <div id="buttons_proc_detail">
-<fieldset class="submit">
+<fieldset class="submit centrarBotoes">
 <% if(status.equals("-2")){ %>
 
   <input class="regular_button_01 btn btn-default btn-sm  pull-right" style="margin-right:40px;" type="button" name="back" value="Fechar" 

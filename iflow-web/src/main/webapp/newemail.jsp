@@ -45,7 +45,7 @@ int result = BeanFactory.getUserManagerBean().confirmEmailAddress(request.getPar
 <% } %>
 					</div>
 				</fieldset>
-				<fieldset class="submit rp_background">
+				<fieldset class="submit rp_background centrarBotoes">
 					<input class="regular_button_01" type="submit" id="continues" name="continues" value="<if:message string="button.continue"/>"/>
 				</fieldset>
 			</form>

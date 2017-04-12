@@ -115,7 +115,7 @@ function validateFieldsToSubmit (){
         </ol>
     </div>
 
-    <fieldset class="submit">
+    <fieldset class="submit centrarBotoes">
         <input class="regular_button_01 btn btn-default" type="button" name="back"
             value="<%=messages.getString("button.back")%>"
             onClick="tabber_right(4, '<%=response.encodeURL("Admin/flow_schedule_list")%>','ts=<%=ts %>');"

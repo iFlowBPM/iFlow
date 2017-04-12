@@ -112,7 +112,7 @@
 </ol>
 </fieldset>
 <% } %>
-<fieldset class="submit"><legend></legend>
+<fieldset class="submit centrarBotoes"><legend></legend>
 <%
   if (op == 1 && sbError.length() == 0) {
 %>

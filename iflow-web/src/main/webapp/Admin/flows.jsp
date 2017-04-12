@@ -256,7 +256,7 @@ if (sCache == null) {
 	      </li>
 		</ol>
 	</fieldset>
-    <fieldset class="submit">
+    <fieldset class="submit centrarBotoes">
 		<input class="regular_button_02" type="button" name="cache" value="<%=messages.getString("admin-flows.button.reloadCache")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flows.jsp") %>','cache=Cache');"/>
 		<input class="regular_button_01" type="button" name="cache" value="<%=messages.getString("admin-flows.button.refresh")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flows.jsp") %>','refresh=Refresh');"/>    			
 	</fieldset>   

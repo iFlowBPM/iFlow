@@ -64,7 +64,7 @@
 
 </table>
 
-<fieldset class="submit">
+<fieldset class="submit centrarBotoes">
     <input class="regular_button_01 btn btn-default" type="button" name="add_flow_schedule"
         value="<if:message string="button.add"/>"
         onClick="tabber_right(4, '<%=response.encodeURL("Admin/flow_schedule_add")%>','ts=<%=ts%>');"/>

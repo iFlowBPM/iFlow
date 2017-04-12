@@ -39,7 +39,7 @@
 							<li><if:message string="resetPassword.result.3"/></li>
 						</ol>
 					</fieldset>
-					<fieldset class="submit rp_background">
+					<fieldset class="submit rp_background centrarBotoes">
 						<input class="regular_button_01" type="submit" name="cancel" value="<if:message string="button.finish"/>"/>
 					</fieldset>
 				</form>

@@ -209,7 +209,7 @@ if (sbError.length() == 0 && flowid > 0 && pid > 0 && subpid > 0) {
      
 
 <% if (state > 0 || !bEmpty) { %>
-  <div class="button_box">
+  <div class="button_box centrarBotoes">
     <% if (state > 0) { %>
  	  <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" 
       onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/flow_state_procs.jsp")%>', get_params(document.procusers));"/>

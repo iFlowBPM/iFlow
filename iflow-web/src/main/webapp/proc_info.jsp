@@ -142,7 +142,7 @@
 		  </script>
 	<% } %>
 <hr class="apt_sep">
-<div class="button_box" style="text-align:center; margin-bottom:30px">
+<div class="button_box centrarBotoes" style="text-align:center; margin-bottom:30px">
   <form action="#" onsubmit="return false;">
     <% String theme = BeanFactory.getOrganizationThemeBean().getOrganizationTheme(userInfo).getThemeName(); %>
 		<input class="regular_button_01 btn btn-default"

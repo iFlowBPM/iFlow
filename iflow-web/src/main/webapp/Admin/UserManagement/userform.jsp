@@ -363,7 +363,7 @@ Vai buscar as propriedades extras existentes nas propriedades do utilizador
 <% } %>
 </ol>
 </fieldset>
-<fieldset class="submit">
+<fieldset class="submit centrarBotoes">
   <input class="regular_button_01 btn btn-default" type="button" name="back" value='<%=messages.getString("button.back")%>' onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/"+jspBack)%>','userid=<%=userId%>');" />
 <% if(bEdit) { %>
   <input class="regular_button_01 btn btn-default" type="button" name="clear" value='<%=messages.getString("button.clear")%>' onClick="javascript:document.formulario.reset();" />

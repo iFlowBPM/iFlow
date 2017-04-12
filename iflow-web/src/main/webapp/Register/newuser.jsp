@@ -79,7 +79,7 @@
 					</c:if>
 				</ol>
 			</fieldset>
-		    <fieldset class="submit rp_background">
+		    <fieldset class="submit rp_background centrarBotoes">
 				<c:choose>
 					<c:when test="${isSystemAdmin}">
 						<input class="regular_button_01" type="button" name="cancel" value="<if:message string="button.cancel"/>"

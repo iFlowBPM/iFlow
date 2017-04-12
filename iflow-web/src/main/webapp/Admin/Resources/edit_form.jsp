@@ -48,7 +48,7 @@
 	  </ol>
 	</fieldset>
 
-	<fieldset class="submit">
+	<fieldset class="submit centrarBotoes">
 	  <input class="regular_button_01 btn btn-default" type="button" name="back" value="<if:message string="button.back"/>"
 		onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/Resources/dolist.jsp") %>', 'type=${param.type}');" />
 	  <input class="regular_button_02 btn btn-default" type="submit" name="add" value="<if:message string="button.save"/>" />

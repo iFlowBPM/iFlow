@@ -40,7 +40,7 @@ int flowid=-1; // this is used by auth.jsp
 	</c:forEach>
 	</c:if>
 		</table>
-		<fieldset class="submit">
+		<fieldset class="submit centrarBotoes">
 			<input class="regular_button_01 btn btn-default" type="button" name="add_unit" value="<if:message string="button.add"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_menu_add") %>','');"/>
 		</fieldset>
 	</div>

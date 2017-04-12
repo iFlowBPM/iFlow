@@ -137,7 +137,7 @@ String deployResult = (String)request.getAttribute("deployResult");
 	</div>
 <% } %>
 
-<div class="button_box">
+<div class="button_box centrarBotoes">
    	<input class="regular_button_02 btn btn-default" type="button" name="add" value="<if:message string="button.import"></if:message>" onClick="javascript:tabber_right(4, '<c:url value="Admin/uploadflow.jsp"></c:url>','ts=<%=ts%>');"></input>
 </div>
 
