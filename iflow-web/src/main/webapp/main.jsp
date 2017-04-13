@@ -73,6 +73,7 @@
     }
 	hsSubst.put("field_dashboard", messages.getString("main.tab.dashboard"));
     hsSubst.put("field_tasks", messages.getString("main.tab.tasks"));
+    hsSubst.put("tooltip_signature", messages.getString("main.tab.signature"));    
 	hsSubst.put("field_myprocesses", messages.getString("main.tab.myprocesses"));
 	hsSubst.put("field_processes", messages.getString("main.tab.processes"));
 	hsSubst.put("field_delegations", messages.getString("main.tab.delegations"));

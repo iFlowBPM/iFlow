@@ -43,17 +43,25 @@ public class FormInputTag
     setMaxlength("");
     setOnchange("");
     setOnblur("");
+    setAdmin(false);
   }
   
-  private static String generateInputField(String asType, String asName, String asValue, String asLabelKey, String asLabel, boolean abEdit, boolean abRequired, String maxlength, String size, String onchange, String onblur, IMessages msg)
+  private static String generateInputField(String asType, String asName, String asValue, String asLabelKey, String asLabel, boolean abEdit, boolean abRequired, String maxlength, String size, String onchange, String onblur, IMessages msg, Boolean abAdmin)
   {
     if ((!abEdit) && ("challenge".equalsIgnoreCase(asType))) {
       return "";
     }
     StringBuffer sb = new StringBuffer();
     
+    
+   
+    
     sb.append("<li class=\"form-group\">");
-    sb.append("<label class=\"control-label col-sm-2\" for=\"");
+    if(onblur == "true"){
+    sb.append("<label class=\"control-label col-sm-4\" for=\"");
+    }else{
+    	sb.append("<label class=\"control-label col-sm-2\" for=\"");
+    }
     sb.append(asName);
     sb.append("\">");
     if ("challenge".equalsIgnoreCase(asType)) {
@@ -152,7 +160,7 @@ public class FormInputTag
   private String generateInputField()
   {
     IMessages msg = getUserMessages();
-    return generateInputField(getType(), getName(), getValue(), getLabelkey(), getLabel(), isEdit(), isRequired(), getMaxlength(), getSize(), getOnchange(), getOnblur(), msg);
+    return generateInputField(getType(), getName(), getValue(), getLabelkey(), getLabel(), isEdit(), isRequired(), getMaxlength(), getSize(), getOnchange(), getOnblur(), msg, isAdmin());
   }
   
   public int doEndTag()
@@ -228,6 +236,15 @@ public class FormInputTag
   public void setLabel(String label)
   {
     this.label = label;
+  }
+  
+  public void setAdmin(boolean admin){
+	  this.admin = admin;
+  }
+  
+  public boolean isAdmin()
+  {
+    return this.admin;
   }
   
   public boolean isRequired()

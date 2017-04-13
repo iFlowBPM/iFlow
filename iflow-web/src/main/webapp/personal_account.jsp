@@ -142,12 +142,12 @@
     </div>
   </c:if>
   <c:if test="${not empty password_changed}">
-    <div class="info_msg">
+    <div class="alert alert-info">
       <if:message string="personal_account.info.password.changed"/>
     </div>
   </c:if>
   <c:if test="${bEmailPending}">
-    <div class="info_msg">
+    <div class="alert alert-warning">
       <if:message string="personal_account.info.confirmPending"/>
     </div>
   </c:if>
@@ -188,7 +188,8 @@
   </c:choose>
   </ol>
   </fieldset>
-  <% if (false && (!bEdit || canTimezone)&& !ui.isSysAdmin()) { %>
+  <% if ((!bEdit || canTimezone)&& !ui.isSysAdmin()) { %>
+  <p class="invisible-xs" style="height:20px;"></p>
     <fieldset>
       <legend><if:message string="personal_account.userSettings" /></legend>
       <ol>
@@ -203,7 +204,9 @@
     	<if:formInput type="password" name="password" value="" labelkey="userform.field.password" edit="true" maxlength="125" />
       </ol>
     </fieldset>
+    
   </c:if>
+  <p class="invisible-xs" style="height:20px;"></p>
   <fieldset class="submit">
     <c:choose>
     <c:when test="${bEdit or bEditTimezone}">

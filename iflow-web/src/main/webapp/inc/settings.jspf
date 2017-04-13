@@ -4,26 +4,30 @@
 <%@ page import="java.util.Locale"%>
 <%@ page import="pt.iflow.api.core.Settings,pt.iflow.api.presentation.DateUtility"%>
 
-<li>
-	<label for="locale"><%=messages.getString("setupUser.label.locale") %></label>
+<li class="form-group">
+	<label for="locale" class="control-label col-sm-2"><%=messages.getString("setupUser.label.locale") %></label>
 	<%String userLang =  "" + pageContext.findAttribute("userLang"); %>
-	<select ${bEditTimezone?'':'disabled'}  id="locale" name="locale">	
+	<div class="col-sm-2">
+	<select ${bEditTimezone?'':'disabled'} class="form-control"  id="locale" name="locale">	
 	<%	for (Locale tzId : Settings.localeKeys) {%>                  
 		<option <%= userLang.equals(tzId.toString())?"selected":"" %> value="<%= tzId.toString()%>"><%= StringUtils.capitalize(tzId.getDisplayLanguage(tzId))%></option>
     <% };%>		
 	</select>
+	</div>
 </li>
 
-<li>
-	<label for="timezone"><%=messages.getString("setupUser.label.timezone") %></label>
+<li class="form-group">
+	<label for="timezone" class="control-label col-sm-2"><%=messages.getString("setupUser.label.timezone") %></label>
 	<%
 	String [] tzIDs = DateUtility.getAvailableTimezones(); 
 	String userTimeZone =  "" + pageContext.findAttribute("userTimeZone");%>
-	<select ${bEditTimezone?'':'disabled'} id="timezone" name="timezone">
+	<div class="col-sm-2">
+	<select ${bEditTimezone?'':'disabled'} class="form-control" id="timezone" name="timezone">
 	<%	for (String tzId : tzIDs) {%>                  
 		<option <%= userTimeZone.equals(tzId)?"selected":"" %> value="<%= tzId%>"><%= tzId%></option>
     <% };%>	
 	</select>
+	</div>
 </li>
 <input type="hidden" name="timezonexx" value="${userTimeZone}"/>
 

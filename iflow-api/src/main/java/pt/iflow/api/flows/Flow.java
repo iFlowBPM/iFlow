@@ -446,5 +446,7 @@ public interface Flow {
 	
 	public abstract void hideProc(UserInfoInterface paramUserInfoInterface, ProcessData paramProcessData, int paramInt)
 		    throws SQLException;
+	
+	
 
 }

@@ -313,11 +313,13 @@ ul, ul ul {
  
 }
 .menu > li > ul li:hover a, .menu > li > ul li:hover a span, .menu > li > ul li:hover, .menu > li > ul li > a.active{
-	color: #263238 !important;
-	background: #afcad8;
+	/* Alteração no menu */
+	font-weight:bold;
+	color: white !important;
+	/* background: #afcad8; */
 	min-height: 25px;
 	padding-top: 5px;
-        padding-bottom: 5px;
+        padding-bottom: 6px;
 	display: block;
 }
 
@@ -940,8 +942,17 @@ a > img:hover {
  }
 
   .menu_selected_item {
-	background-color:#afcad8;
+  
+  /* Alteração menu */
+  
+	/*background-color:#afcad8;
+	
         color:#263238 !important;
+        
+        */
+        
+        color: white !important
+        font-weight:bold;
         border-left: 6px solid #6c95be;
   }
 
@@ -1029,4 +1040,11 @@ border-radius: 0px !important;
     color: #222;
     font-weight: bold;
     border-radius: 0px !important;
+}
+
+
+/* Centrar botões */
+
+.centrarBotoes {
+	text-align:center; margin:3rem 0rem;
 }

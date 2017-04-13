@@ -445,7 +445,7 @@
 	        this.wrapper.css("zIndex", "99999");
 	        this.listWrapper.css("zIndex", "99999");
 	        this.setListHeight();
-		
+			
 		    var listHeight = this.listWrapper.height();
 		    var inputHeight = this.wrapper.height();
 		
@@ -551,11 +551,12 @@
 	        }
 
 
-
+// jcosta 20170309 - set correct width
 this.input.css("width", (this.listWrapper.width() + 40) + 'px');
 this.input.css("left", (89 - this.listWrapper.width()) + 'px');
-this.input.css("font-size", '0.85em');
-this.listWrapper.css("width", (this.listWrapper.width() + 0) + 'px');
+this.input.css("font-size", '0.95em');
+//this.listWrapper.css("width", (this.listWrapper.width() + 0) + 'px');
+this.listWrapper.css("width", (this.listWrapper.width() + 60) + 'px');
 
 
 
