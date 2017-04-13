@@ -270,4 +270,5 @@ Collection<Notification> notifications = BeanFactory.getNotificationManagerBean(
     hsSubst.put("nAlerts", nAlerts);
     hsSubst.put("nMsgs", nMsgs);
 %>
+<%-- <if:generateHelpBox context="proc_hide"/>--%>
 <%=PresentationManager.buildMainPage(response, userInfo, hsSubst)%>

@@ -424,6 +424,10 @@
 									<input type="submit" class="btn btn-default btn-sm" style="margin: 0px;" name="Logout" id="Logout" value="Sair"/>
 								</form>
                                             </li>
+                                            
+                                            <li>
+                                              <div id="context_help_on" class="help_box_open"><a href="javascript:showHelpDialogItem('box_proc_hide');"><img id="helpdivisionopenimg" border="0" src="Themes/newflow/images/question_mark_qm.png"></a></div>
+                                            </li>
 
                                         </ul>
 					
@@ -688,6 +692,7 @@
 							<div style="position: relative; width: 280px; float: left; text-align: right;" class="item">
 								<input style="" id="link_search_span" class="regular_button_01" type="button" name="filter" value="Login" onClick="javascript:doassynclogin();" />
 							</div>
+							
 						</div>
 					</div>
 				</form>

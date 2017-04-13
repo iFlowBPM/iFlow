@@ -339,6 +339,10 @@ public class Const {
   
   public static final String sEXTRA_PROP = "EXTRA.";
   
+  //Show Button Help
+  
+  public static boolean SHOW_BUTTON_HELP = true;
+  
   // hotfolder
   public static int HOT_FOLDER_SEARCH_INTERVAL = -1; 
   public static String HOT_FOLDER_PROCESSED_FOLDER = null; 
