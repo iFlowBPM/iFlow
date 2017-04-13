@@ -1,4 +1,5 @@
 <%@page import="java.net.URLDecoder"%>
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://jakarta.apache.org/taglibs/core" prefix="c"%>
 <%@ taglib uri="http://www.iknow.pt/jsp/jstl/iflow" prefix="if"%>
@@ -9,9 +10,10 @@
   String param = fdFormData.getParameter("param");
   if (param == null)
     param = "";
-  else
-	    //param = URLEncoder.encode(param);
-     	//  param = URLDecoder.decode(param);
+  else{
+	param = StringEscapeUtils.unescapeHtml(param);
+    param = URLEncoder.encode(param);
+  }
 %>
 <div id="div_proc_menu_colapsed" class="proc_menu_colapsed" style="display:block;">
 	

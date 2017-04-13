@@ -1682,28 +1682,31 @@
 				<td align="center" valign="middle">
 				<xsl:if test="../show_edition='true' or ../file_sign_existing='true'">
 					<xsl:if test="../show_edition='true'">
-						<xsl:choose>
+	                  	<xsl:choose>
 							<xsl:when test="($use_scanner='true' and ../scanner_enabled='true') or (../signatureType!='' and ../signatureType!='NONE')">
-								<img class="toolTipImg" border="0" width="16" height="16" src="{$url_prefix}/images/icon_resync.png" alt="Substituir" title="Substituir o documento original" >
-									<xsl:attribute name="onclick">replaceFile('<xsl:value-of select="../variable" />','<xsl:value-of select="id"/>','<xsl:value-of select="../signatureType"/>','<xsl:value-of select="../encryptType"/>')</xsl:attribute>
-								</img>
+			                  	<img class="toolTipImg" border="0" width="16" height="16" src="{$url_prefix}/images/icon_resync.png" alt="Substituir" title="Substituir o documento original">
+				                  		<xsl:attribute name="onclick">
+				                  			window.parent.jQuery.get('/iFlow/AppletWebstart?action=replaceFile&amp;flowid=<xsl:value-of select="../flowid" />&amp;pid=<xsl:value-of select="../pid" />&amp;subpid=<xsl:value-of select="../subpid" />&amp;variable=<xsl:value-of select="../variable" />&amp;fileid=<xsl:value-of select="id"/>&amp;signatureType=<xsl:value-of select="../signatureType"/>&amp;encryptType=<xsl:value-of select="../encryptType"/>');
+				                  			window.parent.jQuery(this).fadeToggle('slow', function(){
+				                  				window.parent.jQuery(this).fadeToggle('slow');
+				                  				});
+				                  		</xsl:attribute>				                  	
+				                  	</img>			                  	
 							</xsl:when>
 							<xsl:otherwise>
-								<div id="idb_{../variable}_upd_[{id}]" class="btn btn-default" style="float:left;width:300px;height:35px;position:relative;top:2px;">Arraste ou pressione para alterar ficheiro</div>
-								<input type="file" name="{../variable}_upd_[{id}]" size="20" style="width:300px;opacity:0;position:relative;height:35px"
-									onchange="javascript:document.getElementById('idb_{../variable}_upd_[{id}]').innerHTML = this.value"/>
+		                    	<input type="file" name="{../variable}_upd_[{id}]" size="20" />
 							</xsl:otherwise>
 						</xsl:choose>
-					</xsl:if>
+	                </xsl:if>
 													<xsl:if test="../file_sign_existing='true' and ../file_sign_method!='true' and tosign='true'">
-						<img class="toolTipImg" border="0" width="16" height="16" src="{$url_prefix}/images/sign.png" alt="Assinar" title="Assinar o documento original" >
+														<img class="toolTipImg" border="0" width="16" height="16" src="{$url_prefix}/images/sign.png" alt="Assinar" title="Assinar o documento original">
 															<xsl:attribute name="onclick">
-															<!--if (isDownloadLinkAvailable('<xsl:value-of select="link_url"/>'))-->
-															modifyFile('<xsl:value-of select="../variable" />',
-																	'<xsl:value-of select="id" />',
-																	'<xsl:value-of select="../signatureType" />',
-																	'<xsl:value-of select="../encryptType" />');															
-															</xsl:attribute>
+																window.parent.jQuery.get('/iFlow/AppletWebstart?action=modifyFile&amp;flowid=<xsl:value-of select="../flowid" />&amp;pid=<xsl:value-of select="../pid" />&amp;subpid=<xsl:value-of select="../subpid" />&amp;variable=<xsl:value-of select="../variable" />&amp;fileid=<xsl:value-of select="id"/>&amp;signatureType=<xsl:value-of select="../signatureType"/>&amp;encryptType=<xsl:value-of select="../encryptType"/>');
+																var key = this;
+																window.parent.jQuery(this).fadeToggle('slow', function(event){
+												                  	window.parent.jQuery(this).fadeToggle('slow');
+												                  	});
+									                  		</xsl:attribute>	
 														</img>
 													</xsl:if>
 													<xsl:if test="../file_sign_existing='true' and ../file_sign_method='true'">

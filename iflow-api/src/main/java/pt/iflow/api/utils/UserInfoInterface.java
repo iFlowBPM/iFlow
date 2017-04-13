@@ -114,4 +114,6 @@ public abstract interface UserInfoInterface
   public abstract boolean inTransaction();
   
   public abstract Connection getTransactionConnection();
+
+public abstract void loginSSO(String employeeid);
 }

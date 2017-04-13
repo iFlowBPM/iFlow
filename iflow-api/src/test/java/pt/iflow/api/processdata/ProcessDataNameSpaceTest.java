@@ -167,5 +167,10 @@ public class ProcessDataNameSpaceTest extends ProcessTestCase {
         
         finishTest("TEST EVAL 4");
     }
+
+	public void initTest(String test) {
+		// TODO Auto-generated method stub
+		
+	}
     
 }
