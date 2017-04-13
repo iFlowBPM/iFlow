@@ -2696,4 +2696,11 @@ public class FlowBean implements Flow {
 	      }
   }
 
+	@Override
+	public void hideProc(UserInfoInterface paramUserInfoInterface, ProcessData paramProcessData, int paramInt)
+			throws SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
