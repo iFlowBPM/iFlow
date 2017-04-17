@@ -197,7 +197,7 @@ String onchange = "$('" + PARAM_ACTION + "').value='" + ACTION_PREVIEW + "';new 
 <fieldset class="submit">
   <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series.jsp")%>','ts=<%=ts %>');" />
 <% if (!done) { %>
-  <input class="regular_button_01 btn btn-default" type="button" name="add" value="<%=messages.getString("button.add")%>" onClick="$('<%=PARAM_ACTION%>').value='<%=ACTION_ADD%>';tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series_add.jsp")%>', get_params(document.series_add));" />
+  <input class="regular_button_01 btn btn-default" type="button" name="add" value="<%=messages.getString("button.add")%>" onClick="document.getElementById('<%=PARAM_ACTION%>').value='<%=ACTION_ADD%>';tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series_add.jsp")%>', get_params(document.series_add));" />  
 <% } %>
 </fieldset>
 </form>
