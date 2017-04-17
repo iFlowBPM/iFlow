@@ -39,5 +39,4 @@ public abstract interface FlowSettings
   
   public abstract void removeFlowSettingsListener(String paramString);
 
-public abstract void saveFlowSettings(UserInfoInterface userInfo, FlowSetting[] afsaSettings);
 }

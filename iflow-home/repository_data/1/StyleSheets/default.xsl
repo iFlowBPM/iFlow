@@ -1689,7 +1689,7 @@
 				                  			window.parent.jQuery.get('/iFlow/AppletWebstart?action=replaceFile&amp;flowid=<xsl:value-of select="../flowid" />&amp;pid=<xsl:value-of select="../pid" />&amp;subpid=<xsl:value-of select="../subpid" />&amp;variable=<xsl:value-of select="../variable" />&amp;fileid=<xsl:value-of select="id"/>&amp;signatureType=<xsl:value-of select="../signatureType"/>&amp;encryptType=<xsl:value-of select="../encryptType"/>');
 				                  			window.parent.jQuery(this).fadeToggle('slow', function(){
 				                  				window.parent.jQuery(this).fadeToggle('slow');
-				                  				});
+			                  				});
 				                  		</xsl:attribute>				                  	
 				                  	</img>			                  	
 							</xsl:when>
@@ -1703,9 +1703,10 @@
 															<xsl:attribute name="onclick">
 																window.parent.jQuery.get('/iFlow/AppletWebstart?action=modifyFile&amp;flowid=<xsl:value-of select="../flowid" />&amp;pid=<xsl:value-of select="../pid" />&amp;subpid=<xsl:value-of select="../subpid" />&amp;variable=<xsl:value-of select="../variable" />&amp;fileid=<xsl:value-of select="id"/>&amp;signatureType=<xsl:value-of select="../signatureType"/>&amp;encryptType=<xsl:value-of select="../encryptType"/>');
 																var key = this;
+																
 																window.parent.jQuery(this).fadeToggle('slow', function(event){
 												                  	window.parent.jQuery(this).fadeToggle('slow');
-												                  	});
+											                  	});
 									                  		</xsl:attribute>	
 														</img>
 													</xsl:if>
