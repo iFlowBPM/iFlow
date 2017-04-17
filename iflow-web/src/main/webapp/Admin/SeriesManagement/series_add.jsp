@@ -156,12 +156,10 @@ String onchange = "$('" + PARAM_ACTION + "').value='" + ACTION_PREVIEW + "';new 
 
 %>
 
-<h1 id="title_admin"><%=title%></h1>
-
-<form method="post" name="series_add" id="series_add" class="form-horizontal">
+<form method="post" name="series_add" id="series_add">
 <input type="hidden" name="<%=PARAM_ACTION %>" id="<%=PARAM_ACTION %>" value=""/>
 <input type="hidden" name="ts" id="ts" value="<%=ts %>"/>
-
+<h1 id="title_admin"><%=title%></h1>
 
 <% if (!success) { %>
 <div class="error_msg"><%=errorMsg.toString()%></div>
@@ -194,10 +192,12 @@ String onchange = "$('" + PARAM_ACTION + "').value='" + ACTION_PREVIEW + "';new 
 </ol>
 </fieldset>
 <% } %>
-<fieldset class="submit centrarBotoes">
-  <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series.jsp")%>','ts=<%=ts %>');" />
+<fieldset class="submit">
+  <input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series.jsp")%>','ts=<%=ts %>');" />
 <% if (!done) { %>
-  <input class="regular_button_01 btn btn-default" type="button" name="add" value="<%=messages.getString("button.add")%>" onClick="$('<%=PARAM_ACTION%>').value='<%=ACTION_ADD%>';tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series_add.jsp")%>', get_params(document.series_add));" />
+  <input class="regular_button_01" type="button" name="add" value="<%=messages.getString("button.add")%>" onClick="$('<%=PARAM_ACTION%>').value='<%=ACTION_ADD%>';tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series_add.jsp")%>', get_params(document.series_add));" />
 <% } %>
 </fieldset>
 </form>
+
+

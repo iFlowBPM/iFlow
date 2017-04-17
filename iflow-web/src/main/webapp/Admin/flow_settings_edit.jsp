@@ -48,9 +48,7 @@
 <%
     String sFlowName = fdFormData.getParameter("flowname");
     IFlowData fd = flow.getFlow(userInfo, flowid);
-    
-    
-    
+          
     
     if (StringUtils.isBlank(sFlowName)) {
       if (fd != null) {
