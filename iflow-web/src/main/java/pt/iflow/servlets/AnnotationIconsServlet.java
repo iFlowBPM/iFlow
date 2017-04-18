@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.ibm.wsdl.util.StringUtils;
 
 import bsh.StringUtil;
@@ -79,18 +81,18 @@ public class AnnotationIconsServlet extends HttpServlet {
 
       UserInfoInterface userInfo = (UserInfoInterface) request.getSession().getAttribute(Const.USER_INFO);
 
-      String iconName = request.getParameter(REQUEST_PARAMETER_ICON_NAME);
+      String iconName = StringEscapeUtils.unescapeHtml(request.getParameter(REQUEST_PARAMETER_ICON_NAME));
 
       if (StringUtilities.isEmpty(iconName)){
         String labelName = request.getParameter(REQUEST_PARAMETER_LABEL_NAME);
         if (!StringUtilities.isEmpty(labelName)){
-          if ((labelName.charAt(0)) == '\'') {
+          while ((labelName.charAt(0)) == '\'') {
             labelName = labelName.substring(1, labelName.length()-1);
           }
           iconName = this.getIconFileName(userInfo, labelName);
         }
       } else {
-        if ((iconName.charAt(0)) == '\'') {
+        while ((iconName.charAt(0)) == '\'') {
           iconName = iconName.substring(1, iconName.length()-1);
         }
       }
