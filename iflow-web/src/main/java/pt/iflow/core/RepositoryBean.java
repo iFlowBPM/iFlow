@@ -80,12 +80,8 @@ public class RepositoryBean implements Repository {
   private static final String sMESSAGES_DIR_TEMPLATE = "{0}{2}/Messages/{1}";
   private static final String sLOGFILES_DIR_TEMPLATE = "log/{1}";
   // private static final String sBLOCKS_DIR_TEMPLATE = "{0}/Blocks/{1}"; // The future is Block!
+  private static final File REPOSITORY_ROOT = new File(Const.IFLOW_HOME + "/repository_data");
 
-  private static final File REPOSITORY_ROOT;
-
-  static {
-    REPOSITORY_ROOT = new File(Const.IFLOW_HOME + "/repository_data");
-  }
 
   protected RepositoryBean() {
     if (StringUtils.equals(Const.EDITOR_MODE_BPMN, Setup.getProperty(Const.EDITOR_MODE)))
@@ -232,8 +228,13 @@ public class RepositoryBean implements Repository {
     return getResourceData(sICONS_DIR_TEMPLATE, userInfo.getOrganization(), file);
   }
 
-  public RepositoryFile getAnnotationIcon(UserInfoInterface userInfo, String file) {
+  /*public RepositoryFile getAnnotationIcon(UserInfoInterface userInfo, String file) {
     return getResourceData(sANNOTATION_ICONS_DIR_TEMPLATE, userInfo.getOrganization(), file);
+  }*/
+  
+  public RepositoryFile getAnnotationIcon(UserInfoInterface userInfo, String file)
+  {
+    return getResourceData("{0}{2}/Icons/annotations/{1}", userInfo.getOrganization(), file);
   }
 
   public RepositoryFile getWebService(UserInfoInterface userInfo, String file) {
@@ -675,7 +676,7 @@ public class RepositoryBean implements Repository {
 
     public int getSize() {
       if(null == file) return 0;
-      return (int) file.length();
+      return (int) this.file.length();
     }
 
     public boolean exists() {
