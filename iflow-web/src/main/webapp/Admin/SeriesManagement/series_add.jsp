@@ -152,21 +152,21 @@ else if (ACTION_ADD.equals(action)) {
 }
 
 
-String onchange = "$('" + PARAM_ACTION + "').value='" + ACTION_PREVIEW + "';new Ajax('" + response.encodeURL("Admin/SeriesManagement/series_add.jsp")+"', {method: 'get', data: $('series_add').toQueryString(), update: 'preview'}).request();$('previewItem').setStyle('display','');";
+String onchange = "document.getElementById('" + PARAM_ACTION + "').value='" + ACTION_PREVIEW + "';new Ajax('" + response.encodeURL("Admin/SeriesManagement/series_add.jsp")+"', {method: 'get', data: $('series_add').toQueryString(), update: 'preview'}).request();$('previewItem').setStyle('display','');";
 
 %>
 
-<form method="post" name="series_add" id="series_add">
+<form method="post" name="series_add" id="series_add" class="form-horizontal">
 <input type="hidden" name="<%=PARAM_ACTION %>" id="<%=PARAM_ACTION %>" value=""/>
 <input type="hidden" name="ts" id="ts" value="<%=ts %>"/>
 <h1 id="title_admin"><%=title%></h1>
 
 <% if (!success) { %>
-<div class="error_msg"><%=errorMsg.toString()%></div>
+<div class="alert alert-danger"><%=errorMsg.toString()%></div>
 <% } %>
 
 <% if (infoMsg.length() > 0) { %>
-<div class="info_msg"><%=infoMsg.toString()%></div>
+<div class="alert alert-info"><%=infoMsg.toString()%></div>
 <% } %>
 
 <% if (!done) { %>
@@ -192,10 +192,11 @@ String onchange = "$('" + PARAM_ACTION + "').value='" + ACTION_PREVIEW + "';new 
 </ol>
 </fieldset>
 <% } %>
-<fieldset class="submit">
-  <input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series.jsp")%>','ts=<%=ts %>');" />
+<fieldset class="submit centrarBotoes">
+  <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series.jsp")%>','ts=<%=ts %>');" />
 <% if (!done) { %>
-  <input class="regular_button_01" type="button" name="add" value="<%=messages.getString("button.add")%>" onClick="$('<%=PARAM_ACTION%>').value='<%=ACTION_ADD%>';tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series_add.jsp")%>', get_params(document.series_add));" />
+
+  <input class="regular_button_01 btn btn-default" type="button" name="add" value="<%=messages.getString("button.add")%>" onClick="document.getElementById('<%=PARAM_ACTION%>').value='<%=ACTION_ADD%>';tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series_add.jsp")%>', get_params(document.series_add));" />  
 <% } %>
 </fieldset>
 </form>

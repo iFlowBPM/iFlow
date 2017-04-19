@@ -341,7 +341,7 @@ public class Const {
   
   //Show Button Help
   
-  public static boolean bSHOW_BUTTON_HELP = true;
+  public static String bSHOW_BUTTON_HELP = "true";
   
   // hotfolder
   public static int HOT_FOLDER_SEARCH_INTERVAL = -1; 
@@ -690,8 +690,8 @@ public class Const {
     
     /* Show Button Help */
     
-    stmp = Setup.getProperty("SHOW_BUTTON_HELP");
-    bSHOW_BUTTON_HELP = StringUtils.isNotEmpty(stmp) && ArrayUtils.contains(new String[]{"yes","true","on","1"}, stmp.toLowerCase());
+    bSHOW_BUTTON_HELP = Setup.getProperty("SHOW_BUTTON_HELP");
+    
         
     try {
       sDELEGATION_NOTIFY_REQUEST_MODE = Setup.getProperty("DELEGATION_NOTIFY_REQUEST_MODE").toLowerCase();

@@ -289,7 +289,6 @@
 			}
 			
 			
-			
 			function selectedLabel(element) {
 			   var labels = document.getElementsByClassName("labellink");
 
@@ -426,7 +425,7 @@
                                             </li>
                                             
                                             <li>
-                                              <div id="context_help_on" class="help_box_open"><a href="javascript:showHelpDialogItem('box_proc_hide');"><img id="helpdivisionopenimg" border="0" src="Themes/newflow/images/question_mark_qm.png"></a></div>
+                                              <div id="context_help_on" class="help_box_open"><a href="javascript:showHelpDialogItem('processes');"><img id="helpdivisionopenimg" border="0" src="Themes/newflow/images/question_mark_qm.png"></a></div>
                                             </li>
 
                                         </ul>
@@ -560,7 +559,10 @@
 			  
 			  SysAdmin = 12
 			-->
-			<div id="section_div_1" class="main" style="margin-left: 220px; display: none"></div>
+			<div id="section_div_1" class="main" style="margin-left: 220px; display: none">
+			<a id="link_process_help" href="javascript:showHelpDialogItem('processes');">
+			<img class="help_button" src="Themes/${orgTheme}/images/question_mark_qm.png"/></a>
+			</div>
 			<!--div id="section_div_2" class="main" style="margin-left: 220px; display: none"></div-->
 			<div id="section_div_3" class="main" style="margin-left: 220px; display: none"></div>
 			<div id="section_div_4" class="main" style="margin-left: 220px; display: none"></div>
