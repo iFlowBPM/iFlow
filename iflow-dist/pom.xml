@@ -297,8 +297,8 @@
 			</plugin>
 			<plugin>
 	        	<groupId>org.codehaus.mojo</groupId>
-	        	<artifactId>maven-buildnumber-plugin</artifactId>
-	        	<version>0.9.4</version>
+	        	<artifactId>buildnumber-maven-plugin</artifactId>
+	        	<version>1.4</version>
 	        	<configuration>
 		        	<format>{0,date,yyyy-MM-dd HH:mm}</format>
 		        	<items>
@@ -357,7 +357,7 @@
 	    <pluginRepository>
 	        <id>tlc</id>
 	        <name>TLC Repository</name>
-	        <url>http://commons.ucalgary.ca/pub/m2</url>
+	        <url>https://repo.maven.apache.org/maven2</url>
 	    </pluginRepository>
 	</pluginRepositories>
 </project>
