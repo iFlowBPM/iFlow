@@ -154,22 +154,22 @@ public class BlockFileDataImport extends Block {
     return portSuccess;
   }
 
-  public String importSpreadSheet(UserInfoInterface userInfo, ProcessData procData, String sType, String sFileName, byte[] data) {
+  public String importSpreadSheet(UserInfoInterface userInfo, ProcessData procData, String sType, String sFileName, byte[] data)
+  {
     String retObj = null;
-    procData.setTempData(BUTTON_KEY, BUTTON_KEY_IMPORT);
-
+    procData.setTempData("BlockDataImport.BUTTON_KEY", "BlockDataImport.IMPORT");
+    
     int flowid = procData.getFlowId();
     int pid = procData.getPid();
     int subpid = procData.getSubPid();
     String login = userInfo.getUtilizador();
-
+    
     Logger.trace(this, "importSpreadSheet", login + " call with flowid=" + flowid + ", pid=" + pid + ", subpid=" + subpid);
-
-    try {
-
-      HashMap<String, String> hmColInfo = new HashMap<String, String>();
-      HashMap<String, Integer> hmVarModes = new HashMap<String, Integer>();
-
+    try
+    {
+      HashMap<String, String> hmColInfo = new HashMap();
+      HashMap<String, Integer> hmVarModes = new HashMap();
+      
       String sName = null;
       String sVar = null;
       String sMode = null;
@@ -177,127 +177,125 @@ public class BlockFileDataImport extends Block {
       int ntmp = 0;
       int iStartLine = 1;
       int iSheet = 1;
-      int iColLabelType = BlockData.nCOLUMN_LABEL;
+      int iColLabelType = 0;
       boolean bHasHeader = true;
-
-      if (StringUtils.isNotEmpty(this.getAttribute(_sSheetNum)))
-        iSheet = Integer.parseInt(this.getAttribute(_sSheetNum));
-
-      if (StringUtils.isNotEmpty(this.getAttribute(_sInitLine)))
-        iStartLine = Integer.parseInt(this.getAttribute(_sInitLine));
-
-      if (StringUtils.isNotEmpty(this.getAttribute(_sColType))) {
-        if (this.getAttribute(_sColType).equals(_sColNameVal))
-          iColLabelType = BlockData.nCOLUMN_LABEL;
-        if (this.getAttribute(_sColType).equals(_sColNumberVal))
-          iColLabelType = BlockData.nCOLUMN_NUMBER;
+      if (StringUtils.isNotEmpty(getAttribute("sheet"))) {
+        iSheet = Integer.parseInt(getAttribute("sheet"));
       }
-
-      if (StringUtils.isNotEmpty(this.getAttribute(_sHasHeader))) {
-        bHasHeader = new Boolean(this.getAttribute(_sHasHeader)).booleanValue();
+      if (StringUtils.isNotEmpty(getAttribute("initLine"))) {
+        iStartLine = Integer.parseInt(getAttribute("initLine"));
       }
+      if (StringUtils.isNotEmpty(getAttribute("colType")))
+      {
+        if (getAttribute("colType").equals("name")) {
+          iColLabelType = 0;
+        }
+        if (getAttribute("colType").equals("position")) {
+          iColLabelType = 1;
+        }
+      }
+      if (StringUtils.isNotEmpty(getAttribute("hasHeader"))) {
+        bHasHeader = new Boolean(getAttribute("hasHeader")).booleanValue();
+      }
+      Map<String, Format> formatters = new HashMap();
+      
 
-      Map<String, Format> formatters = new HashMap<String, Format>();
-
-      // read formatters
       Format intFmt = null;
       Format numFmt = null;
       Format dateFmt = null;
-
+      
       FlowSetting[] settings = BeanFactory.getFlowSettingsBean().getFlowSettings(flowid);
       for (FlowSetting setting : settings) {
-        if (Const.sFLOW_DATE_FORMAT.equals(setting.getName())) {
+        if ("FLOW_DATE_FORMAT".equals(setting.getName()))
+        {
           String fmt = setting.getValue();
-          if (StringUtils.isBlank(fmt))
+          if (StringUtils.isBlank(fmt)) {
             fmt = Const.sDEF_DATE_FORMAT;
+          }
           dateFmt = DateUtility.getBlockDateFormat(userInfo.getOrganization(), fmt);
-        } else if (Const.sFLOW_INT_FORMAT.equals(setting.getName())) {
+        }
+        else if ("FLOW_INT_FORMAT".equals(setting.getName()))
+        {
           String fmt = setting.getValue();
-          if (StringUtils.isBlank(fmt))
+          if (StringUtils.isBlank(fmt)) {
             fmt = Const.sDEF_INT_FORMAT;
+          }
           intFmt = new DecimalFormat(fmt);
-        } else if (Const.sFLOW_FLOAT_FORMAT.equals(setting.getName())) {
+        }
+        else if ("FLOW_FLOAT_FORMAT".equals(setting.getName()))
+        {
           String fmt = setting.getValue();
-          if (StringUtils.isBlank(fmt))
+          if (StringUtils.isBlank(fmt)) {
             fmt = Const.sDEF_FLOAT_FORMAT;
+          }
           numFmt = new DecimalFormat(fmt);
         }
       }
-
-      // read
-
-      for (int ii = 0; (sName = this.getAttribute(_sColName + ii)) != null; ii++) {
-        sVar = this.getAttribute(_sVarName + ii);
-        sMode = this.getAttribute(_sModeName + ii);
-        sFmt = this.getAttribute(_sFormatName + ii);
-
-        ntmp = BlockData.nIMPORT_MODE_WRITE_ALWAYS;
-        if (sMode.equals(_sModeWriteOnce)) {
-          ntmp = BlockData.nIMPORT_MODE_WRITE_ONCE;
+      for (int ii = 0; (sName = getAttribute("name" + ii)) != null; ii++)
+      {
+        sVar = getAttribute("var" + ii);
+        sMode = getAttribute("mode" + ii);
+        sFmt = getAttribute("format" + ii);
+        
+        ntmp = 0;
+        if (sMode.equals("write_once")) {
+          ntmp = 1;
         }
-
-        if (StringUtils.isNotBlank(sFmt)) {
+        if (StringUtils.isNotBlank(sFmt))
+        {
           Format fmt = null;
-          if (INT_FMT.equals(sFmt))
+          if ("INT".equals(sFmt)) {
             fmt = intFmt;
-          else if (NUM_FMT.equals(sFmt))
+          } else if ("NUM".equals(sFmt)) {
             fmt = numFmt;
-          else if (DATE_FMT.equals(sFmt))
+          } else if ("DATE".equals(sFmt)) {
             fmt = dateFmt;
-
+          }
           formatters.put(sVar, fmt);
         }
-
         hmColInfo.put(sName, sVar);
         hmVarModes.put(sVar, new Integer(ntmp));
       }
-
       if (hmColInfo.size() == 0) {
         throw new Exception("Dados para importação não configurados.");
       }
-
-      // Somewhere get dataadapter parameter
       String adapterId = sType;
-      if (StringUtils.equalsIgnoreCase(sType, "auto"))
+      if (StringUtils.equalsIgnoreCase(sType, "auto")) {
         adapterId = sFileName.substring(sFileName.lastIndexOf('.') + 1);
-      DataAdapter adapter = BlockDataImport.getDataAdapter(adapterId);
-
-      boolean loadOk = (null != adapter);
-
-      if (loadOk)
-        loadOk = adapter.loadData(data, new Properties()); // not yet complete...
-      if (loadOk)
-        retObj = BlockDataImport.importFromAdapter(this, userInfo, procData, hmColInfo, hmVarModes, adapter, iSheet - 1,
-            iStartLine, iColLabelType, bHasHeader, formatters);
-
+      }
+      BlockData.DataAdapter adapter = BlockDataImport.getDataAdapter(adapterId);
+      
+      boolean loadOk = adapter != null;
+      if (loadOk) {
+        loadOk = adapter.loadData(data, new Properties());
+      }
+      if (loadOk) {
+        retObj = BlockDataImport.importFromAdapter(this, userInfo, procData, hmColInfo, hmVarModes, adapter, iSheet - 1, 
+          iStartLine, iColLabelType, bHasHeader, formatters);
+      }
       if (!loadOk) {
         retObj = "Ficheiro inválido.";
       }
-
-    } catch (Exception e) {
+    }
+    catch (Exception e)
+    {
       retObj = "Erro: " + e.getMessage();
     }
-
     return retObj;
   }
-
-
-  @Override
-  public String getDescription(UserInfoInterface userInfo, ProcessData procData) {
-    // TODO Auto-generated method stub
+  
+  public String getDescription(UserInfoInterface userInfo, ProcessData procData)
+  {
     return null;
   }
-
-  @Override
-  public String getResult(UserInfoInterface userInfo, ProcessData procData) {
-    // TODO Auto-generated method stub
+  
+  public String getResult(UserInfoInterface userInfo, ProcessData procData)
+  {
     return null;
   }
-
-  @Override
-  public String getUrl(UserInfoInterface userInfo, ProcessData procData) {
-    // TODO Auto-generated method stub
+  
+  public String getUrl(UserInfoInterface userInfo, ProcessData procData)
+  {
     return null;
   }
-
 }

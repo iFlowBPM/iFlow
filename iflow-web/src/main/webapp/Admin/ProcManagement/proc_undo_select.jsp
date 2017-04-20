@@ -394,7 +394,7 @@ else {
     </div>
   <% } %>
   </div>
-  <div class="button_box">
+  <div class="button_box centrarBotoes">
     <% if (!bFirstPage) { %>
       <input class="regular_button_00 btn btn-default" type="button" name="previous" value="<%=messages.getString("button.previous")%>" 
         onClick="javascript:document.undoactivities.mode.value='-1';document.undoactivities.nextstartindex.value='<%=nNextStartIndex%>';tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_undo_select.jsp")%>', get_params(document.undoactivities));"/>

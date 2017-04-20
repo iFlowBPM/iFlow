@@ -48,9 +48,7 @@
 <%
     String sFlowName = fdFormData.getParameter("flowname");
     IFlowData fd = flow.getFlow(userInfo, flowid);
-    
-    
-    
+          
     
     if (StringUtils.isBlank(sFlowName)) {
       if (fd != null) {
@@ -995,7 +993,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 <%
     }
 %>
-<div class="button_box" style="padding-bottom:10px"><input class="regular_button_01 btn btn-default" 
+<div class="button_box centrarBotoes" style="padding-bottom:10px"><input class="regular_button_01 btn btn-default" 
 	type="button" name="back"
 	value="<%=messages.getString("button.back")%>"
 	onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_settings.jsp")%>', '');" />

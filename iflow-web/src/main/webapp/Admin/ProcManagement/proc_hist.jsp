@@ -207,7 +207,7 @@ request.setAttribute("sONGOING",sONGOING);
   </div>
 <% } %>
 <% if (state > 0) { %>
-  <div class="button_box">
+  <div class="button_box centrarBotoes">
     <input class="regular_button_01 btn btn-default" type="button" name="back" value="<if:message string="button.back"/>" 
       onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/flow_state_procs.jsp") %>', get_params(document.prochist));"/>
   </div>

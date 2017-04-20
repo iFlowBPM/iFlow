@@ -16,13 +16,15 @@ String sPage = "Admin/db/";
 
 String title = messages.getString("admin-datasources.title");
 
+String titleDatasource = messages.getString("admin-datasources.titleDatasource");
+
 %>
 <form>
     <h1 id="title_admin"><%=title%></h1>
 
 <fieldset><legend></legend>
     <div class="table_inc">
-        <table class="item_list">
+        <table class="item_list table">
             <tr class="tab_header">
                 <td>DataSources disponíveis</td>
             </tr>
@@ -46,7 +48,7 @@ String title = messages.getString("admin-datasources.title");
       List<Properties> pools = dsMan.getPoolsByOrganization("1");
       %>
     <div class="table_inc">
-        <table class="item_list">
+        <table class="item_list table">
             <tr class="tab_header">
                 <td>DataSource</td>
                 <td>JNDI Name</td>
@@ -71,7 +73,7 @@ String title = messages.getString("admin-datasources.title");
         </table>
     </div>
     <div class="table_inc">
-        <table class="item_list">
+        <table class="item_list table">
             <tr class="tab_header">
                 <td>Implementações DataSource Registadas</td>
             </tr>
@@ -84,7 +86,7 @@ String title = messages.getString("admin-datasources.title");
         </table>
     </div>
     <div class="table_inc">
-        <table class="item_list">
+        <table class="item_list table">
             <tr class="tab_header">
                 <td>Drivers JDBC Registados</td>
             </tr>
@@ -99,7 +101,7 @@ String title = messages.getString("admin-datasources.title");
     <% } %>
 </fieldset>
 <% if(!Const.DISABLE_DATASOURCE_MANAGEMENT) { %>
-<fieldset class="submit">
+<fieldset class="submit centrarBotoes">
    <input class="regular_button_01" type="button" name="add" value="<%=messages.getString("button.add")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/db/edit_ds.jsp")%>', '');" />
 </fieldset>
 <% } %>

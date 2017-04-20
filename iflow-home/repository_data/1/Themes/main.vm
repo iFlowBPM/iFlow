@@ -289,7 +289,6 @@
 			}
 			
 			
-			
 			function selectedLabel(element) {
 			   var labels = document.getElementsByClassName("labellink");
 
@@ -395,7 +394,7 @@
                                           #if($sys_admin == "yes")
 	                                          <li>
 	                                       		<!--<img width="32" height="32" src="images/admin.png"/>-->
-	                                       		ADMIN                                      	
+	                                       		SYSADMIN                                    	
 	                                          </li> 
                                          #end
 
@@ -423,6 +422,10 @@
 								<form action="$response.encodeURL($url_prefix,'logout.jsp')?ts=$ts">
 									<input type="submit" class="btn btn-default btn-sm" style="margin: 0px;" name="Logout" id="Logout" value="Sair"/>
 								</form>
+                                            </li>
+                                            
+                                            <li>
+                                              <div id="context_help_on" class="help_box_open"><a href="javascript:showHelpDialogItem('processes');"><img id="helpdivisionopenimg" border="0" src="Themes/newflow/images/question_mark_qm.png"></a></div>
                                             </li>
 
                                         </ul>
@@ -556,7 +559,10 @@
 			  
 			  SysAdmin = 12
 			-->
-			<div id="section_div_1" class="main" style="margin-left: 220px; display: none"></div>
+			<div id="section_div_1" class="main" style="margin-left: 220px; display: none">
+			<a id="link_process_help" href="javascript:showHelpDialogItem('processes');">
+			<img class="help_button" src="Themes/${orgTheme}/images/question_mark_qm.png"/></a>
+			</div>
 			<!--div id="section_div_2" class="main" style="margin-left: 220px; display: none"></div-->
 			<div id="section_div_3" class="main" style="margin-left: 220px; display: none"></div>
 			<div id="section_div_4" class="main" style="margin-left: 220px; display: none"></div>
@@ -688,6 +694,7 @@
 							<div style="position: relative; width: 280px; float: left; text-align: right;" class="item">
 								<input style="" id="link_search_span" class="regular_button_01" type="button" name="filter" value="Login" onClick="javascript:doassynclogin();" />
 							</div>
+							
 						</div>
 					</div>
 				</form>

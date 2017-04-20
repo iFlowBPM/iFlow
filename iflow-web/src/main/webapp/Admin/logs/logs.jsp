@@ -38,7 +38,7 @@ if (NumberUtils.isNumber(sLogType)) {
 </script>
 <h1 id="title_admin"><%=title%></h1>
 <div style="float: left; margin-left: 34px; margin-top: 20px;">
-	<select id="log_type" name="log_type" onchange="javascript:changeLogType(this);">
+	<select id="log_type" class="form-control" name="log_type" onchange="javascript:selectedItem('admin',<%=AdminNavConsts.LOGS%>);tabber_save(4,'','sel=<%=AdminNavConsts.LOGS%>','<%=response.encodeURL("Admin/logs/logs_file.jsp")%>','ts=<%=ts%>');">
 		<option value="-1"><%=messages.getString("admin-logs.choose") %></option>
 		<option value="0" <%=nLogType == nLogFiles ? "selected=\"selected\"" : ""%>>Files</option>
 		<option value="1" <%=nLogType == nLogUpgradables ? "selected=\"selected\"" : ""%>>Upgradables</option>

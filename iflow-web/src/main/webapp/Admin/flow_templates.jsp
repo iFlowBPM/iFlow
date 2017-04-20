@@ -68,6 +68,6 @@ if(null == flowTpls || 0 == flowTpls.length) {
 <% } %>
 
 
-	<div class="button_box">
+	<div class="button_box centrarBotoes">
     	<input class="regular_button_02" type="button" name="add" value="<%=messages.getString("button.add")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/upload_template.jsp") %>','');"/>
 	</div>

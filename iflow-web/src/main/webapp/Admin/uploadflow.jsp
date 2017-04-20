@@ -56,7 +56,7 @@
 			</div>
 		</div>
 		<div class="row" style="height:7rem;">
-		<fieldset class="submit"> 
+		<fieldset class="submit centrarBotoes"> 
 			<input class="regular_button_01 btn btn-default" type="button" name="back" value="<if:message string="button.back"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_settings.jsp")%>', 'ts=<%=ts%>');"/>
 			<input class="regular_button_01 btn btn-default" type="button" name="clear" value="<if:message string="button.clear"/>" onClick="javascript:document.formulario.reset()"/>
 			<input class="regular_button_02 btn btn-default" type="submit" name="add" value="<if:message string="button.import"/>"/>

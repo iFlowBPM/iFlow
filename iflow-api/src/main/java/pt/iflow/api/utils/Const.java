@@ -339,6 +339,10 @@ public class Const {
   
   public static final String sEXTRA_PROP = "EXTRA.";
   
+  //Show Button Help
+  
+  public static String bSHOW_BUTTON_HELP = "true";
+  
   // hotfolder
   public static int HOT_FOLDER_SEARCH_INTERVAL = -1; 
   public static String HOT_FOLDER_PROCESSED_FOLDER = null; 
@@ -683,6 +687,12 @@ public class Const {
     DOCS_BASE_URL = Setup.getProperty("DOCS_BASE_URL");
     DOCS_DAO_CLASS = Setup.getProperty("DOCS_DAO_CLASS");
     
+    
+    /* Show Button Help */
+    
+    bSHOW_BUTTON_HELP = Setup.getProperty("SHOW_BUTTON_HELP");
+    
+        
     try {
       sDELEGATION_NOTIFY_REQUEST_MODE = Setup.getProperty("DELEGATION_NOTIFY_REQUEST_MODE").toLowerCase();
     } catch (Exception e) { }

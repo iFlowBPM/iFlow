@@ -64,7 +64,7 @@ public class XSSFilter implements Filter {
 
 		public String sanitize(String input) {
 			String result = ESAPI.encoder().encodeForHTML(input); 
-						
+			
 			for(String transformed: filterException)								
 				result = StringUtils.replace(result, ESAPI.encoder().encodeForHTML(transformed), transformed);
 			

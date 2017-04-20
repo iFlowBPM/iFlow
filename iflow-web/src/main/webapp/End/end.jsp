@@ -110,7 +110,7 @@
 %>
 <%@ include file = "../inc/process_top.jspf" %>
 <div class="alert alert-info"><%=sOutput%></div>
-<div class="button_box">
+<div class="button_box centrarBotoes">
   <form action="#" onsubmit="return false;">
     <% String theme = BeanFactory.getOrganizationThemeBean().getOrganizationTheme(userInfo).getThemeName(); %>
     <input class="regular_button_00 btn btn-default" <%if (userInfo.isGuest() || "newflow".equals(theme)) {%> type="hidden" <%} else {%> type="button" <%}%> name="close" value="<%=messages.getString("button.close")%>" onclick="if(parent && parent.close_process) parent.close_process(3); return false;" />

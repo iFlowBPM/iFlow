@@ -207,7 +207,7 @@
     
   </c:if>
   <p class="invisible-xs" style="height:20px;"></p>
-  <fieldset class="submit">
+  <fieldset class="submit centrarBotoes">
     <c:choose>
     <c:when test="${bEdit or bEditTimezone}">
       <input class="regular_button_02 btn btn-default" type="button" name="modify" value="<if:message string="button.cancel" />" 

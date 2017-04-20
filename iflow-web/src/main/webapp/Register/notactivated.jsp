@@ -35,7 +35,7 @@
 						<p><if:message string="register.notactivated.3"/> <a href="mailto:support@iflow.com">support@iflow.com</a></p>
 				    </div>
 				</fieldset>
-				<fieldset class="submit rp_background">
+				<fieldset class="submit rp_background centrarBotoes">
 					<input class="regular_button_01" type="submit" name="cancel" value="<if:message string="button.finish"/>"/>
 <%--				<input class="regular_button_01" type="submit" name=done value="<if:message string="button.finish"/>"/> --%>
 				</fieldset>

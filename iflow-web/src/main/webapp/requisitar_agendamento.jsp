@@ -479,7 +479,7 @@ return;
 		</ol>
   	</fieldset>
 
-	<fieldset class="submit" style="margin-top: 5rem;">
+	<fieldset class="submit centrarBotoes" style="margin-top: 5rem;">
 		<input class="regular_button_02 btn btn-default" type="button" name="cancel" value="<%=messages.getString("button.cancel")%>" onClick="tabber_right(5, '<%= response.encodeURL("gestao_tarefas.jsp") %>', 'ts=<%= ts %>&action=<%=sAction %>');"/>
 		<input class="regular_button_02 btn btn-default" type="button" name="request" value="<%=messages.getString("button.request")%>" onClick="tabber_right(5, '<%= response.encodeURL("requisitar_agendamento.jsp") %>', get_params(document.flowForm));"/>
 	</fieldset>

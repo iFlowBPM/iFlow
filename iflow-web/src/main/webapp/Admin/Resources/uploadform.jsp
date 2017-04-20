@@ -37,7 +37,7 @@
 			</ol>
 		</fieldset>
 		
-		<fieldset class="submit"> 
+		<fieldset class="submit centrarBotoes"> 
 			<input class="regular_button_01 btn btn-default" type="button" name="back" value="<if:message string="button.back"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/Resources/dolist.jsp")%>', 'type=${param.type}');"/>
 			<input class="regular_button_01 btn btn-default" type="button" name="clear" value="<if:message string="button.clear"/>" onClick="javascript:document.formulario.reset()"/>
 			<input class="regular_button_02 btn btn-default" type="submit" name="add" value="<c:choose><c:when test="${not empty param.file}"><if:message string="resources.file.label"/></c:when><c:otherwise><if:message string="button.add"/></c:otherwise></c:choose>"/>

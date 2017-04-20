@@ -394,7 +394,7 @@ request.setAttribute("flow_type", FlowType.WORKFLOW);
 
 
 
-	  <div class="button_box">
+	  <div class="button_box centrarBotoes">
 		<input id="link_search_span" class="regular_button_00" type="button" name="filter" value="<%=messages.getString("button.filter")%>" 
 			onClick="<%=filterAction %>"
 		/>

@@ -94,7 +94,7 @@ String valueDate = DateUtility.formatTimestamp(userInfo, tsNow);
 	} 
 %>
 		</table>
-		<fieldset class="submit">
+		<fieldset class="submit centrarBotoes">
 			<input class="regular_button_01 btn btn-default" type="button" name="add_series" value="<if:message string="button.add"/>" onClick="tabber_right(4, '<%=response.encodeURL("Admin/SeriesManagement/series_add.jsp")%>','ts=<%=ts%>');"/>
 		</fieldset>
 	</div>

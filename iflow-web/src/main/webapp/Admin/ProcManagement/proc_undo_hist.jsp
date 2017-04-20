@@ -213,7 +213,7 @@ if (subpid != -1 && pid != -1 && flowid != -1) {
       </table>
   </div>
 
-  <div class="button_box">
+  <div class="button_box centrarBotoes">
     <input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.search")%>" 
       onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_undo_select.jsp")%>', get_params(document.prochist));"/>
   </div>

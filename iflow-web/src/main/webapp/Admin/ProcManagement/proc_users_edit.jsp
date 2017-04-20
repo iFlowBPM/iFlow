@@ -306,7 +306,7 @@ if (sbError.length() == 0 && sOp.equals("2")) {
   </div>
 <% } %>
 
-  <div class="button_box">
+  <div class="button_box centrarBotoes">
 <%
 if (!sHtml.equals("") || bDel) {
 %>

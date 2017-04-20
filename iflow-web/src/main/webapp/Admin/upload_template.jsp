@@ -24,7 +24,7 @@
 			</ol>
 		</fieldset>
 		
-		<fieldset class="submit"> 
+		<fieldset class="submit centrarBotoes"> 
 			<input class="regular_button_01" type="button" name="back" value="<if:message string="button.back"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_templates.jsp") %>', '');"/>
 			<input class="regular_button_01" type="button" name="clear" value="<if:message string="button.clear"/>" onClick="javascript:document.formulario.reset()"/>
 			<input class="regular_button_01" type="submit" name="add" value="<if:message string="button.add"/>"/>

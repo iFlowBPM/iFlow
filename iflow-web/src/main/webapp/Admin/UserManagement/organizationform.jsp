@@ -83,7 +83,7 @@
 			<if:formInput type="text" name="description" value='<%=org.getDescription()%>' labelkey="organizationform.field.description" edit="true" maxlength="150"/>
 		</ol>
 	</fieldset>
-    <fieldset class="submit">
+    <fieldset class="submit centrarBotoes">
         <input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/organizationadm.jsp")%>');"/>
 		<input class="regular_button_01" type="button" name="clear" value="<%=messages.getString("button.clear")%>" onClick="javascript:document.formulario.reset()"/>
 		<input class="regular_button_01" type="button" name="add" value="<%=messages.getString("button.modify")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/organizationform.jsp")%>','oper=edit&' + get_params(document.formulario));"/>

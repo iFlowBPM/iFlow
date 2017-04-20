@@ -110,7 +110,7 @@ if ("del".equals(sOper)){
     %>
 		</table>
 	</div>
-	<div class="button_box">
+	<div class="button_box centrarBotoes">
     	<input class="regular_button_01 btn btn-default" type="button" name="add" value="<%=messages.getString("button.add")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profileform.jsp")%>','');"/>
 	</div>
 	<if:generateHelpBox context="profileadm"/>

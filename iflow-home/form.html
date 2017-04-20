@@ -608,49 +608,21 @@
 <body onload="reloadBootstrapElements(); initProcFrame();">
 <div style="margin:auto;">
 <form enctype="multipart/form-data" method="post" name="dados" style="width: 100%;margin:auto;" id="dados" action="form.jsp">
-<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="null"> <input type="hidden" name="op" id="op" value="0"> <input type="hidden" name="0_MAX_ROW" id="0_MAX_ROW" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="subpid" id="subpid" value="-10"> <input type="hidden" name="1_MAX_ROW" id="1_MAX_ROW" value="0"> <input type="hidden" name="pid" id="pid" value="-10"> <input type="hidden" name="_changed_form" id="_changed_form" value="null"> <input type="hidden" name="flowid" id="flowid" value="132"> <input type="hidden" name="curmid" id="curmid" value="0"> 
+<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="4"> <input type="hidden" name="op" id="op" value="0"> <input type="hidden" name="0_MAX_ROW" id="0_MAX_ROW" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="subpid" id="subpid" value="-10"> <input type="hidden" name="1_MAX_ROW" id="1_MAX_ROW" value="0"> <input type="hidden" name="pid" id="pid" value="-10"> <input type="hidden" name="_changed_form" id="_changed_form" value="_changed_form"> <input type="hidden" name="flowid" id="flowid" value="105"> <input type="hidden" name="curmid" id="curmid" value="0"> 
 <div id="main">
 <div class="blockdivision">
 <div class="columndivision">
 <ol class="fieldlist">
-<li class="file  field" id="N1000A">
-<table style="border:none;" width="100%" border="0" align="center">
-<tr align="center">
-<td>
-<table width="100%" border="0" class="table">
-<tr>
-<td width="100%" valign="middle" align="left" class="normal_text" colspan="2"></td><td valign="middle" align="center" colspan="3">
-<div id="ficheiro_add_container form-group">
-<div style="width:300px;height:35px;position:relative;top:2px;" class="btn btn-default">Arraste ou pressione para carregar ficheiro</div>
-<input style="width:300px;opacity:0;position:relative;top:-35px;height:35px" size="20" name="ficheiro_add" type="file"><script type="text/javascript" language="JavaScript">
-									window.addEvent('domready', function() {
-																		new MultiUpload( $('dados').ficheiro_add,
-																			1, '_[{id}]', true, true );
-										// IE6 fix
-										if (/msie|MSIE 6/.test(navigator.userAgent)) {
-											$('ficheiro_add_container').style.paddingRight = '252px';
-										}
-									});
-								</script>
-</div>
-</td>
-</tr>
-</table>
-</td>
-</tr>
-</table>
+<li class="header  field" id="N1000A">
+<label class="header field">Registo de Despesas do Colaborador</label>
 </li>
-<li class="datecal  field" id="N1003D" style="">
-<label class="datecal field" for="valor_cal">Data</label><span style="width:150px" class="pull-right"><input size="10" type="text" class="txt form-control" placeholder="" style="max-width:120px;display:inline" id="valor_cal" name="valor_cal" value="" maxlength="11" onmouseover="caltasks(this.id, '%d/%m/%Y');this.onmouseover=null;" onChange="" onblur="
-				ajaxSaveValueChange(this);				
-			"><img src="/iFlow//images/icon_delete.png" border="0" style="display:inline" onclick="javascript:document.getElementById('valor_cal').value=''"></span>
-</li>
+<li class="info_msg field" id="N10011" style="text-align:left;" align="left">Erro a criar o documento de impress&atilde;o.</li>
 </ol>
 </div>
 </div>
 <div class="blockdivision">
 <div class="columndivision columnholder">
-<div class="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_repor" value="Repor" onClick="disableForm(); document.dados.op.value=0;" title="Repor">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_guardar" value="Guardar" onClick="disableForm(); document.dados.op.value=2;" title="Guardar">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_avancar" value="Avan&ccedil;ar" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='4'; } else { return false; }" title="Avan&ccedil;ar">&nbsp;</div>
+<div class="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_avancar" value="Tentar novamente" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='4'; } else { return false; }" title="Tentar novamente">&nbsp;</div>
 </div>
 </div>
 </div>

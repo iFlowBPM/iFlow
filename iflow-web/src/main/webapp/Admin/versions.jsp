@@ -20,16 +20,24 @@ String editor = messages.getString("admin-versions.editor");
 String blocks = messages.getString("admin-versions.blocks");
 
 String openReleaseNotes = messages.getString("admin-versions.openReleaseNotes"); 
-String closeReleaseNotes = messages.getString("admin-versions.closeReleaseNotes"); 
+String closeReleaseNotes = messages.getString("admin-versions.closeReleaseNotes");
+
+String tabelaTitle = messages.getString("admin-versions.tableTitle");
 
 %>
 	<h1 id="title_admin"><%=title%></h1>
 	
 	
 	<div class="col-md-7" style="margin-top:4rem;">
+	
 	<div class="table_inc ">  
 
 		<table class="item_list table">
+		 	<tr class="tab_header">
+                <td><%=tabelaTitle%></td>
+                <td> - </td>
+                <td> - </td>
+            </tr>
 			<tr>
 			  <td class="info_msg" width="50%"><%=version %></td>
 			  <td class="info_msg" width="20%"><%=Version.VERSION %></td>

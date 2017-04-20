@@ -56,7 +56,7 @@ else if (op == 1) {
 			  </td>
 			</tr>
 		</table>
-	    <div class="button_box">
+	    <div class="button_box centrarBotoes">
 	     	<input class="regular_button_02" type="button" name="clear_cache" value="<%=messages.getString("button.clearcache")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/emailcache.jsp") %>','op=1');"/>
 	    </div>
 

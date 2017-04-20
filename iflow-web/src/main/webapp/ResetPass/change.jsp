@@ -42,7 +42,7 @@
 							<if:formInput type="password" name="repeatpass" value="" labelkey="changePassword.label.repeatpass" edit="true" required="true" />
 						</ol>
 					</fieldset>
-					<fieldset class="submit rp_background">
+					<fieldset class="submit rp_background centrarBotoes">
 						<input class="regular_button_01" type="submit" name="cancel" value="<if:message string="button.cancel"/>"/>
 						<input class="regular_button_01" type="submit" name="add" value="<if:message string="button.next"/>"/>
 					</fieldset>

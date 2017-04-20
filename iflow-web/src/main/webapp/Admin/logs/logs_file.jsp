@@ -31,8 +31,11 @@ if (logDir.isDirectory()) {
   }
 }
 %>
-<div class="table_inc">
-	<table class="item_list">
+<div class="row">
+<div class="col-md-12">
+<div class="col-md-6">
+<div class="table_inc ">
+	<table class="item_list table">
 		<tr class="tab_header">
 			<td><if:message string="admin-logs.file.table.header.name" /></td>
 			<td><if:message string="admin-logs.file.table.header.date" /></td>
@@ -56,4 +59,7 @@ if (logDir.isDirectory()) {
 			</tr>
 		<% } %>
 	</table>
+</div></div>
+<div class="col-md-6"></div>
+</div>
 </div>

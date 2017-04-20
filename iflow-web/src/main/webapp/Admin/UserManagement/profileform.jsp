@@ -96,7 +96,7 @@
 		<if:formInput type="text" name="description" value='<%=profileDesc%>' labelkey="profileform.field.description" edit="true" required="true" maxlength="125"/>
 		</ol>
 	</fieldset>
-    <fieldset class="submit">
+    <fieldset class="submit centrarBotoes">
         <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profileadm.jsp")%>');"/>
 		<input class="regular_button_01 btn btn-default" type="button" name="clear" value="<%=messages.getString("button.clear")%>" onClick="javascript:document.formulario.reset()"/>
 		<input class="regular_button_01 btn btn-default" type="button" name="add" value="<%=botao%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profileform.jsp")%>','oper=add&' + get_params(document.formulario));"/>

@@ -72,7 +72,7 @@ request.setAttribute("sONGOING",sONGOING);
 
 <%@ include file = "inc/proc_hist_tables.jspf" %>
 
-  <fieldset class="submit">
+  <fieldset class="submit centrarBotoes">
     <input class="regular_button_00" type="button" name="back" value="<if:message string="button.back"/>" 
     onClick="javascript:tabber_right(8, '<%= response.encodeURL("user_procs.jsp") %>', get_params(document.user_procs_filter));"/>
   </fieldset>

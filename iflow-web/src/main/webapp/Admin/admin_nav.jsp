@@ -97,9 +97,15 @@ boolean isClassic = StringUtils.equals("classic", theme);
 	<%if(isClassic){%>style="display: none;"<%}%>/></h2>
 <ul id="admin_section_users_body">
 	<li><a id="li_a_admin_<%=AdminNavConsts.USER_USERS%>"
+		title="<%=messages.getString("admin_nav.section.users.tooltip.organizations")%>teste"
+		class="toolTipItemLink li_link"
+		href="javascript:selectedItem('admin', <%=AdminNavConsts.USER_ORGANIZATIONS%>);tabber_save(4,'','sel=<%=AdminNavConsts.USER_ORGANIZATIONS%>','<%=response.encodeURL("Admin/UserManagement/organizationadm.jsp")%>','ts=<%=ts%>');"><%=messages.getString("admin_nav.section.users.link.organizations")%></a></li>
+
+	<li><a id="li_a_admin_<%=AdminNavConsts.USER_USERS%>"
 		title="<%=messages.getString("admin_nav.section.users.tooltip.organizations")%>"
 		class="toolTipItemLink li_link"
 		href="javascript:selectedItem('admin', <%=AdminNavConsts.USER_ORGANIZATIONS%>);tabber_save(4,'','sel=<%=AdminNavConsts.USER_ORGANIZATIONS%>','<%=response.encodeURL("Admin/UserManagement/organizationadm.jsp")%>','ts=<%=ts%>');"><%=messages.getString("admin_nav.section.users.link.organizations")%></a></li>
+
 </ul>
 <%
   }

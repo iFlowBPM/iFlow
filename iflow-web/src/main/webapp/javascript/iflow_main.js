@@ -608,7 +608,7 @@ function tabber(tabnr, navpage, navparam, contentpage, contentparam) {
 
   if (contentpage) {
     selectedSection.innerHTML = '';
-    setTimeout("showLoading('section" + tabnr + "_content_div')", 1000);
+   // setTimeout("showLoading('section" + tabnr + "_content_div')", 1000);
     contentparam = prepareParams('content', tabnr, contentparam);
     registerContent(contentpage, contentparam, tabnr);
     getCtrlFill(contentpage, contentparam, selectedSectionStr);
@@ -2186,4 +2186,9 @@ function isDownloadLinkAvailable(link){
 	}		
 	else
 		return true;
+}
+
+
+function changeLogType(value){
+	
 }
