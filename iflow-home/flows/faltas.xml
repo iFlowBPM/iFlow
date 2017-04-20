@@ -1132,7 +1132,7 @@
 			<description>msg0</description>
 			<value>"Tem de indicar um motivo."</value>
 		</XmlAttribute>
-		<XmlAttribute>
+		<XmlPort>
 			<name>portIn</name>
 			<connected_block_id>68</connected_block_id>
 			<connected_port_name>portFront</connected_port_name>
