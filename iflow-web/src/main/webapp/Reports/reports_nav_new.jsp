@@ -30,7 +30,7 @@
 %>
 	<ul id="reports_section_body" class="menu">
 		<li>
-			<a class="active" onclick="javascript:this.focus()" href="#">Relatorios Predefinidos</a>
+			<a class="active" onclick="javascript:this.focus()" href="#"><%=messages.getString("reports_nav.personalized_section.title") %></a>
 			<ul>	
 				<li>
 					<a id="li_a_reports_<%=ReportsNavConsts.PERFORMANCE_CHARTS%>"

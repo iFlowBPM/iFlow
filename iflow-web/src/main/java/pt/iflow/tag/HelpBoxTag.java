@@ -98,15 +98,19 @@ public class HelpBoxTag extends IknowTag {
 //           output.append("</div>");
 //           output.append("</div>");
 
-         
-           output.append("<div id=\"context_help_on\" class=\"help_box_open\">");
+        	 String showHelp = "false";
+        		
+             showHelp = Const.bSHOW_BUTTON_HELP.toString();
+             
+           if(showHelp != "false") { 
+           output.append("<div id=\"context_help_on\" class=\"help_box_open pull-right\" style=\"margin-bottom:2rem;\">");
            output.append("<a href=\"javascript:showHelpDialogItem('");
            output.append(formatFileName(getContext()));
            output.append("');\">");
            output.append("<img id=\"helpdivisionopenimg\" border=\"0\" src=\"" + images + "question_mark_qm.png\"/>");
            output.append("</a>");
            output.append("</div>");
-
+           }
          }
        }
        catch (Exception e) {
