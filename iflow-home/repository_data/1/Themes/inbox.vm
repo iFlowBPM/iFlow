@@ -71,7 +71,7 @@
 	</tbody>
 	</table>
 </div>
-<div class="info_msg" id="msg_empty_div" style="display:${msg_empty_display}">
+<div class="alert alert-info" id="msg_empty_div" style="display:${msg_empty_display}">
 	$notes_empty
 </div>
 #if($hasMoreNotifications)

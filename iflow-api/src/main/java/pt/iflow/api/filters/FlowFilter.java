@@ -13,7 +13,7 @@ public class FlowFilter {
   private FlowIgnorable ignoreFlow;
   private boolean isIntervenient = false;
   private String orderBy = "";
-  private String orderType = "asc";
+  private String orderType = "desc";
   private String folderid = "0";
   private String labelid = "0";
   private String deadline = "0";

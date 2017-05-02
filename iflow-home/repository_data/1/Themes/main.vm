@@ -425,7 +425,7 @@
                                             </li>
                                             
                                             <li>
-                                              <div id="context_help_on" class="help_box_open"><a href="javascript:showHelpDialogItem('processes');"><img id="helpdivisionopenimg" border="0" src="Themes/newflow/images/question_mark_qm.png"></a></div>
+                                              <div id="context_help_on" class="help_box_open"><a href="javascript:showHelpDialogItem('dashboard');"><img id="helpdivisionopenimg" border="0" src="Themes/newflow/images/question_mark_qm.png"></a></div>
                                             </li>
 
                                         </ul>

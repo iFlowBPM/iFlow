@@ -1809,7 +1809,7 @@ function ajaxFormRefresh(component){
   for(var i=0; i<ajaxSavedRichTextAreaValues.length; i++)
 	ajaxSavedValues[ajaxSavedRichTextAreaValues[i]] = $jQuery('#'+ajaxSavedRichTextAreaValues[i]).val();
 
-  $jQuery(component).after('<img src=\'/iFlow/images/loading.gif\' style=\'left:50px; position:relative;\'>');
+  //$jQuery(component).after('<img src=\'/iFlow/images/loading.gif\' style=\'left:50px; position:relative;\'>');
   var varNewValue=component.value;
   var varNewValue=component.value;
   var varName=component.name;  	  

@@ -58,8 +58,9 @@ public class ProcessPresentation {
         rs = null;
         st.close();
         st = null;
-
-        st = db.prepareStatement("select * from flow_state_history where flowid=? and pid=? and subpid=? order by mdate asc, mid asc");
+        
+        st = db.prepareStatement("select * from flow_state_history where flowid=? and pid=? and subpid=? order by mdate desc, mid asc");
+        // st = db.prepareStatement("select * from flow_state_history where flowid=? and pid=? and subpid=? order by mdate asc, mid asc");
         st.setInt(1, flowid);
         st.setInt(2, pid);
         st.setInt(3, subpid);

@@ -38,12 +38,12 @@
 	<fieldset>
 	  <ol style="width: 100%;">
 		<c:if test="${not empty param.file}">
-		  <li>
+		  <li style="font-size: 2rem;padding: 2rem 0rem;">
 			<if:message string="resources.file.label" />&nbsp;<c:out value="'${param.file}'" />
 		  </li>
 		</c:if>
   		<li style="width: 100%;">
-		  <textarea id="editor" name="editor" class="textarea" wrap="off"><%=RepositoryEditor.retrieveFile(userInfo, request.getParameter("file"), request.getParameter("type")) %></textarea>
+		  <textarea id="editor" name="editor" class="form-control" wrap="off" style="width:100%; height:500px;"><%=RepositoryEditor.retrieveFile(userInfo, request.getParameter("file"), request.getParameter("type")) %></textarea>
   		</li>
 	  </ol>
 	</fieldset>
