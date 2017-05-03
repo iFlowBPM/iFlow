@@ -107,7 +107,8 @@
 			close : true,
 			draggable: true
 		} );
-				
+		
+		GLOBAL_helpDialog.setBody(htmltext);
 		GLOBAL_helpDialog.render();
 		GLOBAL_helpDialog.show();
 	}  	

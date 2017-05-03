@@ -1,9 +1,9 @@
 #set( $emDashboard = "<em>" + $messages.getString("help.title.dashboard") + "</em>" )
 #set( $emProcesses = "<em>" + $messages.getString("help.title.processes") + "</em>" )
-#set( $linkTasks = "<a href=javascript:tabber('help','','sel=2','','');show_help('help_tasks');>" + $messages.getString("help.title.tasks") + "</a>" )
-#set( $linkDelegations = "<a href=javascript:tabber('help','','sel=5','','');show_help('help_delegations');>" + $messages.getString("help.title.delegations") + "</a>" )
-#set( $linkNotifications = "<a href=javascript:tabber('help','','sel=10','','');show_help('help_notifications');>" + $messages.getString("help.title.notifications") + "</a>" )
-#set( $linkProcesses = "<a href=javascript:tabber('help','','sel=4','','');show_help('help_processes');>" + $messages.getString("help.title.processes") + "</a>"  )
+#set( $linkTasks = "<a href=javascript:showHelpDialogItem('tasks');>" + $messages.getString("help.title.tasks") + "</a>" )
+#set( $linkDelegations = "<a href=javascript:showHelpDialogItem('delegations');>" + $messages.getString("help.title.delegations") + "</a>" )
+#set( $linkNotifications = "<a href=javascript:showHelpDialogItem('notifications');>" + $messages.getString("help.title.notifications") + "</a>" )
+#set( $linkProcesses = "<a href=javascript:showHelpDialogItem('processes');>" + $messages.getString("help.title.processes") + "</a>"  )
 
 <h2>$messages.getString("main.tab.dashboard")</h2>
     <p>$messages.getString("help.dashboard.subtitle", $emDashboard)</p>
