@@ -37,7 +37,7 @@ String deployResult = (String)request.getAttribute("deployResult");
 	</div>
 <% } %>
 	<div class="table_inc">  
-
+<if:generateHelpBox context="flow_settings"/>
 <% if (fda != null && fda.length > 0) { %>
 		<table class="item_list table">
 		<thead>
@@ -141,5 +141,5 @@ String deployResult = (String)request.getAttribute("deployResult");
    	<input class="regular_button_02 btn btn-default" type="button" name="add" value="<if:message string="button.import"></if:message>" onClick="javascript:tabber_right(4, '<c:url value="Admin/uploadflow.jsp"></c:url>','ts=<%=ts%>');"></input>
 </div>
 
-<if:generateHelpBox context="flow_settings"/>
+
 <%} %>

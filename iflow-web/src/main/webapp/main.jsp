@@ -78,6 +78,8 @@
 	hsSubst.put("field_myprocesses", messages.getString("main.tab.myprocesses"));
 	hsSubst.put("field_processes", messages.getString("main.tab.processes"));
 	hsSubst.put("field_delegations", messages.getString("main.tab.delegations"));
+	
+		
 	hsSubst.put("field_reports", messages.getString("main.tab.reports"));
 	hsSubst.put("field_admin", messages.getString("main.tab.admin"));
 	hsSubst.put("field_account", messages.getString("main.tab.account"));
@@ -206,9 +208,7 @@
 	String showHelp = "false";
 	
 	showHelp = Const.bSHOW_BUTTON_HELP.toString();
-	
-	
-	
+		
 	hsSubst.put("showHelp", showHelp);
 
 	if (hsContentParams != null) {

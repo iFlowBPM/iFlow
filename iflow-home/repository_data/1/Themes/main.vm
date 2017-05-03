@@ -424,10 +424,13 @@
 								</form>
                                             </li>
                                             
+                                            
+                                            #if($showHelp == "true")
                                             <li>
-                                              <div id="context_help_on" class="help_box_open"><a href="javascript:showHelpDialogItem('dashboard');"><img id="helpdivisionopenimg" border="0" src="Themes/newflow/images/question_mark_qm.png"></a></div>
+                                                                                      
+                                            <div id="context_help_on" class="help_box_open"><a href="javascript:showHelpDialogItem('dashboard');"><img id="helpdivisionopenimg" border="0" src="Themes/newflow/images/question_mark_qm.png"></a></div>
                                             </li>
-
+											#end
                                         </ul>
 					
 
@@ -475,8 +478,8 @@
 					
 					#if("$Tab8" != "no")
 					<h3 class="Acor_01">
-						<a href="" onclick="javascript:tabber_load(8, '');">
-						<img src="images/pesquisa.png" width="24" height="24" alt="" />Pesquisa</a>
+						<a href="" onclick="javascript:tabber_load(8, '');" title="$tooltip_myprocesses">
+						<img src="images/pesquisa.png" width="24" height="24" alt="" />$field_myprocesses</a>
 					</h3>
 					<div class="Acor_02" style=" margin: 0 ; padding:20px 0 0 0 ;">
 						<div id="container_search"></div>
@@ -485,14 +488,14 @@
 
 					#if("$Tab5" != "no")	
 					<h3 class="Acor_01">
-						<a href="" onclick="javascript:tabber_load(5, '');">
-						<img src="images/delegacaoes.png" width="24" height="24" alt="" />Delegações</a>
+						<a href="" onclick="javascript:tabber_load(5, '');" title="$tooltip_delegations">
+						<img src="images/delegacaoes.png" width="24" height="24" alt="" />$field_delegations</a>
 					</h3>
 					<div class="Acor_02" style=" margin: 0 ; padding:20px 0 0 0 ;">
 						<div id="container_delegations">
 							<ul class="menu">
 								<li>
-									<a href="#">Gerir existentes</a>
+									<a href="#">$field_delegations_manage</a>
 									<ul>
 										<li>
 											<a href="#">Aprovar / Recusar</a>
@@ -510,8 +513,8 @@
 					
 					#if($org_admin == "yes" || $supervisor == "yes")
 					<h3 class="Acor_01">
-						<a href="" onclick="javascript:tabber_load(10, '');">
-						<img src="images/relatorios.png" width="24" height="24" alt="" /> Relatórios</a>
+						<a href="" onclick="javascript:tabber_load(10, ''); title="$tooltip_reports">
+						<img src="images/relatorios.png" width="24" height="24" alt="" />$field_reports</a>
 					</h3>
 						#if($org_admin == "yes")
 					<div class="Acor_02" style=" margin: 0 ; padding:20px 0 0 0 ;">
