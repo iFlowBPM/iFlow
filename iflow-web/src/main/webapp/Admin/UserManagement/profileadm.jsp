@@ -52,6 +52,9 @@ if ("del".equals(sOper)){
       }
 %>
       <h1 id="title_admin"><%=title%></h1>
+      
+      <if:generateHelpBox context="profileadm"/>
+      
 <% if (bError) { %>
 			<div class="error_msg">
 			    <%=sErrorMsg%>
@@ -113,4 +116,4 @@ if ("del".equals(sOper)){
 	<div class="button_box centrarBotoes">
     	<input class="regular_button_01 btn btn-default" type="button" name="add" value="<%=messages.getString("button.add")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/profileform.jsp")%>','');"/>
 	</div>
-	<if:generateHelpBox context="profileadm"/>
+	

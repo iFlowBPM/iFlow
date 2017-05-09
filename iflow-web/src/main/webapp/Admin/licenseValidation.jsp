@@ -50,7 +50,7 @@ if(null == admin) {
 			<div class="rc_content">
 				<form name="fomulario" id="formulario" action="<%=response.encodeURL("../updateLicense") %>" method="post" enctype="multipart/form-data">
 					<fieldset class="rp_background">
-						<legend><if:message string="licenseValidation.title" /></legend> 
+						<legend style="border: none;font-size: 2rem;"><if:message string="licenseValidation.title" /></legend> 
 						<div class="info_msg">
 <%
 if(isLoaded) {

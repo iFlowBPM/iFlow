@@ -79,7 +79,7 @@
   <% } %>
 
   <fieldset>
-	<legend><%=messages.getString("personal_account_password.header")%></legend>
+	<legend style="border: none;font-size: 2rem;"><%=messages.getString("personal_account_password.header")%></legend>
     <ol>
     	<if:formInput type="password" name="oldpassword" value="" labelkey="userform.field.oldpassword" edit="true" required="true" maxlength="125"/>
     	<if:formInput type="password" name="password" value="" labelkey="userform.field.password" edit="true" required="true" maxlength="125"/>

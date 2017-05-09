@@ -170,7 +170,7 @@ String onchange = "document.getElementById('" + PARAM_ACTION + "').value='" + AC
 <% } %>
 
 <% if (!done) { %>
-<fieldset><legend></legend>
+<fieldset><legend style="border: none;font-size: 2rem;"></legend>
 <ol>
   <if:formInput name="<%=PARAM_NAME %>" labelkey="series.add.field.name" type="text" value='<%=name%>' edit="true" required="true" maxlength="15" />
   

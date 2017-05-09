@@ -44,7 +44,7 @@
 			<input type="hidden" name="full" value="<%= bIsFull %>" />
 			
 		  	<fieldset class="rp_background">
-		  		<legend><if:message string="register.title.user" /></legend>
+		  		<legend style="border: none;font-size: 2rem;"><if:message string="register.title.user" /></legend>
 <% if(!isSystemAdmin.booleanValue()) { %>
 		  		<div class="info_msg rp_background" style="text-align:left;">
 					<if:message string="register.intro.user" />

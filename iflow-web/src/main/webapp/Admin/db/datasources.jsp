@@ -22,7 +22,7 @@ String titleDatasource = messages.getString("admin-datasources.titleDatasource")
 <form>
     <h1 id="title_admin"><%=title%></h1>
 
-<fieldset><legend></legend>
+<fieldset><legend style="border: none;font-size: 2rem;"></legend>
     <div class="table_inc">
         <table class="item_list table">
             <tr class="tab_header">

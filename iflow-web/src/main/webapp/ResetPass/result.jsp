@@ -32,7 +32,7 @@
 			<div class="rc_content">
 				<form name="fomulario" id="formulario" action="<%=response.encodeURL("resetPassword") %>" method="post">
 					<fieldset class="rp_background">
-						<legend><if:message string="resetPassword.title" /></legend>
+						<legend style="border: none;font-size: 2rem;"><if:message string="resetPassword.title" /></legend>
 						<ol>
 							<li><if:message string="resetPassword.result.1"/></li>
 							<li><if:message string="resetPassword.result.2"/></li>

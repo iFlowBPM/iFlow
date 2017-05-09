@@ -91,7 +91,7 @@
 
   	<h1 id="title_admin"><%=title%></h1>
   	<fieldset>
-  		<legend></legend>
+  		<legend style="border: none;font-size: 2rem;"></legend>
 	    <ol>
 			<% String idselectaction = "tabber_right(4, '"+response.encodeURL("Admin/SeriesManagement/series_flows.jsp")+"',get_params(document.series_flows));"; %>
 			<if:formSelect name="<%=PARAM_ID %>" edit="true" value='<%=String.valueOf(id) %>' labelkey="series.series_flows.input.series" onchange="<%=idselectaction%>">

@@ -80,7 +80,7 @@ else if (sOper.equals("edit")) { // TOGGLE EDIT
 <% } %>
 
   <fieldset>
-	<legend><%=sHtml%></legend>
+	<legend style="border: none;font-size: 2rem;"><%=sHtml%></legend>
     <ol>
     
 				<%

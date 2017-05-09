@@ -120,7 +120,7 @@ if (op == 2) {
 <% }  %>
 
   <fieldset>
-    <legend><%=messages.getString("flow_resync_edit.header.flow",sFlowName)%></legend>
+    <legend style="border: none;font-size: 2rem;"><%=messages.getString("flow_resync_edit.header.flow",sFlowName)%></legend>
     <ol>
        <li class="form-group">
         <label class="control-label col-sm-2" for="oldstate"><%=messages.getString("flow_resync_edit.field.oldState")%></label>

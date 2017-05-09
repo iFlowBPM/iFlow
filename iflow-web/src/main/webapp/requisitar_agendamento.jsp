@@ -381,7 +381,7 @@ return;
 	</div>
   
   	<fieldset>
-  		<legend></legend>  
+  		<legend style="border: none;font-size: 2rem;"></legend>  
 	    <ol>
 	    <% if(cbRequest) { %>
 	        <if:formInput name="cb_name" type="text" labelkey="requisitar_agendamento.msg.flows" edit="false" value='' />

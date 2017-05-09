@@ -152,7 +152,7 @@
     </div>
   </c:if>
   <fieldset>
-	<legend><if:message string="personal_account.header.userData" /></legend>
+	<legend style="border: none;font-size: 2rem;"><if:message string="personal_account.header.userData" /></legend>
     <ol>
   <c:choose>
   <c:when test="${bShowModify}">
@@ -191,7 +191,7 @@
   <% if ((!bEdit || canTimezone)&& !ui.isSysAdmin()) { %>
   <p class="invisible-xs" style="height:20px;"></p>
     <fieldset>
-      <legend><if:message string="personal_account.userSettings" /></legend>
+      <legend style="border: none;font-size: 2rem;"><if:message string="personal_account.userSettings" /></legend>
       <ol>
     <%@include file="inc/settings.jspf" %>
       </ol>
@@ -199,7 +199,7 @@
   <% } %>
   <c:if test="${bShowModify && bEdit}">
     <fieldset>
-      <legend><if:message string="personal_account.header.enterPassword"/></legend>
+      <legend style="border: none;font-size: 2rem;"><if:message string="personal_account.header.enterPassword"/></legend>
       <ol>
     	<if:formInput type="password" name="password" value="" labelkey="userform.field.password" edit="true" maxlength="125" />
       </ol>

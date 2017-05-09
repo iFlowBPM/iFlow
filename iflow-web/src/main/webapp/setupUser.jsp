@@ -25,7 +25,7 @@
 			<div class="rc_content">
 				<form name="fomulario" id="formulario" action="<%= response.encodeURL("setupUser") %>" method="post">
 					<fieldset class="rp_background">
-						<legend><if:message string="setupUser.title" /></legend> 
+						<legend style="border: none;font-size: 2rem;"><if:message string="setupUser.title" /></legend> 
 						<div class="info_msg rp_background" style="text-align:left;">
 							<if:message string="setupUser.intro.change" />
 						</div>

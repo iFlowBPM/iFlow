@@ -38,7 +38,7 @@
 <% } %>
 			<form name="formulario" id="formulario" action="<%=response.encodeURL("register") %>" method="post">
 			  	<fieldset class="rp_background">
-					<legend><if:message string="register.title.error" /></legend>
+					<legend style="border: none;font-size: 2rem;"><if:message string="register.title.error" /></legend>
 					<c:if test="${not empty error_msg}">
 						<div class="error_msg rp_background">
 							<c:out value="${error_msg}" escapeXml="false" />

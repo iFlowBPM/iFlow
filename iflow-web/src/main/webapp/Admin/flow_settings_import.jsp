@@ -40,7 +40,7 @@ String sSave = fdFormData.getParameter("save");
 		<input type="hidden" name="flowname" value="<%=sFlowName%>">
 		<input type="hidden" name="op" value="3">
 		<fieldset>
-			<legend></legend>
+			<legend style="border: none;font-size: 2rem;"></legend>
 			<ol>
 				<li>
 					<label for="file"><if:message string="flow_settings_import.field.file"/></label>

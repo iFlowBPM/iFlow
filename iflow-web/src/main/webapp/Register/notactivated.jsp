@@ -28,7 +28,7 @@
 		<div class="rc_content">
 			<form name="formulario" id="formulario" action="<%=response.encodeURL("confirm") %>" method="post">
 				<fieldset class=" rp_background">
-					<legend><if:message string="register.title.notactivated" /></legend>
+					<legend style="border: none;font-size: 2rem;"><if:message string="register.title.notactivated" /></legend>
 					<div class="info_msg  rp_background">
 						<p><if:message string="register.notactivated.1"/></p>
 						<p><if:message string="register.notactivated.2"/></p> 

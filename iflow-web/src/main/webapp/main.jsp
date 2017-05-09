@@ -78,8 +78,7 @@
 	hsSubst.put("field_myprocesses", messages.getString("main.tab.myprocesses"));
 	hsSubst.put("field_processes", messages.getString("main.tab.processes"));
 	hsSubst.put("field_delegations", messages.getString("main.tab.delegations"));
-	
-		
+			
 	hsSubst.put("field_reports", messages.getString("main.tab.reports"));
 	hsSubst.put("field_admin", messages.getString("main.tab.admin"));
 	hsSubst.put("field_account", messages.getString("main.tab.account"));
@@ -97,7 +96,7 @@
 	hsSubst.put("link_logout", messages.getString("main.link.logout"));
 	hsSubst.put("link_account", messages.getString("main.link.account"));
 	hsSubst.put("link_inbox", messages.getString("main.link.inbox"));
-
+	
 	hsSubst.put("link_signature", messages.getString("main.link.signature"));
 	hsSubst.put("tooltip_signature", messages.getString("main.tooltip.signature"));
 
@@ -120,6 +119,7 @@
 	hsSubst.put("confirm", messages.getString("actividades.folder.confirm"));
 	hsSubst.put("cancel", messages.getString("main.labels.cancel"));
 	hsSubst.put("new_label", messages.getString("main.label.add.new"));
+	
 	// tutorial and help stuff
 
 	boolean helpMode = userInfo.getUserSettings().isHelpMode();

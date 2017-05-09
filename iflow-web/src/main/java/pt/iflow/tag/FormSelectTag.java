@@ -53,7 +53,7 @@ public class FormSelectTag
     
     StringBuffer sb = new StringBuffer();
     if (!isNoli()) {
-      sb.append("<li class=\"form-group\">");
+      sb.append("<li class=\"form-group\" style=\"height:3rem;\">");
     }
     boolean doLabel = true;
     if (isNoli()) {

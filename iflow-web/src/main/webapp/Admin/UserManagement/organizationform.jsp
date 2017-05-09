@@ -77,7 +77,7 @@
 <% } %>
 
   	<fieldset>
-  		<legend></legend>
+  		<legend style="border: none;font-size: 2rem;"></legend>
 	    <ol>
 			<if:formInput type="text" name="name" value='<%=org.getName()%>' labelkey="organizationform.field.name" edit="true" required="true" maxlength="50"/>
 			<if:formInput type="text" name="description" value='<%=org.getDescription()%>' labelkey="organizationform.field.description" edit="true" maxlength="150"/>

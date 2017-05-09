@@ -3007,6 +3007,7 @@ public class UserManagerBean
   
   public String getOrgUnitCalendarId(String username, String unitId)
   {
+	  	  
     Connection db = null;
     PreparedStatement st = null;
     ResultSet rs = null;
@@ -3014,7 +3015,11 @@ public class UserManagerBean
     try
     {
       db = Utils.getDataSource().getConnection();
+      if(unitId != ""){ 
       st = db.prepareStatement("select calendid from organizational_units where unitid = " + unitId + "");
+      }else{
+    	 st = db.prepareStatement("select calendid from organizational_units"); 
+      }
       rs = st.executeQuery();
       if (rs.next()) {
         id = rs.getInt("calendid");
@@ -3031,6 +3036,7 @@ public class UserManagerBean
       DatabaseInterface.closeResources(new Object[] { rs, db, st });
     }
     return "" + id;
+	
   }
   
   public String getUserCalendarId(String user, String usId)

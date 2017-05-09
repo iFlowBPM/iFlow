@@ -15,7 +15,7 @@
 			<if:message string="flow_template.add.disclaimer"/>
 		</div>
 		<fieldset>
-			<legend></legend>
+			<legend style="border: none;font-size: 2rem;"></legend>
 			<ol>
 				<li>
 					<label for="file"><if:message string="flow_template.add.label.file"/></label>

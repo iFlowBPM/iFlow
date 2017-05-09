@@ -38,8 +38,8 @@ String sPage = "Admin/flow_menu_edit";
 		</ol>	
 	</fieldset>
 	<fieldset class="submit centrarBotoes">
-        <input class="regular_button_01" type="button" name="back" value="<if:message string="button.back"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_menu_edit") %>');"/>
-		<input class="regular_button_01" type="button" name="clear" value="<if:message string="button.clear"/>" onClick="javascript:document.flows.reset()"/>
-		<input class="regular_button_01" type="button" name="add" value="<if:message string="button.add"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_menu_add") %>',get_params(document.flows));"/>	
+        <input class="regular_button_01 btn btn-default" type="button" name="back" value="<if:message string="button.back"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_menu_edit") %>');"/>
+		<input class="regular_button_01 btn btn-default" type="button" name="clear" value="<if:message string="button.clear"/>" onClick="javascript:document.flows.reset()"/>
+		<input class="regular_button_01 btn btn-default" type="button" name="add" value="<if:message string="button.add"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/flow_menu_add") %>',get_params(document.flows));"/>	
 	</fieldset>
 </form>

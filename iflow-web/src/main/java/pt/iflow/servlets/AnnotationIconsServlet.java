@@ -85,7 +85,7 @@ public class AnnotationIconsServlet extends HttpServlet {
       String iconName = StringEscapeUtils.unescapeHtml(request.getParameter(REQUEST_PARAMETER_ICON_NAME));
 
       if (StringUtilities.isEmpty(iconName)){
-        String labelName = request.getParameter(REQUEST_PARAMETER_LABEL_NAME);
+        String labelName = StringEscapeUtils.unescapeHtml(request.getParameter(REQUEST_PARAMETER_LABEL_NAME));
         if (!StringUtilities.isEmpty(labelName)){
           while ((labelName.charAt(0)) == '\'') {
             labelName = labelName.substring(1, labelName.length()-1);

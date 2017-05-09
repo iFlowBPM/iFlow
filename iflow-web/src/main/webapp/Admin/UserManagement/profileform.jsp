@@ -90,7 +90,7 @@
 <% } %>
 
   	<fieldset>
-  		<legend></legend>
+  		<legend style="border: none;font-size: 2rem;"></legend>
 	    <ol>
 		<if:formInput type="text" name="name" value='<%=profileName%>' labelkey="profileform.field.name" edit="true" required="true" maxlength="50"/>
 		<if:formInput type="text" name="description" value='<%=profileDesc%>' labelkey="profileform.field.description" edit="true" required="true" maxlength="125"/>

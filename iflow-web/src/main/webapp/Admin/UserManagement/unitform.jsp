@@ -127,7 +127,7 @@
 <% } %>
 
   	<fieldset>
-  		<legend></legend>
+  		<legend style="border: none;font-size: 2rem;"></legend>
 	    <ol>
 			<if:formInput type="text" name="name" value='<%=unitView.getName()%>' labelkey="unitform.field.name" edit="true" required="true" maxlength="50"/>
 			<if:formInput type="text" name="description" value='<%=unitView.getDescription()%>' labelkey="unitform.field.description" required="true" edit="true" maxlength="150"/>

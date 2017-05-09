@@ -35,7 +35,7 @@ function Redirect() {
 				<input type="hidden" name="activation" value="${param['activation']}"/>
 				<input type="hidden" name="continue" value="continue"/>
 				<fieldset class="rp_background">
-					<legend><if:message string="register.title.activated" /></legend>
+					<legend style="border: none;font-size: 2rem;"><if:message string="register.title.activated" /></legend>
 					<div class="info_msg  rp_background">
 						<p><if:message string="register.activated.1"/></p>
 						<p><if:message string="register.activated.2"/></p>

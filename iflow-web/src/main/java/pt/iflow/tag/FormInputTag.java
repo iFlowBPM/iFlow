@@ -52,8 +52,7 @@ public class FormInputTag
       return "";
     }
     StringBuffer sb = new StringBuffer();
-    
-    
+       
    
     
     sb.append("<li class=\"form-group\">");

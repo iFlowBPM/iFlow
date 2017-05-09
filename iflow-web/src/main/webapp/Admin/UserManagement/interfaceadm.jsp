@@ -51,6 +51,8 @@ InterfacesManager manager = BeanFactory.getInterfacesManager();
   }
 %>
       <h1 id="title_admin"><%=title%></h1>
+      
+      <if:generateHelpBox context="interface_adm"/>
 <% if (bError) { %>
 			<div class="alert alert-danger">
 			    <%=sErrorMsg%>
@@ -97,4 +99,4 @@ InterfacesManager manager = BeanFactory.getInterfacesManager();
     %>
 		</table>
 	</div>
-	<if:generateHelpBox context="interface_adm"/>
+	

@@ -31,7 +31,7 @@ int result = BeanFactory.getUserManagerBean().confirmEmailAddress(request.getPar
 		<div class="rc_content">
 			<form name="formulario" id="formulario" action="<%= response.encodeURL("main.jsp") %>" method="get">
 				<fieldset class="rp_background">
-					<legend><if:message string="email_confirmation.title" /></legend>
+					<legend style="border: none;font-size: 2rem;"><if:message string="email_confirmation.title" /></legend>
 					<div class="info_msg  rp_background">
 <% if(result == UserManager.CONFIRM_EMAIL_CONFIRMED) { %>
 						<p><if:message string="email_confirmation.confirmed.1"/></p>

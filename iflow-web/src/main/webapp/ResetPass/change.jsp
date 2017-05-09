@@ -26,7 +26,7 @@
 			<div class="rc_content">
 				<form name="fomulario" id="formulario" action="<%=response.encodeURL("changePassword") %>" method="post">
 					<fieldset class="rp_background">
-						<legend><if:message string="changePassword.title" /></legend>
+						<legend style="border: none;font-size: 2rem;"><if:message string="changePassword.title" /></legend>
 						<div class="info_msg rp_background" style="text-align:left;">
 							<if:message string="changePassword.intro.change" />
 						</div>

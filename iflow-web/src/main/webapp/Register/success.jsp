@@ -39,7 +39,7 @@
 <% } %>
 			<form name="formulario" id="formulario" action="<%=response.encodeURL("register") %>" method="post">
 				<fieldset class="rp_background">
-					<legend><if:message string="register.title.success" /></legend>
+					<legend style="border: none;font-size: 2rem;"><if:message string="register.title.success" /></legend>
 					<div class="info_msg  rp_background">
 						<p><if:message string="register.success.1"/></p>
 <% if(Const.bUSE_EMAIL) { %>

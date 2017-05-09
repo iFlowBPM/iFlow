@@ -16,7 +16,7 @@
 			<input type="hidden" name="filename" value="${param.file}" />
 		</c:if>
 		<fieldset>
-			<legend></legend>
+			<legend style="border: none;font-size: 2rem;"></legend>
 			<ol>
 				<c:if test="${not empty param.file}">
 					<li><if:message string="resources.file.label"/>&nbsp;<c:out value="'${param.file}'"/></li>

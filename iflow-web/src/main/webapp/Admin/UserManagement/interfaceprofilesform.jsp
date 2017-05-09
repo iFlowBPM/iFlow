@@ -62,7 +62,7 @@
 		
 	<form method="post" name="formulario" id="formulario" class="form-horizontal">
 
-	<fieldset><legend></legend>
+	<fieldset><legend style="border: none;font-size: 2rem;"></legend>
 	
 	<ol>
 		<li class="form-group">
@@ -126,7 +126,7 @@
 		</div>
 		<div class="ft_right">
 			<div class="ft_select col-sm-2">
-		<select size="10" name="active" MULTIPLE>
+		<select size="10" class="form-control" name="active" MULTIPLE>
 			<%
 			  for (int i = 0; i < profiles.length; i++) {
 			    if (!listOfInterfaceProfiles.contains("" + profiles[i].getProfileId()))

@@ -49,7 +49,7 @@
 	%>
 	<h1 id="title_admin"><%=title%></h1>
 	<form method="post" name="formulario" id="formulario" class="form-horizontal">
-	<fieldset><legend></legend>
+	<fieldset><legend style="border: none;font-size: 2rem;"></legend>
 	
 	<ol>
 		<li class="form-group">

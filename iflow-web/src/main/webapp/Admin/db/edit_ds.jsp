@@ -45,7 +45,7 @@ if(StringUtils.equals(request.getParameter("oper"),"add")) {
       String onChangeDS = "javascript:tabber_right(4, '"+response.encodeURL("Admin/db/edit_ds.jsp")+"','oper=datasource&' + get_params(document.formulario));";
       String onChangeDrv = "javascript:tabber_right(4, '"+response.encodeURL("Admin/db/edit_ds.jsp")+"','oper=driver&' + get_params(document.formulario));";
           %>
-<fieldset><legend></legend>
+<fieldset><legend style="border: none;font-size: 2rem;"></legend>
     <ol>
     <%-- TODO on change submit--%>
       <if:formSelect name="<%=DSLoader.POOL_IMPL_CLASS %>" edit="true" value="<%= dsType %>" label="DataSource Type" multiple="false" required="true" onchange="<%=onChangeDS%>">

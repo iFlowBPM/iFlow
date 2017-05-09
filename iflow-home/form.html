@@ -608,55 +608,18 @@
 <body onload="reloadBootstrapElements(); initProcFrame();">
 <div style="margin:auto;">
 <form enctype="multipart/form-data" method="post" name="dados" style="width: 100%;margin:auto;" id="dados" action="form.jsp">
-<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="null"> <input type="hidden" name="op" id="op" value="0"> <input type="hidden" name="9_MAX_ROW" id="9_MAX_ROW" value="0"> <input type="hidden" name="0_MAX_ROW" id="0_MAX_ROW" value="0"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="7_MAX_ROW" id="7_MAX_ROW" value="0"> <input type="hidden" name="11_MAX_ROW" id="11_MAX_ROW" value="0"> <input type="hidden" name="1_MAX_ROW" id="1_MAX_ROW" value="0"> <input type="hidden" name="pid" id="pid" value="-10"> <input type="hidden" name="12_MAX_ROW" id="12_MAX_ROW" value="0"> <input type="hidden" name="2_MAX_ROW" id="2_MAX_ROW" value="0"> <input type="hidden" name="8_MAX_ROW" id="8_MAX_ROW" value="0"> <input type="hidden" name="4_MAX_ROW" id="4_MAX_ROW" value="0"> <input type="hidden" name="3_MAX_ROW" id="3_MAX_ROW" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="subpid" id="subpid" value="-10"> <input type="hidden" name="6_MAX_ROW" id="6_MAX_ROW" value="0"> <input type="hidden" name="_changed_form" id="_changed_form" value="null"> <input type="hidden" name="5_MAX_ROW" id="5_MAX_ROW" value="0"> <input type="hidden" name="flowid" id="flowid" value="36"> <input type="hidden" name="curmid" id="curmid" value="0"> <input type="hidden" name="10_MAX_ROW" id="10_MAX_ROW" value="0"> 
+<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="null"> <input type="hidden" name="op" id="op" value="0"> <input type="hidden" name="0_MAX_ROW" id="0_MAX_ROW" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="subpid" id="subpid" value="-10"> <input type="hidden" name="pid" id="pid" value="-10"> <input type="hidden" name="_changed_form" id="_changed_form" value="null"> <input type="hidden" name="flowid" id="flowid" value="139"> <input type="hidden" name="curmid" id="curmid" value="0"> 
 <div id="main">
 <div class="blockdivision">
 <div class="columndivision">
 <ol class="fieldlist">
-<li class="header  field" id="N1000A">
-<label class="header field">Registo de N&atilde;o Conformidade</label>
-</li>
-<li class="filler  field" id="N10011"></li>
-</ol>
-</div>
-</div>
-<div class="blockdivision">
-<div class="columndivision" style="width:50%; float: left;">
-<ol class="multicol">
-<li class="selection  field_multicol" id="N10019">
-<label class="selection field multicol" for="tipo">Tipo</label><select style="width:250px;" class="txt  form-control pull-right combobox" name="tipo"><option value="-1">Escolha</option><option value="1">Interna</option><option value="2">Fornecedor</option><option value="3">Cliente</option><option value="99">Outro</option></select>
-</li>
-<li class="selection  field_multicol" id="N10048">
-<label class="selection field multicol" for="origem">Origem</label><select style="width:250px;" class="txt  form-control pull-right combobox" name="origem"><option value="-1">Escolha</option><option value="1">Reclama&ccedil;&atilde;o</option><option value="2">Auditoria</option><option value="3">Processo</option><option value="99">Outra</option></select>
-</li>
-</ol>
-</div>
-<div class="columndivision" style="width:50%; float: left;">
-<ol class="multicol">
-<li class="textlabel  field_multicol" id="N10078" style="">
-<label class="textlabel field multicol" for="">Registada por</label>&Oacute;scar Lopes</li>
-<li class="datecal  field_multicol" id="N10083" style="">
-<label class="datecal field multicol" for="data_registo">Data de registo</label><span style="width:150px" class="pull-right">02/05/2017</span>
-</li>
-<li class="filler  field_multicol" id="N100A1"></li>
-<li class="filler  field_multicol" id="N100A6"></li>
-</ol>
-</div>
-</div>
-<div class="blockdivision">
-<div class="columndivision">
-<ol class="fieldlist">
-<li class="textarea  field" id="N100AD" style="height:250px;">
-<label class="textarea field" for="desc">Descri&ccedil;&atilde;o</label><textarea rows="10" name="desc" style="width:490px;" class=" form-control pull-right" onblur="
-			ajaxSaveValueChange(this);				
-		"></textarea>
-</li>
+<li class="info_msg field" id="N1000A" style="">Enviar</li>
 </ol>
 </div>
 </div>
 <div class="blockdivision">
 <div class="columndivision columnholder">
-<div class="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_avancar" value="Registar" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='4'; } else { return false; }" title="Regista a N&atilde;o Conformidade">&nbsp;</div>
+<div class="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_avancar" value="Avan&ccedil;ar" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='4'; } else { return false; }" title="Avan&ccedil;ar">&nbsp;</div>
 </div>
 </div>
 </div>

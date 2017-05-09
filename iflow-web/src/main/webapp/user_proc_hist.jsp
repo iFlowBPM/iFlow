@@ -61,7 +61,7 @@ request.setAttribute("sONGOING",sONGOING);
   </div>
 <% } %>
 
-  <fieldset class="submit"><legend></legend>
+  <fieldset class="submit"><legend style="border: none;font-size: 2rem;"></legend>
     <ol>
       <if:formInput name="flowname" type="text" value='<%=flow.getName()%>' labelkey="user_proc_hist.field.flow" edit="false" />
       <if:formInput name="flowid" type="text" value='<%=sFlowId%>' labelkey="user_proc_hist.field.flowid" edit="false" />

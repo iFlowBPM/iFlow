@@ -97,7 +97,7 @@
 
 <% if (!(op == 1 && sbError.length() == 0)) { %>
 
-<fieldset><legend></legend>
+<fieldset><legend style="border: none;font-size: 2rem;"></legend>
 <ol>
   <if:formInput name="dummy2" labelkey="flow_delete.flowfile" type="text" value='<%=sFlowFile%>' edit="false" />
   <if:formInput name="dummy3" labelkey="flow_delete.flowname" type="text" value='<%=sFlowName%>' edit="false" />
@@ -112,7 +112,7 @@
 </ol>
 </fieldset>
 <% } %>
-<fieldset class="submit centrarBotoes"><legend></legend>
+<fieldset class="submit centrarBotoes"><legend style="border: none;font-size: 2rem;"></legend>
 <%
   if (op == 1 && sbError.length() == 0) {
 %>

@@ -366,7 +366,7 @@
                                             <!--  Assinatura  -->
                                             
                                             <div style="width: 35px;height: 32px;">
-                                            <a class="menu_link" style="color: #ffffff !important;text-decoration:none;vertical-align: -webkit-baseline-middle;" target="_blank" href="./AppletWebstart"  title="$tooltip_signature"><img src="images/signature1.png"  /></a>
+                                            <a class="menu_link" style="color: #ffffff !important;text-decoration:none;vertical-align: -webkit-baseline-middle;" target="_blank" href="./AppletWebstart"><img src="images/signature1.png" alt="$link_signature" title="$link_signature" /></a>
                                             </div>
                                             </li>
                                             
@@ -420,7 +420,7 @@
 				                                           
 							<li>
 								<form action="$response.encodeURL($url_prefix,'logout.jsp')?ts=$ts">
-									<input type="submit" class="btn btn-default btn-sm" style="margin: 0px;" name="Logout" id="Logout" value="Sair"/>
+									<input type="submit" class="btn btn-default btn-sm" style="margin: 0px;" name="Logout" id="Logout" value="$link_logout"/>
 								</form>
                                             </li>
                                             
