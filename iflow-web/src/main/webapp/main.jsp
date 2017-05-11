@@ -207,7 +207,7 @@
 
 	String showHelp = "false";
 	
-	showHelp = Const.bSHOW_BUTTON_HELP.toString();
+	showHelp = Const.sSHOW_BUTTON_HELP.toString();
 		
 	hsSubst.put("showHelp", showHelp);
 

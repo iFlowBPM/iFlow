@@ -80,7 +80,7 @@ public class HelpBoxTag extends IknowTag {
 //             output.append("<div id=\"helpdivision\" class=\"help_box_division hidden\">");
 //
 //           output.append("<div id=\"helpwrapper\" class=\"help_box_wrapper\">");
-//           output.append("<div id=\"helpsection\" class=\"help_box\">");
+//           output.append("<div id=\"helpsection\" class=\"help_box\" style=\"overflow-y: scroll;height: 500px;\">");
 //           output.append("<h1 id=\"title_help\">");
 //           output.append(getUserMessages().getString("helpbox.title"));           
 //           output.append("</h1>");           
@@ -100,7 +100,7 @@ public class HelpBoxTag extends IknowTag {
 
         	 String showHelp = "false";
         		
-             showHelp = Const.bSHOW_BUTTON_HELP.toString();
+             showHelp = Const.sSHOW_BUTTON_HELP.toString();
              
            if(showHelp != "false") { 
            output.append("<div id=\"context_help_on\" class=\"help_box_open pull-right\" style=\"margin-bottom:2rem;\">");

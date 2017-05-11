@@ -34,7 +34,7 @@ public void makeHelpData(javax.servlet.jsp.JspWriter outstream, UserInfoInterfac
 		        //if (indirect)
 		        //	sHtml.append("<input id=\"link_search_span\" class=\"regular_button_00\" type=\"button\" name=\"filter\" value=\"").append(userInfo.getMessages().getString("button.back")).append("\" onClick=\"javascript:helpBack('").append(spanid).append("')\">");
 		  			
-		        sHtml.append("<div id=\"helpsection\" class=\"help_box\">");        
+		        sHtml.append("<div id=\"helpsection\" class=\"help_box\" style=\"style=overflow-y: scroll;height: 500px;\">");        
 		        sHtml.append(VelocityUtils.processTemplate(htSubst, new InputStreamReader(contentStream, "UTF-8")));
 		        sHtml.append("</div>");        
 		        sHtml.append("</div>");        

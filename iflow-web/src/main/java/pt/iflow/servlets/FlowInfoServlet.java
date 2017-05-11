@@ -67,7 +67,7 @@ public class FlowInfoServlet extends javax.servlet.http.HttpServlet implements j
         out.print("</div>");
         out.print("<div class=\"bd\"><div class=\"dialogcontent\">");
         out.print("<div id=\"helpwrapper\" class=\"help_box_wrapper\">");
-        out.print("<div id=\"helpsection\" class=\"help_box\">");
+        out.print("<div id=\"helpsection\" class=\"help_box\" style=\"overflow-y: scroll;height: 500px;\">");
         List<FlowStateHistoryTO> history = BeanFactory.getProcessManagerBean().getFullProcessHistory(ui, flowid, pnumber);
         if (history.isEmpty()) {
           out.print("<p>" + messages.getString("flowInfo.empty") + "</p>");

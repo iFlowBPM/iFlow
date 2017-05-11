@@ -341,7 +341,7 @@ public class Const {
   
   //Show Button Help
   
-  public static String bSHOW_BUTTON_HELP = "true";
+  public static String sSHOW_BUTTON_HELP = "true";
   
   // hotfolder
   public static int HOT_FOLDER_SEARCH_INTERVAL = -1; 
@@ -690,7 +690,7 @@ public class Const {
     
     /* Show Button Help */
     
-    bSHOW_BUTTON_HELP = Setup.getProperty("SHOW_BUTTON_HELP");
+    sSHOW_BUTTON_HELP = Setup.getProperty("SHOW_BUTTON_HELP");
     
         
     try {
