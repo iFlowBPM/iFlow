@@ -81,7 +81,7 @@
       $msg.get('login.field.keepSession') </label>
     <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
   </form>
-  <div class="loginfooter" style="padding-top:20px">iFlowBPM ${version} $msg.get('iflow.copyright')<br>
+  <div class="loginfooter" style="padding-top:20px">iFlowBPM ${version} </br> $msg.get('iflow.copyright')
     <!--iFlow Version ${version}-->
 	</div>
 </div>

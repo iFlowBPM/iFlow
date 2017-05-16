@@ -28,7 +28,11 @@ import pt.iflow.api.utils.Utils;
 
 public class BlockSQLUpdate extends BlockSQL {
 	
-  private static final String advancedQuery = "advancedQuery";	
+  private static final String advancedQuery = "advancedQuery";
+  
+  private static String sQuerySplit ="";
+  
+  private static String sQuery = "";
 
   public BlockSQLUpdate(int anFlowId,int id, int subflowblockid, String filename) {
     super(anFlowId,id, subflowblockid, filename);
@@ -56,10 +60,13 @@ public class BlockSQLUpdate extends BlockSQL {
     String sTable = null;
     String sSet = null;
     String sWhere = null;
-    String sQuery = null;
+    // String sQuery = null;
     
     try{
     	sQuery = this.getAttribute(advancedQuery);
+    	
+    	validate_character();
+    	
     	 if (StringUtils.isNotEmpty(sQuery)) {
     		 sQuery = procData.transform(userInfo, sQuery, true);
     	 }
@@ -197,5 +204,43 @@ public class BlockSQLUpdate extends BlockSQL {
 
   public String getResult (UserInfoInterface userInfo, ProcessData procData) {
     return this.getDesc(userInfo, procData, false, "SQL Update Efectuado");
+  }
+  
+ private void validate_character(){
+	  
+	  char cValidate;
+  	  	 
+      int count = 0;
+  	
+  	   for(int i=0; sQuerySplit.length() > i; i++){
+  		cValidate = sQuerySplit.charAt(i);      
+  		
+  		if(Character.isLetterOrDigit(cValidate)){
+      
+  			sQuery = sQuery + cValidate;  
+  
+  		}else if(cValidate == '\''){
+                      count++;
+                      
+                      if(count == 1){
+                      sQuery = sQuery + cValidate;
+                      }else{
+                      cValidate = sQuerySplit.charAt(i + 1);    
+                      if(Character.isLetterOrDigit(cValidate)){
+                      sQuery = sQuery + "´";
+                      }else if(cValidate == ',' || cValidate == ')'){
+                          
+                          cValidate = sQuerySplit.charAt(i);
+                          sQuery = sQuery + cValidate;
+                          count=0;
+                      } 
+              
+                  }
+              
+          } else {
+              sQuery = sQuery + cValidate;
+  		}
+  		 
+  		}
   }
 }
