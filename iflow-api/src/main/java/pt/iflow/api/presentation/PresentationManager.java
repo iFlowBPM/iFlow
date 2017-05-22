@@ -150,7 +150,7 @@ public class PresentationManager
     {
       int[] ID_Interface = new int[0];
       String nome = "Tab";
-      ID_Interface = tabsRejeitadas(userInfo);
+      //ID_Interface = tabsRejeitadas(userInfo);
       for (int i = 0; i < ID_Interface.length; i++)
       {
         String chave = nome + ID_Interface[i];

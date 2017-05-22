@@ -24,7 +24,14 @@ String deployResult = (String)request.getAttribute("deployResult");
 %>
 <%if (ui.isOrgAdminFlows()) {%>
 
-	<h1 id="title_admin"><%=title%></h1>
+
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	<if:generateHelpBox context="flow_settings"/>
+</div>
+
 
 <% if (sbError.length() > 0) { %>
 	<div class="alert alert-danger">
@@ -37,7 +44,9 @@ String deployResult = (String)request.getAttribute("deployResult");
 	</div>
 <% } %>
 	<div class="table_inc">  
-<if:generateHelpBox context="flow_settings"/>
+
+
+
 <% if (fda != null && fda.length > 0) { %>
 		<table class="item_list table">
 		<thead>

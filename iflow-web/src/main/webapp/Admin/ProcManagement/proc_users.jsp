@@ -120,7 +120,14 @@ if (sbError.length() == 0 && flowid > 0 && pid > 0 && subpid > 0) {
   <input type="hidden" name="state" value="<%=state%>" />
   <input type="hidden" name="show" value="true" />
 
-  <h1 id="title_admin"><%=title%></h1>
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	<if:generateHelpBox context="proc_users"/>
+</div>
+  
+  
       
 <% if ((it == null || !it.hasNext()) && flowid > 0) { %>
   <div class="alert alert-info">
@@ -223,4 +230,4 @@ if (sbError.length() == 0 && flowid > 0 && pid > 0 && subpid > 0) {
 
 </form>
 
-<if:generateHelpBox context="proc_users"/>
+

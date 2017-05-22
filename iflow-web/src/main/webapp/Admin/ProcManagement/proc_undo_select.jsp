@@ -288,7 +288,14 @@ else {
 
 <%@page import="pt.iflow.api.transition.FlowRolesTO"%>
 
-<h1 id="title_admin"><%=title%></h1>
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	<if:generateHelpBox context="proc_undo_select"/>
+</div>
+
+
 
 <form name="undoactivities" method="post" class="form-horizontal">
   <input type="hidden" name="dummy" value="1">
@@ -408,4 +415,4 @@ else {
 
 </form>
 
-<if:generateHelpBox context="proc_undo_select"/>
+

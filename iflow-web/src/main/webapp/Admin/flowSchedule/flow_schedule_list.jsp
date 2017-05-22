@@ -10,7 +10,12 @@
 <c:set var="presentationMsg" value="${flowScheduleMsgListMsgToUser}" scope="request"/>
 <c:set var="listOfEvents" value="${sessionScope.flow_events_list}" />
 
-<h1 id="title_admin"><if:message string="flow_schedule.list.title" /></h1>
+<div id="title_admin">
+	<h1 style="margin:0px; float:left;"><if:message string="flow_schedule.list.title" /></h1>
+	
+	<if:generateHelpBox context="flow_schedule_list" />
+</div>
+
 <form method="post" name="flow_schedule_list_form">
 
 <c:if test="${not empty presentationMsg}">
@@ -71,5 +76,5 @@
     </fieldset>
 </div>
 </form>
-<if:generateHelpBox context="flow_schedule_list" />
+
 <!-- TODO FIX HELP PAGE -->

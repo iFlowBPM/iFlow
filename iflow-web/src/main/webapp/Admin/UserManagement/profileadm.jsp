@@ -51,9 +51,14 @@ if ("del".equals(sOper)){
         profiles = new ProfilesTO[0];
       }
 %>
-      <h1 id="title_admin"><%=title%></h1>
+      <div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	<if:generateHelpBox context="profileadm"/>
+</div>
       
-      <if:generateHelpBox context="profileadm"/>
+      
       
 <% if (bError) { %>
 			<div class="error_msg">

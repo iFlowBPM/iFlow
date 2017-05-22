@@ -7,7 +7,14 @@
 String sPage = "Admin/flow_menu_edit";
 int flowid=-1; // this is used by auth.jsp
 %><%@ include file = "auth.jspf" %>
-<h1 id="title_admin"><%=title%></h1>
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	<if:generateHelpBox context="flow_menu_edit"/>
+</div>
+
+
 <form method="post" name="menus">
 	<input type="hidden" name="toDelete" value="">
 
@@ -45,6 +52,6 @@ int flowid=-1; // this is used by auth.jsp
 		</fieldset>
 	</div>
 	
-	<if:generateHelpBox context="flow_menu_edit"/>
+	
 	
 </form>

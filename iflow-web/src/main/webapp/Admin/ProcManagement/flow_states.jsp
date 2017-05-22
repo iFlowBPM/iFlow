@@ -120,7 +120,16 @@ if (flow != null) {
 
 <form name="flowstates" method="POST" class="form-horizontal">
 
-  <h1 id="title_admin"><%=title%></h1>
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	 <if:generateHelpBox context="flow_states"/>
+</div>
+
+
+  
+ 
 
 <% if (sbError != null && sbError.length() > 0) { %>
   <div class="alert alert-danger">
@@ -213,4 +222,4 @@ if (flow != null) {
 
 </form>
 
-<if:generateHelpBox context="flow_states"/>
+

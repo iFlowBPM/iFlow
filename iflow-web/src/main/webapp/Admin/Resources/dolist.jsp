@@ -9,7 +9,13 @@
 	</div>
 </if:checkUserAdmin>
 
-<h1 id="title_admin"><if:titleMessage type="${param.type}"></if:titleMessage></h1>
+
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><if:titleMessage type="${param.type}"></if:titleMessage></h1>
+	
+	<if:generateHelpBox context="dolist"/>
+</div>
 
 <%
 	String type = fdFormData.getParameter("type");
@@ -85,5 +91,5 @@
 
 <div class="button_box centrarBotoes">
    	<input class="regular_button_02 btn btn-default" type="button" name="add" value="<if:message string="button.add"></if:message>" onClick="javascript:tabber_right(4, '<c:url value="Admin/Resources/uploadform.jsp"></c:url>','type=${param.type}');"></input>
-	<if:generateHelpBox context="dolist"/>
+	
 </div>

@@ -107,7 +107,14 @@ if (subpid != -1 && pid != -1 && flowid != -1) {
   <input type="hidden" name="showflowid" value="<%=flowid %>"/>
   <input type="hidden" name="pid" value="<%=pid %>"/>
 
-  <h1 id="title_admin"><%=title%></h1>
+  <div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	<if:generateHelpBox context="proc_undo_select"/>
+</div>
+  
+  
       
 <% if (sbError.length() > 0) { %>
   <div class="<%=bSuccess?"info_msg":"error_msg"%>">
@@ -219,5 +226,5 @@ if (subpid != -1 && pid != -1 && flowid != -1) {
   </div>
 </form>
 
-<if:generateHelpBox context="proc_undo_select"/>
+
 

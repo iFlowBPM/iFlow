@@ -55,7 +55,15 @@ UserManager manager = BeanFactory.getUserManagerBean();
       }
 %>
 
-<h1 id="title_admin"><%=title%></h1>
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	<if:generateHelpBox context="unitadm"/>
+</div>
+
+
+
 <form method="post" name="formulario" id="formulario">
 	
 <% if (units.length == 0) { %>
@@ -158,6 +166,6 @@ UserManager manager = BeanFactory.getUserManagerBean();
     	<input class="regular_button_01 btn btn-default" type="button" name="add_unit" value="<%=messages.getString("button.add")%>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/UserManagement/unitform.jsp")%>','');"/>
      </div>
 
-     <if:generateHelpBox context="unitadm"/>
+     
      
 </form>

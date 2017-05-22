@@ -129,7 +129,16 @@ else {
 
 <form name="flowstates" method="POST">
 
-  <h1 id="title_admin"><%=title%></h1>
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	 <if:generateHelpBox context="flow_states"/>
+</div>
+
+  
+  
+ 
 
 <% if (sbError.length() > 0) { %>
   <div class="error_msg">
@@ -207,4 +216,4 @@ else {
   <p style="height:10rem;"></p>
 </form>
 
-<if:generateHelpBox context="flow_states"/>
+

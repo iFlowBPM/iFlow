@@ -222,6 +222,9 @@
 			<div id="cube_$act.get("pid")" class="cube draggable" valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
 				$act.get("pinitials") 
 			</div>
+			<!--<div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
+			$act.get("pinitials") 
+		</div>-->
 			<div class="left">
 				$act.get("pnumber")
 				#if($act.get("previousUserid") != "")
@@ -502,6 +505,9 @@
 		<div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
 			$act.get("pinitials") 
 		</div>
+		<!-- <div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
+			$act.get("pinitials") 
+		</div>-->
 		<div class="pr01" style="width:15%">$act.get("pnumber") </div>
 		<div class="pr02" style="width:10%">
 			<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterPreviousUserid=$act.get("previousUserid")')">$act.get("previousUserid")</a>

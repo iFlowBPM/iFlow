@@ -45,7 +45,14 @@ Timestamp tsNow = new Timestamp((new java.util.Date()).getTime());
 String valueDate = DateUtility.formatTimestamp(userInfo, tsNow);
 %>
 
-<h1 id="title_admin"><%=title%></h1>
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	<if:generateHelpBox context="series"/>
+</div>
+
+
 <form method="post" name="series">
 	<div class="table_inc">
     	<table class="item_list table">
@@ -99,4 +106,4 @@ String valueDate = DateUtility.formatTimestamp(userInfo, tsNow);
 		</fieldset>
 	</div>
 </form>
-<if:generateHelpBox context="series"/>
+

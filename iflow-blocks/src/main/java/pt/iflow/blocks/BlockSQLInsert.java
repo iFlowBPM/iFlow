@@ -31,9 +31,6 @@ public class BlockSQLInsert extends BlockSQL {
 
   private static final String advancedQuery = "advancedQuery";
   
-  private static String sQuerySplit ="";
-  
-  private static String sQuery = "";
 	
   public BlockSQLInsert(int anFlowId,int id, int subflowblockid, String filename) {
     super(anFlowId,id, subflowblockid, filename);
@@ -60,12 +57,45 @@ public class BlockSQLInsert extends BlockSQL {
     String sInto = null;
     String sNames = null;
     String sValues = null;
-   
+    String sQuery ="";
+    
+    String sQuerySplit = null;
     
     try{
     	sQuerySplit = this.getAttribute(advancedQuery);
     	    	    	
-    	validate_character();
+    	char cValidate;
+ 	 	 
+        int count = 0;
+    	
+    	   for(int i=0; sQuerySplit.length() > i; i++){
+    		cValidate = sQuerySplit.charAt(i);
+                            
+    		
+    		if(Character.isLetterOrDigit(cValidate)){
+        
+    			sQuery = sQuery + cValidate;  
+    
+    		}else if(cValidate == '\''){
+                        count++;
+                        
+                        if(count == 1){
+                        sQuery = sQuery + cValidate;
+                        }else{
+                        cValidate = sQuerySplit.charAt(i + 1);    
+                        if(Character.isLetterOrDigit(cValidate)){
+                        sQuery = sQuery + "´";
+                        }else if(cValidate == ',' || cValidate == ')'){
+                            
+                            cValidate = sQuerySplit.charAt(i);
+                            sQuery = sQuery + cValidate;
+                            count=0;
+                        } 
+                    }
+            } else {
+                sQuery = sQuery + cValidate;
+    		}
+    		}
     	
     	
     	 if (StringUtils.isNotEmpty(sQuery)) {
@@ -194,48 +224,4 @@ public class BlockSQLInsert extends BlockSQL {
     return this.getDesc(userInfo, procData, false, "SQL Insert Efectuado");
   }
   
-  private void validate_character(){
-	  
-	  char cValidate;
-  	
-	 
-  	 
-      int count = 0;
-  	
-  	   for(int i=0; sQuerySplit.length() > i; i++){
-  		cValidate = sQuerySplit.charAt(i);
-                          
-  		
-  		if(Character.isLetterOrDigit(cValidate)){
-      
-  			sQuery = sQuery + cValidate;  
-  
-  		}else if(cValidate == '\''){
-                      count++;
-                      
-                      if(count == 1){
-                      sQuery = sQuery + cValidate;
-                      }else{
-                      cValidate = sQuerySplit.charAt(i + 1);    
-                      if(Character.isLetterOrDigit(cValidate)){
-                      sQuery = sQuery + "´";
-                      }else if(cValidate == ',' || cValidate == ')'){
-                          
-                          cValidate = sQuerySplit.charAt(i);
-                          sQuery = sQuery + cValidate;
-                          count=0;
-                      } 
-              
-                  }
-              
-          } else {
-              sQuery = sQuery + cValidate;
-      
-  		}
-  		 
-  		
-         
-  		}
-  	
-  }
 }

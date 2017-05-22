@@ -373,7 +373,15 @@
 	<input type="hidden" name="op" value="0" />
 	<input type="hidden" name="varname" value="" />
 
-<h1 id="title_admin"><%=title.replace("{0}", sFlowName) %></h1>
+
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title.replace("{0}", sFlowName) %></h1>
+	
+	<if:generateHelpBox context="flow_settings_edit" />
+</div>
+
+
 
 <%
     if (sbError.length() > 0) {
@@ -1018,7 +1026,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 <input class="regular_button_01 btn btn-default" type="button" name="save"
 	value="<%=messages.getString("button.save")%>"
 	onClick="javascript:document.flows.op.value='2';if (W != null) W.close();tabber_right(4, '<%=response.encodeURL("Admin/flow_settings_edit.jsp")%>','' + get_params(document.flows));" />
-<if:generateHelpBox context="flow_settings_edit" />
+
 </div>
 
 </form>

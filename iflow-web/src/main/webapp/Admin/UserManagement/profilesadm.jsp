@@ -42,7 +42,14 @@ UserInfoInterface ui = (UserInfoInterface) session.getAttribute(Const.USER_INFO)
 			    profiles = new ProfilesTO[0];
 			  }
 %>
-      <h1 id="title_admin"><%=title%></h1>
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	<if:generateHelpBox context="interface_profiles_adm"/>
+</div>
+
+     
 <% if (bError) { %>
 			<div class="error_msg">
 			    <%=sErrorMsg%>
@@ -105,4 +112,4 @@ UserInfoInterface ui = (UserInfoInterface) session.getAttribute(Const.USER_INFO)
     %>
 		</table>
 	</div>
-	<if:generateHelpBox context="interface_profiles_adm"/>
+	

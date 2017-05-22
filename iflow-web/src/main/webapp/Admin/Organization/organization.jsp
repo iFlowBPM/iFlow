@@ -32,7 +32,14 @@ OrganizationThemeData orgTheme = BeanFactory.getOrganizationThemeBean().getOrgan
 	<div class="alert alert-danger"><if:message string="admin.error.unauthorizedaccess"/></div>
 </if:checkUserAdmin>
 
- <h1 id="title_admin"><if:message string="organization.propertiesform.title"/></h1>
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><if:message string="organization.propertiesform.title"/></h1>
+	
+	<if:generateHelpBox context="organization"/>
+</div>
+
+ 
 
 <div class="upload_box table_inc">
 	<form name="formulario" id="formulario" action="<%=response.encodeURL("UpdateOrg")%>" method="POST" enctype="multipart/form-data"
@@ -82,5 +89,5 @@ OrganizationThemeData orgTheme = BeanFactory.getOrganizationThemeBean().getOrgan
 		<% } %>
 	</fieldset>
 </form>
-<if:generateHelpBox context="organization"/>
+
 </div>

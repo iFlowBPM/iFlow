@@ -95,7 +95,15 @@ request.setAttribute("sONGOING",sONGOING);
 %>
 
 
-<h1 id="title_admin"><%=title%></h1>
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	<if:generateHelpBox context="proc_hist"/>
+</div>
+
+
+
 <form name="prochist" method="POST" class="form-horizontal">
   <input type="hidden" name="state" value="<%=state%>" />
   <input type="hidden" name="show" value="true" />
@@ -215,5 +223,5 @@ request.setAttribute("sONGOING",sONGOING);
 
 </form>
 
-<if:generateHelpBox context="proc_hist"/>
+
 

@@ -4,7 +4,17 @@
 <%@ page import="pt.iflow.api.utils.Const"%>
 <%@ page import="pt.iflow.api.utils.UserInfoInterface"%>
 
-<h1 id="title_admin"><if:message string="flow_editor.title"/></h1>
+
+
+
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><if:message string="flow_editor.title"/></h1>
+	
+	<if:generateHelpBox context="flow_editor"/>
+</div>
+
+
 <form class="form-horizontal">
   <p class="alert" style="-webkit-box-shadow:none;"><if:message string="flow_editor.msg.welcome"/></p>
   <fieldset>
@@ -53,6 +63,6 @@
 	  </ol>
   </fieldset>
   <fieldset class="submit"/>
-  <if:generateHelpBox context="flow_editor"/>
+  
   </form>
   

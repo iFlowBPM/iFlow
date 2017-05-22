@@ -9,7 +9,13 @@
 		string="admin.error.unauthorizedaccess" /></div>
 </if:checkUserAdmin>
 
-<h1 id="title_admin"><if:titleMessage type="${param.type}" /></h1>
+
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><if:titleMessage type="${param.type}"></if:titleMessage></h1>
+	
+	<if:generateHelpBox context="dolist"/>
+</div>
 
 <% 
 	String file = fdFormData.getParameter("filename");
@@ -55,5 +61,5 @@
 	</fieldset>
   </form>
 
-  <if:generateHelpBox context="dolist"/>
+  
 </div>

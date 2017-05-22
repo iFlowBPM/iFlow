@@ -50,9 +50,16 @@ InterfacesManager manager = BeanFactory.getInterfacesManager();
     interfaces = new InterfaceInfo[0];
   }
 %>
-      <h1 id="title_admin"><%=title%></h1>
+
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	 <if:generateHelpBox context="interface_adm"/>
+</div>
+     
       
-      <if:generateHelpBox context="interface_adm"/>
+     
 <% if (bError) { %>
 			<div class="alert alert-danger">
 			    <%=sErrorMsg%>

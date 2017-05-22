@@ -247,7 +247,17 @@ if (sbError.length() == 0 && sOp.equals("2")) {
 %>
 
 <script type="text/javascript"></script>
-<h1 id="title_admin"><%=title%></h1>
+
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	<if:generateHelpBox context="proc_users"/>
+</div>
+
+
+
+
 <form name="procusersedit" method="POST" class="form-horizontal">
     <script>
       function isUserVarFilled(user){
@@ -327,4 +337,4 @@ else {
 </form>
 </div>
 
-<if:generateHelpBox context="proc_users"/>
+

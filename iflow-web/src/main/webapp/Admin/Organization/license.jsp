@@ -59,11 +59,13 @@
 	<div class="alert alert-danger"><if:message string="admin.error.unauthorizedaccess"/></div>
 </if:checkUserAdmin>
 
-<h1 id="title_admin"><if:message string="organization.licenseform.title"/></h1>
-
-<div class="upload_box table_inc">
-<if:generateHelpBox context="license"/>
+<div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><if:message string="organization.licenseform.title"/></h1>
+	
+	<if:generateHelpBox context="license"/>
 </div>
+
 
 <form id="licenseform" name="licenseform" class="form-horizontal">
   <fieldset>

@@ -222,6 +222,13 @@
 			<div id="cube_$act.get("pid")" class="cube draggable" valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
 				$act.get("pinitials") 
 			</div>
+			
+			
+			<div id="cube_$act.get("pid")" class="cube draggable" valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
+				$act.get("pinitials") 
+			</div>
+			
+			
 			<div class="left">
 				$act.get("pnumber")
 				#if($act.get("previousUserid") != "")
@@ -499,6 +506,9 @@
 
 	<div id="pte_$act.get("pid")" class="process_t3" onclick="javascript:changeColor(this); openProcess($act.get("flowid"), '$response.encodeURL($url_prefix, $act.get("uri"))', 'flowid=$act.get("flowid")&pid=$act.get("pid")&subpid=$act.get("subpid")', false, 3);"
 		style="$style_read;">
+		<div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
+			$act.get("pinitials") 
+		</div>
 		<div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
 			$act.get("pinitials") 
 		</div>

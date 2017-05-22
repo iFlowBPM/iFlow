@@ -43,7 +43,14 @@ Map<String,String> displayDesc = AuditChartServlet.getDisplayParams(userInfo);
 %>
 <form name="procperf" method="POST" onsubmit="return false;" class="form-horizontal">
 
-  <h1 id="title_admin"><%=title%></h1>
+  <div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	  <if:generateHelpBox context="proc_perf"/>
+</div>
+  
+
   <div class="alert alert-info">
 	  <%=messages.getString("proc_perf.introMsg")%>
   </div>
@@ -104,6 +111,6 @@ Map<String,String> displayDesc = AuditChartServlet.getDisplayParams(userInfo);
   </div>
 </form>
 
-<if:generateHelpBox context="proc_perf"/>
+
 
 

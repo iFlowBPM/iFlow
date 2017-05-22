@@ -69,7 +69,14 @@ if ("del".equals(sOper)) {
 		<!-- List users -->
 <form method="post" name="formulario" id="formulario">
 
-      <h1 id="title_admin"><%=title%></h1>
+    <div id="title_admin">
+	
+	<h1 style="margin:0px; float:left;"><%=title%></h1>
+	
+	<if:generateHelpBox context="useradm"/>
+</div>
+      
+      
 <% if (StringUtils.isNotEmpty(actionMsg)) { %>
 		<div class="info_msg">
 			<%= actionMsg %>
@@ -175,6 +182,6 @@ if (users.length == 0) {
 	</div>
 <% } %>
 
-<if:generateHelpBox context="useradm"/>
+
 
 </form>

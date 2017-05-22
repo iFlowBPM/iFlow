@@ -187,7 +187,19 @@
   </c:otherwise>
   </c:choose>
   </ol>
+  
+  
+ <!--  <li class="form-group">
+  <label class="control-label col-sm-2" for="extra_DEPARTMENT">Fotografia</label>
+  	<div class="col-sm-5">
+						<input type="file" name="file" class="form-control"/>
+					</div>
+  </li>--> 
   </fieldset>
+  
+  
+				
+				
   <% if ((!bEdit || canTimezone)&& !ui.isSysAdmin()) { %>
   <p class="invisible-xs" style="height:20px;"></p>
     <fieldset>
