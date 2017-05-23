@@ -13,7 +13,7 @@
 <div id="title_admin">
 	<h1 style="margin:0px; float:left;"><if:message string="flow_schedule.list.title" /></h1>
 	
-	<if:generateHelpBox context="flow_schedule_list" />
+	<!-- <if:generateHelpBox context="flow_schedule_list" /> -->
 </div>
 
 <form method="post" name="flow_schedule_list_form">

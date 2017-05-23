@@ -393,7 +393,7 @@
 					}
 
 					li.link {
-					padding: 2px 5px 2px 5px;
+					padding: 8px 5px 5px 0px;
 					}
 
 					li.selection {
@@ -564,7 +564,7 @@
 						
 						/*border-bottom: 1px solid black;*/
 						
-						padding-left: 0px;
+						padding-left: 5px;
 					}
 
 					li.header {
@@ -608,18 +608,50 @@
 <body onload="reloadBootstrapElements(); initProcFrame();">
 <div style="margin:auto;">
 <form enctype="multipart/form-data" method="post" name="dados" style="width: 100%;margin:auto;" id="dados" action="form.jsp">
-<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="4"> <input type="hidden" name="op" id="op" value="0"> <input type="hidden" name="0_MAX_ROW" id="0_MAX_ROW" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="subpid" id="subpid" value="-10"> <input type="hidden" name="pid" id="pid" value="-10"> <input type="hidden" name="_changed_form" id="_changed_form" value="null"> <input type="hidden" name="flowid" id="flowid" value="139"> <input type="hidden" name="curmid" id="curmid" value="0"> 
+<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="null"> <input type="hidden" name="op" id="op" value="0"> <input type="hidden" name="9_MAX_ROW" id="9_MAX_ROW" value="0"> <input type="hidden" name="0_MAX_ROW" id="0_MAX_ROW" value="0"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="7_MAX_ROW" id="7_MAX_ROW" value="0"> <input type="hidden" name="1_MAX_ROW" id="1_MAX_ROW" value="0"> <input type="hidden" name="pid" id="pid" value="-10"> <input type="hidden" name="botao_accao" id="botao_accao" value=""> <input type="hidden" name="8_MAX_ROW" id="8_MAX_ROW" value="2"> <input type="hidden" name="3_MAX_ROW" id="3_MAX_ROW" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="subpid" id="subpid" value="-10"> <input type="hidden" name="_changed_form" id="_changed_form" value="null"> <input type="hidden" name="flowid" id="flowid" value="144"> <input type="hidden" name="curmid" id="curmid" value="0"> 
 <div id="main">
 <div class="blockdivision">
 <div class="columndivision">
 <ol class="fieldlist">
-<li class="info_msg field" id="N1000A" style="">Receber</li>
+<li class="header  field" id="N1000A">
+<label class="header field">Gest&atilde;o de Listas Internas</label>
+</li>
+<li class="filler  field" id="N10011"></li>
+<li class="selection  field" id="N10016">
+<label class="selection field" for="lista">Lista Interna</label><select style="width:250px;" class="txt  form-control pull-right combobox" name="lista" onChange="camouflageForm();document.dados.op.value='16';document.dados.submit();"><option value="-1">--Selecione--</option><option value="clientes">Clientes</option><option value="fornecedores" selected>Fornecedores</option><option value="material">Material</option><option value="objectivo">Objectivo</option></select>
+</li>
+<li class="subheader  field" id="N10046">
+<label class="subheader field">Fornecedores registados no sistema</label>
+</li>
+<li class="arraytable  field" id="N1004D">
+<label class="arraytable field"></label>
+<table class="
+					arraytable sortable
+				">
+<tr bgcolor="#FFFFFF" class="txt">
+<td class="table_main_header" align="center" colspan="8">Dados</td><td class="table_main_header" align="center" colspan="1">Ac&ccedil;&atilde;o</td>
+</tr>
+<tr bgcolor="#FFFFFF" class="txt">
+<td class="table_sub_header" align="left">Nome</td><td class="table_sub_header" align="left">NIF</td><td class="table_sub_header" align="left">Morada</td><td class="table_sub_header" align="left">Localidade</td><td class="table_sub_header" align="left">Email</td><td class="table_sub_header" align="left">Telefone</td><td class="table_sub_header" align="left">Pessoa respons&aacute;vel</td><td class="table_sub_header" align="left">Moeda</td><td class="table_sub_header" align="center">Eliminar</td>
+</tr>
+<tr bgcolor="#FFFFFF" class="txt">
+<td class="txt " align="left"><input class="txt" type="text" name="lista_entidade[0]" id="lista_entidade[0]" value="HP Portugal" size="30" maxlength="200" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_nif[0]" id="lista_nif[0]" value="502934812" size="10" maxlength="10" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_morada[0]" id="lista_morada[0]" value="Quinta da Fonte, Pt. Ground Floor" size="30" maxlength="200" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_localidade[0]" id="lista_localidade[0]" value="2774-528 Paco de Arcos" size="30" maxlength="200" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_email[0]" id="lista_email[0]" value="geral@hpportugal.pt" size="30" maxlength="200" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_telefone[0]" id="lista_telefone[0]" value="211948329" size="15" maxlength="10" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_nome[0]" id="lista_nome[0]" value="S&iacute;lvia Moreira Lima" size="60" maxlength="200" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_perfil[0]" id="lista_perfil[0]" value="eur" size="20" maxlength="20" title=""></td><td class="txt " align="center"><a class="" href="form.jsp?op=3&amp;flowid=144&amp;pid=-10&amp;subpid=-10&amp;8_MAX_ROW=2&amp;eliminar_0_row=0&amp;eliminar_0=1&amp;eliminar_0_lista_id=1">Eliminar</a></td>
+</tr>
+<tr bgcolor="#FFFFFF" class="txt">
+<td class="txt " align="left"><input class="txt" type="text" name="lista_entidade[1]" id="lista_entidade[1]" value="Staples Portugal" size="30" maxlength="200" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_nif[1]" id="lista_nif[1]" value="506981912" size="10" maxlength="10" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_morada[1]" id="lista_morada[1]" value="Rua Quinta do Pinheiro Edif&iacute;cio Tejo, 5&ordm; Piso" size="30" maxlength="200" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_localidade[1]" id="lista_localidade[1]" value="2794-079 Carnaxide" size="30" maxlength="200" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_email[1]" id="lista_email[1]" value="encomendasgeral@staples.pt" size="30" maxlength="200" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_telefone[1]" id="lista_telefone[1]" value="707 200 656" size="15" maxlength="10" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_nome[1]" id="lista_nome[1]" value="Contact Center" size="60" maxlength="200" title=""></td><td class="txt " align="left"><input class="txt" type="text" name="lista_perfil[1]" id="lista_perfil[1]" value="eur" size="20" maxlength="20" title=""></td><td class="txt " align="center"><a class="" href="form.jsp?op=3&amp;flowid=144&amp;pid=-10&amp;subpid=-10&amp;8_MAX_ROW=2&amp;eliminar_1_row=1&amp;eliminar_1=1&amp;eliminar_1_lista_id=2">Eliminar</a></td>
+</tr>
+</table>
+</li>
+<li class="link  field" id="N102D3" style="
+			text-align:right">
+<a style="color:#03679e;font-size:14px;" href="javascript:disableForm();document.dados.botao_accao.value='add';document.dados.op.value='3';document.dados.submit();" onMouseOver="window.status='center';return true;" onMouseOut="window.status='';return true;">Adicionar linha</a>
+</li>
 </ol>
 </div>
 </div>
 <div class="blockdivision">
 <div class="columndivision columnholder">
-<div class="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_avancar" value="Avan&ccedil;ar" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='4'; } else { return false; }" title="Avan&ccedil;ar">&nbsp;</div>
+<div class="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_custom_9" value="Fechar" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='9'; } else { return false; }document.dados.botao_accao.value='fechar';" title="Fechar sem Guardar">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_custom_13" value="Guardar Altera&ccedil;&otilde;es" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='13'; } else { return false; }document.dados.botao_accao.value='guardar';" title="Guardar Altera&ccedil;&otilde;es">&nbsp;</div>
 </div>
 </div>
 </div>

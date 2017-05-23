@@ -209,7 +209,7 @@ else {
      <% } %>
   </div>
   <div class="button_box" style="text-align:center;">
-      <input class="regular_button_01" type="button" name="back" value="<%=messages.getString("button.back")%>" 
+      <input class="regular_button_01 btn btn-default" type="button" name="back" value="<%=messages.getString("button.back")%>" 
         onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/flow_states.jsp") %>', 'ts=<%=ts%>&flowid=<%=flowid%>');"/>
   </div> 
   

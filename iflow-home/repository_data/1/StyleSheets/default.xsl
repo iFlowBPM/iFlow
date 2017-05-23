@@ -466,7 +466,7 @@
 					}
 
 					li.link {
-					padding: 2px 5px 2px 5px;
+					padding: 8px 5px 5px 0px;
 					}
 
 					li.selection {
@@ -638,7 +638,7 @@
 						
 						/*border-bottom: 1px solid black;*/
 						
-						padding-left: 0px;
+						padding-left: 5px;
 					}
 
 					li.header {

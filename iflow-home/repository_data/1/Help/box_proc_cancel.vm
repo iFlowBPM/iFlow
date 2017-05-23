@@ -4,26 +4,26 @@
 		
 	<input class="regular_button_01" type="button" value="$messages.getString("button.show")" disabled="disabled"/>	
 	<p>$messages.getString("help.box_proc_cancel.table")</p>
-	<table class="item_list">
-		<tr class="tab_header">
-			<td>$messages.getString("help.box_proc_cancel.header.field")</td>
-			<td>$messages.getString("help.box_proc_cancel.header.description")</td>
-			<td>$messages.getString("help.box_proc_cancel.header.mandatory")</td>
+	<table class="item_list" style="width:100%;">
+		<tr class="tab_header" style="border-top: 1px solid #dddddd;">
+			<td class="itemlist_icon">$messages.getString("help.box_proc_cancel.table.header.field")</td>
+			<td class="itemlist_icon">$messages.getString("help.box_proc_cancel.table.header.description")</td>
+			<td class="itemlist_icon">$messages.getString("help.box_proc_cancel.table.header.mandatory")</td>
 		</tr>
-		<tr class="tab_row_odd">
-			<td>"$messages.getString("proc_cancel.field.flow")"</td>
-			<td>$messages.getString("help.box_proc_cancel.table.body.flow")</td>
-			<td>$messages.getString("const.yes")</td>
+		<tr class="tab_row_odd" style="border-top: 1px solid #dddddd;">
+			<td class="itemlist_icon">"$messages.getString("proc_cancel.field.flow")"</td>
+			<td class="itemlist_icon">$messages.getString("help.box_proc_cancel.table.body.flow")</td>
+			<td class="itemlist_icon">$messages.getString("const.yes")</td>
 		</tr>
-		<tr class="tab_row_even">
-			<td>"$messages.getString("proc_cancel.field.pid")"</td>
-			<td>$messages.getString("help.box_proc_cancel.table.body.pid")</td>
-			<td>$messages.getString("const.no")</td>
+		<tr class="tab_row_even" style="border-top: 1px solid #dddddd;">
+			<td class="itemlist_icon">"$messages.getString("proc_cancel.field.pid")"</td>
+			<td class="itemlist_icon">$messages.getString("help.box_proc_cancel.table.body.pid")</td>
+			<td class="itemlist_icon">$messages.getString("const.no")</td>
 		</tr>
-		<tr class="tab_row_odd">
-			<td>"$messages.getString("proc_cancel.field.subpid")"</td>
-			<td>$messages.getString("help.box_proc_cancel.table.body.subpid")</td>
-			<td>$messages.getString("const.no")</td>
+		<tr class="tab_row_odd" style="border-top: 1px solid #dddddd;">
+			<td class="itemlist_icon">"$messages.getString("proc_cancel.field.subpid")"</td>
+			<td class="itemlist_icon">$messages.getString("help.box_proc_cancel.table.body.subpid")</td>
+			<td class="itemlist_icon">$messages.getString("const.no")</td>
 		</tr>
 	</table>
 	

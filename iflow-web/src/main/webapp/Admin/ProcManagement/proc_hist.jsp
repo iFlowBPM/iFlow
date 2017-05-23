@@ -139,7 +139,7 @@ request.setAttribute("sONGOING",sONGOING);
       <if:formInput name="subpid" type="text" value='<%=(subpid > -1 ? "" + subpid : "")%>' labelkey="proc_hist.field.subpid" maxlength="10" size="10" edit="<%=!bLocked%>"/>
     </ol>
   </fieldset>
-    <fieldset class="submit">
+    <fieldset class="submit centrarBotoes">
 <% if (state < 0) { %>
       <input class="regular_button_00 btn btn-default" type="button" name="show" value="<if:message string="button.show"/>" onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_hist.jsp") %>', get_params(document.prochist));"/>
 <% } %>

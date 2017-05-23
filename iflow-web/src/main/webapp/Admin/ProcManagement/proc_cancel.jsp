@@ -170,7 +170,7 @@
 				</div></li>
 		</ol>
 	</fieldset>
-	<fieldset class="submit">
+	<fieldset class="submit centrarBotoes">
 		<input class="regular_button_00 btn btn-default" type="button"
 			name="show" value="<%=messages.getString("button.show")%>"
 			onClick="javascript:tabber_right(4, '<%=response.encodeURL("Admin/ProcManagement/proc_cancel.jsp")%>', get_params(document.proccancel));" />
