@@ -222,7 +222,7 @@ request.setAttribute("flow_type", FlowType.WORKFLOW);
 								</div>
 								
 								
-								<p class="item"><if:message string="user_procs_filtro.field.process_status"/>:</p>
+								<p class="item" style="color: white; font-weight:bold;"><if:message string="user_procs_filtro.field.process_status"/>:</p>
 								<p class="item_indent">
 								<div class="form-group">
 									<div class="col-sm-9">
@@ -233,7 +233,7 @@ request.setAttribute("flow_type", FlowType.WORKFLOW);
 									</div>
 								</div>
 
-								<p class="item"><%=messages.getString("user_procs_filtro.field.nitems")%>:</p>
+								<p class="item" style="color: white; font-weight:bold;"><%=messages.getString("user_procs_filtro.field.nitems")%>:</p>
 								<p class="item_indent">
 								<div class="item_indent form-group">
 									<div class="col-sm-9">
@@ -247,10 +247,10 @@ request.setAttribute("flow_type", FlowType.WORKFLOW);
 								</div>
 								
 								<!-- "Texto a pesquisar" -->
-								<p class="item" style="display:none"><if:message string="user_procs_filtro.field.searchtext"/>:</p>
+								<p class="item" style="color: white; font-weight:bold;display:none;"><if:message string="user_procs_filtro.field.searchtext"/>:</p>
 								<p class="item_indent" style="display:none"><input type="text" id="searchText" name="searchText" size="15" value="<%=searchText %>" maxlength="1024"/></p>
 								
-								<p class="item" style="display:none"><if:message string="user_procs_filtro.field.searchtext.checkbox"/>:
+								<p class="item" style="color: white; font-weight:bold;display:none;"><if:message string="user_procs_filtro.field.searchtext.checkbox"/>:
 								<input class="" type="checkbox" id="searchTextCheckbox" value="set" title="<%=messages.getString("user_procs_filtro.field.searchtext.checkbox") %>" 
 							   		onclick="proc_sla_execute('<%=ts%>')">
 								</p>
@@ -258,7 +258,7 @@ request.setAttribute("flow_type", FlowType.WORKFLOW);
 							   <input type="hidden" name="showUserProcs" value="true"/> 
 								
 								<% if (isAdmin || isSearchableByInterv) { %>
-								<p class="item" id="targetuser_label"><if:message string="user_procs_filtro.field.targetuserlabel"/>:</p>
+								<p class="item" style="color: white; font-weight:bold;" id="targetuser_label"><if:message string="user_procs_filtro.field.targetuserlabel"/>:</p>
 								<p class="item_indent" id="targetuser_body"/>
 								<div class="item_indent form-group">
 									<div class="col-sm-9">
@@ -275,20 +275,25 @@ request.setAttribute("flow_type", FlowType.WORKFLOW);
 								</div>
 								<%} %>
 								
-								<p class="item" id="orderby_label"><if:message string="user_procs_filtro.field.orderbylabel"/>:</p>
+								<p class="item" style="color: white; font-weight:bold;" id="orderby_label"><if:message string="user_procs_filtro.field.orderbylabel"/>:</p>
 								<p class="item_indent" id="orderby_body"/>
 								<div class="item_indent form-group">
 									<div class="col-sm-9">
 										<select name="orderby" class="form-control" value="<%=orderBy %>" style="height:25px;font-size:0.8em;padding: 0 0 0 5px">
-											<option value="f.flowname">fluxo</option>
-											<option value="p.pnumber">processo</option>
-											<option value="fs.result">estado</option>
-											<option value="fs.mdate">desde</option>
-											<option value="p.creator">agendado em</option>
+											<option value="f.flowname"><if:message string="user_procs_filtro.field.orderbylabel.flow"/></option>
+											<option value="p.pnumber"><if:message string="user_procs_filtro.field.orderbylabel.process"/></option>
+											<option value="fs.result"><if:message string="user_procs_filtro.field.orderbylabel.state"/></option>
+											<option value="fs.mdate"><if:message string="user_procs_filtro.field.orderbylabel.since"/></option>
+											<option value="p.creator"><if:message string="user_procs_filtro.field.orderbylabel.appointment"/></option>
 										</select>
+										</div>
+										</div>
+										<p class="item_indent" id="orderby_body"/>
+											<div class="item_indent form-group">
+										<div class="col-sm-9">
 										<select name="ordertype" class="form-control" value="<%=orderType %>" style="height:25px;font-size:0.8em;padding: 0 0 0 5px">
-											<option value="asc">Ascendente</option>
-											<option value="desc">Descendente</option>
+											<option value="asc"><if:message string="user_procs_filtro.field.orderbylabel.ascendente"/></option>
+											<option value="desc"><if:message string="user_procs_filtro.field.orderbylabel.descendente"/></option>
 										</select>								
 									</div>
 								</div>
