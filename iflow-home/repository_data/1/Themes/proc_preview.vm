@@ -61,7 +61,7 @@
 
 			<!--div class="table"-->
 			#if ($processDetail.isEmpty())
-					<div class="alert alert-warning">
+					<div class="alert alert-info">
 						$noDetail
 					</div>
 			#else

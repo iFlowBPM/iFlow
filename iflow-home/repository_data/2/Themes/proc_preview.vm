@@ -70,7 +70,7 @@
           <div class="form-horizontal" role="form">
 			<!--div class="table"-->
 			#if ($processDetail.isEmpty())
-					<div class="alert alert-warning">
+					<div class="alert alert-info">
 						$noDetail
 					</div>
 			#else
@@ -80,7 +80,7 @@
 					</div>
 				#end
 				#if ($procFlowid == 159 || $procFlowid == 271)
-					#set($varName="Área")
+					#set($varName="Ã�rea")
 					#set($value = "")
 					#if ($processDetail.get(${varName})!="")
 						#set($value = $processDetail.get(${varName}))
@@ -94,7 +94,7 @@
 							#end 
 						</div>
 					</div>
-					#set($varName="Subárea")
+					#set($varName="SubÃ¡rea")
 					#set($value = "")
 					#if ($processDetail.get(${varName})!="")
 						#set($value = $processDetail.get(${varName}))
@@ -175,7 +175,7 @@
 								#end
 						#end
 						
-						#set($sAccoes=$processDetail.get("Acções"))
+						#set($sAccoes=$processDetail.get("AcÃ§Ãµes"))
 						#set($lAccoes=$sAccoes.split("] "))
 						#set($countAccoes = 0)
 						#if ($lAccoes != "")
@@ -189,7 +189,7 @@
 								#end
 						#end
 						
-						#set($sComents=$processDetail.get("Comentários"))
+						#set($sComents=$processDetail.get("ComentÃ¡rios"))
 						#set($lComents=$sComents.split("] "))
 						#if ($lComents != "")
 							#set($listComents = [])
@@ -252,12 +252,12 @@
 						#end
 
 						<div class="form-group">
-							<label  class="col-sm-2 control-label" style=" font-size: 12px; margin-bottom: 2px">Tramitação: </label>
+							<label  class="col-sm-2 control-label" style=" font-size: 12px; margin-bottom: 2px">TramitaÃ§Ã£o: </label>
 							<div class="col-sm-8">&nbsp;</div>				
 						</div>
 						<div class="form-group">					
 							<table class="col-sm-11" border="1" cellpadding="10%" style=" font-size: 12px; margin-top: 5px; margin-left: 15px">
-							<tr align="center" style="font-weight:bold"><td>Ordem</td><td>Acção</td><td>Por</td><td>Em</td>
+							<tr align="center" style="font-weight:bold"><td>Ordem</td><td>AcÃ§Ã£o</td><td>Por</td><td>Em</td>
 							#if ($FlagDecisao == 1)
 								<td>Marcar para Despacho</td>
 							#end
@@ -270,7 +270,7 @@
 																#if ($coment!="" && $coment!="null")
 																	#set($tool = $coment.replaceAll("</?[^>]+/?>", ""))
 																#else
-																	#set($tool = "Sem comentário")
+																	#set($tool = "Sem comentÃ¡rio")
 																#end
 																
 															#end
@@ -321,16 +321,16 @@
 						<input id="91_MAX_ROW" type="hidden" value="$max_row" name="91_MAX_ROW">
 					#end
 					
-					#if ($FlagDecisao == 1 && $processDetail.get("Acções")!="" && (!($processDetail.get("Ação escolhida")!="") || $processDetail.get("Ação escolhida")=="pre_decisao" || $processDetail.get("Ação escolhida")=="parecer") )
+					#if ($FlagDecisao == 1 && $processDetail.get("AcÃ§Ãµes")!="" && (!($processDetail.get("AÃ§Ã£o escolhida")!="") || $processDetail.get("AÃ§Ã£o escolhida")=="pre_decisao" || $processDetail.get("AÃ§Ã£o escolhida")=="parecer") )
 
-						#set($valueName="Ação a executar")
-						#set($varName="Decisão")
+						#set($valueName="AÃ§Ã£o a executar")
+						#set($varName="DecisÃ£o")
 						#set($value = "") 
 						#if ($processDetail.get(${valueName})!="")
 							#set($value = $processDetail.get(${valueName}))
 						#end
 						#set($sValues=$processDetail.get($varName))
-						#set($sTexts=$processDetail.get("Decisão Texto"))
+						#set($sTexts=$processDetail.get("DecisÃ£o Texto"))
 						#set($lValues=$sValues.split("] "))
 						#set($lTexts=$sTexts.split("] "))
 						#if ($lTexts != "")
@@ -348,7 +348,7 @@
 									<select class="txt  form-control pull-right combobox" style="width:250px;" name="$processVarnames.get(${valueName})"
 											onchange="camouflageForm();document.dadosPreview.op.value='16';jQuery('#dadosPreview').submit();" >
 									#set($idx = 0)
-									<option value="Opção de decisão" >Opção de decisão</option>
+									<option value="OpÃ§Ã£o de decisÃ£o" >OpÃ§Ã£o de decisÃ£o</option>
 									#foreach($val in $lValues)
 										#if($val.indexOf("<br>") > 0)
 											#set($val = $val.substring(0, $val.indexOf("<br>")))
@@ -394,18 +394,18 @@
 									</div>
 								</div>
 								<div class="form-group">
-									<label  class="col-sm-2 control-label" style=" font-size: 12px; margin-bottom: 2px">Descrição da tarefa: </label>
+									<label  class="col-sm-2 control-label" style=" font-size: 12px; margin-bottom: 2px">DescriÃ§Ã£o da tarefa: </label>
 									<div class="col-sm-8" style=" font-size: 12px; margin-top: 5px"> 
-										#if ($processDetail.get("Descrição da tarefa")!="")
-											$processDetail.get("Descrição da tarefa")
+										#if ($processDetail.get("DescriÃ§Ã£o da tarefa")!="")
+											$processDetail.get("DescriÃ§Ã£o da tarefa")
 										#end 
 									</div>
 								</div>
 								<div class="form-group">
-									<label  class="col-sm-2 control-label" sty2e=" font-size: 12px; margin-bottom: 2px">Comentário: </label>
+									<label  class="col-sm-2 control-label" sty2e=" font-size: 12px; margin-bottom: 2px">ComentÃ¡rio: </label>
 									<div class="col-sm-8" style=" font-size: 12px; margin-top: 5px">
-										#if ($processDetail.get("Comentário")!="")
-											$processDetail.get("Comentário")
+										#if ($processDetail.get("ComentÃ¡rio")!="")
+											$processDetail.get("ComentÃ¡rio")
 										#end 										
 									</div>
 								</div>								
