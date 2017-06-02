@@ -681,7 +681,7 @@ try {
       
         FlowSetting fs = BeanFactory.getFlowSettingsBean().getFlowSetting(fd.getId(), Const.sFLOW_INITIALS);
         String pinitials = (fs==null || fs.getValue()==null)?"":(fs.getValue()+"   ").substring(0,3);
-        if (sFlow != null && sFlow.length()>2 && (pinitials==null || pinitials.length()==0)) {
+        if (sFlow != null && sFlow.length()>2 && (pinitials==null || pinitials.trim().length()==0)) {
           String[] words = sFlow.split(" ");
           if (words.length == 1) {
             pinitials = sFlow.substring(0,2);
@@ -708,6 +708,25 @@ try {
       }
     }
   
+    hsSubstLocal.put("sort", messages.getString("main_content.tasks.sort"));
+    hsSubstLocal.put("filter", messages.getString("main_content.tasks.filter"));
+    hsSubstLocal.put("preview", messages.getString("main_content.tasks.preview"));
+    hsSubstLocal.put("preview_on", messages.getString("main_content.tasks.preview_on"));
+    hsSubstLocal.put("preview_off", messages.getString("main_content.tasks.preview_off"));
+    hsSubstLocal.put("mark_read", messages.getString("main_content.tasks.mark_read"));
+    hsSubstLocal.put("mark_unread", messages.getString("main_content.tasks.mark_unread"));    
+    hsSubstLocal.put("process_number", messages.getString("main_content.tasks.process_number"));
+    hsSubstLocal.put("previous_user", messages.getString("main_content.tasks.previous_user"));
+    hsSubstLocal.put("send_date", messages.getString("main_content.tasks.send_date"));
+    hsSubstLocal.put("description", messages.getString("main_content.tasks.description"));    
+    hsSubstLocal.put("select_flow", messages.getString("main_content.tasks.select_flow"));
+    hsSubstLocal.put("date_to", messages.getString("main_content.tasks.date_to"));
+    hsSubstLocal.put("date_from", messages.getString("main_content.tasks.date_from"));
+    hsSubstLocal.put("clean", messages.getString("main_content.tasks.clean"));
+    hsSubstLocal.put("apply", messages.getString("main_content.tasks.apply"));
+    hsSubstLocal.put("pending_for", messages.getString("main_content.tasks.pending_for"));
+    hsSubstLocal.put("filters", messages.getString("main_content.tasks.filters"));
+    
     hsSubstLocal.put("allUsers", allUsersStr);
     hsSubstLocal.put("allDates", allDatesStr);
   

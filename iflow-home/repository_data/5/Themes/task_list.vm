@@ -41,7 +41,7 @@
 
 	<div style=" border-bottom: 1px Solid #cccccc; padding: 5px 2px 5px 2px; text-align: left;">
 		<form style="display:inline">
-			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Ordenar<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">$sort<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
 			<ul class="dropdown-menu" role="menu" style="width:250px; top:110px; left: 190px;">
 				<li class="form-group">
 					<label></label>
@@ -49,7 +49,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Nº de processo
+						$process_number
 					</label>
 					<div class="btn-group pull-right">
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=pid&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
@@ -59,7 +59,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Utilizador prévio
+						$previous_user
 					</label>
 					<div class="btn-group pull-right">
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=previousUserId&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
@@ -68,7 +68,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Data de envio
+						$send_date
 					</label>
 					<div class="btn-group pull-right">
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=created&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
@@ -77,7 +77,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Descrição
+						$description
 					</label>
 					<div class="btn-group pull-right">
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=description&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
@@ -87,7 +87,7 @@
 			</ul>  
 		</form>
 		<form style="display:inline" class="dropdown keep-open">
-			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Filtrar<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">$filter<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
 			<ul class="dropdown-menu" role="menu" style="width:350px; top:20px; left: 0px;; padding-top: 10px">
 				<li class="form-group">
 					<label></label>
@@ -95,7 +95,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Selecionar fluxo
+						$select_flow
 					</label>
 					<select id="filterflowid" name="filterflowid" class="form-control donotclosemenu pull-right" style="width:150px;height:25px;font-size:0.8em;padding: 0 0 0 5px">
 						<option value="-1">$selectFlow</option>
@@ -105,7 +105,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Utilizador prévio
+						$previous_user
 					</label>
 					<input type="text" class="form-control donotclosemenu pull-right" id="previousUseridText" title="Utilizador Anterior" value="$filterPreviousUserid"
 							style="display: inline; width: 150px; height: 20px; padding: 0;">
@@ -113,7 +113,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Descrição
+						$description
 					</label>
 					<input type="text" class="form-control donotclosemenu pull-right" id="filterSubject" title="Descrição" value="$filterSubject"
 							style="display: inline; width: 150px; height: 20px; padding: 0;">
@@ -121,7 +121,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Data de
+						$date_from
 					</label>
 					<span class="pull-right">
 						<input type="text" class="form-control donotclosemenu" id="dataCriacaoText" title="Data de"  value="$filterDate"
@@ -132,7 +132,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Data até
+						$date_to
 					</label>
 					<span class="pull-right">
 						<input type="text" class="form-control donotclosemenu" id="dataUltMovText" title="Data ate"  value="$filterLastMoveDate"
@@ -143,9 +143,9 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Nº processo
+						$process_number
 					</label>
-					<input type="text" class="form-control donotclosemenu pull-right" id="filterProcessNumber" title="N processo" value="$filterProcessNumber"
+					<input type="text" class="form-control donotclosemenu pull-right" id="filterProcessNumber" title="$process_number" value="$filterProcessNumber"
 							style="display: inline; width: 150px; height: 20px; padding: 0;">
 					</input>
 				</li>
@@ -164,8 +164,8 @@
 			</ul>  
 		</form>
 		<div class="btn-group">
-		<div> &nbsp;&nbsp; Pré-visualização:
-			<button id="layout1" title="Desligar Pré-visualização" type="button" class="btn btn-default btn-sm" onclick="javascript:tabber_right(2, 'main_content.jsp', 'layout=1');">ON</button>
+		<div> &nbsp;&nbsp; $preview
+			<button id="layout1" title="$preview_off" type="button" class="btn btn-default btn-sm" onclick="javascript:tabber_right(2, 'main_content.jsp', 'layout=1');">ON</button>
 		</div>
 		</div>
 
@@ -192,7 +192,7 @@
 				
 		<div style="height:30px;clear:both;padding-right: 10px;">
 			<div class="left" style="padding-top:10px;text-align:left;font-size:1em;color:#aaa;">
-				Filtros: $selectedFlow $selectedFolderName $selectedDate $selectedPreviousUser $selectedProcessNumber <button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1');">&times;</button>
+				$filters $selectedFlow $selectedFolderName $selectedDate $selectedPreviousUser $selectedProcessNumber <button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1');">&times;</button>
 			</div>
 		</div>
 		#end
@@ -254,10 +254,10 @@
 					<div class="dropdown-toggle" data-toggle="dropdown" id="dropdownmenu_$act.get('pnumber')" data-toggle="dropdown" onClick="cancelMenu=true;"><img src="Themes/newflow/images/V.png"/></div>
 					<ul class="dropdown-menu topt-menu" role="menu" aria-labelledby="dropdownmenu_$act.get('pnumber')" style="top:10px;left:30px">
 						<li id="mread_$act.get("pid")" style="$display_read" role="presentation">
-							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(1, $act.get("flowid"), $act.get("pid"));return false;">Marcar como lido</a>
+							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(1, $act.get("flowid"), $act.get("pid"));return false;">$mark_read</a>
 						</li>
 						<li id="munread_$act.get("pid")" style="$display_unread" role="presentation">
-							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(0, $act.get("flowid"), $act.get("pid"));return false;">Marcar como não lido</a>
+							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(0, $act.get("flowid"), $act.get("pid"));return false;">$mark_unread</a>
 						</li>
 						<li role="presentation"  style="text-transform: uppercase;">
 							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true; MarkCategory('$valToAssign', $act.get("pid"), '');return false;">
@@ -313,7 +313,7 @@
 <div class="content_template3" style="width:100%">
 	<div class="process_t3" style=" border-bottom: 1px Solid #cccccc; padding: 5px 2px 5px 2px; height:40px;">
 		<form style="display:inline">
-			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Ordenar<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">$sort<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
 			<ul class="dropdown-menu" role="menu" style="width:250px; top:110px; left: 190px;">
 				<li class="form-group">
 					<label></label>
@@ -321,7 +321,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Nº de processo
+						$process_number
 					</label>
 					<div class="btn-group pull-right">
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=pid&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
@@ -331,7 +331,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Utilizador prévio
+						$previous_user
 					</label>
 					<div class="btn-group pull-right">
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=previousUserId&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
@@ -340,7 +340,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Data de envio
+						$send_date
 					</label>
 					<div class="btn-group pull-right">
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=created&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
@@ -349,7 +349,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Descrição
+						$description
 					</label>
 					<div class="btn-group pull-right">
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=description&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
@@ -359,7 +359,7 @@
 			</ul>  
 		</form>
 		<form style="display:inline" class="dropdown keep-open">
-			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Filtrar<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">$filter<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
 			<ul class="dropdown-menu" role="menu" style="width:350px; top:10px; left: 0px; margin-top:10px">
 				<li class="form-group">
 					<label></label>
@@ -367,7 +367,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Selecionar fluxo
+						$select_flow
 					</label>
 					<select id="filterflowid" name="filterflowid" class="form-control donotclosemenu pull-right" style="width:150px;height:25px;font-size:0.8em;padding: 0 0 0 5px">
 						<option value="-1">$selectFlow</option>
@@ -377,7 +377,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Utilizador prévio
+						$previous_user
 					</label>
 					<input type="text" class="form-control donotclosemenu pull-right" id="previousUseridText" title="Utilizador Anterior" value="$filterPreviousUserid"
 							style="display: inline; width: 150px; height: 20px; padding: 0;">
@@ -385,7 +385,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Descrição
+						$description
 					</label>
 					<input type="text" class="form-control donotclosemenu pull-right" id="filterSubject" title="Descrição" value="$filterSubject"
 							style="display: inline; width: 150px; height: 20px; padding: 0;">
@@ -393,7 +393,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Data de
+						$date_from
 					</label>
 					<span class="pull-right">
 						<input type="text" class="form-control donotclosemenu" id="dataCriacaoText" title="Data de"  value="$filterDate"
@@ -404,7 +404,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Data até
+						$date_to
 					</label>
 					<span class="pull-right">
 						<input type="text" class="form-control donotclosemenu" id="dataUltMovText" title="Data ate"  value="$filterLastMoveDate"
@@ -415,7 +415,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Nº processo
+						$process_number
 					</label>
 					<input type="text" class="form-control donotclosemenu pull-right" id="filterProcessNumber" title="N processo" value="$filterProcessNumber"
 							style="display: inline; width: 150px; height: 20px; padding: 0;">
@@ -429,14 +429,14 @@
 					+'&filterSubject=' + document.getElementById('filterSubject').value
 					+'&filterPreviousUserid=' + document.getElementById('previousUseridText').value
 					+'&showflowid=' + document.getElementById('filterflowid').value					
-					); return false; ">Aplicar</button>
-					<button type="button" class="btn btn-default btn-sm pull-right" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1&startindex=0');">Limpar</button>
+					); return false; ">$apply</button>
+					<button type="button" class="btn btn-default btn-sm pull-right" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1&startindex=0');">$clean</button>
 				</li>
 			</ul>
 		</form>
 		<div class="btn-group">
-		<div> &nbsp;&nbsp; Pré-visualização:
-			<button id="layout0" title="Ligar Pré-visualização" type="button" class="btn btn-default btn-sm" onclick="javascript:tabber_right(2, 'main_content.jsp', 'layout=0');">OFF</button> 
+		<div> &nbsp;&nbsp; $preview
+			<button id="layout0" title="$preview_on" type="button" class="btn btn-default btn-sm" onclick="javascript:tabber_right(2, 'main_content.jsp', 'layout=0');">OFF</button> 
 		</div>
 		</div>
 
@@ -467,7 +467,7 @@
 		<div class="process_t3" style=" border-bottom: 1px Solid #cccccc; padding: 0 2px 5px 2px;height:30px;">
 		<div style="height:30px;margin-bottom:20px;padding-right: 10px;">
 			<div class="left" style="padding-top:10px;text-align:left;font-size:1em;color:#aaa;width:200px;">
-				Filtros: $selectedFlow $selectedFolderName $selectedDate $selectedPreviousUser $selectedProcessNumber <button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1');">&times;</button>
+				$filters $selectedFlow $selectedFolderName $selectedDate $selectedPreviousUser $selectedProcessNumber <button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1');">&times;</button>
 			</div>
 		</div>
 		</div>
@@ -478,12 +478,12 @@
 
 	<div  class="process_t3">
 		<div class="pr01" style="text-align: left;width:40px;font-weight:bold"></div>
-		<div class="pr01" style="text-align: left;width:15%;font-weight:bold">Nº processo</div>
-		<div class="pr02" style="text-align: left;width:10%;font-weight:bold">Vindo de</div>
-		<div class="pr04" style="text-align: left;width:40%; font-weight:bold">Descrição</div>
+		<div class="pr01" style="text-align: left;width:15%;font-weight:bold">$process_number</div>
+		<div class="pr02" style="text-align: left;width:10%;font-weight:bold">$previous_user</div>
+		<div class="pr04" style="text-align: left;width:40%; font-weight:bold">$description</div>
 		<div class="pr05" style="text-align: left;width:6%; font-weight:bold"></div>
-		<div class="pr06" style="text-align: left;width:10%; font-weight:bold">Pendente há</div>
-		<div class="pr07" style="text-align: left;width:10%;font-weight:bold">Data de envio</div>
+		<div class="pr06" style="text-align: left;width:10%; font-weight:bold">$pending_for</div>
+		<div class="pr07" style="text-align: left;width:10%;font-weight:bold">$send_date</div>
 	</div>
 
 	#set($maxLen = 70)
@@ -538,10 +538,10 @@
 				<div class="dropdown-toggle" style="text-align:right;margin-right:40px" id="dropdownmenu_$act.get('pnumber')" data-toggle="dropdown" onClick="cancelMenu=true;"><img src="Themes/newflow/images/V.png"/></div>
 				<ul class="dropdown-menu topt-menu" role="menu" aria-labelledby="dropdownmenu_$act.get('pnumber')" style="top:10px;left:-72px">
 					<li id="mread_$act.get("pid")" style="$display_read" role="presentation">
-						<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(1, $act.get("flowid"), $act.get("pid"));return false;">Marcar como lido</a>
+						<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(1, $act.get("flowid"), $act.get("pid"));return false;">$mark_read</a>
 					</li>
 					<li id="munread_$act.get("pid")" style="$display_unread" role="presentation">
-						<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(0, $act.get("flowid"), $act.get("pid"));return false;">Marcar como não lido</a>
+						<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(0, $act.get("flowid"), $act.get("pid"));return false;">$mark_unread</a>
 					</li>
 						<li role="presentation"  style="text-transform: uppercase;">
 							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true; MarkCategory('$valToAssign', $act.get("pid"), '');return false;">
