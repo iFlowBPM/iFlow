@@ -160,7 +160,7 @@ request.setAttribute("flow_type", FlowType.WORKFLOW);
 		font-size: 0.8m;
 	}
 </style>
-	<form id="search_simple_form" class="form-horizontal" name="user_procs_filter" method="post" style="display:<%=(StringUtils.equals(searchType,"ss") || userInfo.isOrgAdmin())?"block":"none"%>">
+	<form id="search_simple_form" class="form-horizontal" name="user_procs_filter" method="post" style="display:<%=(StringUtils.equals(searchType,"ss") || StringUtils.equals(searchType,"as") ||userInfo.isOrgAdmin())?"block":"none"%>">
 		<ul class="menu">
 			<li>
 				<a id="searchlink" title="<%=messages.getString("user_procs_filtro.simplesearch.tooltip")%>" class="" href= "#"><%=messages.getString("user_procs_filtro.simplesearch")%></a>
