@@ -466,7 +466,7 @@
 					}
 
 					li.link {
-					padding: 8px 5px 5px 0px;
+					padding: 2px 5px 2px 5px;
 					}
 
 					li.selection {
@@ -638,7 +638,7 @@
 						
 						/*border-bottom: 1px solid black;*/
 						
-						padding-left: 5px;
+						padding-left: 0px;
 					}
 
 					li.header {
@@ -938,7 +938,7 @@
 										
 									</xsl:attribute>
 									<xsl:attribute name="style">
-										<xsl:text>max-width:</xsl:text><xsl:value-of select="size/text()*7" />
+										<xsl:text>max-width:</xsl:text><xsl:value-of select="size/text()*7+28" />
 									</xsl:attribute>
 		<xsl:attribute name="id">
 			<xsl:value-of select="variable/text()" />
@@ -1025,7 +1025,7 @@
 										
 									</xsl:attribute>
 									<xsl:attribute name="style">
-										<xsl:text>max-width:</xsl:text><xsl:value-of select="size/text()*7" />
+										<xsl:text>max-width:</xsl:text><xsl:value-of select="size/text()*7+28" />
 									</xsl:attribute>
 		<xsl:attribute name="id">
 			<xsl:value-of select="variable/text()" />
@@ -1077,7 +1077,7 @@
 			<em>*</em>
 		</xsl:if>
 		</label>
-		<span class="pull-right" style="width:150px">
+		<span class="pull-right" style="width:170px">
 		<xsl:choose>
 		<xsl:when test="disabled='true'">
 			<xsl:apply-templates select="value" />
@@ -1094,7 +1094,7 @@
 										
 									</xsl:attribute>
 									<xsl:attribute name="style">
-										<xsl:text>max-width:120px;display:inline</xsl:text>
+										<xsl:text>max-width:134px;display:inline</xsl:text>
 									</xsl:attribute>
 			<xsl:attribute name="id">
 				<xsl:value-of select="variable/text()" />

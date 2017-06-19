@@ -233,7 +233,10 @@ public class BlockSQLUpdate extends BlockSQL {
                           cValidate = sQuerySplit.charAt(i);
                           sQuery = sQuery + cValidate;
                           count=0;
-                      } 
+                      } else if(cValidate == '\''){
+                      	sQuery = sQuery + "´";
+                      	count = 1;
+                      }
               
                   }
               
