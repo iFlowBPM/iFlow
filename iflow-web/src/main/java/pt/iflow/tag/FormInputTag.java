@@ -55,7 +55,7 @@ public class FormInputTag
        
    
     
-    sb.append("<li class=\"form-group\">");
+    sb.append("<li class=\"form-group\" style=\"height:3rem;\">");
     if(onblur == "true"){
     sb.append("<label class=\"control-label col-sm-4\" for=\"");
     }else{
