@@ -1083,7 +1083,7 @@
 			<xsl:apply-templates select="value" />
 		</xsl:when>
 		<xsl:otherwise>
-			<input type="text" size="12" >
+			<input type="text" size="12" maxlength="18" >
 			<xsl:attribute name="class">
 				<xsl:text>txt form-control</xsl:text>
 				<xsl:if test="disabled='true'">
@@ -1108,9 +1108,9 @@
 			<xsl:attribute name="size">
 				<xsl:value-of select="size/text()" />
 			</xsl:attribute>
-			<xsl:attribute name="maxlength">
+			<!-- <xsl:attribute name="maxlength">
 				<xsl:value-of select="maxlength/text()" />
-			</xsl:attribute>
+			</xsl:attribute> -->
 			<xsl:attribute name="onmouseover">
 				<xsl:text>caltasks(this.id, '</xsl:text>
 				<xsl:value-of select="dateformat/text()"></xsl:value-of>

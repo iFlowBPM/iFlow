@@ -152,7 +152,7 @@
 		    <li>
 		        <a id="li_a_admin_<%=AdminNavConsts.FLOW_SCHEDULE%>" 
 				class="toolTipItemLink li_link"
-				title="<%=messages.getString("admin_nav.section.flows.tooltip.flow_schedule")%>" href="javascript:selectedItem('admin',<%=AdminNavConsts.FLOW_SCHEDULE%>);tabber_save(4, '', '', 'Admin/flowSchedule/flow_schedule_list.jsp');">
+				title="<%=messages.getString("admin_nav.section.flows.tooltip.flow_schedule")%>" href="javascript:selectedItem('admin',<%=AdminNavConsts.FLOW_SCHEDULE%>);tabber_right(4,'<%=response.encodeURL("Admin/flow_schedule_list")%>','ts=<%=ts%>');">
 		       		<%=messages.getString("admin_nav.section.flows.link.flow_schedule")%>
 		       	</a>
 		    </li>

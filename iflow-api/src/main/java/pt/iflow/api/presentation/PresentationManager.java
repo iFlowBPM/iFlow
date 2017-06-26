@@ -121,7 +121,7 @@ public class PresentationManager
   
   public static String buildMainPage(HttpServletResponse response, UserInfoInterface userInfo, Hashtable<String, Object> htSubst)
   {
-    return buildPage(response, userInfo, htSubst, "main");
+    return buildPage(response, userInfo, htSubst, "main_new");
   }
   
   public static String buildMainPageContent(HttpServletResponse response, UserInfoInterface userInfo, Hashtable<String, Object> htSubst)

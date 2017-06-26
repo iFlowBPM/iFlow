@@ -71,6 +71,12 @@ public class BlockSQLInsert extends BlockSQL {
 
 		try {
 			sQuerySplit = this.getAttribute(advancedQuery);
+			
+			if (StringUtils.isNotEmpty(sQuerySplit)) {
+				sQuerySplit = procData.transform(userInfo, sQuerySplit, true);
+			}
+			
+			sQuerySplit = sQuerySplit.replace("&#x27;","'");
 
 			char cValidate;
 
@@ -111,9 +117,7 @@ public class BlockSQLInsert extends BlockSQL {
 				}
 			}
 
-			if (StringUtils.isNotEmpty(sQuery)) {
-				sQuery = procData.transform(userInfo, sQuery, true);
-			}
+			
 			if (StringUtils.isEmpty(sQuery))
 				sQuery = null;
 		} catch (Exception e) {
