@@ -193,6 +193,8 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
   public int getExitStatus() {
     return exitStatus;
   }
+  
+
 
   /**
    * getNewAttributes
@@ -575,11 +577,14 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
     setLocationRelativeTo(getParent());
     setVisible(true);
   }
+  
+ 
+  
 
   /**
    * jbInit
    */
-  private void jbInit() {
+  private void  jbInit() {
     /* paineis */
     JPanel aux1 = new JPanel();
     this.getContentPane().add(aux1, BorderLayout.WEST);

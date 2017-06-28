@@ -10,12 +10,14 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Collection;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -48,13 +50,11 @@ import pt.iflow.api.xml.codegen.flow.XmlCatalogVarAttribute;
 import pt.iflow.api.xml.codegen.flow.XmlCatalogVars;
 import pt.iflow.api.xml.codegen.flow.XmlFlow;
 import pt.iknow.floweditor.Atributo;
-import pt.iknow.floweditor.FlowEditorAdapter;
 import pt.iknow.iflow.RepositoryClient;
 import pt.iknow.utils.swing.JMultiLineToolTip;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
 
-import pt.iflow.blocks.*;
 
 
 /**
@@ -3135,6 +3135,8 @@ public class JSPFieldData {
     this.saveData(true);
   }
 
+
+  
   @SuppressWarnings("unchecked")
   public void saveData(boolean abValidate)
   throws FieldDataException {
@@ -3177,22 +3179,26 @@ public class JSPFieldData {
           stmp = (String)(((JComboBox)jValue).getSelectedItem());
           break;
         case JSPFieldData.nPROP_VAR_NAME:
-          stmp = (String) (((JComboBox) jValue).getSelectedItem());
-          
-                 	  
+        	
+        		stmp = (String) (((JComboBox) jValue).getSelectedItem());
+            
         	  Object[] elements = getCatalogue(); 
         	  int length = Array.getLength(elements);        	          	  
         	  
         	  if (ArrayUtils.contains(elements, stmp) ) {
         		    
         		}else{
-        			desenho.addCatalogVariable(stmp, "", false, "", "Text", null);
-        		    	
+        			adapter.getString(("AlteraAtributosStart.title"), true); 
+        			desenho = adapter.getDesenho();       			        			
+        			
+        			desenho.addCatalogVariable(stmp, "", false, "", "", null);
+        			 			
+        			AlteraAtributosStart aas = new AlteraAtributosStart(adapter);
+        			
+        			//aas.setDataIn("",Arrays.asList(aas.getNewAttributes()));
+        			
         		}
         		    
-        		       	  
-          
-          
           break;
         case JSPFieldData.nPROP_PP_PASS_TO_LINK:
         case JSPFieldData.nPROP_USE_LINKS:
