@@ -63,7 +63,7 @@ String params = null;
 
       <h1 id="title_admin">Flows &gt; Properties</h1>
 <% if (sbError.length() > 0) { %>
-      <div class="error_msg">
+      <div class="alert alert-danger">
         <%=sbError.toString()%>
 	  </div>
 <% } %>

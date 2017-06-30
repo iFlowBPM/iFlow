@@ -608,53 +608,22 @@
 <body onload="reloadBootstrapElements(); initProcFrame();">
 <div style="margin:auto;">
 <form enctype="multipart/form-data" method="post" name="dados" style="width: 100%;margin:auto;" id="dados" action="form.jsp">
-<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="null"> <input type="hidden" name="op" id="op" value="0"> <input type="hidden" name="0_MAX_ROW" id="0_MAX_ROW" value="0"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="7_MAX_ROW" id="7_MAX_ROW" value="0"> <input type="hidden" name="pid" id="pid" value="-10"> <input type="hidden" name="8_MAX_ROW" id="8_MAX_ROW" value="0"> <input type="hidden" name="4_MAX_ROW" id="4_MAX_ROW" value="0"> <input type="hidden" name="3_MAX_ROW" id="3_MAX_ROW" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="subpid" id="subpid" value="-10"> <input type="hidden" name="6_MAX_ROW" id="6_MAX_ROW" value="0"> <input type="hidden" name="_changed_form" id="_changed_form" value="null"> <input type="hidden" name="5_MAX_ROW" id="5_MAX_ROW" value="0"> <input type="hidden" name="buttonResult" id="buttonResult" value=""> <input type="hidden" name="flowid" id="flowid" value="84"> <input type="hidden" name="curmid" id="curmid" value="0"> 
+<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="null"> <input type="hidden" name="op" id="op" value="2"> <input type="hidden" name="0_MAX_ROW" id="0_MAX_ROW" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="subpid" id="subpid" value="1"> <input type="hidden" name="pid" id="pid" value="38"> <input type="hidden" name="_changed_form" id="_changed_form" value="null"> <input type="hidden" name="flowid" id="flowid" value="139"> <input type="hidden" name="curmid" id="curmid" value="2"> 
 <div id="main">
 <div class="blockdivision">
 <div class="columndivision">
 <ol class="fieldlist">
-<li class="header  field" id="N1000A">
-<label class="header field">Registo de f&eacute;rias</label>
-</li>
-<li class="arraytable  field" id="N10011">
-<label class="arraytable field"></label>
-<table class="
-					arraytable sortable
-				">
-<tr bgcolor="#FFFFFF" class="txt">
-<td class="table_main_header" align="center" colspan="4">F&eacute;rias marcadas</td>
-</tr>
-<tr bgcolor="#FFFFFF" class="txt">
-<td class="table_sub_header" align="left">Inicio do per&iacute;odo</td><td class="table_sub_header" align="left">Fim do per&iacute;odo</td><td class="table_sub_header" align="left">Estado</td><td class="table_sub_header" align="center">Cancelar</td>
-</tr>
-</table>
-</li>
-<li class="subheader  field" id="N10047">
-<label class="subheader field">Insira os dados para o registo de f&eacute;rias</label>
-</li>
-<li class="datecal  field" id="N1004E" style="">
-<label class="datecal field" for="entradaManual">In&iacute;cio</label><span style="width:170px" class="pull-right"><input maxlength="18" size="10" type="text" class="txt form-control" placeholder="" style="max-width:134px;display:inline" id="entradaManual" name="entradaManual" value="" onmouseover="caltasks(this.id, '%d/%m/%Y');this.onmouseover=null;" onChange="" onblur="
-				ajaxSaveValueChange(this);				
-			"><img src="/iFlow//images/icon_delete.png" border="0" style="display:inline" onclick="javascript:document.getElementById('entradaManual').value=''"></span>
-</li>
-<li class="datecal  field" id="N1006B" style="">
-<label class="datecal field" for="saidaManual">T&eacute;rmino</label><span style="width:170px" class="pull-right"><input maxlength="18" size="10" type="text" class="txt form-control" placeholder="" style="max-width:134px;display:inline" id="saidaManual" name="saidaManual" value="" onmouseover="caltasks(this.id, '%d/%m/%Y');this.onmouseover=null;" onChange="" onblur="
-				ajaxSaveValueChange(this);				
-			"><img src="/iFlow//images/icon_delete.png" border="0" style="display:inline" onclick="javascript:document.getElementById('saidaManual').value=''"></span>
-</li>
-<li class="textlabel  field" id="N10088" style="">
-<label class="textlabel field" for="">Tipo</label>f&eacute;rias</li>
-<li class="textarea  field" id="N10093" style="height:170px;">
-<label class="textarea field" for="obsManual">Observa&ccedil;&otilde;es</label><textarea rows="6" name="obsManual" style="width:560px;" class=" form-control pull-right" onblur="
-			ajaxSaveValueChange(this);				
-		"></textarea>
+<li class="textbox  field" id="N1000A" style="">
+<label class="textbox field" id="label_teste" for="teste">teste</label><input type="text" class="txt form-control pull-right" placeholder="" style="max-width:728" id="teste" name="teste" value="teste" size="100" maxlength="100" onblur="
+			ajaxSaveValueChange(this);
+			" title=""><script type="text/javascript"></script>
 </li>
 </ol>
 </div>
 </div>
 <div class="blockdivision">
 <div class="columndivision columnholder">
-<div class="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_custom_9" value="Fechar" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='9'; } else { return false; }document.dados.buttonResult.value='fechar';" title="Fechar">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_custom_8" value="Submeter" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='8'; } else { return false; }document.dados.buttonResult.value='submeter';" title="Submeter o pedido ao superior">&nbsp;</div>
+<div class="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_cancelar" value="Cancel" onClick="if (confirm('Deseja cancelar/fechar o processo?')) { disableForm(); document.dados.op.value=4; } else { return false; }" title="Cancel">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_repor" value="Reset" onClick="disableForm(); document.dados.op.value=0;" title="Reset">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_guardar" value="Save" onClick="disableForm(); document.dados.op.value=2;" title="Save">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_avancar" value="Forward" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='4'; } else { return false; }" title="Forward">&nbsp;</div>
 </div>
 </div>
 </div>

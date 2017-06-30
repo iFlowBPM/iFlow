@@ -84,7 +84,7 @@
 	<h1 id="title_admin"><%=titulo%></h1>
 
 <% if (bError) { %>
-	<div class="error_msg">
+	<div class="alert alert-danger">
 		<%=sErrorMsg%>
 	</div>
 <% } %>

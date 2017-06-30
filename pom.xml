@@ -27,9 +27,10 @@
 		<module>iflow-editor</module>
 		<module>iflow-fixtures</module>
 		<module>iflow-home</module>
-		<!--
-		<module>iflow-dist</module>
-		-->
+		
+		
+		 <module>iflow-dist</module> 
+		
 		<module>vfs-connector</module>
 	</modules>
 

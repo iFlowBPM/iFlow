@@ -71,47 +71,7 @@ public class BlockSQLUpdate extends BlockSQL {
     		 sQuerySplit = procData.transform(userInfo, sQuerySplit, true);
     	 }
     	 
-    	 sQuerySplit = sQuerySplit.replace("&#x27;","'");
-
-			char cValidate;
-
-			int count = 0;
-
-			for (int i = 0; sQuerySplit.length() > i; i++) {
-				cValidate = sQuerySplit.charAt(i);
-
-				if (Character.isLetterOrDigit(cValidate)) {
-					sQuery = sQuery + cValidate;
-
-				} else if (cValidate == '\'') {
-					count++;
-
-					if (count == 1) {
-						sQuery = sQuery + cValidate;
-					}
-
-					else {
-						cValidate = sQuerySplit.charAt(i + 1);
-						
-						if (Character.isLetterOrDigit(cValidate)) {
-							sQuery = sQuery + "´";
-							
-						} else if (cValidate == ',' || cValidate == ')') {
-
-							cValidate = sQuerySplit.charAt(i);
-							sQuery = sQuery + cValidate;
-							count = 0;
-							
-						} else if (cValidate == '\'' || cValidate == ' ') {
-							sQuery = sQuery + "´";
-							count = 1;
-						}
-					}
-				} else {
-					sQuery = sQuery + cValidate;
-				}
-			}
-
+    	 
          if (StringUtils.isEmpty(sQuery)) sQuery = null;
     }
     catch (Exception e) {

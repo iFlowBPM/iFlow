@@ -2,12 +2,16 @@ package pt.iknow.floweditor.blocks;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.Graphics;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +45,8 @@ import org.exolab.castor.xml.ValidationException;
 import pt.iflow.api.blocks.FormProps;
 import pt.iknow.floweditor.FlowEditorAdapter;
 import pt.iknow.floweditor.IDesenho;
+import pt.iknow.floweditor.InstanciaComponente;
+import pt.iknow.floweditor.Janela;
 import pt.iflow.api.datatypes.DataTypeInterface;
 import pt.iflow.api.utils.NameValuePair;
 import pt.iflow.api.xml.ConnectorMarshaller;
@@ -54,6 +60,10 @@ import pt.iknow.iflow.RepositoryClient;
 import pt.iknow.utils.swing.JMultiLineToolTip;
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
+
+import pt.iknow.floweditor.Componente_Biblioteca;
+import pt.iknow.floweditor.FlowEditor;
+
 
 
 
@@ -3193,9 +3203,18 @@ public class JSPFieldData {
         			
         			desenho.addCatalogVariable(stmp, "", false, "", "", null);
         			 			
-        			AlteraAtributosStart aas = new AlteraAtributosStart(adapter);
+        			//AlteraAtributosStart aas = new AlteraAtributosStart(adapter);
         			
-        			//aas.setDataIn("",Arrays.asList(aas.getNewAttributes()));
+        			InstanciaComponente aaa = new InstanciaComponente();
+        			
+        			Graphics g = null;
+        			
+        			 final Janela janela = null;
+        			
+        			
+        			
+        			
+        			aaa.paint(g);
         			
         		}
         		    
