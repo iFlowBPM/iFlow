@@ -2,26 +2,20 @@ package pt.iknow.floweditor.blocks;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.Graphics;
-
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Collection;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -42,11 +36,9 @@ import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import pt.iflow.api.blocks.FormProps;
-import pt.iknow.floweditor.FlowEditorAdapter;
-import pt.iknow.floweditor.IDesenho;
-import pt.iknow.floweditor.InstanciaComponente;
-import pt.iknow.floweditor.Janela;
 import pt.iflow.api.datatypes.DataTypeInterface;
 import pt.iflow.api.utils.NameValuePair;
 import pt.iflow.api.xml.ConnectorMarshaller;
@@ -56,13 +48,10 @@ import pt.iflow.api.xml.codegen.flow.XmlCatalogVarAttribute;
 import pt.iflow.api.xml.codegen.flow.XmlCatalogVars;
 import pt.iflow.api.xml.codegen.flow.XmlFlow;
 import pt.iknow.floweditor.Atributo;
+import pt.iknow.floweditor.FlowEditorAdapter;
+import pt.iknow.floweditor.IDesenho;
 import pt.iknow.iflow.RepositoryClient;
 import pt.iknow.utils.swing.JMultiLineToolTip;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.swing.AutoCompleteSupport;
-
-import pt.iknow.floweditor.Componente_Biblioteca;
-import pt.iknow.floweditor.FlowEditor;
 
 
 
@@ -3202,20 +3191,7 @@ public class JSPFieldData {
         			desenho = adapter.getDesenho();       			        			
         			
         			desenho.addCatalogVariable(stmp, "", false, "", "", null);
-        			 			
-        			//AlteraAtributosStart aas = new AlteraAtributosStart(adapter);
-        			
-        			InstanciaComponente aaa = new InstanciaComponente();
-        			
-        			Graphics g = null;
-        			
-        			 final Janela janela = null;
-        			
-        			
-        			
-        			
-        			aaa.paint(g);
-        			
+        			 	
         		}
         		    
           break;
