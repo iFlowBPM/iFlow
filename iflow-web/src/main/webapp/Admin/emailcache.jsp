@@ -45,7 +45,7 @@ else if (op == 1) {
 	<div class="table_inc">  
 
 <% if (sbError.length() > 0) { %>
-		<div class="error_msg">
+		<div class="alert alert-danger">
 			<%=sbError.toString()%>
 		</div>
 <% } %>

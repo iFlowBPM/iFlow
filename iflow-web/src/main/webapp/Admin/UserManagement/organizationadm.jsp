@@ -76,7 +76,7 @@
 <%
 	if (bError) {
 %>
-<div class="error_msg">
+<div class="alert alert-danger">
 	<%=sErrorMsg%>
 </div>
 <%

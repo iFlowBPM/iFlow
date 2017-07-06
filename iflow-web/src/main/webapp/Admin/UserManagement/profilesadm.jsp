@@ -51,7 +51,7 @@ UserInfoInterface ui = (UserInfoInterface) session.getAttribute(Const.USER_INFO)
 
      
 <% if (bError) { %>
-			<div class="error_msg">
+			<div class="alert alert-danger">
 			    <%=sErrorMsg%>
 			</div>
 <% } %>

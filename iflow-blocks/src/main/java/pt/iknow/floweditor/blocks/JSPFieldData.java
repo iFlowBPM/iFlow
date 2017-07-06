@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,13 +30,15 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolTip;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 
+import ca.odell.glazedlists.GlazedLists;
+import ca.odell.glazedlists.swing.AutoCompleteSupport;
 import pt.iflow.api.blocks.FormProps;
-import pt.iknow.floweditor.FlowEditorAdapter;
 import pt.iflow.api.datatypes.DataTypeInterface;
 import pt.iflow.api.utils.NameValuePair;
 import pt.iflow.api.xml.ConnectorMarshaller;
@@ -46,10 +49,11 @@ import pt.iflow.api.xml.codegen.flow.XmlCatalogVars;
 import pt.iflow.api.xml.codegen.flow.XmlFlow;
 import pt.iknow.floweditor.Atributo;
 import pt.iknow.floweditor.FlowEditorAdapter;
+import pt.iknow.floweditor.IDesenho;
 import pt.iknow.iflow.RepositoryClient;
 import pt.iknow.utils.swing.JMultiLineToolTip;
-import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.swing.AutoCompleteSupport;
+
+
 
 
 /**
@@ -3090,6 +3094,9 @@ public class JSPFieldData {
       ret[i] = ((Atributo) catalogue[i]).getNome();
     return ret;
   }
+  
+  private IDesenho desenho;
+  
 
   private JButton makeControlButton(String asImageIconName,
       String asToolTipText,
@@ -3127,6 +3134,8 @@ public class JSPFieldData {
     this.saveData(true);
   }
 
+
+  
   @SuppressWarnings("unchecked")
   public void saveData(boolean abValidate)
   throws FieldDataException {
@@ -3169,20 +3178,22 @@ public class JSPFieldData {
           stmp = (String)(((JComboBox)jValue).getSelectedItem());
           break;
         case JSPFieldData.nPROP_VAR_NAME:
-          stmp = (String) (((JComboBox) jValue).getSelectedItem());
-          
-          if(i==2){
-        	  String valorx = stmp;
+        	
+        		stmp = (String) (((JComboBox) jValue).getSelectedItem());
+            
+        	  Object[] elements = getCatalogue(); 
+        	  int length = Array.getLength(elements);        	          	  
         	  
-        	  Object[] elements = getCatalogue();
-        	          	          	  
-        	  for(int v =0; elements.length < v; v++ ) {
-        		    String item = elements.toString();
-        		    System.out.println(item);
+        	  if (ArrayUtils.contains(elements, stmp) ) {
+        		    
+        		}else{
+        			adapter.getString(("AlteraAtributosStart.title"), true); 
+        			desenho = adapter.getDesenho();       			        			
+        			
+        			desenho.addCatalogVariable(stmp, "", false, "", "", null);
+        			 	
         		}
-        	  
-          }
-          
+        		    
           break;
         case JSPFieldData.nPROP_PP_PASS_TO_LINK:
         case JSPFieldData.nPROP_USE_LINKS:

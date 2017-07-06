@@ -690,9 +690,6 @@ public class BlockFormulario extends Block implements FormOperations {
         //END MENU_DIVISION
         
         
-        
-        
-        
         // check if field is disabled
         if (abBlock.checkDisabledField(userInfo, procData, props)) {
           Logger.debug(sLogin,abBlock,"generateForm",

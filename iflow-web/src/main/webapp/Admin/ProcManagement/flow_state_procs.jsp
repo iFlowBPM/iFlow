@@ -141,11 +141,11 @@ else {
  
 
 <% if (sbError.length() > 0) { %>
-  <div class="error_msg">
+  <div class="error_msg alert alert-danger" >
     <%=sHtml%>
   </div>
 <% } %>
-  <div class="info_msg">
+  <div class="info_msg alert alert-info">
     <%=sHtml%>
   </div>
 

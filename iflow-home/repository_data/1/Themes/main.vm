@@ -573,7 +573,7 @@
 			<!--div id="section_div_9" class="main" style="margin-left: 220px; display: none"></div-->
 			<div id="section_div_10" class="main" style="margin-left: 220px; display: none"></div>
 			<div id="section_div_11" class="main" style="margin-left: 220px; display: none"></div>
-			<div id="delegations-form" class="cma_dialog" title="Alertas" style="display:none"></div>
+			<div id="delegations-form" class="cma_dialog" title="$link_alert" style="display:none"></div>
 
 			<div class="yui-skin-sam">
 				<div id="userdialog">
@@ -656,7 +656,7 @@
 			<!--div id="section_div_9" class="main" style="margin-left: 220px; display: none"></div-->
 			<div id="section_div_10" class="main" style="margin-left: 220px; display: none"></div>
 			<div id="section_div_11" class="main" style="margin-left: 220px; display: none"></div>
-			<div id="delegations-form" class="cma_dialog" title="Alertas" style="display:none"></div>
+			<div id="delegations-form" class="cma_dialog" title="$link_alert" style="display:none"></div>
 
 			<div class="yui-skin-sam">
 				<div id="userdialog">

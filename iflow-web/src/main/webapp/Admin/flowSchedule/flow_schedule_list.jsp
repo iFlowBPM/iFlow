@@ -19,7 +19,7 @@
 <form method="post" name="flow_schedule_list_form">
 
 <c:if test="${not empty presentationMsg}">
-    <div class="alert alert-danger">
+    <div class="alert alert-success">
         <c:out value="${presentationMsg}" />
     </div>
 </c:if>

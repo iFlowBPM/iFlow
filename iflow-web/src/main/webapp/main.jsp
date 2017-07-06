@@ -96,6 +96,7 @@
 	hsSubst.put("link_logout", messages.getString("main.link.logout"));
 	hsSubst.put("link_account", messages.getString("main.link.account"));
 	hsSubst.put("link_inbox", messages.getString("main.link.inbox"));
+	hsSubst.put("link_alert", messages.getString("main.link.alert"));
 	
 	hsSubst.put("link_signature", messages.getString("main.link.signature"));
 	hsSubst.put("tooltip_signature", messages.getString("main.tooltip.signature"));

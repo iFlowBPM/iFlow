@@ -138,7 +138,7 @@ boolean isClassic = StringUtils.equals("classic", theme);
         <a id="li_a_admin_<%=AdminNavConsts.FLOW_SCHEDULE%>"
         title="<%=messages.getString("admin_nav.section.flows.tooltip.flow_schedule")%>"
         class="toolTipItemLink li_link"
-        href="javascript:selectedItem('admin',<%=AdminNavConsts.FLOW_SCHEDULE%>);tabber_save(4,'','sel=<%=AdminNavConsts.FLOW_SCHEDULE%>','<%=response.encodeURL("Admin/flow_schedule_list")%>','ts=<%=ts%>');"><%=messages.getString("admin_nav.section.flows.link.flow_schedule")%></a></li>
+        href="javascript:selectedItem('admin',<%=AdminNavConsts.FLOW_SCHEDULE%>);tabber_right(4,'<%=response.encodeURL("Admin/flow_schedule_list")%>','ts=<%=ts%>');"><%=messages.getString("admin_nav.section.flows.link.flow_schedule")%></a></li>
 </ul>
 
 <%

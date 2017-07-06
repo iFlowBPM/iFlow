@@ -4094,7 +4094,11 @@ public class ProcessManagerBean implements ProcessManager {
 
         if (Const.nMODE != Const.nPRODUCTION) {
           String sNewSubject = email.getSubject();
-          sNewSubject = "(de user: " + userInfo.getUtilizador() + ") " + sNewSubject + " (para user " + to + ")";
+          
+          // Retirado por @Pedro Gonçalves para o projeto Uniksystem 
+          
+          //sNewSubject = "(de user: " + userInfo.getUtilizador() + ") " + sNewSubject + " (para user " + to + ")";
+          
           email.setSubject(sNewSubject);
         }
 
