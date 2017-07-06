@@ -129,7 +129,7 @@ public class Register extends HttpServlet {
     String password = request.getParameter("pass");
     String repeatpass = request.getParameter("repeatpass");
     String gender = request.getParameter("gender");
-    String emailAddress = StringEscapeUtils.unescapeHtml(request.getParameter("emailAddress"));
+    String emailAddress = StringEscapeUtils.unescapeHtml(request.getParameter("emailAddress"));;
     String firstName = request.getParameter("firstName");
     String lastName = request.getParameter("lastName");
     String phoneNumber = request.getParameter("phoneNumber");
