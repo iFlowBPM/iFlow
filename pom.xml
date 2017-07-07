@@ -36,7 +36,7 @@
 
 	<properties>
 		<iflow.baseversion>5.0.2</iflow.baseversion>
-		<iflow.buildnumber>20170614</iflow.buildnumber>
+		<iflow.buildnumber>20170707</iflow.buildnumber>
 		<iflow.version>${iflow.baseversion}-R${iflow.buildnumber}</iflow.version>
 		<dms-connector.version>0.0.7-R20100908</dms-connector.version>
 		<alfresco-connector.version>0.0.7-R20100908</alfresco-connector.version>

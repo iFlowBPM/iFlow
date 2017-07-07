@@ -74,13 +74,13 @@ else if (sOper.equals("edit")) { // TOGGLE EDIT
 	<div class="table_inc">  
 
 <% if (sbError.length() > 0) { %>
-		<div class="error_msg">
+		<div class="error_msg alert alert-danger">
 			<%=sbError.toString()%>
 		</div>
 <% } %>
 
   <fieldset>
-	<legend style="border: none;font-size: 2rem;"><%=sHtml%></legend>
+	<legend class="alert alert-success" style="border: none;font-size: 2rem;"><%=sHtml%></legend>
     <ol>
     
 				<%

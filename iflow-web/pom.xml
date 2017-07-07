@@ -13,7 +13,7 @@
 
 	<artifactId>iflow-web</artifactId>
 	<packaging>war</packaging>
-	<version>${iflow.version}</version>
+	<version>5.0.2-R20170707</version>
 
 	<dependencies>
 		<!-- APP -->

@@ -141,7 +141,7 @@ String maintenance = Const.isInMaintenance() ? "maintenance" : "";
 				
 <div class="bos_login" style="background:beige;margin-top:50px;width:460px;">
 
-<div class="alert alert-info" style="text-align:center; padding: 4px; height:30px; margin: 10px 110px; background-color: gray; color:white; font-weight: bold;"><if:message string="login.admin.title"/></div>
+<div class="alert alert-info" style="text-align:center;width: 75%;padding: 4px;height:30px;margin: 10px 4rem;background-color: gray;color:white;font-weight: bold;"><if:message string="login.admin.title"/></div>
 
     <div class="img"> <img src="../Themes/newflow/images/iflowbpm_logo.png" width="196" height="68" alt=""/></div>
     

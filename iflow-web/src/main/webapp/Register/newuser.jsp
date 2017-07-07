@@ -82,19 +82,19 @@
 		    <fieldset class="submit rp_background centrarBotoes">
 				<c:choose>
 					<c:when test="${isSystemAdmin}">
-						<input class="regular_button_01" type="button" name="cancel" value="<if:message string="button.cancel"/>"
+						<input class="regular_button_01 btn btn-default" type="button" name="cancel" value="<if:message string="button.cancel"/>"
 							onclick="javascript:tabber_right(4, '<%=response.encodeURL("register") %>','cancel=cancel');" />
-				    	<input class="regular_button_01" type="button" name="back" value="<if:message string="button.back"/>"
+				    	<input class="regular_button_01 btn btn-default" type="button" name="back" value="<if:message string="button.back"/>"
 							onclick="javascript:tabber_right(4, '<%=response.encodeURL("register") %>','back=back&'+get_params(document.formulario));" />
-						<input class="regular_button_01" type="reset" name="clear" value="<if:message string="button.clear"/>"/>
-						<input class="regular_button_01" type="button" name="add" value="<if:message string="button.next"/>"
+						<input class="regular_button_01 btn btn-default" type="reset" name="clear" value="<if:message string="button.clear"/>"/>
+						<input class="regular_button_01 btn btn-default" type="button" name="add" value="<if:message string="button.next"/>"
 							onclick="javascript:tabber_right(4, '<%=response.encodeURL("register") %>','create=create&'+get_params(document.formulario));" />
 					</c:when>
 					<c:otherwise>
-						<input class="regular_button_01" type="submit" name="cancel" value="<if:message string="button.cancel"/>"/> 
-				    	<input class="regular_button_01" type="submit" name="back" value="<if:message string="button.back"/>" />
-				    	<input class="regular_button_01" type="reset"  name="clear" value="<if:message string="button.clear"/>" />
-				    	<input class="regular_button_01" type="submit" name="create" value="<if:message string="button.create"/>"/>
+						<input class="regular_button_01 btn btn-default" type="submit" name="cancel" value="<if:message string="button.cancel"/>"/> 
+				    	<input class="regular_button_01 btn btn-default" type="submit" name="back" value="<if:message string="button.back"/>" />
+				    	<input class="regular_button_01 btn btn-default" type="reset"  name="clear" value="<if:message string="button.clear"/>" />
+				    	<input class="regular_button_01 btn btn-default" type="submit" name="create" value="<if:message string="button.create"/>"/>
 					</c:otherwise>
 				</c:choose>
 			</fieldset>
@@ -102,7 +102,7 @@
 	</div>
 <% if(!isSystemAdmin.booleanValue()) { %>
 	<div class="lp_footer_nav">
-	  <a class="lp_top_nav_link" style="color:#5D7891;" href="http://www.infosistema.pt"><if:message string="iflow.copyright"/></a>
+	  <a class="lp_top_nav_link" style="color:#5D7891;" href="http://www.uniksystem.pt"><if:message string="iflow.copyright"/></a>
     </div>
 </body>
 </html>

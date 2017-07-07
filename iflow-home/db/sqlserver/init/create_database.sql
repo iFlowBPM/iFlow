@@ -1,3 +1,6 @@
+USE [iflow]
+GO
+
 CREATE TABLE system_users (
   userid INT NOT NULL IDENTITY(1,1),
   username VARCHAR(50) NOT NULL,
@@ -9,7 +12,6 @@ CREATE TABLE system_users (
   last_name VARCHAR(50) NULL,
   sessionid VARCHAR(150) NULL,
   CONSTRAINT pk_system_users PRIMARY KEY (userid),
-  --CONSTRAINT uk_system_users_sessionid UNIQUE (sessionid), -- UNIQUES com NULLS em SQLServer nï¿½o funcionam bem
   CONSTRAINT uk_system_users_username UNIQUE (username))
 GO
 
@@ -426,6 +428,13 @@ CREATE TABLE documents (
   PRIMARY KEY (docid))
 GO
 
+CREATE TABLE documents_support (
+  docid INT NOT NULL IDENTITY(1,1),
+  generation int DEFAULT NULL,
+  PRIMARY KEY (docid)
+) 
+GO
+
 CREATE TABLE email (
   eid INT NOT NULL IDENTITY(1,1),
   eserver VARCHAR(256) NOT NULL,
@@ -532,6 +541,9 @@ CREATE TABLE iflow_errors (
   description VARCHAR(512) NOT NULL,
   PRIMARY KEY (errorid))
 GO
+
+
+
 
 CREATE TABLE links_flows (
   linkid INT NOT NULL IDENTITY(1,1),
@@ -642,7 +654,7 @@ CREATE TABLE users (
   orgadm_resources NUMERIC(1)  NOT NULL DEFAULT 1,
   orgadm_org NUMERIC(1)  NOT NULL DEFAULT 1,
   PRIMARY KEY (userid),
-  --CONSTRAINT uk_users_sessionid UNIQUE (sessionid), -- UNIQUES com NULLS em SQLServer nï¿½o funcionam bem
+ 
   CONSTRAINT uk_users_username UNIQUE (username),
   FOREIGN KEY (unitid)
     REFERENCES organizational_units (unitid)
@@ -920,7 +932,7 @@ CREATE TABLE migration_log (
   migrator VARCHAR(16) NULL,
   task VARCHAR(128) NOT NULL,
   finished DATETIME NULL,
-  --CONSTRAINT uk_migration_log UNIQUE (migrator,task)) -- UNIQUES com NULLS em SQLServer nï¿½o funcionam bem
+
 )
 GO
 
@@ -1244,7 +1256,7 @@ CREATE TABLE menu (
   norder INT NOT NULL,
   level INT NOT NULL,
   PRIMARY KEY (menuId),
-  --CONSTRAINT parentMenuId_UNIQUE UNIQUE (parentMenuId, norder), -- UNIQUES com NULLS em SQLServer nï¿½o funcionam bem
+
   FOREIGN KEY (parentMenuId)
     REFERENCES menu (menuId)
     ON DELETE NO ACTION
@@ -1999,18 +2011,6 @@ CREATE TABLE  dbo.active_node (
   expiration DATETIME NOT NULL,
   PRIMARY KEY (nodekey)
 );
-
-CREATE PROCEDURE get_next_pid 
-  @retnodekey INT OUT
-AS
-BEGIN
-	DECLARE @tmp INT
-    set @retnodekey = 1
-    select value into @tmp from counter where name='nodekey'
-    update counter set value=(@tmp +1) where  name='nodekey'
-    select value into @retnodekey from counter where name='nodekey'    
-END
-GO
 
 CREATE TABLE  dbo.sharedobjectrefresh (
   id int NOT NULL IDENTITY,

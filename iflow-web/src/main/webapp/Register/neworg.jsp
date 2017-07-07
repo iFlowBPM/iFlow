@@ -43,12 +43,12 @@
 					<fieldset class="rp_background">
 						<legend style="border: none;font-size: 2rem;"><if:message string="register.title.organization" /></legend>
 <% if(!isSystemAdmin) { %>
-						<div class="info_msg rp_background" style="text-align:left;">
+						<div class="info_msg rp_background " style="text-align:left;">
 							<if:message string="register.intro.organization" />
 						</div>
 <% } %>
 						<c:if test="${not empty error_msg}">
-							<div class="error_msg rp_background">
+							<div class="error_msg rp_background alert alert-warning">
 								<c:out value="${error_msg}" escapeXml="false"/>
 							</div>
 						</c:if>
@@ -56,23 +56,26 @@
 						<ol>
 							<if:formInput type="text" name="organization_name" value="${organization_name}" labelkey="register.label.organization_name" edit="true" required="true" maxlength="50"/>
 							<if:formInput type="text" name="organization_desc" value="${organization_desc}" labelkey="register.label.organization_desc" edit="true" maxlength="150"/>
+							
+							<li class="form-group" style="height:3rem;">
 							<if:formLocale name="organization_lang" edit="true" value="${organization_lang}" labelkey="register.label.organization_lang" />
+							</li>
 							<if:formTimeZone name="organization_timezone" edit="true" value="${organization_timezone}" labelkey="register.label.organization_timezone" />
 						</ol>
 					</fieldset>
 					<fieldset class="submit rp_background centrarBotoes">
 					<c:choose>
 						<c:when test="${isSystemAdmin}">
-							<input class="regular_button_01" type="button" name="cancel" value="<if:message string="button.cancel"/>"
+							<input class="regular_button_01 btn btn-default" type="button" name="cancel" value="<if:message string="button.cancel"/>"
 								onclick="javascript:tabber_right(4, '<%=response.encodeURL("register") %>','cancel=cancel');" />
-							<input class="regular_button_01" type="reset" name="clear" value="<if:message string="button.clear"/>"/>
-							<input class="regular_button_01" type="button" name="add" value="<if:message string="button.next"/>"
+							<input class="regular_button_01 btn btn-default" type="reset" name="clear" value="<if:message string="button.clear"/>"/>
+							<input class="regular_button_01 btn btn-default" type="button" name="add" value="<if:message string="button.next"/>"
 								onclick="javascript:tabber_right(4, '<%=response.encodeURL("register") %>','add=add&'+get_params(document.formulario));" />
 						</c:when>
 						<c:otherwise>
-							<input class="regular_button_01" type="submit" name="cancel" value="<if:message string="button.cancel"/>"/>
-							<input class="regular_button_01" type="reset" name="clear" value="<if:message string="button.clear"/>"/>
-							<input class="regular_button_01" type="submit" name="add" value="<if:message string="button.next"/>"/>
+							<input class="regular_button_01 btn btn-default" type="submit" name="cancel" value="<if:message string="button.cancel"/>"/>
+							<input class="regular_button_01 btn btn-default" type="reset" name="clear" value="<if:message string="button.clear"/>"/>
+							<input class="regular_button_01 btn btn-default" type="submit" name="add" value="<if:message string="button.next"/>"/>
 						</c:otherwise>
 					</c:choose>
 					</fieldset>
@@ -81,7 +84,7 @@
 <% if(!isSystemAdmin) { %>
 		</div>
 		<div class="lp_footer_nav">
-		  <a class="lp_top_nav_link" style="color:#5D7891;" href="http://www.infosistema.pt"><if:message string="iflow.copyright"/></a>
+		  <a class="lp_top_nav_link" style="color:#5D7891;" href="http://www.uniksystem.pt"><if:message string="iflow.copyright"/></a>
 	    </div>
 	</body>
 </html>
