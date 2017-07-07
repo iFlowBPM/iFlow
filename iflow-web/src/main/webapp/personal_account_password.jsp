@@ -73,7 +73,7 @@
   <h1 id="title_account"><%=title%></h1>
 
   <% if (sErrorMsg != null) { %>
-  <div class="error_msg">
+  <div class="error_msg alert alert-danger">
     <%=sErrorMsg %>
   </div>
   <% } %>
