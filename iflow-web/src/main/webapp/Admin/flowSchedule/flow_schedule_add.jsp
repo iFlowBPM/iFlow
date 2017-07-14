@@ -169,7 +169,7 @@ function validateFieldsToSubmit (){
 	    <li class="form-group" style="height:4rem;">
 	    <label class="control-label col-sm-2" for="isRepeatable"><%=messages.getString("flow_schedule.add.field.checkbox.is_repeatable")%></label>
 	    <div class="col-sm-1">
-	    <input type="checkbox" class="form-control" style="width:25%;" name="isRepeatable" id="isRepeatable" value="false" onchange="if (this.checked) {document.getElementById('eventRepeateTimeFrame').style.display='';} else { document.getElementById('eventRepeateTimeFrame').style.display='none';};">
+	    <input type="checkbox" class="form-control" style="width:25%;" name="isRepeatable" id="isRepeatable" onchange="if (this.checked) {document.getElementById('eventRepeateTimeFrame').style.display='';} else { document.getElementById('eventRepeateTimeFrame').style.display='none';};">
 	    </div>
 	    </li>
 						

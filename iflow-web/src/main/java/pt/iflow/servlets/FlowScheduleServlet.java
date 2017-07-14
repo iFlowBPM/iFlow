@@ -138,7 +138,7 @@ public class FlowScheduleServlet extends HttpServlet implements Servlet {
           scheduleData.setStartTime(new Timestamp(eventTriggerTime.getTime().getTime()));
 
           String isRepeatable = request.getParameter("isRepeatable");
-          if ("true".equals(isRepeatable)){
+          if ("true".equals(isRepeatable) || "on".equals(isRepeatable)){
             scheduleData.setSimpleEvent(false);
             long eventIntervalUnformated = Long.parseLong(String.valueOf(request.getParameter("eventInterval")));
             int eventIntervalUnit = Integer.parseInt(String.valueOf(request.getParameter("form_add_time_frame_time_unit")));
