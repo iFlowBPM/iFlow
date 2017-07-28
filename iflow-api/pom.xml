@@ -13,7 +13,7 @@
 
 	<artifactId>iflow-api</artifactId>
 	<packaging>jar</packaging>
-	<version>5.0.2-R20170614</version>
+	<version>${iflow.version}</version>
 
 	<dependencies>
 		<!-- APP -->

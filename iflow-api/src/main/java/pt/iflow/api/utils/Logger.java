@@ -28,7 +28,7 @@ public class Logger
   
   static
   {
-    initLogger();
+    initLogger(); 
   }
   
   public static synchronized void initLogger()
@@ -112,7 +112,7 @@ public class Logger
     }
     switch (logLevel)
     {
-    case DEBUG: 
+    case DEBUG:
       if (logger.isDebugEnabled()) {
         logger.debug(sMessage, t);
       }
