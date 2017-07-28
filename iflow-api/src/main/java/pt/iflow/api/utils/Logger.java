@@ -117,18 +117,18 @@ public class Logger
         logger.debug(sMessage, t);
       }
       break;
-    case ERROR: 
+    case INFO: 
       if (logger.isInfoEnabled()) {
         logger.info(sMessage, t);
       }
       break;
-    case FATAL: 
+    case TRACE: 
       logger.warn(sMessage, t);
       break;
-    case INFO: 
+    case ERROR: 
       logger.error(sMessage, t);
       break;
-    case TRACE: 
+    case FATAL: 
       logger.fatal(sMessage, t);
       break;
     case TRACE_JSP: 
