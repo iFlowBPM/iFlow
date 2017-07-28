@@ -297,6 +297,7 @@ CREATE TABLE activity (
   read_flag INT NULL DEFAULT 1,
   mid INT NULL DEFAULT 0,
   folderid INT NULL,
+  previoususerid [varchar](100) NULL,
   PRIMARY KEY (flowid, pid, subpid, userid),
   FOREIGN KEY (flowid, pid, subpid)
     REFERENCES process (flowid, pid, subpid)
@@ -363,6 +364,7 @@ CREATE TABLE activity_history (
   mid INT NULL DEFAULT 0,
   worker INT NULL DEFAULT 0,
   undoflag INT NULL DEFAULT 0,
+  previoususerid [varchar](100) NULL,
   FOREIGN KEY (flowid, pid, subpid, mid)
     REFERENCES process_history (flowid, pid, subpid, mid)
     ON DELETE NO ACTION
@@ -2017,3 +2019,147 @@ CREATE TABLE  dbo.sharedobjectrefresh (
   flowid int NOT NULL,
   PRIMARY KEY (id)
 );
+
+IF OBJECT_ID('get_next_nodekey') IS NOT NULL
+begin
+        drop procedure dbo.get_next_nodekey
+end
+GO
+
+CREATE  PROCEDURE get_next_nodekey( @retnodekey INTEGER OUT)
+AS
+BEGIN
+SET NOCOUNT ON;
+    DECLARE @tmp integer;
+   
+    set @retnodekey = 1;
+    select @tmp = value from counter where name='nodekey';
+    update counter set value=(@tmp +1) where  name='nodekey';
+    select @retnodekey = value from counter where name='nodekey';
+   
+END;
+GO
+
+IF OBJECT_ID('dbo.all_process_annotation_icons') IS NOT NULL
+begin
+        drop view dbo.all_process_annotation_icons
+end
+GO
+
+create view all_process_annotation_icons (iconid, flowid, pid, subpid) as
+select 0 iconid, flowid, pid, subpid from deadline d where d.deadline is not null and d.deadline<>''
+union
+select pl.labelid iconid, pl.flowid, pl.pid, pl.subpid from process_label pl
+union
+select 99999 iconid, flowid, pid, subpid from comment c where c.comment is not null and c.comment <>'';
+GO
+
+
+IF OBJECT_ID('dbo.annotation_icons') IS NOT NULL
+begin
+        drop view dbo.annotation_icons
+end
+GO
+
+create view annotation_icons (iconid, icon) as
+select 0 iconid, 'label_clock.png'
+union
+select id iconid, icon icon from label
+union
+select 99999 iconid, 'label_comment_blue.png';
+GO
+
+CREATE PROCEDURE forward_proc_to_user(@aflowid INTEGER,@apid INTEGER,@auserid VARCHAR(256))
+as
+begin
+
+  declare @mydate datetime2(0);
+  declare @olduser varchar(150);
+  declare @oldmid int;
+
+  set @mydate = getdate();
+  select @olduser = MAX(userid), @oldmid = Max(mid) from activity where pid = @apid and flowid = @aflowid and status = 0 group by pid, flowid;
+  
+  update activity set userid = @auserid, created = @mydate, started = @mydate, archived = @mydate, profilename = @auserid, read_flag = 0
+  where pid = @apid and flowid = @aflowid and userid = @olduser and mid = @oldmid;
+END
+GO
+
+CREATE TABLE  iflow.dbo.calendar (
+  [id] int NOT NULL IDENTITY,
+  [version] int NOT NULL,
+  [name] varchar(256) NOT NULL,
+  [monday] smallint check ([monday] > 0) NOT NULL ,
+  [tuesday] smallint check ([tuesday] > 0) NOT NULL ,
+  [wednesday] smallint check ([wednesday] > 0) NOT NULL ,
+  [thursday] smallint check ([thursday] > 0) NOT NULL ,
+  [friday] smallint check ([friday] > 0) NOT NULL ,
+  [saturday] smallint check ([saturday] > 0) NOT NULL ,
+  [sunday] smallint check ([sunday] > 0) NOT NULL ,
+  [valid] smallint check ([valid] > 0) NOT NULL ,
+  [day_hours] int DEFAULT NULL,
+  [week_hours] int DEFAULT NULL,
+  [month_hours] int DEFAULT NULL,
+  [create_date] datetime2(0) NOT NULL,
+  PRIMARY KEY ([id],[version])
+)  ;
+GO
+
+
+CREATE TABLE   iflow.dbo.calendar_history (
+  [flowid] int NOT NULL,
+  [pid] int NOT NULL,
+  [subpid] int NOT NULL DEFAULT '1',
+  [mid] int NOT NULL,
+  [calendar_id] int NOT NULL DEFAULT '-1',
+  [calendar_version] int NOT NULL DEFAULT '-1',
+  PRIMARY KEY ([flowid],[pid],[subpid],[mid],[calendar_id],[calendar_version])
+) ;
+GO
+
+
+CREATE TABLE iflow.dbo.serial_code_templates (
+  [template] VARCHAR(50) NOT NULL,
+  [name] VARCHAR(50) NOT NULL,
+  [description] VARCHAR(500),
+  [callback] VARCHAR(50),
+  [flag] VARCHAR(50),
+  [organization] VARCHAR(50) NOT NULL,
+  PRIMARY KEY ([template], [name], [organization])
+);
+GO
+
+
+ALTER TABLE [reporting] ADD  [time_reporting] VARCHAR(1024) NULL;
+ALTER TABLE [reporting] ADD  [calendarid] INT NULL ;
+
+ALTER TABLE process 
+ADD  hidden INT NULL DEFAULT '0';
+
+
+ALTER TABLE organizations ADD calendid INT  default 0;
+
+ALTER TABLE organizational_units ADD calendid INT  default 0;
+
+
+IF OBJECT_ID('get_next_nodekey') IS NOT NULL
+begin
+        drop procedure dbo.get_next_nodekey
+end
+GO
+
+CREATE  PROCEDURE get_next_nodekey( @retnodekey INTEGER OUT)
+AS
+BEGIN
+SET NOCOUNT ON;
+    DECLARE @tmp integer;
+   
+    set @retnodekey = 1;
+    select @tmp = value from counter where name='nodekey';
+    update counter set value=(@tmp +1) where  name='nodekey';
+    select @retnodekey = value from counter where name='nodekey';
+   
+END;
+GO
+
+

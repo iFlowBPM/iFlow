@@ -202,8 +202,8 @@
 				#end
 				
 				#* Inject applet inside element body (right here...) *#
-			setApplet('div_applet');
-			getAppletElem();
+			//setApplet('div_applet');
+			//getAppletElem();
 			}
 
 			YAHOO.util.Event.onDOMReady(initDom);	

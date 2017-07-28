@@ -608,22 +608,18 @@
 <body onload="reloadBootstrapElements(); initProcFrame();">
 <div style="margin:auto;">
 <form enctype="multipart/form-data" method="post" name="dados" style="width: 100%;margin:auto;" id="dados" action="form.jsp">
-<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="null"> <input type="hidden" name="op" id="op" value="2"> <input type="hidden" name="0_MAX_ROW" id="0_MAX_ROW" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="subpid" id="subpid" value="1"> <input type="hidden" name="pid" id="pid" value="38"> <input type="hidden" name="_changed_form" id="_changed_form" value="null"> <input type="hidden" name="flowid" id="flowid" value="139"> <input type="hidden" name="curmid" id="curmid" value="2"> 
+<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="4"> <input type="hidden" name="op" id="op" value="0"> <input type="hidden" name="0_MAX_ROW" id="0_MAX_ROW" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="subpid" id="subpid" value="-10"> <input type="hidden" name="pid" id="pid" value="-10"> <input type="hidden" name="_changed_form" id="_changed_form" value="_changed_form"> <input type="hidden" name="flowid" id="flowid" value="139"> <input type="hidden" name="curmid" id="curmid" value="0"> 
 <div id="main">
 <div class="blockdivision">
 <div class="columndivision">
 <ol class="fieldlist">
-<li class="textbox  field" id="N1000A" style="">
-<label class="textbox field" id="label_teste" for="teste">teste</label><input type="text" class="txt form-control pull-right" placeholder="" style="max-width:728" id="teste" name="teste" value="teste" size="100" maxlength="100" onblur="
-			ajaxSaveValueChange(this);
-			" title=""><script type="text/javascript"></script>
-</li>
+<li class="info_msg field" id="N1000A" style="text-align:left;" align="left"></li>
 </ol>
 </div>
 </div>
 <div class="blockdivision">
 <div class="columndivision columnholder">
-<div class="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_cancelar" value="Cancel" onClick="if (confirm('Deseja cancelar/fechar o processo?')) { disableForm(); document.dados.op.value=4; } else { return false; }" title="Cancel">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_repor" value="Reset" onClick="disableForm(); document.dados.op.value=0;" title="Reset">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_guardar" value="Save" onClick="disableForm(); document.dados.op.value=2;" title="Save">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_avancar" value="Forward" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='4'; } else { return false; }" title="Forward">&nbsp;</div>
+<div class="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_repor" value="Reset" onClick="disableForm(); document.dados.op.value=0;" title="Reset">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_guardar" value="Save" onClick="disableForm(); document.dados.op.value=2;" title="Save">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_avancar" value="Forward" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='4'; } else { return false; }" title="Forward">&nbsp;</div>
 </div>
 </div>
 </div>

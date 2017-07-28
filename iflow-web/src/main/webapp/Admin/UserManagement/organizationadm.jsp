@@ -84,7 +84,7 @@
 
 	if (StringUtils.isNotEmpty(infoMsg)) {
 %>
-<div class="info_msg">
+<div class="alert alert-success">
 	<%=infoMsg%>
 </div>
 <%
@@ -93,7 +93,7 @@
 <%
 	if (orgs.length == 0) {
 %>
-<div class="info_msg">
+<div class="alert alert-info">
 	<%=messages.getString("organizationadm.msg.noOrgs")%>
 </div>
 <%

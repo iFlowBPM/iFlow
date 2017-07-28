@@ -182,6 +182,7 @@ public class OrganizationThemeBean implements OrganizationTheme {
       pst.close();
 
       if(null == theme) theme = curTheme;
+      if(null == theme) theme = "newflow";
       if(null == style) style = curStyle;
       if(null == style) style = "default"; // style cannot be null?
       if(null == logo) logo = curLogo;

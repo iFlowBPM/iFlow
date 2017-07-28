@@ -1976,14 +1976,6 @@ public class UserManagerBean
       rs = null;
       
 
-
-
-
-
-
-
-
-
       pst = db.prepareStatement("insert into organizations (NAME,DESCRIPTION) values (?,?)", new String[] { "organizationid" });
       pst.setString(1, orgName);
       pst.setString(2, orgDescription);
