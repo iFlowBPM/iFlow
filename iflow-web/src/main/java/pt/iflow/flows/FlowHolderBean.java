@@ -1696,7 +1696,7 @@ public class FlowHolderBean implements FlowHolder {
                 throw new Exception("Flow " + asFile + "is online!");
             }
             
-            pst = db.prepareStatement("call deleteFlow(?,?,?)");
+            pst = db.prepareStatement(DBQueryManager.getQuery("Flow.delete"));            
             pst.setString(1, userid);
             pst.setInt(2, nFlowId);
             pst.setInt(3, abProcs ? 1 : 0);

@@ -138,7 +138,7 @@ public class DocumentServlet extends HttpServlet {
     String user = userInfo.getUtilizador();
     
     try {
-      if(StringUtils.equals(request.getServletPath(), "/document")) {
+      if(StringUtils.startsWith(request.getServletPath(), "/document")) {
         String hdoc = request.getParameter("hdoc");
         if(StringUtils.isNotEmpty(hdoc)) {
           Logger.debug(user, this, "getDocument", "Hashed document: "+logVar+" - proceeding with file retrieval...");

@@ -825,6 +825,26 @@
 		</div>			
 		</div>
 	</xsl:template>
+	
+	<xsl:template name="string-replace-all">
+	  <xsl:param name="text" />
+	  <xsl:param name="replace" />
+	  <xsl:param name="by" />
+	  <xsl:choose>
+	    <xsl:when test="contains($text, $replace)">
+	      <xsl:value-of select="substring-before($text,$replace)" />
+	      <xsl:value-of select="$by" />
+	      <xsl:call-template name="string-replace-all">
+	        <xsl:with-param name="text" select="substring-after($text,$replace)" />
+	        <xsl:with-param name="replace" select="$replace" />
+	        <xsl:with-param name="by" select="$by" />
+	      </xsl:call-template>
+	    </xsl:when>
+	    <xsl:otherwise>
+	      <xsl:value-of select="$text" />
+	    </xsl:otherwise>
+	  </xsl:choose>
+	</xsl:template>
 
 	<xsl:template match="field">
 	<xsl:variable name="multicol" select="count(../../columndivision)" />
@@ -1627,6 +1647,21 @@
 			</xsl:attribute>
 		</xsl:if>
 		</img>
+	</xsl:if>
+	
+	<xsl:if test="type='document_preview'">		
+		<xsl:for-each select="file">
+          <xsl:variable name="preview_link_url">
+		  	<xsl:call-template name="string-replace-all">
+		    	<xsl:with-param name="text" select="link_url" />
+		    	<xsl:with-param name="replace" select="'document'" />
+		    	<xsl:with-param name="by" select="'document/preview.pdf'" />
+		  	</xsl:call-template>		  
+		  </xsl:variable>	  
+		  <iframe width='300' height='400'>
+	   	  	<xsl:attribute name="src">../javascript/ViewerJS/#../../..<xsl:value-of select="$preview_link_url" /></xsl:attribute>
+		  </iframe>		  
+        </xsl:for-each>
 	</xsl:if>
 
 	<xsl:if test="type='file'"> <!--  FILE  -->

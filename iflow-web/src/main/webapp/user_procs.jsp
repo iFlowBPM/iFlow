@@ -124,7 +124,7 @@
   <div id="title_admin"><if:message string="user_procs.title" /></div>
 </div>
 <%
-  if (!showUserProcs) {
+  if (false && !showUserProcs) {
 %>
 	<div class="alert alert-info">
 		<%=messages.getString("user_procs.msg.select")%>
@@ -192,10 +192,17 @@
       hmConfig.put(Const.SESSION_USER_PROCS_IDX, idx);
       session.setAttribute(Const.SESSION_USER_PROCS, hmConfig);
     }
+    
+    UserProcesses getUserProcessesResult;
+    
+    String searchToken = fdFormData.getParameter("searchToken");
+    if (searchToken!=null)
+    	getUserProcessesResult = BeanFactory.getProcessManagerBean().getUserProcessesInIndex(userInfo, searchToken);
+    else
+    	getUserProcessesResult = BeanFactory.getProcessManagerBean().getUserProcesses(userInfo, nShowFlowId,
+    	        targetUser, idx, closedProcesses, new FlowFilter(pnumber, dtAfter, dtBefore, nStartIndex, nItems, 
+    	            isIntervenient, orderBy, orderType));
 
-    UserProcesses getUserProcessesResult = BeanFactory.getProcessManagerBean().getUserProcesses(userInfo, nShowFlowId,
-        targetUser, idx, closedProcesses, new FlowFilter(pnumber, dtAfter, dtBefore, nStartIndex, nItems, 
-            isIntervenient, orderBy, orderType));
 
     List<List<String>> alData = getUserProcessesResult.getAlData();
     Map<String, Map<String, List<String>>> hmFlowUsers = getUserProcessesResult.getHmFlowUsers();

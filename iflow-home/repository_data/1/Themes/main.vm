@@ -360,6 +360,19 @@
 
                                         <ul>
                                         
+                                        <li>
+	                                        <form id="search_index" class="form-horizontal" name="search_index" method="post">
+	                                        	<div class="form-group">
+	                                        		<div class="col-sm-9">
+														<input type="text" id="searchToken" class="form-control" name="searchToken" size="20" maxlength="1024" style="height:25px;font-size:0.8em;padding:0"/>
+														
+														<img src="images/pesquisa.png" onClick="javascript:tabber_right(8, 'user_procs.jsp', get_params(document.search_index));"/>
+													</div>
+													
+	                                        	</div>	                                        	
+	                                        </form>
+                                        </li>
+                                         
                                      	#if($sys_admin == "no")
                                             <li>
                             

@@ -569,6 +569,8 @@ public abstract interface ProcessManager extends UserProcsConst {
    */
   public abstract UserProcesses getUserProcesses(UserInfoInterface userInfo, int nShowFlowId, String targetOwner, String[] idx, boolean closedProcesses, FlowFilter filter);
   
+  public abstract UserProcesses getUserProcessesInIndex(UserInfoInterface userInfo, String searchToken);
+  
   /**
    * Retrieve all process intervenients 
    * @param userInfo current user

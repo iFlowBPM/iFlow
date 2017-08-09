@@ -61,6 +61,7 @@ import pt.iflow.api.flows.FlowSetting;
 import pt.iflow.api.flows.FlowSettings;
 import pt.iflow.api.flows.FlowType;
 import pt.iflow.api.flows.IFlowData;
+import pt.iflow.api.index.Index;
 import pt.iflow.api.msg.IMessages;
 import pt.iflow.api.notification.Email;
 import pt.iflow.api.notification.EmailManager;
@@ -4751,6 +4752,181 @@ public class ProcessManagerBean implements ProcessManager {
     }
     return new UserProcesses(alData, hmFlowUsers);
   }
+  
+  public UserProcesses getUserProcessesInIndex(UserInfoInterface userInfo, String searchBox){
+	    Connection db = null;
+	    PreparedStatement pst = null;
+	    Statement st = null;
+	    ResultSet rs = null;
+
+	    final Map<Integer, Boolean> hmShowAssignedCache = new HashMap<Integer, Boolean>();
+	    final Map<Integer, Boolean> hmReadProcessCache = new HashMap<Integer, Boolean>();
+	    final Map<Integer, Boolean> hmSuperProcessCache = new HashMap<Integer, Boolean>();
+	    final Map<Integer, Boolean> hmProcessHasDetailCache = new HashMap<Integer, Boolean>();
+	    final List<List<String>> alData = new ArrayList<List<String>>();
+	    final Map<String, String> hmFlowNames = new HashMap<String, String>();
+	    final Map<String, List<String>> hmFlowPids = new HashMap<String, List<String>>();
+	    final Map<String, Map<String, List<String>>> hmFlowUsers = new HashMap<String, Map<String, List<String>>>();
+	    final FlowSettings flowSettings = BeanFactory.getFlowSettingsBean();
+	    Flow flow = BeanFactory.getFlowBean();
+	    IFlowData[] arrFlowData = null;
+//	    if (nShowFlowId < 0) {
+	      arrFlowData = BeanFactory.getFlowHolderBean().listFlowsOnline(userInfo, FlowType.WORKFLOW);
+//	    } else {
+//	      arrFlowData = new IFlowData[] { BeanFactory.getFlowHolderBean().getFlow(userInfo, nShowFlowId) };
+//	    }
+	    if (arrFlowData != null && arrFlowData.length > 0) 
+	      for (int i = 0; i < arrFlowData.length; i++) {
+	        int nflowid = arrFlowData[i].getId();
+	        // permission related stuff. First Read permission. Second Show assigned
+	        if (!hmReadProcessCache.containsKey(nflowid)) {
+	          boolean val = canViewProcess(userInfo, nflowid);
+	          hmReadProcessCache.put(nflowid, val);
+	        }
+	        if (!hmShowAssignedCache.containsKey(nflowid)) {
+	          FlowSetting setting = flowSettings.getFlowSetting(nflowid, Const.sSHOW_ASSIGNED_TO);
+	          boolean val = false;
+	          if (null != setting) {
+	            val = StringUtils.equalsIgnoreCase(Const.sSHOW_YES, setting.getValue());
+	          }
+	          hmShowAssignedCache.put(nflowid, val);
+	        }
+	        if (!hmProcessHasDetailCache.containsKey(nflowid)) {
+	          IFlowData fd = flow.getFlow(userInfo, nflowid); // must instantiate...  :-(
+	          boolean val = false;
+	          if (fd != null && fd.hasDetail()) {
+	            if (fd.getDetailForm() != null)
+	              val = true;
+	            else if (fd.getCatalogue() != null)
+	              val = true;
+	          }
+	          hmProcessHasDetailCache.put(nflowid, val);
+	        }
+	        if (!hmSuperProcessCache.containsKey(nflowid)) {
+	          boolean val = false;
+	          val = canViewProcess(userInfo, nflowid);
+	          hmSuperProcessCache.put(nflowid, val);
+	        }
+	      }
+	     
+
+	      try {
+	    	Collection <ProcessHeader> searchResult= Index.search(searchBox);
+	        Iterator<ProcessHeader> resultIterator = searchResult.iterator();
+	        
+	        while(resultIterator.hasNext()){
+	        	ProcessHeader ph = resultIterator.next();
+	        	ProcessData pd = getProcessData(userInfo, ph);
+	        	
+	        	String flowid = "" + ph.getFlowId();
+		          String pid = "" + ph.getPid();
+		          String subpid = "" + ph.getSubPid();
+		          String pn = "" + pd.getPNumber();
+		          String procCreator = pd.getCreator();
+		          String result = null;
+		          Timestamp tstamp = new Timestamp(pd.getLastUpdate().getTime());
+		          
+		          
+		          
+		          if (!StringUtils.equals(procCreator, userInfo.getUtilizador()) && !canViewProcess(userInfo, ph.getFlowId()) && !canSuperProcess(userInfo, ph.getFlowId())) {
+		            Logger.debug(userInfo.getUtilizador(), this, "getUserProcesses", "User is not supervisor. Access to process denied: "+procCreator);
+		            continue;
+		          }
+		          
+		          List<String> alFlowPids = null;
+		          if (hmFlowPids.containsKey(flowid)) {
+		            alFlowPids = hmFlowPids.get(flowid);
+		          } else {
+		            alFlowPids = new ArrayList<String>();
+		            hmFlowPids.put(flowid, alFlowPids);
+		          }
+		          alFlowPids.add(pid);
+
+		       // ArrayList<String> alFlowFields = new ArrayList<String>(UserProcsConst.FIELD_COUNT);
+		          String [] saFlowFields = new String [UserProcsConst.FIELD_COUNT];
+
+		          // flow (id and name)
+		          saFlowFields[UserProcsConst.FLOW_ID] = flowid;
+		          
+		          saFlowFields[UserProcsConst.FLOW_NAME] = BeanFactory.getFlowBean().getFlow(userInfo, ph.getFlowId()).getName();
+		          // pid
+		          saFlowFields[UserProcsConst.PID] = pid;
+		          // subpid
+		          saFlowFields[UserProcsConst.SUBPID] = subpid;
+		          // result
+		          saFlowFields[UserProcsConst.RESULT] = result == null ? "" : result;
+		          // mdate
+		          saFlowFields[UserProcsConst.MDATE] = tstamp == null ? "" : tstamp.toString();
+		          //creator
+		          saFlowFields[UserProcsConst.CREATOR] = procCreator;
+		          // pnumber
+		          saFlowFields[UserProcsConst.PNUMBER] = pn;
+
+		          // pode ler o processo (ver detalhe)
+		          saFlowFields[UserProcsConst.SHOW_DETAIL] = String.valueOf(hmReadProcessCache.get(ph.getFlowId())&&hmProcessHasDetailCache.get(ph.getFlowId()));
+		          // pode ver os utilizadores agendados
+		          saFlowFields[UserProcsConst.SHOW_ASSIGNED] = String.valueOf(hmShowAssignedCache.get(ph.getFlowId())&&hmReadProcessCache.get(ph.getFlowId()));
+
+		          alData.add(arrayToList(saFlowFields));
+	        }
+
+	        for (int i = 0; i < arrFlowData.length; i++) {
+	          // discard protected flows
+	          int nflowid = arrFlowData[i].getId();
+	          boolean show = hmShowAssignedCache.get(nflowid) || hmReadProcessCache.get(nflowid);
+	          if (!show)
+	            hmFlowPids.remove(nflowid);
+	        }
+	        db = DatabaseInterface.getConnection(userInfo);
+	        st = db.createStatement();
+	        if (hmFlowPids.size() > 0) {
+	          Iterator<String> iter = hmFlowPids.keySet().iterator();
+
+	          while (iter != null && iter.hasNext()) {
+	            String sFid = iter.next();
+	            List<String> alFlowPids = hmFlowPids.get(sFid);
+	            if (alFlowPids == null || alFlowPids.size() == 0) {
+	              continue;
+	            }
+	            StringBuilder sbQuery = new StringBuilder();
+	            sbQuery.append("select pid, userid from activity where flowid=");
+	            sbQuery.append(sFid);
+	            sbQuery.append(" and pid in (");
+	            for (int i = 0; i < alFlowPids.size(); i++) {
+	              if (i > 0) {
+	                sbQuery.append(",");
+	              }
+	              sbQuery.append((String) alFlowPids.get(i));
+	            }
+	            sbQuery.append(")");
+	            Map<String, List<String>> hmPidUsers = new HashMap<String, List<String>>();
+	            Logger.debug(userInfo.getUtilizador(), this, "getUserProcesses", "Executing query: " + sbQuery);
+	            rs = st.executeQuery(sbQuery.toString());
+	            List<String> alPidUsers = new ArrayList<String>();
+	            while (rs != null && rs.next()) {
+	              String sPid = rs.getString("pid");
+	              if (hmPidUsers.containsKey(sPid)) {
+	                alPidUsers = hmPidUsers.get(sPid);
+	              } else {
+	                alPidUsers = new ArrayList<String>();
+	              }
+	              alPidUsers.add(rs.getString("userid"));
+	              hmPidUsers.put(sPid, alPidUsers);
+	            }// while
+	            alPidUsers = null;
+	            hmFlowUsers.put(sFid, hmPidUsers);
+	          }
+	        }
+	      } catch (SQLException sqle) {
+	        Logger.error(userInfo.getUtilizador(), this, "getUserProcesses", "Error retrieving data from DB.", sqle);
+	      } catch (Exception e) {
+	        Logger.error(userInfo.getUtilizador(), this, "getUserProcesses", "Error retrieving processes.", e);
+	      } finally {
+	        DatabaseInterface.closeResources(db,st,pst,rs);
+	      }
+	    
+	    return new UserProcesses(alData, hmFlowUsers);
+	  }
   
   public java.util.Collection<String> getProcessIntervenients(UserInfoInterface userInfo, ProcessData procData) {
     if (null == userInfo) {
