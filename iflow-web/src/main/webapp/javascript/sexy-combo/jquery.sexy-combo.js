@@ -551,13 +551,18 @@
 	        }
 
 
-// jcosta 20170309 - set correct width
+//// jcosta 20170309 - set correct width
+//this.input.css("width", (this.listWrapper.width() + 40) + 'px');
+//this.input.css("left", (89 - this.listWrapper.width()) + 'px');
+//this.input.css("font-size", '0.95em');
+////this.listWrapper.css("width", (this.listWrapper.width() + 0) + 'px');
+//this.listWrapper.css("width", (this.listWrapper.width() + 60) + 'px');
+
+// pgoncalves 20170814 - Já não aumenta o tamanho da dropdown
 this.input.css("width", (this.listWrapper.width() + 40) + 'px');
 this.input.css("left", (89 - this.listWrapper.width()) + 'px');
 this.input.css("font-size", '0.95em');
-//this.listWrapper.css("width", (this.listWrapper.width() + 0) + 'px');
-this.listWrapper.css("width", (this.listWrapper.width() + 60) + 'px');
-
+//this.listWrapper.css("width", (this.listWrapper.width() + 60) + 'px');
 
 
 	    },
@@ -702,7 +707,8 @@ this.listWrapper.css("width", (this.listWrapper.width() + 60) + 'px');
 	
 	    var listHeight = this.listWrapper.height();
 	    if (liHeight < listHeight) {
-	        this.listWrapper.height(liHeight); 
+	    	// aumentar o listWrapper - Pedro Gonçalves - 20170814
+	        this.listWrapper.height(liHeight + 10); 
 			
 			return liHeight;
 	    }

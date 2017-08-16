@@ -2192,3 +2192,5 @@ function isDownloadLinkAvailable(link){
 function changeLogType(value){
 	
 }
+
+
