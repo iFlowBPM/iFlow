@@ -121,6 +121,92 @@
 	hsSubst.put("cancel", messages.getString("main.labels.cancel"));
 	hsSubst.put("new_label", messages.getString("main.label.add.new"));
 	
+	// MESSAGES --------------------------------------------------------------------------------------------------------
+    hsSubst.put("application", messages.getString("main_content.tasks.field.application"));
+    hsSubst.put("flow", messages.getString("main_content.tasks.field.flow"));
+    hsSubst.put("pnumber", messages.getString("main_content.tasks.field.pnumber"));
+    hsSubst.put("subject", messages.getString("main_content.tasks.field.subject"));
+    hsSubst.put("arrived", messages.getString("main_content.tasks.field.arrived"));
+    hsSubst.put("waiting", messages.getString("main_content.tasks.field.waiting"));
+    hsSubst.put("no_tasks", messages.getString("main_content.tasks.noTasks"));
+    hsSubst.put("no_tasks_filter", messages.getString("actividades.msg.noactivities"));
+    
+    hsSubst.put("most_recent", messages.getString("main_content.tasks.title.mostRecent"));
+    hsSubst.put("oldest", messages.getString("main_content.tasks.title.oldest"));
+    hsSubst.put("tasksMostRecentMsg", messages.getString("main_content.tasks.mostRecentMsg"));
+  
+    hsSubst.put("button_more", messages.getString("button.more"));
+    
+    hsSubst.put("notes_empty", messages.getString("main_content.notes.emptyText"));
+    hsSubst.put("notes_empty_link_text", messages.getString("main_content.notes.emptyLinkText"));
+    hsSubst.put("notes_title", messages.getString("main_content.notes.title"));
+    hsSubst.put("notes_from", messages.getString("main_content.notes.field.from"));
+    hsSubst.put("notes_date", messages.getString("main_content.notes.field.date"));
+    hsSubst.put("notes_message", messages.getString("main_content.notes.field.message"));
+    hsSubst.put("notes_tooltip", messages.getString("main_content.notes.tooltip"));
+    hsSubst.put("tooltip_inbox", messages.getString("main.tooltip.inbox"));
+    
+    //int nNOTIFICATION_LIMIT = 10;
+    
+ // prepare notification data
+    Collection<Notification> notifications = BeanFactory.getNotificationManagerBean().listAllNotifications(userInfo);
+	Collection<Map<String,String>> notes = new ArrayList<Map<String,String>>();
+	int n = 0;
+	for(Notification notification : notifications) {
+		
+		++n;
+		Map<String,String> note = new HashMap<String,String>();
+		note.put("id", String.valueOf(notification.getId()));
+		note.put("from", notification.getSender());
+		note.put("date", DateUtility.formatTimestamp(userInfo, notification.getCreated()));
+		note.put("message", StringEscapeUtils.escapeHtml(notification.getMessage()));
+		note.put("read", String.valueOf(notification.isRead()));
+		
+		String href = "";
+		
+		String [] dadosproc = notification.getLink().split(",");
+		
+		int procid = -1; 
+		
+		if(dadosproc.length > 1)
+			procid = Integer.parseInt(dadosproc[1]);
+		
+		if(notification.getLink().equals("false") || procid<=0)
+			href =  "false";
+		else
+			href =  "8, \'user_proc_detail.jsp\'," + notification.getLink()+",-3";
+		
+		
+		note.put("link",href);
+		
+		if(StringUtils.isNotBlank(notification.getOpenFlowid())){			
+			note.put("openFlow", "javascript:openProcess(" +notification.getOpenFlowid()+ ",%20'inicio_flow.jsp',%20'flowid=" +notification.getOpenFlowid()+ "&sel=" +notification.getOpenFlowid()+ "',%20false,%203)");
+		}else{
+			note.put("openFlow","-1");
+		}
+			
+		
+		notes.add(note);
+    }
+    
+ 
+    
+    
+    //SET ACTION
+    hsSubst.put("row", 0);
+    hsSubst.put("iconTime", System.currentTimeMillis());
+    hsSubst.put("action_move", messages.getString("actividades.folder.move"));
+    hsSubst.put("action_close", messages.getString("actividades.folder.close"));
+    
+    hsSubst.put("notifications", notes);
+   /* hsSubst.put("hasMoreNotifications", notifications.size()>nNOTIFICATION_LIMIT);*/
+    hsSubst.put("notificationsMsg", messages.getString("main_content.notifications.notificationsMsg"));
+       
+    hsSubst.put("notificationtitle", messages.getString("inbox.notificationtitle"));
+    hsSubst.put("notificationitem", messages.getString("inbox.notificationitem"));
+    
+ 
+	
 	// tutorial and help stuff
 
 	boolean helpMode = userInfo.getUserSettings().isHelpMode();
@@ -273,8 +359,8 @@
 	hsSubst.put("menuLocation", orgTheme.getMenuLocation());
 	hsSubst.put("procMenuVisible", orgTheme.getProcMenuVisible() ? "yes" : "no");
 
-	Collection<Notification> notifications = BeanFactory.getNotificationManagerBean()
-			.listNotifications(userInfo);
+	//Collection<Notification> notifications = BeanFactory.getNotificationManagerBean()
+			//.listNotifications(userInfo);
 	Collection<DelegationInfoData> delegations = BeanFactory.getDelegationInfoBean()
 			.getDeployedReceivedDelegations(userInfo);
 	Collection<Notification> msgs = BeanFactory.getNotificationManagerBean().listAllNotifications(userInfo);

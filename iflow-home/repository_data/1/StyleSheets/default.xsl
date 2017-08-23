@@ -258,7 +258,7 @@
 					background-color: #B5B45D;
 					border: none;
 					}
-
+					
 					.table_main_header ,
 					.table_sub_header {
 					font-weight: bold;
@@ -272,7 +272,7 @@
 					12px;
 					background-color: red;
 					}
-
+					
 					.table_sub_header {
 					font-size: 11px;
 					background-color: #858585;
@@ -2039,13 +2039,15 @@
 														<xsl:otherwise>
 															<div id="{variable}_add_container form-group">
 																<div class="btn btn-default"
-																	style="width:300px;height:35px;position:relative;top:2px;">Arraste ou pressione para carregar ficheiro</div>
+																	style="width:350px;height:55px;position:relative;top:2px; padding: 15px 22px;">Arraste ou pressione para carregar ficheiro</div>
 																<input type="file" name="{variable}_add" size="20"
-																	style="width:300px;opacity:0;position:relative;top:-35px;height:35px">
+																	style="width:335px;opacity:0;position:relative;top:-35px;height:35px">
 																	<xsl:if test="accept!=''">
 																		<xsl:attribute name="accept">
 											<xsl:value-of select="accept" />
 										</xsl:attribute>
+										
+										
 																	</xsl:if>
 																</input>
 																<script language="JavaScript" type="text/javascript">
