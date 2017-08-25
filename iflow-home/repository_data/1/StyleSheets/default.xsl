@@ -676,6 +676,20 @@
 						background-image: linear-gradient(87deg, rgba(205,206,210,0.32) 0%, rgba(205,206,210,0.54) 100%);
 
 					}
+					
+					.viewer-responsive{
+					overflow:hidden;
+					padding-bottom:56.25%;
+					position:relative;
+					height:0;
+				}
+					.viewer-responsive iframe{
+					left:0;
+    top:0;
+    height:100%;
+    width:100%;
+    position:absolute;
+}
 
 				</style>
 
@@ -1658,9 +1672,11 @@
 		    	<xsl:with-param name="by" select="'document/preview.pdf'" />
 		  	</xsl:call-template>		  
 		  </xsl:variable>	  
-		  <iframe width='300' height='400'>
+		  <div class="viewer-responsive">
+		  <iframe width='600' height='450' frameborder='0' style='border: 0' allowfullscreen='allowfullscreen'>
 	   	  	<xsl:attribute name="src">../javascript/ViewerJS/#../../..<xsl:value-of select="$preview_link_url" /></xsl:attribute>
 		  </iframe>		  
+		  </div>
         </xsl:for-each>
 	</xsl:if>
 

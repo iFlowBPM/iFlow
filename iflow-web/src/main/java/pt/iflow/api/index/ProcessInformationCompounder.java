@@ -79,7 +79,8 @@ public class ProcessInformationCompounder {
 				ListIterator<ProcessListItem> processListItemIterator = variable.getItemIterator();
 				while(processListItemIterator.hasNext()){
 					ProcessListItem item = processListItemIterator.next();
-					sb.append(item.getRawValue() + " ");
+					if(item!=null)
+						sb.append(item.getRawValue() + " ");
 				}
 				fullProcInfo.append(sb.toString()+" ");
 			} 
@@ -97,8 +98,10 @@ public class ProcessInformationCompounder {
 				ListIterator<ProcessListItem> processListItemIterator = variable.getItemIterator();
 				while(processListItemIterator.hasNext()){
 					ProcessListItem item = processListItemIterator.next();
-					pt.iflow.connector.document.Document iFlowDocument = documentsBean.getDocument(userInfo, procData, ((Long)item.getValue()).intValue());
-					fullProcInfo.append(DocumentTextExtractor.extract(new ByteArrayInputStream(iFlowDocument.getContent()))+" ");					
+					if(item!=null){
+						pt.iflow.connector.document.Document iFlowDocument = documentsBean.getDocument(userInfo, procData, ((Long)item.getValue()).intValue());
+						fullProcInfo.append(DocumentTextExtractor.extract(new ByteArrayInputStream(iFlowDocument.getContent()))+" ");
+					}
 				}
 			}
 		}		
