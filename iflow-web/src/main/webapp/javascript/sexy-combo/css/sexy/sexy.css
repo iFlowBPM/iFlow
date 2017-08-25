@@ -69,18 +69,28 @@ div.sexy ul {
     height: 200px;
 }
 
+/* Pedro Gonçalves - Alterações estilo - 20170814 */
 
 div.sexy  li {
-    padding: 0;
-    padding-left: 5px;
+	
+    padding: 5px;
+    padding-top:6px;
+    padding-bottom:3px;
+    /*padding-left: 5px;*/
     font:normal 14px tahoma, arial, helvetica, sans-serif;
     background-color: #FFFFFF;
     cursor: pointer;
     margin: 0;
+    height:1.8rem;
 }
 
 div.sexy li.active {
     background-color: rgb(223, 232, 246);
+    height:1.8rem;
+    padding: 5px;
+    padding-top:6px;
+    padding-bottom:3px;
+    
 }
 
 /*for IE*/

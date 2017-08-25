@@ -111,8 +111,12 @@
 	        <%} %>
 			<ul class="apt_reg form-group">
 				<label class="control-label"><if:message string="process_annotations.field.comment" /></label>
-				<textarea id="comment" class="form-control" rows="4" cols="51"><%=comment.getComment()%></textarea>
-				<input type="hidden" id="old_comment" value="<%=comment.getComment()%>">
+				
+				<!-- PGoncalves - 20170816 - Limpar comentário -->
+				
+				<!-- <textarea id="comment" class="form-control" rows="4" cols="51"><%=comment.getComment()%></textarea> -->
+				<textarea id="comment" class="form-control" rows="4" cols="51"></textarea>
+				<input type="hidden" id="old_comment" value="<%=comment.getComment()%>"> 
 			</ul>
 	
 			<hr class="apt_sep"/>

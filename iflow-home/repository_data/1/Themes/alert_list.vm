@@ -7,6 +7,8 @@
 		#set($msg_display="none")
 		#set($msg_empty_display="")
 	#end
+	
+	
 <div class="table_inc" id="msg_table" style="display:$msg_display">
 	<div class="alert alert-info">$notificationsMsg</div>
 	<table class="item_list process">
@@ -40,12 +42,7 @@
 		</tr>
 	#end
 	</table>
-	#if($hasMoreNotifications)
-	<div class="button_box">
-		<input class="regular_button_00" type="button" name="more" value="$button_more" 
-				onClick="javascript:tabber(6, '','','$response.encodeURL($url_prefix,'inbox.jsp')','ts=$ts');" />
-	</div>    
-	#end
+	
 </div>
 <div id="msg_empty_div" style="display:$msg_empty_display">
 	<div class="info_msg alert alert-info small">
@@ -54,43 +51,6 @@
 </div>
 #end
 
-#if("$Tab5" != "no")
-<h1>$delegs_title</h1>
-	  
-	#if($hasDelegs)
-<div class="table_inc">	  
-	<div class="tab_title">
-		$delegs_received_requests
-	</div>
-	<p class="item_list process">$delegationsMsg</p>
-	<table class="item_list process">
-		<tr class="tab_header">
-			<td>$delegs_title_responsible/<br>$delegs_title_flow</td>
-			<td>$delegs_title_endDate</td>			
-		</tr>
-		#set($odd=1)
-		#foreach( $received in $receivedDelegs )
-			#if($odd == 0)
-				#set($class_type="even")
-				#set($odd=1)
-			#else
-				#set($class_type="odd")
-				#set($odd=0)
-			#end
-		<tr class="tab_row_$class_type">
-			<td>$received.get("OwnerID")/<br>$received.get("FlowName")</td>
-			
-			<td>
-				$received.get("Expires")<br>
-				<a class="cell_button" onclick="document.getElementById('delegButtonCount').text= document.getElementById('delegButtonCount').text-1;" href="javascript:tabber(5, gestaoTarefasNavJSP, '', '$response.encodeURL($url_prefix,'confirmar_agendamento.jsp')', 'id=$received.get("HierarchyID")&owner=$received.get("OwnerID")&dkey=$received.get("AcceptKey")&ts=$ts');getCtrlFill(mainContentJSP, 'data=alerts', delegationsForm);getCtrlFill(mainContentJSP, 'data=procs', containerFlowList);">$delegs_title_accept</a>
-				<a class="cell_button" onclick="document.getElementById('delegButtonCount').text= document.getElementById('delegButtonCount').text-1;" href="javascript:tabber(5, gestaoTarefasNavJSP, '', '$response.encodeURL($url_prefix,'confirmar_agendamento.jsp')', 'id=$received.get("HierarchyID")&owner=$received.get("OwnerID")&dkey=$received.get("RejectKey")&ts=$ts');getCtrlFill(mainContentJSP, 'data=alerts', delegationsForm);getCtrlFill(mainContentJSP, 'data=procs', containerFlowList);">$delegs_title_refuse</a>				
-			</td>
-			
-		</tr>
-		#end
-	</table>
-</div>    
-	#else
 	
 	<div id="msg_empty_div" style="display:$msg_empty_display">
 		<div class="info_msg alert alert-info small">
@@ -98,6 +58,3 @@
 		</div>
 	</div>
 
-
-	#end
-#end
