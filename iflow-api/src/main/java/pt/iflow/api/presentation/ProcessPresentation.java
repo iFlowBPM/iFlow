@@ -17,6 +17,7 @@ import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.processdata.ProcessListItem;
 import pt.iflow.api.processdata.ProcessListVariable;
 import pt.iflow.api.processdata.ProcessSimpleVariable;
+import pt.iflow.api.processtype.DocumentDataType;
 import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
@@ -214,10 +215,16 @@ public class ProcessPresentation {
     		for(int i=0; i < var.size(); i++) {
     			ProcessListItem item = var.getItem(i);
     			String value = "";
-    			if (item != null)
-    				value = item.format();
-    			
-    			sb.append("[").append(i).append("] ").append(value).append("<br>");
+    			if (item != null){
+    				if(var.getType().getClass() == DocumentDataType.class){
+    					String link = "document/preview.pdf?docid=" +item.format()+ "&flowid=" +procData.getFlowId()+ "&pid=" +procData.getPid()+ "&subpid=" +procData.getSubPid();
+    					value ="<iframe width='600' height='450' src='../javascript/ViewerJS/#../../" +link + "'> </iframe>";   
+    					sb.append(value).append("<br>");
+    				} else {
+    					value = item.format();
+    					sb.append("[").append(i).append("] ").append(value).append("<br>");
+    				}
+    			}    			    			    		
     		}
     		result.put(catalog.getPublicName(varname), sb.toString());
     		Logger.debug(userInfo.getUtilizador(), "ProcessPresentation", "getProcessDetail", "Added variable "+varname+"; Desciption: "+catalog.getPublicName(varname)+"; Value: "+ sb.toString());
