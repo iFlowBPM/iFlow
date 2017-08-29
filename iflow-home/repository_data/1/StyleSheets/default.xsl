@@ -116,28 +116,24 @@
 				<script type="text/javascript" src="{$url_prefix}/javascript/applet_functions.js"></script>
 
 				<!-- Possibilidade de fixar o header da tabela -->
-				<script type="text/javascript"
-					src="{$url_prefix}/javascript/jquery-1.10.2.js"></script>
-				
+				<script type="text/javascript" src="{$url_prefix}/javascript/jquery-1.10.2.js"></script>
+
 				<script type="text/javascript"
 					src="{$url_prefix}/javascript/jquery.fixedtableheader.min.js"></script>
-					
-					<script type="text/javascript"
-					src="{$url_prefix}/javascript/jquery.floatThead.js"></script>
-					
-					<script type="text/javascript"
-					src="{$url_prefix}/javascript/jquery.tablesorter.js"></script>
-					
-					<script type="text/javascript"
+
+				<script type="text/javascript" src="{$url_prefix}/javascript/jquery.floatThead.js"></script>
+
+				<script type="text/javascript" src="{$url_prefix}/javascript/jquery.tablesorter.js"></script>
+
+				<script type="text/javascript"
 					src="{$url_prefix}/javascript/jquery.stickytableheaders.js"></script>
-					
+
 				<script type="text/javascript">
 					window.addEvent('domready', getAppletElem);
 				</script>
-				
-				
+				<!-- <script type="text/javascript"> $(function () { console.dir($(".tbl1")); 
+					$(".tbl1").fixedtableheader(); }); </script> -->
 
-				
 
 				<style type="text/css">
 					html {
@@ -147,15 +143,18 @@
 					}
 
 					body {
-					/* background-color: #e3e3e3;
+					/* background-color:
+					#e3e3e3;
 					background-color: #f7f5e8;*/
-					background-color: #f6f6f8 !important;
+					background-color: #f6f6f8
+					!important;
 					}
 					* html body { padding-left:5px !important; }
 
 					a
 					{
-					color: #03679e;
+					color:
+					#03679e;
 					}
 
 					a:VISITED {
@@ -166,42 +165,51 @@
 					color: #B5B45D;
 					}
 
-					#main {
+					#main
+					{
 					padding: 20px;
 					text-align: center;
 					background: white;
-					border: 1px solid #bababa;
+					border: 1px
+					solid #bababa;
 					margin: 30px auto;
 					display: table;
 
 					width: 96%;
-					margin: 0;
+					margin:
+					0;
 					margin-left: 2%;
 					border-radius: 0;
 					}
 
-					* html #main { margin-left:20px; }
+					* html #main {
+					margin-left:20px; }
 
 					.error_msg {
 
-					/* replace with bootstrap alert and alert-danger
+					/* replace with bootstrap alert and
+					alert-danger
 					font-size: 12px;
 					font-weight: bold;
 					color: red;
-					padding: 10px 0px 10px 10px;
+					padding:
+					10px 0px 10px 10px;
 					text-align: left;
 					*/
 
 					padding: 15px;
-					margin-bottom: 20px;
+					margin-bottom:
+					20px;
 					border: 1px solid transparent;
 					border-radius: 4px;
-					color: #b94a48;
+					color:
+					#b94a48;
 					background-color: #f2dede;
 					border-color: #ebccd1;
 					}
 
-					.info_msg {
+					.info_msg
+					{
 					font-weight: normal;
 					color: #1E5B78;
 					padding: 3px 0 0 10px;
@@ -228,7 +236,8 @@
 					}
 
 					.columndivision {
-					margin: 0;
+					margin:
+					0;
 					*position: relative;
 					}
 
@@ -245,7 +254,8 @@
 					color: #444444;
 					}
 
-					.center {
+					.center
+					{
 					text-align: center;
 					}
 
@@ -258,11 +268,12 @@
 					background-color: #B5B45D;
 					border: none;
 					}
-					
+
 					.table_main_header ,
 					.table_sub_header {
 					font-weight: bold;
-					color: #FFFFFF;
+					color:
+					#FFFFFF;
 					text-decoration: none;
 					height: 23px;
 					}
@@ -272,7 +283,7 @@
 					12px;
 					background-color: red;
 					}
-					
+
 					.table_sub_header {
 					font-size: 11px;
 					background-color: #858585;
@@ -520,7 +531,8 @@
 					height: auto;
 					/*background-color:
 					#e0e0e0;*/
-					border-bottom: 1px solid #cccccc;
+					border-bottom: 1px solid
+					#cccccc;
 					padding: 5px 5px 5px 0;
 					}
 
@@ -533,20 +545,23 @@
 					}
 
 					li.link {
-					padding: 2px 5px 2px 5px;
+					padding: 2px 5px
+					2px 5px;
 					}
 
 					li.selection {
 					border-bottom:
 					1px solid #cccccc;
-					padding: 8px 5px 2px 0;
+					padding: 8px
+					5px 2px 0;
 					height:45px;
 					}
 
 
 					li.header {
 					background-color:#6C95BE;
-					border: none;
+					border:
+					none;
 					/*
 					background-color:#6C95BE;
 					border-bottom:1px solid #BABABA;
@@ -662,10 +677,12 @@
 					padding: 5px 4px;
 					}
 
-					table.arraytable td.table_sub_header {
+					table.arraytable
+					td.table_sub_header {
 					padding: 2px 4px;
 					color: white;
-					font-size: 1.1em;
+					font-size:
+					1.1em;
 
 					background-color: #eeeeee;
 					color:black;
@@ -688,7 +705,8 @@
 					}
 
 					li.subheader {
-					border-bottom: 1px solid #777;
+					border-bottom: 1px
+					solid #777;
 					border-right: 1px solid #777;
 					margin-top:20px;
 					border-radius:5px 5px 5px 5px;
@@ -710,23 +728,27 @@
 					font-weight: bold;
 
 
-					/*border-bottom: 1px solid black;*/
+					/*border-bottom:
+					1px solid black;*/
 
 					padding-left: 0px;
 					}
 
 					li.header {
-					background-color: #ddd;
+					background-color:
+					#ddd;
 					padding: 8px 5px 35px 8px;
 					position: relative;
 					left: -20px;
 					margin-top: 0px;
 					margin-right: -40px;
 					/*
-					border-bottom: 1px solid #5577bb;
+					border-bottom: 1px solid
+					#5577bb;
 					border-right: 1px solid #5577bb;
 
-					border-radius:5px 5px 5px 5px;
+					border-radius:5px 5px 5px
+					5px;
 					font-size: 1.2em;
 					margin-bottom:20px;
 					*/
@@ -744,29 +766,47 @@
 					.ui-accordion-header {
 					text-align:left;
 					margin-top:8px;
-					background-image: -webkit-linear-gradient(3deg, rgba(205,206,210,0.32) 0%,
+					background-image: -webkit-linear-gradient(3deg,
+					rgba(205,206,210,0.32) 0%,
 					rgba(205,206,210,0.54) 100%);
-					background-image: -moz-linear-gradient(3deg, rgba(205,206,210,0.32) 0%,
+					background-image: -moz-linear-gradient(3deg, rgba(205,206,210,0.32)
+					0%,
 					rgba(205,206,210,0.54) 100%);
-					background-image: -o-linear-gradient(3deg, rgba(205,206,210,0.32) 0%,
+					background-image:
+					-o-linear-gradient(3deg, rgba(205,206,210,0.32) 0%,
 					rgba(205,206,210,0.54) 100%);
-					background-image: linear-gradient(87deg, rgba(205,206,210,0.32) 0%,
+					background-image:
+					linear-gradient(87deg, rgba(205,206,210,0.32) 0%,
 					rgba(205,206,210,0.54) 100%);
 
+					}
+
+					.viewer-responsive{
+					overflow:hidden;
+					padding-bottom:56.25%;
+					position:relative;
+					height:0;
+					}
+					.viewer-responsive iframe{
+					left:0;
+					top:0;
+					height:100%;
+					width:100%;
+					position:absolute;
 					}
 
 				</style>
 
 				<xsl:text disable-output-escaping="yes"></xsl:text>
-				
-				
+
+
 			</head>
 
 			<body onload="reloadBootstrapElements(); initProcFrame();">
 				<div style="margin:auto;">
 					<xsl:apply-templates select="form" />
 				</div>
-				
+
 				<div id="_formLoadingDiv"
 					style="text-align:center;width:99%;height:99%;position:absolute;left:0;top:0;z-index:99;display:none">
 					<div class="loadingDivContainer">
@@ -1521,11 +1561,11 @@
 					arraytable 
 				</xsl:attribute>
 								</xsl:when>
-								
-								
-								
+
+
+
 								<xsl:otherwise>
-								
+
 									<xsl:attribute name="class">
 					arraytable sortable tbl1
 				</xsl:attribute>
@@ -1789,10 +1829,13 @@
 									<xsl:with-param name="by" select="'document/preview.pdf'" />
 								</xsl:call-template>
 							</xsl:variable>
-							<iframe width='300' height='400'>
-								<xsl:attribute name="src">../javascript/ViewerJS/#../../..<xsl:value-of
-									select="$preview_link_url" /></xsl:attribute>
-							</iframe>
+							<div class="viewer-responsive">
+								<iframe width='600' height='450' frameborder='0' style='border: 0'
+									allowfullscreen='allowfullscreen'>
+									<xsl:attribute name="src">../javascript/ViewerJS/#../../..<xsl:value-of
+										select="$preview_link_url" /></xsl:attribute>
+								</iframe>
+							</div>
 						</xsl:for-each>
 					</xsl:if>
 
@@ -1803,25 +1846,25 @@
 									<table class="table" border="0" width="100%">
 										<xsl:if test="has_label_row='true'">
 											<tr><!-- File Headers -->
-												<td class="document_header" nowrap="true">
+												<td class="document_header a" nowrap="true">
 													<xsl:if test="string-length(text) &gt; 0">
 														<xsl:apply-templates select="file_label" />
 													</xsl:if>
 												</td>
-												<td class="document_header" nowrap="true">
+												<td class="document_header b" nowrap="true">
 													<xsl:if test="show_link='true'">
 														<xsl:apply-templates select="link_label" />
 													</xsl:if>
 												</td>
-												<td class="document_header" nowrap="true">
+												<td class="document_header c" nowrap="true">
 													<xsl:if test="show_edition='true'">
 														<xsl:apply-templates select="edition_label" />
 													</xsl:if>
 												</td>
-												<td class="document_header" nowrap="true">
-						&nbsp;
+												<td class="document_header d" nowrap="true">
+												&nbsp;
 												</td>
-												<td class="document_header" nowrap="true">
+												<td class="document_header e" nowrap="true">
 													<xsl:if test="show_remove='true'">
 														<xsl:apply-templates select="remove_label" />
 													</xsl:if>
@@ -2003,16 +2046,21 @@
 																obj.on('drop', function (e) {
 																e.stopPropagation();
 																e.preventDefault();
-																var files = e.originalEvent.dataTransfer.files;
-																if (files == null || files.length == 0) {
-																alert('Arraste um ficheiro, por favor.');
+																var files =
+																e.originalEvent.dataTransfer.files;
+																if (files == null ||
+																files.length == 0) {
+																alert('Arraste um ficheiro, por
+																favor.');
 																return false;
 																} else if (files.length > 1) {
 																alert('Arraste apenas um ficheiro, por favor.');
-																return false;
+																return
+																false;
 																}
 																var reader = new FileReader();
-																reader.onload = function (evt) {
+																reader.onload =
+																function (evt) {
 																var obj = evt.target.result;
 
 																uploadFileFromDisk('
@@ -2046,27 +2094,22 @@
 																		<xsl:attribute name="accept">
 											<xsl:value-of select="accept" />
 										</xsl:attribute>
-										
-										
+
+
 																	</xsl:if>
 																</input>
+															
+																
 																<script language="JavaScript" type="text/javascript">
-																	window.addEvent('domready', function() {
-																	new MultiUpload( $('
-																	<xsl:value-of select="/form/name" />
-																	').
-																	<xsl:value-of select="variable" />
-																	_add,
-																	<xsl:value-of select="upload_limit" />
-																	, '_[{id}]', true, true );
-																	// IE6 fix
-																	if (/msie|MSIE 6/.test(navigator.userAgent)) {
-																	$('
-																	<xsl:value-of select="variable" />
-																	_add_container').style.paddingRight = '252px';
-																	}
-																	});
-																</script>
+									window.addEvent('domready', function() {
+																		new MultiUpload( $('<xsl:value-of select="/form/name" />').<xsl:value-of select="variable" />_add,
+																			<xsl:value-of select="upload_limit" />, '_[{id}]', true, true );
+																			// IE6 fix
+																			if (/msie|MSIE 6/.test(navigator.userAgent)) {
+																			$('<xsl:value-of select="variable" />_add_container').style.paddingRight = '252px';
+																			}
+									});
+								</script>
 															</div>
 														</xsl:otherwise>
 													</xsl:choose>

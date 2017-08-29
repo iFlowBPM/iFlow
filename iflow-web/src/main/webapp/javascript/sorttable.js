@@ -31,7 +31,7 @@ sorttable = {
 
     sorttable.DATE_RE = /^(\d\d?)[\/\.-](\d\d?)[\/\.-]((\d\d)?\d\d)$/;
 
-    /* c�digo de init comentado, agora faz-se explicitamente em reloadBootstrapElements()  
+    /* código de init comentado, agora faz-se explicitamente em reloadBootstrapElements()  
     forEach(document.getElementsByTagName('table'), function(table) {
       if (table.className.search(/\bsortable\b/) != -1) {
         sorttable.makeSortable(table);
@@ -54,6 +54,7 @@ sorttable = {
 		the.appendChild(table.rows[0]);
 	  }
       table.insertBefore(the,table.firstChild);
+      //$(".tbl1").fixedtableheader();
     }
     // Safari doesn't support table.tHead, sigh
     if (table.tHead == null) table.tHead = table.getElementsByTagName('thead')[0];
@@ -184,7 +185,7 @@ sorttable = {
     for (var i=0; i<table.tBodies[0].rows.length; i++) {
       text = sorttable.getInnerText(table.tBodies[0].rows[i].cells[column]);
       if (text != '') {
-        if (text.match(/^-?[£$¤]?[\d,.]+%?$/)) {
+        if (text.match(/^-?[Â£$Â¤]?[\d,.]+%?$/)) {
           return sorttable.sort_numeric;
         }
         // check for a date: dd/mm/yyyy or dd/mm/yy

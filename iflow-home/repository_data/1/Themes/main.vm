@@ -441,6 +441,7 @@
 												<th></th>
 												<th></th>
 												<th></th>
+												<th></th>
 												
 												</tr>
 												<thead>
@@ -468,18 +469,18 @@
 														
 												<tr class="tab_row_$class_type" id="msg_tr_$note.get("id")" style="${text_style};border-top:1px solid black">
 												<td class="itemlist_icon" style="padding: 8px;">
-												<a href="javascript:markNotification($note.get("id"), '${msg_action}');" onclick="${msg_onclick};showAlert(); ">
+												<a href="javascript:markNotification($note.get("id"), '${msg_action}');" onclick="${msg_onclick}; ">
 														<img class="toolTipImg" src="images/icon_${msg_icon}.png" id="msg_img_$note.get("id")" width="16" height="16" border="0" title="$tooltip_mark_read"></img>
 														</a>
 												</td>
 												<td style="padding: 8px;float: left;text-align: left;">$note.get("message") </strong> - <strong>$note.get("date")</strong></br><strong>$note.get("from")</td>
 																							
-				<!--
+				
 												<td class="itemlist_icon" style="padding: 8px;">
 												<a href="javascript:markNotification($note.get("id"), 'D');" onclick="showAlert();" >
 												<img class="toolTipImg" src="images/icon_delete.png" id="msg_img_$note.get("id")" width="16" height="16" border="0" title="$tooltip_delete"></img>
 												</a>
-												</td>-->
+												</td>
 										</tr>
 										#end
 										</tbody>
@@ -524,8 +525,6 @@
 									<input type="submit" class="btn btn-default btn-sm" style="margin: 0px;" name="Logout" id="Logout" value="$link_logout"/>
 								</form>
                                             </li>
-                                            
-                                            
                                             #if($showHelp == "true")
                                             <!-- <li>
                                                                                       
@@ -795,7 +794,6 @@
 							<div style="position: relative; width: 280px; float: left; text-align: right;" class="item">
 								<input style="" id="link_search_span" class="regular_button_01" type="button" name="filter" value="Login" onClick="javascript:doassynclogin();" />
 							</div>
-							
 						</div>
 					</div>
 				</form>
@@ -803,25 +801,7 @@
 			#end
 				
 		</div>
-		<script>
-			function showAlert() {
-			
-				if(document.getElementById("alert_list").classList.contains('notvisible')) {
-				
-				document.getElementById("alert_list").classList.remove('notvisible');
-				
-    			document.getElementById("alert_list").classList.add('visible');
-			
-			} else {
-			
-				document.getElementById("alert_list").classList.remove('visible');
-				
-    			document.getElementById("alert_list").classList.add('notvisible');
-			
-			}
-				
-		}
-</script>
+		
 
 		
 	</body>

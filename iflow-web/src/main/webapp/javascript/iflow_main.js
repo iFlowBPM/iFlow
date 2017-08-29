@@ -17,16 +17,16 @@ var globalSelectedTask = 0;
 var GLOBAL_session_config = {};
 GLOBAL_session_config.sections = new Array(0);
 
-//global number of allowed tabs
+// global number of allowed tabs
 var GLOBAL_MAX_TABS = 15;
 
-//height offset for viewing frame
+// height offset for viewing frame
 var GLOBAL_HEIGHT_OFFSET_SAVE = 135;
 var GLOBAL_HEIGHT_OFFSET = 135;
 
 var page_history = {};
 
-//default page locations
+// default page locations
 var mainJSP="main.jsp";
 var gotoPersonalAccount="GoTo?goto=personal_account.jsp";
 var processLoadJSP="process_load.jsp";
@@ -52,7 +52,7 @@ var containerDelegations = 'container_delegations';
 var delegationsForm = 'delegations-form';
 var closeMenus = true;
 
-//tab links 
+// tab links
 var mainContentJSP="main_content.jsp";
 var actividadesFiltroJSP="actividades_filtro.jsp";
 var actividadesJSP="actividades.jsp";
@@ -78,9 +78,9 @@ var sysadminNavJSP = "Admin/admin_nav.jsp";
 var prev_item = new Array();
 GLOBAL_session_config.sel = new Array();
 
-//var to save temporary changes in form before ajax submit
+// var to save temporary changes in form before ajax submit
 var ajaxSavedValues = {};
-//var that keeps richtextarea variables to save before ajaxsubmit
+// var that keeps richtextarea variables to save before ajaxsubmit
 var ajaxSavedRichTextAreaValues = new Array();
 
 var cancelMenu = false;
@@ -102,14 +102,14 @@ function selectedItem(tabnr, item) {
 function getBrowserWindowHeight() {
   var myHeight = 0;
   if( typeof( window.innerWidth ) == 'number' ) {
-    //Non-IE
+    // Non-IE
     myHeight = window.innerHeight;
   }
   else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
     myHeight = document.documentElement.clientHeight;
   }
   else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
-    //IE 4 compatible
+    // IE 4 compatible
     myHeight = document.body.clientHeight;
   }
   return myHeight; 
@@ -118,14 +118,14 @@ function getBrowserWindowHeight() {
 function getBrowserWindowWidth() {
   var myWidth = 0;
   if( typeof(window.innerWidth) == 'number' ) {
-    //Non-IE
+    // Non-IE
     myWidth = window.innerWidth;
   } 
   else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
     myWidth = document.documentElement.clientWidth;
   } 
   else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
-    //IE 4 compatible
+    // IE 4 compatible
     myWidth = document.body.clientWidth;
   }
   return myWidth;
@@ -146,8 +146,14 @@ function updateSize(offset) {
 
 function init(css) {
   updateCSS(css);
-  doTooltip($$('#div_tabs .tab_button'), 600, 'tab-tool');  // fetch all childs of div_tabs with class tab_button
-  doTooltip($$('#div_menu_link .menu_link'), 600, 'tab-tool');  // fetch all childs of div_menu_link with class menu_link
+  doTooltip($$('#div_tabs .tab_button'), 600, 'tab-tool');  // fetch all childs
+															// of div_tabs with
+															// class tab_button
+  doTooltip($$('#div_menu_link .menu_link'), 600, 'tab-tool');  // fetch all
+																// childs of
+																// div_menu_link
+																// with class
+																// menu_link
   if ((orgTheme() == "classic") || (orgTheme() == "default")) {
     tabber(1, mainContentJSP , 'data=procs', mainContentJSP, 'data=tasks');
     $('section3_content_div').style.height="100%";
@@ -317,7 +323,7 @@ function open_process(tabnr, flowid, contentpage, contentparam, runMax) {
       myframe = document.getElementById('open_proc_frame');
       myframe.style.display = "block";
       myframe.src = processLoadJSP+'?process_url=' + escape(contentpage + "?tabnr=" + tabnr + "&" + contentparam); 
-      //myframe.src = contentpage + "?tabnr=" + tabnr + "&" + contentparam;
+      // myframe.src = contentpage + "?tabnr=" + tabnr + "&" + contentparam;
       gContentPage = contentpage;
       gContentParam = contentparam;
 
@@ -465,7 +471,8 @@ function tooltips(locId) {
   // select all elements with class toolTipImg within element with ID locId
   doTooltip($$('#'+locId+' .toolTipImg'), 600);
 
-  // select all elements with class toolTipItemLink within element with ID locId
+  // select all elements with class toolTipItemLink within element with ID
+	// locId
   doTooltip($$('#'+locId+' .toolTipItemLink'), 1200);
 }
 
@@ -481,7 +488,8 @@ function doTooltip(elements, delay, className) {
         this.fx.start(0);
       },
       maxTitleChars: 50, showDelay: delay};
-  if(className) opts['className'] = className; // if className is defined, add to options
+  if(className) opts['className'] = className; // if className is defined, add
+												// to options
   new Tips(elements, opts);
 }
 
@@ -541,7 +549,7 @@ function updateSessionConfig(tabnr) {
 
 }
 
-//TABBER
+// TABBER
 function tabber_right(tabnr, contentpage, contentparam) {
   tabnr = convert_tabnr(tabnr);
   tabber(tabnr, '', '', contentpage, contentparam);
@@ -571,11 +579,11 @@ function tabber(tabnr, navpage, navparam, contentpage, contentparam) {
     if (!section) section = parent.document.getElementById(sectionDiv + i);
     if (section) {
       if (i != tabnr) {
-    	//Martelada CMA P13064-16 BEGIN
+    	// Martelada CMA P13064-16 BEGIN
           if (i==3 && section.style.display == 'block'){        	 
         	try{
-        	  	  //var $jQuery = jQuery.noConflict();
-        	  	  //find if ther is a auto return button
+        	  	  // var $jQuery = jQuery.noConflict();
+        	  	  // find if ther is a auto return button
         	  	  var j=0;
         	      autoReturnId = '';        	      
         	  	  var objsInButtons = window.jQuery('#open_proc_frame_3').contents().find('.submit').contents(); 
@@ -584,7 +592,7 @@ function tabber(tabnr, navpage, navparam, contentpage, contentparam) {
         	  			if (objsInButtons[j].attributes.title.value.indexOf('#auto')>-1)
         	  				autoReturnId = objsInButtons[j].attributes.name.value.charAt(objsInButtons[j].attributes.name.value.length-1);
         	  		} catch(e){}
-        	  	  //process form trough AJAX        		  
+        	  	  // process form trough AJAX
         	  	window.jQuery.ajaxSetup ({cache: false});
         		  ajaxSavedValues['_button_clicked_id'] = autoReturnId;
         		  ajaxSavedValues['op'] = '3';
@@ -596,7 +604,7 @@ function tabber(tabnr, navpage, navparam, contentpage, contentparam) {
         		  window.jQuery.getJSON('AjaxGoBackServlet', ajaxSavedValues);
         	}catch(e){}
           }
-          //Martelada CMA P13064-16 END  
+          // Martelada CMA P13064-16 END
         section.style.display = 'none';      
       } else {
         selectedSection = section; 
@@ -748,7 +756,8 @@ function clearContent() {
   gContentType = null;
 }
 
-//Note: changed encode() to encodeURIComponent(). This is how mootools builds the query string from a form element.
+// Note: changed encode() to encodeURIComponent(). This is how mootools builds
+// the query string from a form element.
 function get_params(obj) {
   var getstr = "";
   for (i=0; i<obj.elements.length; i++) {
@@ -978,7 +987,7 @@ function show_help (topic) {
   }
 }
 
-//File upload callbacks
+// File upload callbacks
 
 function getStartUploadCallback(divId) {
   // turn on loading...
@@ -1089,7 +1098,7 @@ function do_copy_clip(meintext) {
   return false;
 }
 
-//Handle enter/return keys
+// Handle enter/return keys
 function getEnterKeyHandler(eventToCall) {
   var evt = eventToCall;
   var handleEnterKey = function (e) {
@@ -1142,7 +1151,7 @@ function registerFormKey(url, key, hasPID) {
   }
 }
 
-//inject some CSS into standard browsers
+// inject some CSS into standard browsers
 function updateCSS(css) {
   if(navigator.appName.toLowerCase().indexOf('internet explorer') == -1) {
     var _style = document.createElement('link');
@@ -1168,7 +1177,8 @@ notificationTimer = -1;
 
 function updateMessageCount() {
   clearTimeout(notificationTimer); // just in case
-  notificationTimer = setTimeout("updateMessageCount()",5*60000);// 5 minutes from now
+  notificationTimer = setTimeout("updateMessageCount()",5*60000);// 5 minutes
+																	// from now
   makeRequest(msgHandlerJSP, 'id=0&action=C', markNotificationCallback, 'text', {id:0,action:'C'});
 }
 
@@ -1182,20 +1192,34 @@ function markNotificationCallback(text, params) {
   if (text.indexOf("session-expired") > 0) {
     openLoginIbox();
   }
+  
+  // Noit
   try {
     response = Json.evaluate(text); // use mootools json
     if(response.success) {
       id = params.id;
       action = params.action;
+      var objRef = document.getElementById("msg_tr_"+id);
+	  var val= parseInt($("#delegButtonCount").text());
       $('new_msg_count').innerHTML=response.count; // update new count
       switch(action) {
       case 'M':  // mark read (dashboard)
         tabber_load(1, mainContentJSP);
         break;
       case 'R':  // mark read
+    	  $("#msg_img_"+id).attr("src","images/icon_read.png");
+    	  tabber(6,'','',inboxJSP,'');
+    	  break;
       case 'U':  // unmark read
+    	  $("#msg_img_"+id).attr("src","images/icon_unread.png");
+    	  tabber(6,'','',inboxJSP,'');
+    	  break;
       case 'D':  // delete
-        tabber(6,'','',inboxJSP,'');
+    	  if($("#msg_img_"+id).attr("src") =="images/icon_unread.png")
+        	  $("#delegButtonCount").text(val-1);
+    	  $(objRef).remove();
+    	  tabber(6,'','',inboxJSP,'');
+        break;
       }
     } else {
       // error occurred
@@ -1348,10 +1372,12 @@ function process_detail(tabnr, thePage, flowid, pid, subpid, procStatus) {
 function resizeProcDetail() {
   try {
 	  if(!$('iframe_proc_detail')) return
-	    //var iframe_height = (document.getElementById('Accordion1').style.height + 10) + "px";
+	    // var iframe_height =
+		// (document.getElementById('Accordion1').style.height + 10) + "px";
 	    var iframe_base = document.getElementById('iframe_proc_detail').contentWindow.document.body.scrollHeight;
 
-	    //var iframe_height = document.getElementById('main_sidebar').clientHeight;
+	    // var iframe_height =
+		// document.getElementById('main_sidebar').clientHeight;
 	    var iframe_height = (screen.height - 185);
 
 	    var mainWidth = document.getElementById('mainheader').scrollWidth-0;
@@ -1360,7 +1386,10 @@ function resizeProcDetail() {
 	    	var taskbarWidth = document.getElementById('taskbar').scrollWidth-0;
 	    else
 	    	var taskbarWidth = 0;
-	    var iframe_width=(mainWidth-sidebarWidth-taskbarWidth-6)+'px'; // nao mexer sem saber
+	    var iframe_width=(mainWidth-sidebarWidth-taskbarWidth-6)+'px'; // nao
+																		// mexer
+																		// sem
+																		// saber
 
 	    document.getElementById('iframe_proc_detail').setStyle('width',iframe_width);
 	    if (iframe_height > iframe_base) {
@@ -1377,24 +1406,30 @@ function resizeProcDetail() {
 function resizeProcPreview() {
 	  try {
 		  if(!$('iframe_proc_preview')) return
-		    //var iframe_height = (document.getElementById('Accordion1').style.height + 10) + "px";
+		    // var iframe_height =
+			// (document.getElementById('Accordion1').style.height + 10) + "px";
 		    var iframe_base = document.getElementById('iframe_proc_preview').contentWindow.document.body.scrollHeight;
 
-		    //var iframe_height = document.getElementById('main_sidebar').clientHeight;
+		    // var iframe_height =
+			// document.getElementById('main_sidebar').clientHeight;
 		    var iframe_height = (screen.height - 185);
 
 		    var mainWidth = document.getElementById('mainheader').scrollWidth-0;
 		    var sidebarWidth = document.getElementById('main_sidebar').scrollWidth-0;
 		    var taskbarWidth = document.getElementById('taskbar').scrollWidth-0;
-		    var iframe_width=(mainWidth-sidebarWidth-taskbarWidth-6)+'px'; // nao mexer sem saber
+		    var iframe_width=(mainWidth-sidebarWidth-taskbarWidth-6)+'px'; // nao
+																			// mexer
+																			// sem
+																			// saber
 
 		    document.getElementById('iframe_proc_preview').setStyle('width',iframe_width);
-		    //if (iframe_height > iframe_base) {
+		    // if (iframe_height > iframe_base) {
 			    document.getElementById('iframe_proc_preview').setStyle('height',iframe_height + "px");
-		    //}
-		    //else {
-			//    document.getElementById('iframe_proc_preview').setStyle('height',iframe_base + "px");	
-		    //}
+		    // }
+		    // else {
+			// document.getElementById('iframe_proc_preview').setStyle('height',iframe_base
+			// + "px");
+		    // }
 	  } catch(err) {
 	    // ignore error....
 	  }
@@ -1402,7 +1437,9 @@ function resizeProcPreview() {
 
 /**
  * Check if caps lock is ON and warn the user
- * @param e key event
+ * 
+ * @param e
+ *            key event
  * @return
  */
 function isCapslock(e){
@@ -1485,7 +1522,8 @@ function set_html( id, html ) {
     node.parentNode.removeChild(node);
   }
 
-  // add html to place holder element (note: we are adding the html before we execute the scripts)
+  // add html to place holder element (note: we are adding the html before we
+	// execute the scripts)
   document.getElementById(id).innerHTML = orphNode.innerHTML;
 
   // execute stored scripts
@@ -1543,55 +1581,43 @@ function setScrollPosition(yPosition) {
 
 function InicializeRichTextField(elementName, richTextComponentTitle, richTextComponentWidth, richTextComponentHeight){
 	$jQuery('#'+elementName).ckeditor();	
-/*var isReadOnly = document.getElementById(elementName).readOnly;
-  var collapseToolbar = true;
-
-  //Setup some private variables
-  var Dom = YAHOO.util.Dom;
-  var Event = YAHOO.util.Event;
-  var richTextEditorComponent = null;
-
-  var timer = null;
-
-  var update = function(ev) {
-    if (timer) {
-      clearTimeout(timer);
-    }
-    timer = setTimeout(function() {
-      Dom.get(elementName).innerHTML = richTextEditorComponent.cleanHTML();
-      richTextEditorComponent.saveHTML();
-    }, 100);
-  };
-
-  richTextComponentWidth = document.getElementById('main').clientWidth + 'px';
-  if (richTextComponentWidth == undefined){
-    richTextComponentWidth = '600px';
-  }
-  if (richTextComponentHeight == undefined){
-    richTextComponentHeight = '300px';
-  }
-  if (richTextComponentTitle == undefined || richTextComponentTitle == ''){
-    richTextComponentTitle = "Text Editing Tools";
-  }
-
-  //The SimpleEditor config
-  var richTextEditorComponentConfiguration = {
-      height: richTextComponentHeight,
-      width: richTextComponentWidth,
-      dompath: false, //Turns on the bar at the bottom
-      animate: true //Animates the opening, closing and moving of Editor windows
-  };
-
-  richTextEditorComponent = new YAHOO.widget.Editor(document.getElementById(elementName), richTextEditorComponentConfiguration);
-  richTextEditorComponent.on('afterNodeChange', update);
-  richTextEditorComponent.on('editorKeyDown', update);
-
-  richTextEditorComponent._defaultToolbar.titlebar = richTextComponentTitle;
-
-
-  richTextEditorComponent.render();
-  var cleanPaste = new CleanPaste(richTextEditorComponent);
-*/
+/*
+ * var isReadOnly = document.getElementById(elementName).readOnly; var
+ * collapseToolbar = true;
+ * 
+ * //Setup some private variables var Dom = YAHOO.util.Dom; var Event =
+ * YAHOO.util.Event; var richTextEditorComponent = null;
+ * 
+ * var timer = null;
+ * 
+ * var update = function(ev) { if (timer) { clearTimeout(timer); } timer =
+ * setTimeout(function() { Dom.get(elementName).innerHTML =
+ * richTextEditorComponent.cleanHTML(); richTextEditorComponent.saveHTML(); },
+ * 100); };
+ * 
+ * richTextComponentWidth = document.getElementById('main').clientWidth + 'px';
+ * if (richTextComponentWidth == undefined){ richTextComponentWidth = '600px'; }
+ * if (richTextComponentHeight == undefined){ richTextComponentHeight = '300px'; }
+ * if (richTextComponentTitle == undefined || richTextComponentTitle == ''){
+ * richTextComponentTitle = "Text Editing Tools"; }
+ * 
+ * //The SimpleEditor config var richTextEditorComponentConfiguration = {
+ * height: richTextComponentHeight, width: richTextComponentWidth, dompath:
+ * false, //Turns on the bar at the bottom animate: true //Animates the opening,
+ * closing and moving of Editor windows };
+ * 
+ * richTextEditorComponent = new
+ * YAHOO.widget.Editor(document.getElementById(elementName),
+ * richTextEditorComponentConfiguration);
+ * richTextEditorComponent.on('afterNodeChange', update);
+ * richTextEditorComponent.on('editorKeyDown', update);
+ * 
+ * richTextEditorComponent._defaultToolbar.titlebar = richTextComponentTitle;
+ * 
+ * 
+ * richTextEditorComponent.render(); var cleanPaste = new
+ * CleanPaste(richTextEditorComponent);
+ */
 }
 
 function blockPopupCallerForm(){
@@ -1791,12 +1817,13 @@ function process_detail_new(thePage, ctrl, flowid, pid, subpid, procStatus, uri)
   getCtrlFill(thePage, params, ctrl);
 }
 
-//save temporary changes in form before ajax submit
+// save temporary changes in form before ajax submit
 function ajaxSaveValueChange(component){
-	//save present variable
-	//for(var i=0; i<ajaxSavedRichTextAreaValues.length; i++)
-	//	ajaxSavedValues[ajaxSavedRichTextAreaValues[i]] = document.getElementById(ajaxSavedRichTextAreaValues[i]).value;
-	//save the new value
+	// save present variable
+	// for(var i=0; i<ajaxSavedRichTextAreaValues.length; i++)
+	// ajaxSavedValues[ajaxSavedRichTextAreaValues[i]] =
+	// document.getElementById(ajaxSavedRichTextAreaValues[i]).value;
+	// save the new value
 	var varNewValue=component.value;
 	var varName=component.name;	
 	ajaxSavedValues[varName] = varNewValue;	
@@ -1805,11 +1832,12 @@ function ajaxSaveValueChange(component){
 function ajaxFormRefresh(component){	
   var $jQuery = jQuery.noConflict();
   $jQuery.ajaxSetup ({cache: false});
-  //save richtext variable
+  // save richtext variable
   for(var i=0; i<ajaxSavedRichTextAreaValues.length; i++)
 	ajaxSavedValues[ajaxSavedRichTextAreaValues[i]] = $jQuery('#'+ajaxSavedRichTextAreaValues[i]).val();
 
-  //$jQuery(component).after('<img src=\'/iFlow/images/loading.gif\' style=\'left:50px; position:relative;\'>');
+  // $jQuery(component).after('<img src=\'/iFlow/images/loading.gif\'
+	// style=\'left:50px; position:relative;\'>');
   var varNewValue=component.value;
   var varNewValue=component.value;
   var varName=component.name;  	  
@@ -1849,12 +1877,12 @@ $jQuery( ".accordionclose" ).accordion("option","active", false);
 function reloadBootstrapElements(){
   var $jQuery = jQuery.noConflict();
 
-  //combobox
+  // combobox
   try {
     $jQuery('.combobox').sexyCombo();
   } catch (err) {}
 
-  //Quickserch
+  // Quickserch
   try {
     var j = 0;
     $jQuery('.sortable').each(function(e){
@@ -1872,14 +1900,14 @@ function reloadBootstrapElements(){
   } catch (err) {}
 
 
-  //sortable
+  // sortable
   forEach(document.getElementsByTagName('table'), function(table) {
     if (table.className.search(/\bsortable\b/) != -1) {
       sorttable.makeSortable(table);
     }
   });
 
-  //accordion
+  // accordion
   try {
     $jQuery('.accordion').accordion({
       collapsible:true,
@@ -1923,7 +1951,8 @@ function reloadJS(doCloseMenus) {
       $('[title]').qtip({
 	      		  position: {
 		  target: 'mouse', // Track the mouse as the positioning target
-			  adjust: { x: 5, y: 5 } // Offset it slightly from under the mouse
+			  adjust: { x: 5, y: 5 } // Offset it slightly from under the
+										// mouse
 	      },
 		  show: { delay: 400 },
 
@@ -1936,7 +1965,7 @@ function reloadJS(doCloseMenus) {
 	  });
   } catch (err) {}
 
-  //sortable
+  // sortable
   try {
     var tables = document.getElementsByTagName('table');
     for(var i = 0; i <tables.length; i++) {
@@ -2190,6 +2219,24 @@ function isDownloadLinkAvailable(link){
 
 
 function changeLogType(value){
+	
+}
+
+function showAlert() {
+	
+	if(document.getElementById("alert_list").classList.contains('notvisible')) {
+	
+	document.getElementById("alert_list").classList.remove('notvisible');
+	
+	document.getElementById("alert_list").classList.add('visible');
+
+} else {
+
+	document.getElementById("alert_list").classList.remove('visible');
+	
+	document.getElementById("alert_list").classList.add('notvisible');
+
+}
 	
 }
 

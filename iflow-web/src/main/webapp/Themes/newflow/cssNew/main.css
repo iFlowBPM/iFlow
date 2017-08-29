@@ -1051,6 +1051,7 @@ td.gauge_empty {
 
 /* /* CSSTerm.com Simple Horizontal DropDown CSS menu */
 
+
 /*
 .drop_menu {
 	padding:0;
@@ -1107,8 +1108,19 @@ td.gauge_empty {
 	}
 */
 #alert_list {
-	margin-top: 6px;
+	margin-top: 26px;
 	width: 32rem !important;
+}
+
+.drop_menu > li{
+	position: relative;
+}
+.notification-area{
+	position: absolute;
+    bottom: 0px;
+    right: 0;
+    left: auto;
+    z-index: 10;
 }
 
 .unem {
