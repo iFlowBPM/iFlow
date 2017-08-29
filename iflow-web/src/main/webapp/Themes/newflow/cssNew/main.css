@@ -1118,7 +1118,7 @@ td.gauge_empty {
 .notification-area{
 	position: absolute;
     bottom: 0px;
-    right: 0;
+    right: -100px;
     left: auto;
     z-index: 10;
 }

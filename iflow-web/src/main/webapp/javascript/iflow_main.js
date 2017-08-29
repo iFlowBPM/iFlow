@@ -1180,7 +1180,55 @@ function updateMessageCount() {
   notificationTimer = setTimeout("updateMessageCount()",5*60000);// 5 minutes
 																	// from now
   makeRequest(msgHandlerJSP, 'id=0&action=C', markNotificationCallback, 'text', {id:0,action:'C'});
+  makeRequest(msgHandlerJSP, 'id=0&action=C', markNotificationCallback_alert, 'text', {id:0,action:'C'});
 }
+
+function markNotification_alert(id,action) {
+	  // do stuff
+	  hidetooltips();
+	  makeRequest(msgHandlerJSP, 'id='+id+'&action='+action, markNotificationCallback_alert, 'text', {id:id,action:action});
+	}
+
+function markNotificationCallback_alert(text, params) {
+	  if (text.indexOf("session-expired") > 0) {
+	    openLoginIbox();
+	  }
+	  
+	  // Notifications
+	  try {
+	    response = Json.evaluate(text); // use mootools json
+	    if(response.success) {
+	      id = params.id;
+	      action = params.action;
+	      var objRef = document.getElementById("msg_tr_"+id);
+		  var val= parseInt($("#delegButtonCount").text());
+	      $('new_msg_count').innerHTML=response.count; // update new count
+	      switch(action) {
+	      case 'M':  // mark read (dashboard)
+	    	  tabber_load(1, mainContentJSP);
+	        break;
+	      case 'R':  // mark read
+	    	  $("#msg_img_"+id).attr("src","images/icon_read.png");
+	    	 // tabber(6,'','',inboxJSP,'');
+	    	  break;
+	      case 'U':  // unmark read
+	    	  $("#msg_img_"+id).attr("src","images/icon_unread.png");
+	    	 // tabber(6,'','',inboxJSP,'');
+	    	  break;
+	      case 'D':  // delete
+	    	  if($("#msg_img_"+id).attr("src") =="images/icon_unread.png")
+	        	  $("#delegButtonCount").text(val-1);
+	    	  $(objRef).remove();
+	    	 // tabber(6,'','',inboxJSP,'');
+	        break;
+	      }
+	    } else {
+	      // error occurred
+	      alert(messages.mark_msg_error);
+	    }
+	  } catch(err) {}
+	}
+
 
 function markNotification(id,action) {
   // do stuff
@@ -1204,7 +1252,7 @@ function markNotificationCallback(text, params) {
       $('new_msg_count').innerHTML=response.count; // update new count
       switch(action) {
       case 'M':  // mark read (dashboard)
-        tabber_load(1, mainContentJSP);
+    	  tabber_load(1, mainContentJSP);
         break;
       case 'R':  // mark read
     	  $("#msg_img_"+id).attr("src","images/icon_read.png");

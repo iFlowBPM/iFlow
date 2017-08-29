@@ -469,7 +469,7 @@
 														
 												<tr class="tab_row_$class_type" id="msg_tr_$note.get("id")" style="${text_style};border-top:1px solid black">
 												<td class="itemlist_icon" style="padding: 8px;">
-												<a href="javascript:markNotification($note.get("id"), '${msg_action}');" onclick="${msg_onclick}; ">
+												<a href="javascript:markNotification_alert($note.get("id"), '${msg_action}');" onclick="${msg_onclick}; ">
 														<img class="toolTipImg" src="images/icon_${msg_icon}.png" id="msg_img_$note.get("id")" width="16" height="16" border="0" title="$tooltip_mark_read"></img>
 														</a>
 												</td>
@@ -477,7 +477,7 @@
 																							
 				
 												<td class="itemlist_icon" style="padding: 8px;">
-												<a href="javascript:markNotification($note.get("id"), 'D');" onclick="showAlert();" >
+												<a href="javascript:markNotification($note.get("id"), 'D');">
 												<img class="toolTipImg" src="images/icon_delete.png" id="msg_img_$note.get("id")" width="16" height="16" border="0" title="$tooltip_delete"></img>
 												</a>
 												</td>
