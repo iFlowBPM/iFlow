@@ -477,7 +477,7 @@
 																							
 				
 												<td class="itemlist_icon" style="padding: 8px;">
-												<a href="javascript:markNotification($note.get("id"), 'D');">
+												<a href="javascript:markNotification_alert($note.get("id"), 'D');">
 												<img class="toolTipImg" src="images/icon_delete.png" id="msg_img_$note.get("id")" width="16" height="16" border="0" title="$tooltip_delete"></img>
 												</a>
 												</td>
@@ -801,8 +801,6 @@
 			#end
 				
 		</div>
-		
-
 		
 	</body>
 
