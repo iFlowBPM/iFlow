@@ -412,22 +412,23 @@
                                            	<a id="delegButton" onclick="showAlert()">
                                            		<img width="32" height="32" src="images/alertas.png"/>
                                            	</a>
-                                           	<span class="spanAlerts">
-                                           		<a id="delegButtonCount">$nAlerts</a>
-                                           	</span>
-                                           	<ul id="alert_list" class="notification-area notvisible">
                                            	
                                            	#if($notifications.size()> 0)
-												#set($msg_display="")
-												#set($msg_empty_display="none")
+											<span class="spanAlerts">
+                                           		<a id="delegButtonCount">$nAlerts</a>
+                                           	</span>
 											#else
-												#set($msg_display="none")
-												#set($msg_empty_display="")
+												
 											#end
-											
-											
                                            	
-                                           <div class="table_inc" id="msg_table" style=" display:${msg_display}; color:black;" >
+                                           	
+                                           	<ul id="alert_list" class="notification-area notvisible">
+                                                                                      
+                                           	#if($notifications.size()> 0)
+                                           <div class="table_inc" id="msg_table" style="color:black;" >
+                                           #else
+                                           <div class="table_inc" id="msg_table" style="display:none;color:black;" >
+                                           #end
                                             <div class="" style="display:inline; width:100%;">
 												<span class="spanAlert" style="color:black; display:inline;	padding: 0; background-color:initial;">$notificationsMsg | </span>
 												

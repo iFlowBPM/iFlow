@@ -184,8 +184,6 @@
 		}else{
 			note.put("openFlow","-1");
 		}
-			
-		
 		notes.add(note);
     }
     
