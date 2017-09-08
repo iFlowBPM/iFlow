@@ -1006,6 +1006,15 @@ public class BlockFormulario extends Block implements FormOperations {
 					}
 					submitOnBlur = procData.transform(userInfo, submitOnBlur);
 					props.setProperty(FormProps.TEXT_SUBMIT_ON_BLUR, submitOnBlur);
+
+				} else if (stmp.endsWith("form.CheckBox")) {
+					String submitOnBlur = props.getProperty(FormProps.CHECKBOX_SUBMIT_ON_BLUR);
+					if (StringUtils.isBlank(submitOnBlur)) {
+						submitOnBlur = "false";
+					}
+					submitOnBlur = procData.transform(userInfo, submitOnBlur);
+					props.setProperty(FormProps.CHECKBOX_SUBMIT_ON_BLUR, submitOnBlur);
+
 				} else if (stmp.endsWith("form.File")) {
 					String onclick = "javascript:if (this.checked) { return confirm('"
 							+ userInfo.getMessages().getString("BlockFormulario.file.delete.confirmation") + "'); }";
