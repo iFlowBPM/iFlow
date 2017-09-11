@@ -346,7 +346,7 @@ public class Const {
   
   // Tempo Notificação
   
-  public static int  iMAX_NOTIFICATIONS = -1;
+  public static int  iMAX_NOTIFICATIONS = -15;
   
   // hotfolder
   public static int HOT_FOLDER_SEARCH_INTERVAL = -1; 
@@ -699,7 +699,7 @@ public class Const {
     
     /* Show MAX NOTIFICATIONS /*  */
     
-    iMAX_NOTIFICATIONS = Setup.getPropertyInt("MAX_NOTIFICATIONS");
+    iMAX_NOTIFICATIONS = Setup.getPropertyInt("NOTIFICATIONS_KEEP_DAYS");
     
         
     try {
