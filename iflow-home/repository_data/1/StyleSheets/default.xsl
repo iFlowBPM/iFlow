@@ -115,19 +115,7 @@
 					ambiente -->
 				<script type="text/javascript" src="{$url_prefix}/javascript/applet_functions.js"></script>
 
-				<!-- Possibilidade de fixar o header da tabela -->
-				<script type="text/javascript" src="{$url_prefix}/javascript/jquery-1.10.2.js"></script>
-
-				<script type="text/javascript"
-					src="{$url_prefix}/javascript/jquery.fixedtableheader.min.js"></script>
-
-				<script type="text/javascript" src="{$url_prefix}/javascript/jquery.floatThead.js"></script>
-
-				<script type="text/javascript" src="{$url_prefix}/javascript/jquery.tablesorter.js"></script>
-
-				<script type="text/javascript"
-					src="{$url_prefix}/javascript/jquery.stickytableheaders.js"></script>
-
+				
 				<script type="text/javascript">
 					window.addEvent('domready', getAppletElem);
 				</script>

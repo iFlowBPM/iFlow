@@ -15,17 +15,19 @@ public class NotificationImpl implements Serializable, Notification {
 	private boolean read;
 	private String link = "";
 	private String openFlowid;
+	private Date suspend;
 
 	public NotificationImpl() {
 
 	}
 
-	public NotificationImpl(int id, String sender, Date created, String message, boolean read) {
+	public NotificationImpl(int id, String sender, Date created, String message, boolean read, Date suspend) {
 		this.id = id;
 		this.sender = sender;
 		this.created = created;
 		this.message = message;
 		this.read = read;
+		this.suspend= suspend;
 	}
 
 	/*
@@ -129,6 +131,27 @@ public class NotificationImpl implements Serializable, Notification {
 		else
 			link = "";
 	}
+		
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see pt.iflow.web.notification.NotificationInterface#getSuspend()
+	 */
+	public Date getSuspend() {
+		return suspend;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * pt.iflow.web.notification.NotificationInterface#setSuspend(java.util.
+	 * Date)
+	 */
+	public void setSuspend(Date suspend) {
+		this.suspend = suspend;
+	}
+		
 
 	/*
 	 * (non-Javadoc)

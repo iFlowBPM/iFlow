@@ -118,7 +118,7 @@ public class NotificationManagerBean implements NotificationManager {
   private Collection<Notification> listAllNotifications(UserInfoInterface userInfo, boolean listNew) {
     if(userInfo == null) return null;
     String user = userInfo.getUtilizador();
-    final String query = "select a.*,b.isread from notifications a, user_notifications b where a.id=b.notificationid "+(listNew?"and b.isread=0":"")+" and b.userid=? order by a.created desc";
+    final String query = "select a.*,b.isread, b.suspend from notifications a, user_notifications b where a.id=b.notificationid "+(listNew?"and b.isread=0":"")+" and b.userid=? order by a.created desc";
 
     ArrayList<Notification> notifications = new ArrayList<Notification>();
 
@@ -135,7 +135,7 @@ public class NotificationManagerBean implements NotificationManager {
       
       rs = st.executeQuery();
       while(rs.next()) {
-        NotificationImpl notification = new NotificationImpl(rs.getInt("id"), rs.getString("sender"), rs.getTimestamp("created"), rs.getString("message"), rs.getInt("isread")!=0);
+        NotificationImpl notification = new NotificationImpl(rs.getInt("id"), rs.getString("sender"), rs.getTimestamp("created"), rs.getString("message"), rs.getInt("isread")!=0, rs.getTimestamp("suspend"));
         notification.setLink(rs.getString("link"));
         notifications.add(notification);
       }
@@ -157,7 +157,7 @@ public class NotificationManagerBean implements NotificationManager {
     int count = -1;
     if(userInfo == null) return -1;
     String user = userInfo.getUtilizador();
-    final String query = "select count(*) from user_notifications where isread=0 and userid=?";
+    final String query = "select count(*) from user_notifications where isread=0 and  and userid=? and suspend IS NULL";
 
     // lista mensagens
     Connection db = null;
@@ -242,7 +242,7 @@ public class NotificationManagerBean implements NotificationManager {
 
 	  // created,sender,message
 	  final String queryMsg = DBQueryManager.getQuery("Notification.CREATE_MESSAGE");
-	  final String queryUsr = "insert into user_notifications (userid,notificationid,isread) values (?,?,0)";
+	  final String queryUsr = "insert into user_notifications (userid,notificationid,isread,suspend) values (?,?,0,NULL)";
 
 	  // criar nova mensagem
 	  Connection db = null;
@@ -401,7 +401,50 @@ public class NotificationManagerBean implements NotificationManager {
     }
     return result;
   }
+  
+  
+  private int suspendMessage(UserInfoInterface userInfo, int messageId, int code) {
+	    if(userInfo == null) return NOTIFICATION_ERROR;
+	    final String query = "update user_notifications set suspend=? where userid=? and notificationid=?";
+	    String userId = userInfo.getUtilizador();
+	    int result = NOTIFICATION_ERROR;
+	    
+	    // Suspende mensagen até ao dia escolhido
+	    Connection db = null;
+	    PreparedStatement st = null;
+	    DataSource ds = null;
+	    try {
+	      ds = Utils.getDataSource();
+	      db = ds.getConnection();
+	      db.setAutoCommit(true);
+	      st = db.prepareStatement(query);
+	      st.setInt(1, code);
+	      st.setString(2, userId);
+	      st.setInt(3, messageId);
 
+	      int n = st.executeUpdate();
+
+	      st.close();
+	      st = null;
+	      result = NOTIFICATION_OK;
+	      Logger.debug(userId, this, "suspendMessage", "Suspended "+n+" notification messages.");
+	    } catch (SQLException e) {
+	      Logger.warning(userId, this, "suspendMessage", "Error suspended messages.", e);
+	    } finally {
+	      DatabaseInterface.closeResources(db, st);
+	    }
+	    return result;
+	  }
+
+  	public int suspendMessageRead(UserInfoInterface userInfo, int messageId) {
+	    return suspendMessage(userInfo, messageId, MSG_CODE_READ);
+	  }
+
+	  public int suspendMessageNew(UserInfoInterface userInfo, int messageId) {
+	    return suspendMessage(userInfo, messageId, MSG_CODE_NEW);
+	  }
+  
+  
   private enum ErrorNotificationType {
 	  SYSTEM,
 	  ORG;

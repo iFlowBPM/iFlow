@@ -529,7 +529,7 @@
 		</div>
 		<div class="pr05" style="text-align: left;width:6%; font-weight:bold"></div>
 		<div  class="pr06" style="width:10%;"><div>$act.get("duration")</div>
-<!--div style="height:2px;width:$act.get("diffDays")px;background-color:$act.get("durationColor")"></div-->
+		<!--div style="height:2px;width:$act.get("diffDays")px;background-color:$act.get("durationColor")"></div-->
 		</div>
 		<div class="pr07" style="width:10%;">
 			<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterDate=$act.get("createdDate")&filterLastMoveDate=$act.get("createdDate")')">$act.get("createdDate")</a>

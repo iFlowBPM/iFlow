@@ -2270,6 +2270,8 @@ function changeLogType(value){
 	
 }
 
+
+
 function showAlert() {
 	
 	if(document.getElementById("alert_list").classList.contains('notvisible')) {
@@ -2283,6 +2285,39 @@ function showAlert() {
 	document.getElementById("alert_list").classList.remove('visible');
 	
 	document.getElementById("alert_list").classList.add('notvisible');
+
+}
+	
+}
+
+
+function showSchedule() {
+	
+	if(document.getElementById("schedule_list").classList.contains('notvisible')) {
+	
+	document.getElementById("schedule_list").classList.remove('notvisible');
+	
+	document.getElementById("schedule_list").classList.add('visible');
+	
+	document.getElementById("alert_list").classList.remove('visible');
+	
+	document.getElementById("alert_list").classList.add('notvisible');
+	
+	
+
+} else {
+
+	document.getElementById("schedule_list").classList.remove('visible');
+	
+	document.getElementById("schedule_list").classList.add('notvisible');
+	
+	document.getElementById("alert_list").classList.remove('notvisible');
+	
+	document.getElementById("alert_list").classList.add('visible');
+	
+	
+	
+	
 
 }
 	
