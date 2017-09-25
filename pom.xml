@@ -29,7 +29,7 @@
 		<module>iflow-home</module>
 		
 		
-		   <module>iflow-dist</module> 
+		  <!-- <module>iflow-dist</module> -->
 		
 		<module>vfs-connector</module>
 	</modules>

@@ -57,18 +57,15 @@ public class BlockSQLUpdate extends BlockSQL {
     String sTable = null;
     String sSet = null;
     String sWhere = null;
-    
-    String sQuery = "";
-
-	String sQuerySplit = null;
-    // String sQuery = null;
+  
+     String sQuery = null;
     
     try{
-    	sQuerySplit = this.getAttribute(advancedQuery);
+    	sQuery = this.getAttribute(advancedQuery);
     	    	
     	
-    	 if (StringUtils.isNotEmpty(sQuerySplit)) {
-    		 sQuerySplit = procData.transform(userInfo, sQuerySplit, true);
+    	 if (StringUtils.isNotEmpty(sQuery)) {
+    		 sQuery = procData.transform(userInfo, sQuery, true);
     	 }
     	 
     	 

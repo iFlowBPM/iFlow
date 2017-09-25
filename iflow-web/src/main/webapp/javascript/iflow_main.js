@@ -2315,12 +2315,23 @@ function showSchedule() {
 	
 	document.getElementById("alert_list").classList.add('visible');
 	
-	
-	
-	
 
 }
 	
 }
+
+function teste_review(){
+	
+		//find the height of the internal page
+		var the_height = document.getElementById('open_proc_frame_3'); //pp: martelada dos 10 deveria ser corrigida.
+			
+		//change the height of the iframe
+		document.getElementById(open_proc_frame_3).style.height = the_height.toString() + 'px';
+		
+		resizeDelay(2000,open_proc_frame_3);
+		
+		return the_height;
+	}
+
 
 

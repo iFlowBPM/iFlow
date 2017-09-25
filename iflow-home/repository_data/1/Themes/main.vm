@@ -141,6 +141,11 @@
 				
 				resizeDelay(2000,frameName);
 			}
+			
+			function resizeIframe(value){
+			document.getElementById("open_proc_frame_3").style.height = value + 'px';
+			resizeDelay(100,"open_proc_frame_3");
+			}
 
 			function setFocus(el, focus) {
 				el.focused = focus;
@@ -505,14 +510,19 @@
                                            					</ul>
                                            					
                                            					<div id="schedule_list" class="schedule_box notification-area notvisible">
-                                           					<div class="col-md-12">
-                                           					<div class="col-md-3"><img class="" src="images/icon_delete.png" width="16" height="16"/></div>
-                                           					<div class="col-md-9"><span>Escolher data e hora</span></div>
+                                           					<div class="col-md-12" style="margin-top:5%;">
+                                           						<div class="col-md-3"><img class="" src="images/arrow_left.png" width="16" height="16" onclick="showSchedule();"/></div>
+                                           						<div class="col-md-9"><span class="spanAlert" style="color:black; display:inline;padding: 0; background-color:initial;">Escolher data e hora</span></div>
                                            					</div>
                                            					
-                                           					<div>
-                                           					<div class='col-sm-6'>
-            													<input type="date" class="form-control" />
+                                           					<div class="col-md-12" style="margin-top:2%;">
+                                           					<div class="col-md-3" style="width:16px;"></div>
+                                           					<div class="col-md-9 col-sm-6">
+            													  <div class="form-group">
+      																	<input data-provide="datepicker" class="datepicker" id="calendar" style=" border: 0;  outline: 0;  background: transparent;  border-bottom: 1px solid black;">
+      																	
+    															  </div>
+            													
         													</div>
        
                                            					</div>
@@ -835,7 +845,29 @@
 		
 		<script>
 		
+		$('#calendar').datepicker.dates['pt'] = {
+    		days: ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],
+    		daysShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+   			daysMin: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+    		months: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
+    		monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    		today: "Today",
+    		clear: "Clear",
+    		format: "mm/dd/yyyy",
+    		titleFormat: "MM yyyy", /* Leverages same syntax as 'format' */
+    		weekStart: 0
+		};
 		
+		
+		$('#calendar').datepicker({
+		    language: 'pt',
+    		format: 'DD, dd/mm/yyyy',
+    		weekStart: 1,
+            autoclose: true,
+            todayHighlight: true
+   			
+		});
+				
 		function runScript(e) {
     		if (e.keyCode == 13) {
     			e.preventDefault();
