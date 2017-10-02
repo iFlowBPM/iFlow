@@ -28,15 +28,14 @@
 		<module>iflow-fixtures</module>
 		<module>iflow-home</module>
 		
-		
 		 <!--  <module>iflow-dist</module>  -->
 		
 		<module>vfs-connector</module>
 	</modules>
 
 	<properties>
-		<iflow.baseversion>5.0.2</iflow.baseversion>
-		<iflow.buildnumber>20170614</iflow.buildnumber>
+		<iflow.baseversion>5.0.3</iflow.baseversion>
+		<iflow.buildnumber>20170928</iflow.buildnumber>
 		<iflow.version>${iflow.baseversion}-R${iflow.buildnumber}</iflow.version>
 		<dms-connector.version>0.0.7-R20100908</dms-connector.version>
 		<alfresco-connector.version>0.0.7-R20100908</alfresco-connector.version>

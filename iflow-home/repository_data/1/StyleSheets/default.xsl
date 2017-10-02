@@ -75,6 +75,7 @@
 					rel="stylesheet" type="text/css" />
 				<link href="{$url_prefix}/javascript/sexy-combo/css/sexy/sexy.css"
 					rel="stylesheet" type="text/css" />
+
 				<script type="text/javascript"
 					src="{$url_prefix}/javascript/yahoo/yahoo-dom-event/yahoo-dom-event.js" />
 				<script type="text/javascript"
@@ -115,25 +116,32 @@
 					ambiente -->
 				<script type="text/javascript" src="{$url_prefix}/javascript/applet_functions.js"></script>
 
-				<!-- Possibilidade de fixar o header da tabela -->
-				<script type="text/javascript" src="{$url_prefix}/javascript/jquery-1.10.2.js"></script>
-
-				<script type="text/javascript"
-					src="{$url_prefix}/javascript/jquery.fixedtableheader.min.js"></script>
-
-				<script type="text/javascript" src="{$url_prefix}/javascript/jquery.floatThead.js"></script>
-
-				<script type="text/javascript" src="{$url_prefix}/javascript/jquery.tablesorter.js"></script>
-
-				<script type="text/javascript"
-					src="{$url_prefix}/javascript/jquery.stickytableheaders.js"></script>
-
 				<script type="text/javascript">
 					window.addEvent('domready', getAppletElem);
-				</script>
-				<!-- <script type="text/javascript"> $(function () { console.dir($(".tbl1")); 
-					$(".tbl1").fixedtableheader(); }); </script> -->
+					function alertbutton() {
+					alert("Por favor utilize os botões disponíveis");
+					}
+					
+					function runScript(e) {
+    					if (e.keyCode == 13) {
+    					e.preventDefault();
+    					alert("Por favor utilize os botões disponíveis");
+        	
+        				return false;
+   		 			}
+				}
 
+				</script>
+				
+				<script>
+				function runScript(event) {
+    				if (event.which == 13 || event.keyCode == 13) {
+        			//code to execute here
+        			return false;
+    				}
+    				return true;
+					};
+					</script>
 
 				<style type="text/css">
 					html {
@@ -210,9 +218,10 @@
 
 					.info_msg
 					{
+
 					font-weight: normal;
 					color: #1E5B78;
-					padding: 3px 0 0 10px;
+					padding: 15px 0 10px 10px;
 
 					text-align: left;
 					color: black;
@@ -781,32 +790,63 @@
 
 					}
 
-					.viewer-responsive{
-					overflow:hidden;
-					padding-bottom:56.25%;
-					position:relative;
-					height:0;
-					}
-					.viewer-responsive iframe{
-					left:0;
-					top:0;
-					height:100%;
-					width:100%;
-					position:absolute;
+
+					.noshow {
+					visibility: hidden;
 					}
 
 				</style>
 
 				<xsl:text disable-output-escaping="yes"></xsl:text>
-
-
 			</head>
+
+			<style type="text/css">
+
+				.scrollableContainer {
+				width: 100%;
+				overflow: auto;
+				margin: 0 auto;
+				}
+
+				.scrollableContainer {
+				max-height:300px;
+				height:auto;
+				}
+
+				.scrollableContainer {
+				height: expression((this.scrollHeight > 429
+				|| this.scrollHeight == 0) ?
+				'430px' : 'auto');
+				}
+
+				.scrollableTable {
+				width: 99%;
+				}
+
+
+				.scrollableTable>tbody {
+				/*height:200px;*/
+				overflow-x:hidden;
+				overflow-y:auto;
+				}
+
+				.scrollableTable thead tr {
+				position:relative;
+				top: expression(offsetParent.scrollTop);
+				}
+
+				.scrollableTable td:last-child
+				{
+				padding-right: 20px;
+				}
+
+
+			</style>
 
 			<body onload="reloadBootstrapElements(); initProcFrame();">
 				<div style="margin:auto;">
 					<xsl:apply-templates select="form" />
 				</div>
-
 				<div id="_formLoadingDiv"
 					style="text-align:center;width:99%;height:99%;position:absolute;left:0;top:0;z-index:99;display:none">
 					<div class="loadingDivContainer">
@@ -849,6 +889,9 @@
 					<div class="blockdivision">
 						<div class="columndivision columnholder">
 							<div class="submit">
+								<input type="submit" class="noshow" valign="center" align="center"
+									name="_noop" value="NoOp" onkeypress="runScript(event)" onclick="alertbutton();return false;"
+									title="NoOp" />
 								<xsl:apply-templates select="button" />
 							</div>
 						</div>
@@ -954,27 +997,6 @@
 				<xsl:apply-templates select="blockdivision" />
 			</div>
 		</div>
-	</xsl:template>
-
-	<xsl:template name="string-replace-all">
-		<xsl:param name="text" />
-		<xsl:param name="replace" />
-		<xsl:param name="by" />
-		<xsl:choose>
-			<xsl:when test="contains($text, $replace)">
-				<xsl:value-of select="substring-before($text,$replace)" />
-				<xsl:value-of select="$by" />
-				<xsl:call-template name="string-replace-all">
-					<xsl:with-param name="text"
-						select="substring-after($text,$replace)" />
-					<xsl:with-param name="replace" select="$replace" />
-					<xsl:with-param name="by" select="$by" />
-				</xsl:call-template>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:value-of select="$text" />
-			</xsl:otherwise>
-		</xsl:choose>
 	</xsl:template>
 
 	<xsl:template match="field">
@@ -1519,7 +1541,8 @@
 								<em>*</em>
 							</xsl:if>
 						</label>
-						<select class="txt form-control pull-right combobox" style="width:250px;">
+						<select class="txt  form-control pull-right combobox"
+							style="width:250px;">
 							<xsl:attribute name="name">
 			<xsl:value-of select="variable/text()" />
 		</xsl:attribute>
@@ -1554,156 +1577,154 @@
 				</xsl:if>
 			</xsl:attribute>
 						</label>
-						<table class="">
-							<xsl:choose>
-								<xsl:when test="tablesearch='true'">
-									<xsl:attribute name="class">
-					arraytable 
+						<div class="tableContainer scrollableContainer" id="tableContainer">
+							<table class="">
+								<xsl:choose>
+									<xsl:when test="tablesearch='true'">
+										<xsl:attribute name="class">
+					arraytable scrollableTable scrollTable
 				</xsl:attribute>
-								</xsl:when>
-
-
-
-								<xsl:otherwise>
-
-									<xsl:attribute name="class">
-					arraytable sortable tbl1
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:attribute name="class">
+					arraytable scrollableTable scrollTable sortable
 				</xsl:attribute>
-								</xsl:otherwise>
-							</xsl:choose>
-							<xsl:variable name="rowCount" select="count(row)" />
-							<xsl:variable name="colCount" select="count(row/col)" />
-							<xsl:for-each select="row">
-								<tr>
-									<xsl:choose>
-										<xsl:when test="separator='true'">
-											<xsl:attribute name="class">
-						<xsl:text>table_row_title_item </xsl:text>
+									</xsl:otherwise>
+								</xsl:choose>
+								<xsl:variable name="rowCount" select="count(row)" />
+								<xsl:variable name="colCount" select="count(row/col)" />
+								<xsl:for-each select="row">
+									<tr>
+										<xsl:choose>
+											<xsl:when test="separator='true'">
+												<xsl:attribute name="class">
+						<xsl:text>table_row_title_item</xsl:text>
 					</xsl:attribute>
-										</xsl:when>
-										<xsl:when test="subheader='true'">
-											<xsl:attribute name="class">
+											</xsl:when>
+											<xsl:when test="subheader='true'">
+												<xsl:attribute name="class">
 						<xsl:text>table_row_subheader</xsl:text>
 					</xsl:attribute>
-										</xsl:when>
-										<xsl:when test="string-length(bgcolor) &gt; 0">
-											<xsl:attribute name="bgcolor">
+											</xsl:when>
+											<xsl:when test="string-length(bgcolor) &gt; 0">
+												<xsl:attribute name="bgcolor">
 						<xsl:value-of select="bgcolor/text()" />
 					</xsl:attribute>
-										</xsl:when>
-										<xsl:otherwise>
-											<xsl:attribute name="bgcolor">
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:attribute name="bgcolor">
 						<xsl:text>#FFFFFF</xsl:text>
 					</xsl:attribute>
-											<xsl:attribute name="class">
+												<xsl:attribute name="class">
 						<xsl:text>txt</xsl:text>
 					</xsl:attribute>
-										</xsl:otherwise>
-									</xsl:choose>
-									<xsl:for-each select="col">
-										<td>
-											<xsl:attribute name="class">
+											</xsl:otherwise>
+										</xsl:choose>
+										<xsl:for-each select="col">
+											<td>
+												<xsl:attribute name="class">
 						<xsl:text>txt </xsl:text>
 						<xsl:if test="subheader='true'">
 							<xsl:text>table_row_subheader</xsl:text>
 						</xsl:if>
 					</xsl:attribute>
-											<xsl:attribute name="align">
+												<xsl:attribute name="align">
 				<xsl:value-of select="align/text()" />
 				</xsl:attribute>
-											<xsl:choose>
-												<xsl:when test="header='true'">
-													<xsl:choose>
-														<xsl:when test="string-length(colspan) &gt; 0">
-															<xsl:attribute name="class">
+												<xsl:choose>
+													<xsl:when test="header='true'">
+														<xsl:choose>
+															<xsl:when test="string-length(colspan) &gt; 0">
+																<xsl:attribute name="class">
 								<xsl:text>table_main_header</xsl:text>
 							</xsl:attribute>
-															<xsl:attribute name="colspan">
+																<xsl:attribute name="colspan">
 								<xsl:value-of select="colspan/text()" />
 							</xsl:attribute>
-														</xsl:when>
-														<xsl:otherwise>
-															<xsl:attribute name="class">
+															</xsl:when>
+															<xsl:otherwise>
+																<xsl:attribute name="class">
 								<xsl:text>table_sub_header</xsl:text>
 							</xsl:attribute>
-														</xsl:otherwise>
-													</xsl:choose>
-												</xsl:when>
+															</xsl:otherwise>
+														</xsl:choose>
+													</xsl:when>
 
-												<xsl:otherwise>
-													<xsl:choose>
-														<xsl:when test="string-length(gt) &gt; 0">
-															<xsl:attribute name="class">bgcolor1</xsl:attribute>
-														</xsl:when>
-														<xsl:when test="string-length(eq) &gt; 0">
-															<xsl:attribute name="class">bgcolor1</xsl:attribute>
-														</xsl:when>
-														<xsl:when test="string-length(lt) &gt; 0">
-															<xsl:attribute name="class">bgcolor2</xsl:attribute>
-														</xsl:when>
-														<xsl:when test="string-length(bgcolor) &gt; 0">
-															<xsl:if test="count(../separator) = 0">
-																<xsl:attribute name="bgcolor">
+													<xsl:otherwise>
+														<xsl:choose>
+															<xsl:when test="string-length(gt) &gt; 0">
+																<xsl:attribute name="class">bgcolor1</xsl:attribute>
+															</xsl:when>
+															<xsl:when test="string-length(eq) &gt; 0">
+																<xsl:attribute name="class">bgcolor1</xsl:attribute>
+															</xsl:when>
+															<xsl:when test="string-length(lt) &gt; 0">
+																<xsl:attribute name="class">bgcolor2</xsl:attribute>
+															</xsl:when>
+															<xsl:when test="string-length(bgcolor) &gt; 0">
+																<xsl:if test="count(../separator) = 0">
+																	<xsl:attribute name="bgcolor">
 								<xsl:value-of select="bgcolor/text()" />
 								</xsl:attribute>
-															</xsl:if>
-														</xsl:when>
-													</xsl:choose>
-												</xsl:otherwise>
-											</xsl:choose>
-											<xsl:choose>
-												<xsl:when test="string-length(value) = 0">
-													<xsl:text>&nbsp;</xsl:text>
-												</xsl:when>
+																</xsl:if>
+															</xsl:when>
+														</xsl:choose>
+													</xsl:otherwise>
+												</xsl:choose>
+												<xsl:choose>
+													<xsl:when test="string-length(value) = 0">
+														<xsl:text>&nbsp;</xsl:text>
+													</xsl:when>
 
-												<xsl:when
-													test="string-length(value) > $maxLenCol and count(value/a) = 0 and not(contains(value,'&lt;')) and tablesearch='true'">
-													<xsl:variable name="valueShort"
-														select="substring(value, 1, $maxLenCol)" />
-													<xsl:variable name="idAux" select="generate-id()" />
-													<span id="span_short_{$idAux}">
-														<xsl:value-of select="$valueShort" />
-														<span style="color:blue;cursor:pointer;"
-															onClick="javascript:cancelMenu=true;document.getElementById('span_short_{$idAux}').style.display='none';document.getElementById('span_long_{$idAux}').style.display='inline';">&nbsp;...
+													<xsl:when
+														test="string-length(value) > $maxLenCol and count(value/a) = 0 and not(contains(value,'&lt;')) and tablesearch='true'">
+														<xsl:variable name="valueShort"
+															select="substring(value, 1, $maxLenCol)" />
+														<xsl:variable name="idAux" select="generate-id()" />
+														<span id="span_short_{$idAux}">
+															<xsl:value-of select="$valueShort" />
+															<span style="color:blue;cursor:pointer;"
+																onClick="javascript:cancelMenu=true;document.getElementById('span_short_{$idAux}').style.display='none';document.getElementById('span_long_{$idAux}').style.display='inline';">&nbsp;...
+															</span>
 														</span>
-													</span>
-													<span id="span_long_{$idAux}" style="display:none">
+														<span id="span_long_{$idAux}" style="display:none">
+															<xsl:apply-templates select="value" />
+															<span style="color:blue;cursor:pointer;"
+																onClick="javascript:cancelMenu=true;document.getElementById('span_short_{$idAux}').style.display='block';document.getElementById('span_long_{$idAux}').style.display='none';">&nbsp;[.]
+															</span>
+														</span>
+
+														<xsl:choose>
+															<xsl:when test="string-length(suffix) &gt; 0">
+																<xsl:apply-templates select="suffix" />
+															</xsl:when>
+														</xsl:choose>
+													</xsl:when>
+
+													<xsl:otherwise>
 														<xsl:apply-templates select="value" />
-														<span style="color:blue;cursor:pointer;"
-															onClick="javascript:cancelMenu=true;document.getElementById('span_short_{$idAux}').style.display='block';document.getElementById('span_long_{$idAux}').style.display='none';">&nbsp;[.]
-														</span>
-													</span>
+														<xsl:choose>
+															<xsl:when test="string-length(suffix) &gt; 0">
+																<xsl:apply-templates select="suffix" />
+															</xsl:when>
+														</xsl:choose>
+													</xsl:otherwise>
+												</xsl:choose>
+											</td>
+										</xsl:for-each>
+									</tr>
+								</xsl:for-each>
 
-													<xsl:choose>
-														<xsl:when test="string-length(suffix) &gt; 0">
-															<xsl:apply-templates select="suffix" />
-														</xsl:when>
-													</xsl:choose>
-												</xsl:when>
-
-												<xsl:otherwise>
-													<xsl:apply-templates select="value" />
-													<xsl:choose>
-														<xsl:when test="string-length(suffix) &gt; 0">
-															<xsl:apply-templates select="suffix" />
-														</xsl:when>
-													</xsl:choose>
-												</xsl:otherwise>
-											</xsl:choose>
+								<xsl:if test="$rowCount=1">
+									<tr>
+										<td class="info_msg" colspan="{$colCount}" align="center">
+											<xsl:text>&lt;Vazio&gt;</xsl:text>
 										</td>
-									</xsl:for-each>
-								</tr>
-							</xsl:for-each>
+									</tr>
+								</xsl:if>
 
-							<xsl:if test="$rowCount=1">
-								<tr>
-									<td class="info_msg" colspan="{$colCount}" align="center">
-										<xsl:text>&lt;Vazio&gt;</xsl:text>
-									</td>
-								</tr>
-							</xsl:if>
-
-						</table>
+							</table>
+						</div>
 						<xsl:if test="string-length(extra) &gt; 0">
 							<script type="text/javascript">
 								<xsl:value-of select="extra/text()" />
@@ -1820,25 +1841,6 @@
 						</img>
 					</xsl:if>
 
-					<xsl:if test="type='document_preview'">
-						<xsl:for-each select="file">
-							<xsl:variable name="preview_link_url">
-								<xsl:call-template name="string-replace-all">
-									<xsl:with-param name="text" select="link_url" />
-									<xsl:with-param name="replace" select="'document'" />
-									<xsl:with-param name="by" select="'document/preview.pdf'" />
-								</xsl:call-template>
-							</xsl:variable>
-							<div class="viewer-responsive">
-								<iframe width='600' height='450' frameborder='0' style='border: 0'
-									allowfullscreen='allowfullscreen'>
-									<xsl:attribute name="src">../javascript/ViewerJS/#../../..<xsl:value-of
-										select="$preview_link_url" /></xsl:attribute>
-								</iframe>
-							</div>
-						</xsl:for-each>
-					</xsl:if>
-
 					<xsl:if test="type='file'"> <!-- FILE -->
 						<table align="center" border="0" width="100%" style="border:none;">
 							<tr align="center">
@@ -1846,25 +1848,25 @@
 									<table class="table" border="0" width="100%">
 										<xsl:if test="has_label_row='true'">
 											<tr><!-- File Headers -->
-												<td class="document_header a" nowrap="true">
+												<td class="document_header" nowrap="true">
 													<xsl:if test="string-length(text) &gt; 0">
 														<xsl:apply-templates select="file_label" />
 													</xsl:if>
 												</td>
-												<td class="document_header b" nowrap="true">
+												<td class="document_header" nowrap="true">
 													<xsl:if test="show_link='true'">
 														<xsl:apply-templates select="link_label" />
 													</xsl:if>
 												</td>
-												<td class="document_header c" nowrap="true">
+												<td class="document_header" nowrap="true">
 													<xsl:if test="show_edition='true'">
 														<xsl:apply-templates select="edition_label" />
 													</xsl:if>
 												</td>
-												<td class="document_header d" nowrap="true">
-												&nbsp;
+												<td class="document_header" nowrap="true">
+						&nbsp;
 												</td>
-												<td class="document_header e" nowrap="true">
+												<td class="document_header" nowrap="true">
 													<xsl:if test="show_remove='true'">
 														<xsl:apply-templates select="remove_label" />
 													</xsl:if>
@@ -2087,29 +2089,24 @@
 														<xsl:otherwise>
 															<div id="{variable}_add_container form-group">
 																<div class="btn btn-default"
-																	style="width:350px;height:55px;position:relative;top:2px; padding: 15px 22px;">Arraste ou pressione para carregar ficheiro</div>
+																	style="width:350px;height:35px;position:relative;top:2px;">Arraste ou pressione para carregar ficheiro</div>
 																<input type="file" name="{variable}_add" size="20"
-																	style="width:335px;opacity:0;position:relative;top:-35px;height:35px">
+																	style="width:300px;opacity:0;position:relative;top:-35px;height:35px">
 																	<xsl:if test="accept!=''">
 																		<xsl:attribute name="accept">
 											<xsl:value-of select="accept" />
 										</xsl:attribute>
-
-
 																	</xsl:if>
 																</input>
-															
-																
 																<script language="JavaScript" type="text/javascript">
-									window.addEvent('domready', function() {
-																		new MultiUpload( $('<xsl:value-of select="/form/name" />').<xsl:value-of select="variable" />_add,
-																			<xsl:value-of select="upload_limit" />, '_[{id}]', true, true );
-																			// IE6 fix
-																			if (/msie|MSIE 6/.test(navigator.userAgent)) {
-																			$('<xsl:value-of select="variable" />_add_container').style.paddingRight = '252px';
-																			}
-									});
-								</script>
+         window.addEvent('domready', function() {
+          new MultiUpload( $( '<xsl:value-of select="/form/name" />' ).<xsl:value-of select="variable" />_add, <xsl:value-of select="upload_limit" />, '_[{id}]', true, true );
+          // IE6 fix
+          if (/msie|MSIE 6/.test(navigator.userAgent)) {
+           $('<xsl:value-of select="variable" />_add_container').style.paddingRight = '252px';
+          }
+         });
+                       </script>
 															</div>
 														</xsl:otherwise>
 													</xsl:choose>
@@ -2165,7 +2162,7 @@
 	</xsl:template>
 
 	<xsl:template match="hidden">
-		<input type="hidden">
+		<input type="hidden" onkeypress="runScript(event)" onclick="alertbutton();return false;">
 			<xsl:attribute name="name">
 	<xsl:value-of select="name/text()" />
 	</xsl:attribute>
@@ -2181,7 +2178,7 @@
 
 	<xsl:template match="input">
 		<xsl:if test="type = 'checkbox'">
-			<input type="checkbox" class="txt">
+			<input type="checkbox" class="txt" onkeypress="runScript(event)" onclick="alertbutton();return false;">
 				<xsl:attribute name="name">
 		<xsl:value-of select="name/text()" />
 	</xsl:attribute>
@@ -2200,7 +2197,7 @@
 			</input>
 		</xsl:if>
 		<xsl:if test="type = 'radio'">
-			<input type="radio" class="txt">
+			<input type="radio" class="txt" onkeypress="runScript(event)" onclick="alertbutton();return false;">
 				<xsl:attribute name="name">
 		<xsl:value-of select="name/text()" />
 	</xsl:attribute>
@@ -2219,7 +2216,7 @@
 			</input>
 		</xsl:if>
 		<xsl:if test="type = 'hidden'">
-			<input type="hidden">
+			<input type="hidden" onkeypress="runScript(event)" onclick="alertbutton();return false;">
 				<xsl:attribute name="name">
 		<xsl:value-of select="name/text()" />
 	</xsl:attribute>
@@ -2232,7 +2229,7 @@
 			</input>
 		</xsl:if>
 		<xsl:if test="type = 'tabletext'">
-			<input type="text" class="txt">
+			<input type="text" class="txt" onkeypress="runScript(event)" onclick="alertbutton();return false;" >
 				<xsl:attribute name="name">
 		<xsl:value-of select="variable/text()" />
 	</xsl:attribute>

@@ -309,6 +309,19 @@ var MultiUpload = new Class(
     			);
     			// Apply multi-upload functionality to new element
     			this.initializeElement(new_input, lang);
+    			
+    			// Aumentar o tamanho do iFrame - Pedro Gonçalves
+   			    			 
+   			    parent.calcFrameHeight('open_proc_frame_3');
+   			    //var xpto = document.querySelector('.ui-accordion-content').id;
+   			    //document.getElementById(xpto).style.height = "100%";
+   			    
+   			    var myElements = document.querySelectorAll(".ui-accordion-content");
+   			 
+   			    for (var i = 0; i < myElements.length; i++) {
+   			    myElements[i].style.height = "100%";
+   			    }
+   			   
 
     			// Add new element to page
     			current_element.element.style.position = 'absolute';

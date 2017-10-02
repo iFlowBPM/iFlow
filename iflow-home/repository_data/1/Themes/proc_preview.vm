@@ -59,7 +59,7 @@
         <div class="panel-body">
           <div class="form-horizontal" role="form">
 
-			<!--div class="table"-->
+			<!--div class="table"
 			#if ($processDetail.isEmpty())
 					<div class="alert alert-info">
 						$noDetail
@@ -91,7 +91,7 @@
 						</div>
 					</div>
 				#end
-			#end
+			#end-->
 			#if($isForward)
 				</div>
 					<div class="form-group">
@@ -103,6 +103,7 @@
 					<div class="col-sm-12" style=" font-size: 12px; margin-bottom: -10px;clear:both;"> Op&ccedil;&otilde;es dispon&iacute;veis </div>
 				</div>
 			#end
+			<!--
 		    #if (!$processDetail.isEmpty())
 				<fieldset class="submit">
 				#foreach($button in $buttonList)
@@ -126,6 +127,7 @@
 				#end
 				</fieldset>
 			#end
+			-->
 			<div id="preview" class="Preview">
 			<button id="Aceder" style=" font-size: 24px; padding: 10px;" class="btn btn-default navbar-btn"
 				onclick="javascript:openProcess($procFlowid, '$response.encodeURL($url_prefix,$uri)', 'flowid=$procFlowid&pid=$procPid&subpid=$procSubpid', false, 3);"> #*$act.get("runMax")*#
