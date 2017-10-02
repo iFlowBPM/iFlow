@@ -313,8 +313,7 @@ var MultiUpload = new Class(
     			// Aumentar o tamanho do iFrame - Pedro Gonçalves
    			    			 
    			    parent.calcFrameHeight('open_proc_frame_3');
-   			    //var xpto = document.querySelector('.ui-accordion-content').id;
-   			    //document.getElementById(xpto).style.height = "100%";
+   			   
    			    
    			    var myElements = document.querySelectorAll(".ui-accordion-content");
    			 
@@ -322,6 +321,7 @@ var MultiUpload = new Class(
    			    myElements[i].style.height = "100%";
    			    }
    			   
+
 
     			// Add new element to page
     			current_element.element.style.position = 'absolute';
@@ -333,6 +333,7 @@ var MultiUpload = new Class(
             }
 		} else {
 		    element.name="";
+		    
 			alert( this.getMessage('stickman_upload_max', lang).replace("{0}", "" + this.max));
 		}
 		
@@ -497,3 +498,13 @@ $(document).on('drop', function (e)
 	}
 }
 );
+
+function iframeLoaded() {
+    var iFrameID = document.getElementById('open_proc_frame_3');
+    if(iFrameID) {
+          // here you can make the height, I delete it first, then I make it again
+          iFrameID.height = "";
+          iFrameID.height = iFrameID.contentWindow.document.body.scrollHeight + "px";
+    }   
+}
+

@@ -1,6 +1,7 @@
-  <div class="table_inc">
-    <div class="tab_title">$messages.getString('proc_hist.header.hist')</div> 
-    <table class="item_list">
+<p style="height:1rem;"></p>
+  <div class="table_inc" style="padding-left: 1%;">
+    <div class="tab_title"><h4>$messages.getString('proc_hist.header.hist')</h4></div> 
+    <table class="item_list table">
       <tr class="tab_header">
         <td>$messages.getString('proc_hist.field.id')</td>
         <td>$messages.getString('proc_hist.field.start')</td>

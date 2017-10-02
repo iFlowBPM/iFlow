@@ -1845,7 +1845,7 @@
 						<table align="center" border="0" width="100%" style="border:none;">
 							<tr align="center">
 								<td>
-									<table class="table" border="0" width="100%">
+									<table id="table_size" class="table" border="0" width="100%">
 										<xsl:if test="has_label_row='true'">
 											<tr><!-- File Headers -->
 												<td class="document_header" nowrap="true">

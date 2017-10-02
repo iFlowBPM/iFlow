@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -461,6 +463,7 @@ public class FixedTable implements FieldInterface {
     BufferedReader br = new BufferedReader(new StringReader(sTextArea));
 
     try {
+        	
       String sLine = null;
       while ((sLine = br.readLine()) != null) {
         sLine = sLine.trim();

@@ -135,5 +135,14 @@ public interface NotificationManager {
    * @return
    */
   public abstract int deleteMessage(UserInfoInterface userInfo, int messageId);
+  
+  /**
+   * Suspend a message from user view.
+   * 
+   * @param userInfo
+   * @param messageId
+   * @return
+   */
+  public abstract int suspendMessageNew(UserInfoInterface userInfo, int messageId);
 
 }

@@ -343,6 +343,11 @@ public class Const {
   
   public static String sSHOW_BUTTON_HELP = "true";
   
+  
+  // Tempo Notificação
+  
+  public static int  iMAX_NOTIFICATIONS = -15;
+  
   // hotfolder
   public static int HOT_FOLDER_SEARCH_INTERVAL = -1; 
   public static String HOT_FOLDER_PROCESSED_FOLDER = null; 
@@ -691,6 +696,10 @@ public class Const {
     /* Show Button Help */
     
     sSHOW_BUTTON_HELP = Setup.getProperty("SHOW_BUTTON_HELP");
+    
+    /* Show MAX NOTIFICATIONS /*  */
+    
+    iMAX_NOTIFICATIONS = Setup.getPropertyInt("NOTIFICATIONS_KEEP_DAYS");
     
         
     try {

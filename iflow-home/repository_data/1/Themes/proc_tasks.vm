@@ -1,6 +1,7 @@
-  <div class="table_inc">
-    <div class="tab_title">$messages.getString('proc_hist.header.histTask')</div> 
-    <table class="item_list">
+  <p style="height:3rem;"></p>
+  <div class="table_inc" style="padding-left: 1%;">
+    <div class="tab_title"><h4>$messages.getString('proc_hist.header.histTask')</h4></div> 
+    <table class="item_list table">
       <tr class="tab_header">
         <td>$messages.getString('proc_hist.field.user')</td>
         <td>$messages.getString('proc_hist.field.start')</td>
@@ -23,10 +24,10 @@
 		#set($archived=$dateUtil.formatTimestamp($act.getArchived()))
 		#end
         <tr class="tab_row_$odd">
-        <td align="center" class="v10AZU">$act.getUserid()</td>
-        <td align="center" class="v10AZU">$created</td>
-        <td align="center" class="v10AZU">$archived</td>
-        <td align="center" class="v10AZU">$act.getDescription()</td>
+        <td align="" class="v10AZU">$act.getUserid()</td>
+        <td align="" class="v10AZU">$created</td>
+        <td align="" class="v10AZU">$archived</td>
+        <td align="" class="v10AZU">$act.getDescription()</td>
         </tr>
 	  #end
     </table>

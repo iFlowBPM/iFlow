@@ -47,8 +47,6 @@ try {
   showButton = val && view;
 } catch (Throwable t) {}
 
-
-
 %>
 <form name="userproctasksForm" method="POST">
 <input type="hidden" name="flowid" value="<%=sFlowId%>">
@@ -58,7 +56,7 @@ try {
 
   <div style="vertical-align: middle;">
     <!-- img src="images/icon_tab_tarefas.png" class="icon_item"/-->
-    <div class="title_cont"><if:message string="user_proc_detail.title"/></div>
+    <div id="title_admin"><if:message string="user_proc_detail.title"/></div>
   </div>
       
 <% if (sbError.length() > 0) { %>
