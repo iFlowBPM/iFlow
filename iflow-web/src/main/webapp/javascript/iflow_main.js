@@ -1189,6 +1189,18 @@ function markNotification_alert(id,action) {
 	  makeRequest(msgHandlerJSP, 'id='+id+'&action='+action, markNotificationCallback_alert, 'text', {id:id,action:action});
 	}
 
+function markNotification_schedule(id,action) {
+	  // do stuff
+	  hidetooltips();
+	  
+	  var value = $('#calendar').val();
+	 
+	  makeRequest(msgHandlerJSP, 'id='+id+'&action='+action+'&value='+value, markNotificationCallback_alert, 'text', {id:id,action:action,value:value});
+	  
+	  }
+
+
+
 function markNotificationCallback_alert(text, params) {
 	  if (text.indexOf("session-expired") > 0) {
 	    openLoginIbox();
@@ -1214,6 +1226,14 @@ function markNotificationCallback_alert(text, params) {
 	      case 'U':  // unmark read
 	    	  $("#msg_img_"+id).attr("src","images/icon_unread.png");
 	    	 // tabber(6,'','',inboxJSP,'');
+	    	  break;
+	    	  
+	      case 'S':  // Schedule
+	    	 
+	    	  $(objRef).remove();
+	    	  
+	    	  showSchedule();
+	    	  
 	    	  break;
 	      case 'D':  // delete
 	    	  if($("#msg_img_"+id).attr("src") =="images/icon_unread.png")
@@ -1262,6 +1282,11 @@ function markNotificationCallback(text, params) {
     	  $("#msg_img_"+id).attr("src","images/icon_unread.png");
     	  tabber(6,'','',inboxJSP,'');
     	  break;
+      case 'S':  // Schedule
+    	  
+    	  
+    	  break;
+    	  
       case 'D':  // delete
     	  if($("#msg_img_"+id).attr("src") =="images/icon_unread.png")
         	  $("#delegButtonCount").text(val-1);

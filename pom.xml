@@ -28,23 +28,16 @@
 		<module>iflow-fixtures</module>
 		<module>iflow-home</module>
 		
-<<<<<<< HEAD
-		 <!--  <module>iflow-dist</module>  -->
-=======
-		
 		  <!-- <module>iflow-dist</module> -->
->>>>>>> 0753cdcca05e7f5eade8410ded524f0d436cc77f
 		
 		<module>vfs-connector</module>
 	</modules>
 
 	<properties>
-		<iflow.baseversion>5.0.3</iflow.baseversion>
-<<<<<<< HEAD
+		<iflow.baseversion>5.2.0</iflow.baseversion>
+
 		<iflow.buildnumber>20170928</iflow.buildnumber>
-=======
-		<iflow.buildnumber>20170913</iflow.buildnumber>
->>>>>>> 0753cdcca05e7f5eade8410ded524f0d436cc77f
+
 		<iflow.version>${iflow.baseversion}-R${iflow.buildnumber}</iflow.version>
 		<dms-connector.version>0.0.7-R20100908</dms-connector.version>
 		<alfresco-connector.version>0.0.7-R20100908</alfresco-connector.version>

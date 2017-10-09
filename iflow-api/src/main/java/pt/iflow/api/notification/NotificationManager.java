@@ -143,6 +143,6 @@ public interface NotificationManager {
    * @param messageId
    * @return
    */
-  public abstract int suspendMessageNew(UserInfoInterface userInfo, int messageId);
+  public abstract int suspendMessageNew(UserInfoInterface userInfo, int messageId, String value);
 
 }

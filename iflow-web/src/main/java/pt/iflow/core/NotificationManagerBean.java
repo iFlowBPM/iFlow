@@ -118,8 +118,8 @@ public class NotificationManagerBean implements NotificationManager {
   private Collection<Notification> listAllNotifications(UserInfoInterface userInfo, boolean listNew) {
     if(userInfo == null) return null;
     String user = userInfo.getUtilizador();
-    final String query = "select a.*,b.isread, b.suspend from notifications a, user_notifications b where a.id=b.notificationid "+(listNew?"and b.isread=0":"")+" and b.userid=? order by a.created desc";
-
+    //final String query = "select a.*,b.isread, b.suspend from notifications a, user_notifications b where a.id=b.notificationid "+(listNew?"and b.isread=0":"")+" and b.userid=? order by a.created desc";
+    final String query = "select a.*,b.isread, b.suspend from notifications a join user_notifications b on a.id=b.notificationid where b.isread=0 and b.userid=? and suspend <= NOW() or suspend is NULL order by a.created desc";
     ArrayList<Notification> notifications = new ArrayList<Notification>();
 
     // lista mensagens
@@ -157,7 +157,7 @@ public class NotificationManagerBean implements NotificationManager {
     int count = -1;
     if(userInfo == null) return -1;
     String user = userInfo.getUtilizador();
-    final String query = "select count(*) from user_notifications where isread=0 and  and userid=? and suspend IS NULL";
+    final String query = "select count(*) from user_notifications where isread=0 and userid=? and suspend <= NOW() or suspend is NULL";
 
     // lista mensagens
     Connection db = null;
@@ -403,7 +403,7 @@ public class NotificationManagerBean implements NotificationManager {
   }
   
   
-  private int suspendMessage(UserInfoInterface userInfo, int messageId, int code) {
+  private int suspendMessage(UserInfoInterface userInfo, int messageId, int code, String value) {
 	    if(userInfo == null) return NOTIFICATION_ERROR;
 	    final String query = "update user_notifications set suspend=? where userid=? and notificationid=?";
 	    String userId = userInfo.getUtilizador();
@@ -418,7 +418,7 @@ public class NotificationManagerBean implements NotificationManager {
 	      db = ds.getConnection();
 	      db.setAutoCommit(true);
 	      st = db.prepareStatement(query);
-	      st.setInt(1, code);
+	      st.setString(1, value);
 	      st.setString(2, userId);
 	      st.setInt(3, messageId);
 
@@ -436,12 +436,12 @@ public class NotificationManagerBean implements NotificationManager {
 	    return result;
 	  }
 
-  	public int suspendMessageRead(UserInfoInterface userInfo, int messageId) {
-	    return suspendMessage(userInfo, messageId, MSG_CODE_READ);
+  	public int suspendMessageRead(UserInfoInterface userInfo, int messageId, String value) {
+	    return suspendMessage(userInfo, messageId, MSG_CODE_READ, value);
 	  }
 
-	  public int suspendMessageNew(UserInfoInterface userInfo, int messageId) {
-	    return suspendMessage(userInfo, messageId, MSG_CODE_NEW);
+	  public int suspendMessageNew(UserInfoInterface userInfo, int messageId, String value) {
+	    return suspendMessage(userInfo, messageId, MSG_CODE_NEW, value);
 	  }
   
   

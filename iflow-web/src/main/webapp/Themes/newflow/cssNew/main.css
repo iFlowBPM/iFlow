@@ -1114,10 +1114,12 @@ td.gauge_empty {
 
 .schedule_box{
 	margin-top: 26px;
-    width: 32rem !important;
-    height: 10rem;
+    width: 25rem !important;
+    height: 15rem;
     background-color: white;
-    border: 1px solid black;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 8px;
 }
 
 .drop_menu > li{

@@ -145,6 +145,10 @@
     hsSubst.put("notes_message", messages.getString("main_content.notes.field.message"));
     hsSubst.put("notes_tooltip", messages.getString("main_content.notes.tooltip"));
     hsSubst.put("tooltip_inbox", messages.getString("main.tooltip.inbox"));
+    hsSubst.put("tooltip_delete", messages.getString("inbox.tooltips.delete"));
+    hsSubst.put("tooltip_mark_read", messages.getString("inbox.tooltips.mark_read"));
+    hsSubst.put("notes_more", messages.getString("inbox.hasMore"));  
+    
     
     //int nNOTIFICATION_LIMIT = 10;
     

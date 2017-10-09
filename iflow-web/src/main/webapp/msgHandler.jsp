@@ -8,9 +8,12 @@ boolean success = false;
 int count = 0;
 int id = -1;
 String action = "";
+String value="";
+
 try {
   id = Integer.parseInt(fdFormData.getParameter("id"));
   action = fdFormData.getParameter("action");
+  value = fdFormData.getParameter("value");
   switch(action.charAt(0)) {
   case 'C': // Count messages
   	success = true;
@@ -22,6 +25,9 @@ try {
   case 'U': // Unmark message read
     success = BeanFactory.getNotificationManagerBean().markMessageNew(userInfo, id) == NotificationManager.NOTIFICATION_OK;
     break;
+  case 'S':
+	success = BeanFactory.getNotificationManagerBean().suspendMessageNew(userInfo, id, value) == NotificationManager.NOTIFICATION_OK;
+	break;
   case 'D': // Delete message
     success = BeanFactory.getNotificationManagerBean().deleteMessage(userInfo, id) == NotificationManager.NOTIFICATION_OK;
     break;
@@ -33,7 +39,8 @@ try {
   count = BeanFactory.getNotificationManagerBean().countNewMessages(userInfo);
   if(action.charAt(0)=='C') success=(count!=-1);
   if(count == -1) count = 0;
-
+ 
+  
 } catch(Throwable t) {
   Logger.errorJsp(userInfo.getUtilizador(), "msgHandler.jsp", "Error occurred.", t);
   success=false;

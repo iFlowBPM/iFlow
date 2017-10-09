@@ -2,7 +2,7 @@
 <deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
 
 	<globalConfiguration>
-		<parameter name="adminPassword" value="admin"/>
+		<!-- <parameter name="adminPassword" value="admin"/> -->
 		<parameter name="sendXsiTypes" value="true"/>
 		<!-- <parameter name="sendMultiRefs" value="true"/> -->
 		<parameter name="sendXMLDeclaration" value="true"/>

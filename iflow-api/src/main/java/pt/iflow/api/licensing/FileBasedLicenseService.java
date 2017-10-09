@@ -240,15 +240,15 @@ class FileBasedLicenseService implements LicenseService {
   private static final int KEY_LENGTH = KEY_SIZE/8;
   
   private static byte [] encryptSnapShot(byte [] data) throws GeneralSecurityException {
-    SecretKeySpec key = new SecretKeySpec(KEY_256_BIT, 0, KEY_LENGTH, "AES");
-    Cipher cipher = Cipher.getInstance("AES");
+	  SecretKeySpec key = new SecretKeySpec(KEY_256_BIT, 0, 16, "AES/CBC/PKCS5PADDING");
+	    Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
     cipher.init(Cipher.ENCRYPT_MODE, key);
     return cipher.doFinal(data);
   }
   
   private static byte [] decryptSnapShot(byte [] data) throws GeneralSecurityException {
-    SecretKeySpec key = new SecretKeySpec(KEY_256_BIT, 0, KEY_LENGTH, "AES");
-    Cipher cipher = Cipher.getInstance("AES");
+	  SecretKeySpec key = new SecretKeySpec(KEY_256_BIT, 0, 16, "AES/CBC/PKCS5PADDING");
+	  Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
     cipher.init(Cipher.DECRYPT_MODE, key);
     return cipher.doFinal(data);
   }

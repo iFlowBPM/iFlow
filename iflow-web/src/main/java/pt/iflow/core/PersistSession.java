@@ -77,13 +77,7 @@ public class PersistSession {
         buf = rs.getBytes("session");
       }
       
-      if (buf != null) {
-        ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-        ObjectInputStream objectIn = new ObjectInputStream(bais);
-        valores = (Object[][]) objectIn.readObject();
-        
-      }
-      
+           
       rs.close();
       rs = null;
     } catch (SQLException sqle) {

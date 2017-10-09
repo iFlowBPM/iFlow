@@ -91,7 +91,7 @@
 			
 		</form>
 		<script type="text/javascript">
-			register(document.dados, document.dados.login, document.dados.password);
+			//register(document.dados, document.dados.login, document.dados.password);
 		</script>
 	</body>
 </html>
