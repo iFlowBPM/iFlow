@@ -777,7 +777,7 @@ public class BlockPesquisaProcesso extends Block implements PesquisaProcesso {
       for (int i=0; i < saData.length; i++) {
 
         String field = null;
-        boolean addAnd = !sbtmp.equals("");
+        boolean addAnd = !"".equals(sbtmp.toString());
         String[] data = saData[i];
 
         if (data[nVAR] == null) 

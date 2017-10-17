@@ -3,7 +3,6 @@ In this file there is a list of all libraries used by this program together with
 License		Name						ArtifactId			Version				GroupId				Download from
 ASLv2.0		Apache Commons Collections	commons-discovery	0.4					commons-discovery	maven managed
 ASLv2.0		ROME						rome				0.9					rome				maven managed
-ASLv2.0		Castor						castor				0.9.6				castor				maven managed
 ASLv2.0		JDOM						jdom				1.0					org.jdom			maven managed
 ASLv2.0		Hivemind					hivemind			1.1.1				org.apache.hivemind	maven managed
 ASLv2.0		Jakarta Standard Taglibs	standard			1.1.2				taglibs				maven managed

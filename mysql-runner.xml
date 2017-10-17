@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Mysql Runner" basedir="." default="">
+	
+	<property name="mysql-path" value="C:\Users\bcosta\Workspaces\iFlow\mysql"></property>
+	<target name="start-mysql" description="Start MySQL server">
+		<exec dir="${mysql-path}" executable="cmd">
+			<arg value="/C"/>
+			<arg value="mysqld_start.bat"/>
+		</exec>
+	</target>
+	
+	<target name="stop-mysql" description="Stop MySQL server">
+		<exec dir="${mysql-path}" executable="cmd">
+			<arg value="/C"/>
+			<arg value="mysqld_stop.bat"/>
+		</exec>
+	</target>
+	
+</project>

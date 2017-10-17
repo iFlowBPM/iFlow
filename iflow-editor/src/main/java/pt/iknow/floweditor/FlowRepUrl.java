@@ -3,7 +3,9 @@ package pt.iknow.floweditor;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class FlowRepUrl {
+
+public class FlowRepUrl 
+{
   String url = null;
   String user = null;
   HashMap<String, Long> iconsLastModifiedMap = new HashMap<String, Long>();

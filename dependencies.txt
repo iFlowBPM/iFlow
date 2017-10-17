@@ -34,7 +34,6 @@ axis:axis-schema:jar:1.3:compile
 axis:axis-wsdl4j:jar:1.5.1:compile
 bouncycastle:bcprov-jdk14:jar:142:compile
 bouncycastle:bcprov-jdk15:jar:140:compile
-castor:castor:jar:0.9.6:compile
 com.google.code.google-collections:google-collect:jar:snapshot-20080530:compile
 com.sun.media:jai_codec:jar:1.1.2_01:compile
 com.twolattes:json:jar:0.10:compile
@@ -84,7 +83,6 @@ axis:axis-schema:jar:1.3:compile
 axis:axis-wsdl4j:jar:1.5.1:compile
 bouncycastle:bcprov-jdk14:jar:142:compile
 bouncycastle:bcprov-jdk15:jar:140:compile
-castor:castor:jar:0.9.6:compile
 com.google.code.google-collections:google-collect:jar:snapshot-20080530:compile
 com.sun.media:jai_codec:jar:1.1.2_01:compile
 com.twolattes:json:jar:0.10:compile
@@ -144,7 +142,6 @@ axis:axis:jar:1.4:compile
 axis:axis-schema:jar:1.3:compile
 axis:axis-wsdl4j:jar:1.5.1:compile
 bouncycastle:bcprov-jdk15:jar:140:compile
-castor:castor:jar:0.9.6:compile
 cglib:cglib-nodep:jar:2.2:test
 com.google.code.google-collections:google-collect:jar:snapshot-20080530:compile
 com.lowagie:itext:jar:2.1.7:compile
@@ -231,7 +228,6 @@ bouncycastle:bcpg-jdk14:jar:142:compile
 bouncycastle:bcprov-jdk14:jar:142:compile
 bouncycastle:bcprov-jdk15:jar:140:compile
 bouncycastle:bctsp-jdk14:jar:142:compile
-castor:castor:jar:0.9.6:compile
 com.google.code.google-collections:google-collect:jar:snapshot-20080530:compile
 com.infosistema:crypto-api:jar:1.0.3:compile
 com.lowagie:itext:jar:2.1.7:compile
@@ -333,7 +329,6 @@ axis:axis-schema:jar:1.3:compile
 axis:axis-wsdl4j:jar:1.5.1:compile
 bouncycastle:bcprov-jdk14:jar:142:compile
 bouncycastle:bcprov-jdk15:jar:140:compile
-castor:castor:jar:0.9.6:compile
 cglib:cglib-nodep:jar:2.2:test
 com.google.code.google-collections:google-collect:jar:snapshot-20080530:compile
 com.jgoodies:looks:jar:2.2.1:compile
@@ -425,7 +420,6 @@ axis:axis-schema:jar:1.3:compile
 axis:axis-wsdl4j:jar:1.5.1:compile
 bouncycastle:bcprov-jdk14:jar:142:compile
 bouncycastle:bcprov-jdk15:jar:140:compile
-castor:castor:jar:0.9.6:compile
 com.google.code.google-collections:google-collect:jar:snapshot-20080530:compile
 com.lowagie:itext:jar:2.1.7:compile
 com.sun.media:jai_codec:jar:1.1.2_01:compile

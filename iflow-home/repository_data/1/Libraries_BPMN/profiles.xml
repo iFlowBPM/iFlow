@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by jmv (.) -->
-<XmlLibrary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="library.xsd">
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by jmv (.) -->
+<XmlLibrary xmlns="http://www.iflow.pt/Library" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.iflow.pt/Library ../schemas/xmllibrary.xsd">
 	<name>Profiles</name>
 	<version>1.0</version>
 	<author>iKnow</author>
@@ -699,108 +699,108 @@
 		<description>Get User Profiles</description>
 		<i18n>library.profiles.get_user_profiles</i18n>
 	</XmlBlock>
-    <XmlBlock>
-  	<class>BlockDelegationOwner</class>
-  	<XmlPort>
-      <name>portIn</name>
-      <description>Entrada</description>
-      <in_out>in</in_out>
-      <position>
-        <x>-5</x>
-        <y>45</y>
-      </position>
-    </XmlPort>
-    <XmlPort>
-      <name>portSuccess</name>
-      <description>Success</description>
-      <in_out>out</in_out>
-      <position>
-        <x>104</x>
-        <y>20</y>
-      </position>
-    </XmlPort>
-    <XmlPort>
-      <name>portEmpty</name>
-      <description>Empty</description>
-      <in_out>out</in_out>
-      <position>
-        <x>104</x>
-        <y>39</y>
-      </position>
-    </XmlPort>
-    <XmlPort>
-      <name>portError</name>
-      <description>Error</description>
-      <in_out>out</in_out>
-      <position>
-        <x>104</x>
-        <y>62</y>
-      </position>
-    </XmlPort>
-    <XmlAttribute>
-      <name>substitute</name>
-      <description>Substitute</description>
-      <value>userid</value>
-    </XmlAttribute>      
-    <XmlAttribute>
-      <name>taskOwner</name>
-      <description>Task Owner</description>
-      <value></value>
-    </XmlAttribute>
-    <image>bpmn_user_extra.png</image>
-    <description>Delegation Owner</description>
-	<i18n>library.profiles.delegate_owner</i18n>
-  </XmlBlock>
-  <XmlBlock>
-  	<class>BlockDelegationSubstitute</class>
-  	<XmlPort>
-      <name>portIn</name>
-      <description>Entrada</description>
-      <in_out>in</in_out>
-      <position>
-        <x>-5</x>
-        <y>45</y>
-      </position>
-    </XmlPort>
-    <XmlPort>
-      <name>portSuccess</name>
-      <description>Sucesso</description>
-      <in_out>out</in_out>
-      <position>
-        <x>104</x>
-        <y>20</y>
-      </position>
-    </XmlPort>
-    <XmlPort>
-      <name>portEmpty</name>
-      <description>Vazio</description>
-      <in_out>out</in_out>
-      <position>
-        <x>104</x>
-        <y>39</y>
-      </position>
-    </XmlPort>
-    <XmlPort>
-      <name>portError</name>
-      <description>Erro</description>
-      <in_out>out</in_out>
-      <position>
-        <x>104</x>
-        <y>62</y>
-      </position>
-    </XmlPort>
-    <XmlAttribute>
-      <name>taskOwner</name>
-      <description>Task Owner</description>
-      <value>userid</value>
-    </XmlAttribute>      
-    <XmlAttribute>
-      <name>substitute</name>
-      <description>Substituto</description>
-      <value></value>
-    </XmlAttribute>
-    <image>bpmn_user_extra.png</image>
-    <description>Delegation Substitute</description>
-	<i18n>library.profiles.delegate_substitute</i18n>
-  </XmlBlock>  
+	<XmlBlock>
+		<class>BlockDelegationOwner</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Success</description>
+			<in_out>out</in_out>
+			<position>
+				<x>104</x>
+				<y>20</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>Empty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>104</x>
+				<y>39</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Error</description>
+			<in_out>out</in_out>
+			<position>
+				<x>104</x>
+				<y>62</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>substitute</name>
+			<description>Substitute</description>
+			<value>userid</value>
+		</XmlAttribute>      
+		<XmlAttribute>
+			<name>taskOwner</name>
+			<description>Task Owner</description>
+			<value></value>
+		</XmlAttribute>
+		<image>bpmn_user_extra.png</image>
+		<description>Delegation Owner</description>
+		<i18n>library.profiles.delegate_owner</i18n>
+	</XmlBlock>
+	<XmlBlock>
+		<class>BlockDelegationSubstitute</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>104</x>
+				<y>20</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>Vazio</description>
+			<in_out>out</in_out>
+			<position>
+				<x>104</x>
+				<y>39</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>104</x>
+				<y>62</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>taskOwner</name>
+			<description>Task Owner</description>
+			<value>userid</value>
+		</XmlAttribute>      
+		<XmlAttribute>
+			<name>substitute</name>
+			<description>Substituto</description>
+			<value></value>
+		</XmlAttribute>
+		<image>bpmn_user_extra.png</image>
+		<description>Delegation Substitute</description>
+		<i18n>library.profiles.delegate_substitute</i18n>
+	</XmlBlock>  
 </XmlLibrary>
