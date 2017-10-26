@@ -114,7 +114,7 @@
 				<!-- Carrega codigo javacript de interaccao com a applet e prepara o 
 					ambiente -->
 				<script type="text/javascript" src="{$url_prefix}/javascript/applet_functions.js"></script>
-
+				<script type="text/javascript" src="{$url_prefix}/javascript/jquery.stickytableheaders.js"></script>				
 		
 				<script type="text/javascript">
 					window.addEvent('domready', getAppletElem);
@@ -806,7 +806,14 @@
 				</div>
 				<script type="text/javascript">
 					window.parent.onresize = function(event) {
-					initProcFrame();};
+					initProcFrame();};					
+				</script>
+				<script type="text/javascript">
+				alert(1);				
+				$jQuery(document).ready(function () {
+					$jQuery("table").stickyTableHeaders();
+				});
+				alert(2);
 				</script>
 			</body>
 		</html>
