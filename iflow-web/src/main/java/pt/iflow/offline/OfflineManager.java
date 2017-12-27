@@ -70,9 +70,14 @@ public class OfflineManager {
         newDocument.setContent(doc);
         newDocument.setUpdated(Calendar.getInstance().getTime());
 
-        Document savedDocument = 
-          BeanFactory.getDocumentsBean().addDocument(userInfo, 
-              procData, newDocument);
+        Document savedDocument = null;
+		try {
+			savedDocument = BeanFactory.getDocumentsBean().addDocument(userInfo, 
+			      procData, newDocument);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
         try {
           docsVar.parseAndAddNewItem(

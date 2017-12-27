@@ -2463,7 +2463,12 @@ public class BlockFormulario extends Block implements FormOperations {
 							if (null != ffFile && ffFile.isValid()) {
 								// quick and dirty hack: fix file name for IE
 								String fileName = ffFile.getFileName().replace('\\', '/').replaceAll("[^/]*/", "");
-								if (extensionAccepted(userInfo, pdProcData, props, fileName)) {
+								//check if filename is too long
+								if (fileName.length()>128){
+									alErrors.add(FormUtils.formatParsingError(props, varName,
+											userInfo.getMessages().getString("Datatype.filename_too_long")));	
+								}
+								else if (extensionAccepted(userInfo, pdProcData, props, fileName)) {
 									fileName = getFileName(userInfo, pdProcData, props, fileName);
 
 									Document doc = new DocumentData(fileName, ffFile.getData());

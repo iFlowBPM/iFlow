@@ -124,7 +124,7 @@ public class DocumentsBean implements Documents {
    * @see pt.iflow.api.documents.Documents#addDocument(pt.iflow.api.utils.UserInfoInterface, pt.iflow.api.processdata.ProcessData,
    * pt.iflow.connector.document.Document)
    */
-  public Document addDocument(UserInfoInterface userInfo, ProcessData procData, Document doc) {
+  public Document addDocument(UserInfoInterface userInfo, ProcessData procData, Document doc) throws Exception {
     Connection db = null;
     ResultSet rs = null;
     PreparedStatement pst = null;
@@ -174,6 +174,12 @@ public class DocumentsBean implements Documents {
       }
       DatabaseInterface.commitConnection(db);
       Logger.debug(userInfo.getUtilizador(), this, "addDocument", procData.getSignature() + "connection commit");
+      
+      //final check if ok
+      Document checkDoc = getDocument(userInfo, procData, doc);
+      if(checkDoc==null || checkDoc.getDocId()<0 || checkDoc.getContent()==null || checkDoc.getContent().length==0)
+    	  throw new IOException("addDocument failed");
+      
     } catch (Exception e) {
       try {
         DatabaseInterface.rollbackConnection(db);
@@ -186,6 +192,7 @@ public class DocumentsBean implements Documents {
       if (doc instanceof DocumentData) {
         ((DocumentData) doc).setUpdated(null);
       }
+      throw e;
     } finally {
       DatabaseInterface.closeResources(db, pst, rs);
     }
@@ -359,10 +366,11 @@ public class DocumentsBean implements Documents {
     } catch (Exception e) {
       Logger.error(userInfo.getUtilizador(), this, "addDocument", procData.getSignature()
           + "Error inserting new document into database.", e);
-      adoc.setDocId(-1);
-      if (adoc instanceof DocumentData) {
-        ((DocumentData) adoc).setUpdated(null);
-      }
+      throw e;
+//      adoc.setDocId(-1);
+//      if (adoc instanceof DocumentData) {
+//        ((DocumentData) adoc).setUpdated(null);
+//      }
     } finally {
       DatabaseInterface.closeResources(pst, rs);
     }

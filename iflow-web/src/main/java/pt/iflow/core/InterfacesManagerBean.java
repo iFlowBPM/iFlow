@@ -257,7 +257,7 @@ public int[] tabsRejeitadas( UserInfoInterface userInfo , String perfil)
     
     //Tirar vector com nao permissoes da organizaçao e dos perfis
     rs = st.executeQuery("SELECT tabid FROM profiles_tabs" 
-                        + "where profileid = "+ perfil
+                        + " where profileid = "+ perfil
                         + " union select tabid from organizations_tabs where organizationid = "+userInfo.getOrganization());
 
  //Inicializar array com numero de tabs
