@@ -73,7 +73,7 @@ boolean bError = false;
 String sLoginError = (String)session.getAttribute("login_error");
 if (StringUtils.isNotEmpty(sLoginError)) {
 	bError = true;
-    session.invalidate();
+    //session.invalidate();
 }
 
 Hashtable<String,String> cookies = ServletUtils.getCookies(request);
@@ -134,7 +134,7 @@ for (int i = 0, lim = Settings.localeKeys.length; i < lim; i++) {
   localeKeys.add(localeKey);
 }
 hsSubst.put("localeKeys", localeKeys);
-hsSubst.put("isOverFailureLimit", LoginAttemptCounterController.isOverFailureLimit(config.getServletContext() , request));
+hsSubst.put("isOverFailureLimit", LoginAttemptCounterController.isOverFailureLimit(config.getServletContext() , (HttpServletRequest)request));
 %>
 
 

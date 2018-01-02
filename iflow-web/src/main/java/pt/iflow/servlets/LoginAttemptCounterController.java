@@ -7,22 +7,19 @@ import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Setup;
-import pt.iflow.tag.FormInputTag;
 
 public class LoginAttemptCounterController {
 	
 	static final String LOGIN_ATTEMPT_COUNTER_MAP_NAME = "LOGIN_ATTEMPT_COUNTER_MAP_NAME";
 	
 	@SuppressWarnings("unchecked")
-	public static void markFailedAttempt(ServletContext sc, ServletRequest req) throws UnknownHostException{
-		HashMap <InetAddress,LoginAttemptCounter> map =  (HashMap<InetAddress, LoginAttemptCounter>) sc.getAttribute(LOGIN_ATTEMPT_COUNTER_MAP_NAME);
-		if(map==null || !(map instanceof HashMap <?,?>))
-			map = new HashMap<InetAddress, LoginAttemptCounter>();
-			
-		LoginAttemptCounter lc = map.get(InetAddress.getByName(req.getLocalAddr()));
+	public static void markFailedAttempt(ServletContext sc, HttpServletRequest req) throws UnknownHostException{
+		LoginAttemptCounter lc = (LoginAttemptCounter) req.getSession().getAttribute(LOGIN_ATTEMPT_COUNTER_MAP_NAME);
+		
 		if(lc==null)
 			lc = new LoginAttemptCounter();
 		
@@ -30,16 +27,12 @@ public class LoginAttemptCounterController {
 		lc.setFailedAttempt(lc.getFailedAttempt()+1);
 		lc.setLastFailedAttempt(new Date());
 		
-		map.put(lc.getAddressAttempt(), lc);
-		sc.setAttribute(LOGIN_ATTEMPT_COUNTER_MAP_NAME, map);
+		req.getSession().setAttribute(LOGIN_ATTEMPT_COUNTER_MAP_NAME, lc);
 	}
 	
-	public static Boolean isOverFailureLimit(ServletContext sc, ServletRequest req) throws UnknownHostException{			
-		HashMap <InetAddress,LoginAttemptCounter> map =  (HashMap<InetAddress, LoginAttemptCounter>) sc.getAttribute(LOGIN_ATTEMPT_COUNTER_MAP_NAME);
-		if(map==null || !(map instanceof HashMap <?,?>))
-			return false;
+	public static Boolean isOverFailureLimit(ServletContext sc, HttpServletRequest req) throws UnknownHostException{			
+		LoginAttemptCounter lc = (LoginAttemptCounter) req.getSession().getAttribute(LOGIN_ATTEMPT_COUNTER_MAP_NAME);
 			
-		LoginAttemptCounter lc = map.get(InetAddress.getByName(req.getLocalAddr()));
 		if(lc==null)
 			return false;
 		
@@ -47,8 +40,7 @@ public class LoginAttemptCounterController {
 		if(lc.getFailedAttempt() > Setup.getPropertyInt(Const.MAX_LOGIN_ATTEMPTS)
 				&& lc.getLastFailedAttempt().getTime() < ((new Date()).getTime()- Setup.getPropertyInt(Const.MAX_LOGIN_ATTEMPTS_WAIT))){
 			lc.setFailedAttempt(0);
-			map.put(lc.getAddressAttempt(), lc);
-			sc.setAttribute(LOGIN_ATTEMPT_COUNTER_MAP_NAME, map);
+			req.getSession().setAttribute(LOGIN_ATTEMPT_COUNTER_MAP_NAME, lc);
 			
 			return false;
 		}

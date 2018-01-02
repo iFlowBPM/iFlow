@@ -79,6 +79,19 @@
     <label class="checkbox">
       <input type="checkbox" name="keep_session" id="keep_logged" >
       $msg.get('login.field.keepSession') </label>
+    #if ($isOverFailureLimit)
+			<div style="width: 320px; margin: auto;">
+				<img alt="Challenge" id="challenge_kap" src="/iFlow/kaptcha" style="padding-left: 175px;margin-bottom:4px;">
+				<br/>			
+				<div class="user_info lp_field_label">
+					Preencha texto da imagem
+				</div>
+				<div class="item lp_field_input">				
+					<input type="text" value="" id="challenge" name="challenge" size="15" maxlength="5">
+				</div>
+				<br/>
+			</div>
+		#end
     <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
   </form>
   <div class="loginfooter" style="padding-top:20px">iFlowBPM ${version} </br> $msg.get('iflow.copyright')
