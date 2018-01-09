@@ -1183,10 +1183,17 @@ function updateMessageCount() {
   makeRequest(msgHandlerJSP, 'id=0&action=C', markNotificationCallback_alert, 'text', {id:0,action:'C'});
 }
 
-function markNotification_alert(id,action) {
+/*function markNotification_alert(id,action) {
 	  // do stuff
 	  hidetooltips();
 	  makeRequest(msgHandlerJSP, 'id='+id+'&action='+action, markNotificationCallback_alert, 'text', {id:id,action:action});
+	}
+*/
+function markNotification_alert(id,action, suspendDate) {
+	  // do stuff
+	  hidetooltips();
+	  makeRequest(msgHandlerJSP, 'id='+id+'&action='+action+'&suspendDate='+suspendDate, markNotificationCallback_alert, 'text', {id:id,action:action});
+	  updateNotifications();
 	}
 
 function markNotification_schedule(id,action) {
@@ -1220,20 +1227,15 @@ function markNotificationCallback_alert(text, params) {
 	    	  tabber_load(1, mainContentJSP);
 	        break;
 	      case 'R':  // mark read
-	    	  $("#msg_img_"+id).attr("src","images/icon_read.png");
+	    	 // $("#msg_img_"+id).attr("src","images/icon_read.png");
 	    	 // tabber(6,'','',inboxJSP,'');
 	    	  break;
 	      case 'U':  // unmark read
-	    	  $("#msg_img_"+id).attr("src","images/icon_unread.png");
+	    	  //$("#msg_img_"+id).attr("src","images/icon_unread.png");
 	    	 // tabber(6,'','',inboxJSP,'');
-	    	  break;
-	    	  
+	    	  break;	    	  
 	      case 'S':  // Schedule
-	    	 
 	    	  $(objRef).remove();
-	    	  
-	    	  showSchedule();
-	    	  
 	    	  break;
 	      case 'D':  // delete
 	    	  if($("#msg_img_"+id).attr("src") =="images/icon_unread.png")
@@ -1242,6 +1244,7 @@ function markNotificationCallback_alert(text, params) {
 	    	 // tabber(6,'','',inboxJSP,'');
 	        break;
 	      }
+	      updateNotifications();
 	    } else {
 	      // error occurred
 	      alert(messages.mark_msg_error);
@@ -2234,14 +2237,60 @@ function MarkCategoryCallBack(error) {
 }
 
 function updateNotifications(){
-	makeRequest('updateNotifications.jsp', '', updateNotificationsCallback, 'text');   	
+	launchBrowserNotificationCheckers();
+	//launchAppNotificationCheckers();
+}
+
+function launchBrowserNotificationCheckers(){
+	makeRequest('updateNotifications.jsp', '', updateNotificationsCallback, 'text');
+	makeRequest('countNotifications.jsp', '', countNotificationsCallback, 'text');
+	makeRequest('checkAlertNotifications.jsp', '', checkAlertNotificationsCallback, 'text');
+	window.setTimeout(launchBrowserNotificationCheckers, 30000);
+}
+
+function launchAppNotificationCheckers(){
+	makeRequest('checkShowNotificationDetail.jsp', '', checkShowNotificationDetailCallback, 'text');
+	window.setTimeout(launchAppNotificationCheckers, 3000);
+}
+
+function checkShowNotificationDetailCallback(response){
+	if(response!=null && response!='' && response.search('false')<1){
+		var splitDetail = response.split(',')
+		window.open('user_proc_detail.jsp?flowid='+splitDetail[2]+'&pid='+splitDetail[3]+'&subpid='+splitDetail[4]+'&procStatus=-5');
+		window.focus();
+	}
+}
+
+function checkAlertNotificationsCallback(response){
+	try{
+		var check = Json.evaluate(response);
+		if (check.length > 0)
+			showAlertOpen();
+		
+		var i=0;
+		var interval = window.setInterval(function () {
+			doNotification ('',check[i].alert.text +'  '+ check[i].alert.link , check[i].alert.id , 5, check[i].alert);
+			if (++i >= check.length) 
+	          window.clearInterval(interval);	        
+	     }, 500);
+
+	} catch (err) {}
 }
 
 function updateNotificationsCallback(response){
-	if(document.getElementById('delegButtonCount')==null)
-		return;
-	document.getElementById('delegButtonCount').text = response.trim();
-	window.setTimeout(updateNotifications, 60000);
+	try{
+		document.getElementById("table_notifications").innerHTML = response;		
+	} catch (err) {}	
+}
+
+function countNotificationsCallback(response){
+	try{
+		document.getElementById('delegButtonCount').text = response.trim();
+	} catch (err) {}
+}
+
+function pickActivityFromNotificationCallback(response){
+	tabber_right(1, 'main_content.jsp', 'cleanFilter=1');
 }
 
 function isDownloadAvailable(component){
@@ -2297,53 +2346,124 @@ function changeLogType(value){
 
 
 
-function showAlert() {
-	
-	if(document.getElementById("alert_list").classList.contains('notvisible')) {
-	
-	document.getElementById("alert_list").classList.remove('notvisible');
-	
+function showAlert() {	
+	if(document.getElementById("alert_list").classList.contains('notvisible')) {	
+		document.getElementById("alert_list").classList.remove('notvisible');	
+		document.getElementById("alert_list").classList.add('visible');
+	} else {
+		document.getElementById("alert_list").classList.remove('visible');	
+		document.getElementById("alert_list").classList.add('notvisible');
+	}	
+}
+
+function showAlertOpen() {	
+	document.getElementById("alert_list").classList.remove('notvisible');	
 	document.getElementById("alert_list").classList.add('visible');
-
-} else {
-
-	document.getElementById("alert_list").classList.remove('visible');
-	
-	document.getElementById("alert_list").classList.add('notvisible');
-
-}
-	
 }
 
+function showSchedule() {	
+	if(document.getElementById("schedule_list").classList.contains('notvisible')) {	
+		document.getElementById("schedule_list").classList.remove('notvisible');	
+		document.getElementById("schedule_list").classList.add('visible');	
+		document.getElementById("alert_list").classList.remove('visible');	
+		document.getElementById("alert_list").classList.add('notvisible');		
+	} else {
+		document.getElementById("schedule_list").classList.remove('visible');	
+		document.getElementById("schedule_list").classList.add('notvisible');	
+		document.getElementById("alert_list").classList.remove('notvisible');	
+		document.getElementById("alert_list").classList.add('visible');	
+	}	
+}
 
-function showSchedule() {
-	
-	if(document.getElementById("schedule_list").classList.contains('notvisible')) {
-	
-	document.getElementById("schedule_list").classList.remove('notvisible');
-	
-	document.getElementById("schedule_list").classList.add('visible');
-	
-	document.getElementById("alert_list").classList.remove('visible');
-	
-	document.getElementById("alert_list").classList.add('notvisible');
-	
-	
+function calculateCells(){
+	// Aumentar o tamanho do iFrame - Pedro Gonçalves 
+    parent.calcFrameHeight('open_proc_frame_3');   
+    var myElements = document.querySelectorAll(".ui-accordion-content");
+ 
+    for (var i = 0; i < myElements.length; i++) {
+    	myElements[i].style.height = "100%";
+    }  			  			
+}
 
-} else {
+function onShowNotification () {
+	console.log('notification is shown!');
+}
 
-	document.getElementById("schedule_list").classList.remove('visible');
-	
-	document.getElementById("schedule_list").classList.add('notvisible');
-	
-	document.getElementById("alert_list").classList.remove('notvisible');
-	
-	document.getElementById("alert_list").classList.add('visible');
-	
+function onCloseNotification () {
+	console.log('notification is closed!');
+}
 
+function onClickNotification () {
+	window.focus();
+	/*if(this.options.alertInfo.detail!=null && this.options.alertInfo.detail!=''){
+		var splitDetail = this.options.alertInfo.detail.split(',')
+		window.open('user_proc_detail.jsp?flowid='+splitDetail[2]+'&pid='+splitDetail[3]+'&subpid='+splitDetail[4]+'&procStatus=-5');
+		window.focus();
+	}
+		
+	if(this.options.alertInfo.link!=null && this.options.alertInfo.link!='')
+		window.open(this.options.alertInfo.link);
+		*/
+}
+
+function onErrorNotification () {
+	console.error('Error showing notification. You may need to request permission.');
+}
+
+function onPermissionGranted () {
+	console.log('Permission has been granted by the user');
+}
+
+function onPermissionDenied () {
+	console.warn('Permission has been denied by the user');
 }
 	
+function doNotification (notificationTitle, notificationBody, notificationId, notificationTimeout, alert) {
+	if (Notify.needsPermission) {
+		Notify.requestPermission(onPermissionGranted, onPermissionDenied);
+	}
+	
+	myNotification = new Notify(notificationTitle, {
+		body: notificationBody,
+		tag: notificationId,
+		alertInfo: alert,
+		icon: 'images/logo_iflow.png',
+		notifyShow: onShowNotification,
+		notifyClose: onCloseNotification,
+		notifyClick: onClickNotification,
+		notifyError: onErrorNotification,
+		timeout: notificationTimeout
+	});
+	
+	myNotification.show();
+} 
+
+/*function notifyClick () {
+	if(this.options.alertInfo.detail!=null && this.options.alertInfo.detail!=''){
+		var splitDetail = this.options.alertInfo.detail.split(',')
+		process_detail(splitDetail[0], 'user_proc_detail.jsp', splitDetail[2], splitDetail[3], splitDetail[4], splitDetail[5]);
+	}
+		
+	if(this.options.alertInfo.link!=null && this.options.alertInfo.link!='')
+		window.open(this.options.alertInfo.link);
 }
+
+function doNotification (notificationTitle, notificationBody, notificationId, notificationTimeout, alert) {
+	if (Notify.needsPermission) {
+		Notify.requestPermission();
+	}    
+	
+	var options = {
+	  body: notificationBody,
+	  tag: '' + notificationId,
+	  alertInfo: alert
+	}
+
+    var n = new Notification("iFlow Notificação", options);
+	setTimeout(n.close.bind(n), notificationTimeout);
+	n.addEventListener('click',notifyClick,false);	
+}
+*/
 
 function teste_review(){
 	

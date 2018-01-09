@@ -119,10 +119,10 @@
 		<script src="javascript/iflow_main.js" type="text/javascript"></script>
 		<script src="javascript/jQueryAssets/jquery-ui-1.10.3/ui/minified/jquery-ui.min.js" type="text/javascript"></script>
 		<script src="javascript/sorttable.js" type="text/javascript"></script>
-			
-		
-		
-		
+		<link rel="stylesheet" href="javascript/datetimepicker/css/bootstrap-datetimepicker.min.css" />
+		<script src="javascript/datetimepicker/js/bootstrap-datetimepicker.js"></script>
+		<script src="javascript/notify.js"></script>			
+					
 		<!-- Include Bootstrap Datepicker -->
 		<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker.min.css" />
 		<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" />
@@ -418,128 +418,60 @@
                                             
                                             <!-- Alertas - onclick="javascript:$('#delegations-form').dialog('open');return false" -->
                                             
-                                          	<li>
-                                           	<a id="delegButton" onclick="showAlert()">
-                                           		<img width="32" height="32" src="images/alertas.png"/>
-                                           	</a>
-                                           	
-                                           	#if($notifications.size()> 0)
-											<span class="spanAlerts">
-                                           		<a id="delegButtonCount">$nAlerts</a>
-                                           	</span>
-											#else
-												
-											#end
-                                           	
-                                           	
-                                           	<ul id="alert_list" class="notification-area notvisible">
-                                                                                      
-                                           	#if($notifications.size()> 0)
-                                           <div class="table_inc" id="msg_table" style="color:black;" >
-                                           #else
-                                           <div class="table_inc" id="msg_table" style="display:none;color:black;" >
-                                           #end
-                                            <div class="" style="display:inline; width:100%;">
-												<span class="spanAlert" style="color:black; display:inline;	padding: 0; background-color:initial;">$notificationsMsg | </span>
-												
-												<a href="#" onclick="javascript:tabber_right(11, 'inbox.jsp');showAlert(); ">Mostrar Todos</a>
-												</div>
-												<div id="table_notifications" style="">
-												<table class="item_list table" style="color:black;">
-												<thead>
-												<tr class="tab_header">
-												<th style="padding: 8px;"></th>
-												<th></th>
-												<th></th>
-												<th></th>
-																								
-												</tr>
-												<thead>
-												<tbody>
-												#set($odd=1)
-												#foreach($note in $notifications)
-														#if($odd == 0)
-														#set($class_type="even")
-														#set($odd=1)
-														#else
-														#set($class_type="odd")
-														#set($odd=0)
-														#end
-														#if($note.get("read")=="true")
-														#set($text_style="")
-														#set($msg_icon="read")
-														#set($msg_action="U")
-														#set($msg_onclick="document.getElementById('delegButtonCount').text=1 +  Number(document.getElementById('delegButtonCount').text);")
-														#else
-														#set($text_style="font-weight:bold")
-														#set($msg_icon="unread")
-														#set($msg_action="R")
-														#set($msg_onclick="document.getElementById('delegButtonCount').text= document.getElementById('delegButtonCount').text-1;")
-														#end
-														
-												<tr class="tab_row_$class_type" id="msg_tr_$note.get("id")" style="${text_style};border-top:1px solid black">
-												<td class="itemlist_icon" style="padding: 8px;">
-												<a href="javascript:markNotification_alert($note.get("id"), '${msg_action}');" onclick="${msg_onclick}; ">
-														<img class="toolTipImg" src="images/icon_${msg_icon}.png" id="msg_img_$note.get("id")" width="16" height="16" border="0" title="$tooltip_mark_read"></img>
-														</a>
-												</td>
-												<td style="padding: 8px;text-align: left;">$note.get("message") </strong> - <strong>$note.get("date")</strong></br><strong>$note.get("from")</td>
-												
-												<td class="itemlist_icon" style="padding: 8px;">
-												<a onclick="showSchedule(); attributeValueSchedule($note.get("id"));">
-												<img class="toolTipImg" src="images/flowScheduling_new.png" id="msg_img_$note.get("id")" width="16" height="16" border="0" title="Agendar"></img>
+                                          	<!-- NEW -->
+											<li>
+												<a id="delegButton" onclick="showAlert()">
+				                               		<img width="35px" height="32px" src="images/alertas.png"/>
 												</a>
-												</td>										
-				
-												<td class="itemlist_icon" style="padding: 8px;">
-												<a href="javascript:markNotification_alert($note.get("id"), 'D');">
-												<img class="toolTipImg" src="images/icon_delete.png" id="msg_img_$note.get("id")" width="16" height="16" border="0" title="$tooltip_delete"></img>
-												</a>
-												</td>
+												<span class="spanAlerts">
+				                                   	<a id="delegButtonCount">$nAlerts</a>
+				                               	</span>
 												
-												
-										</tr>
-										#end
-										</tbody>
-										</table>
-										</div>
-										</div>
-                                           					</li>
-                                           					
-                                           					<!-- Suspender mensagem  -->
-                                           					
-                                           					</ul>
-                                           					
-                                           					<div id="schedule_list" class="schedule_box notification-area notvisible">
-                                           					<div class="col-md-12" style="margin-top:5%; height: 4rem; border-bottom: 1px solid black;">
-                                           						<div class="col-md-3"><img class="" src="images/arrow_left.png" width="16" height="16" onclick="showSchedule();"/></div>
-                                           						<div class="col-md-9"><span class="spanAlert" style="color:black; display:inline;padding: 0; background-color:initial;">Escolher data para suspender</span></div>
-                                           					</div>
-                                           					
-                                           					<div class="col-md-12" style="margin-top:4%;">
-                                           						<div class="col-md-3" style="width:16px;"></div>
-                                           						<div class="col-md-9 col-sm-6">
-            													  <div class="form-group">
-      																	<input data-provide="datepicker" class="datepicker" id="calendar" style=" border: 0;  outline: 0;  background: transparent;  border-bottom: 1px solid black;">
-      																	
-    															  </div>
-            													
-        													</div>
-        													
-        													<div class="col-md-12" style="margin-top:2%;">
-                                           						
-            													  	<div class="form-group pull-right">
-      																	<a href="#" onclick="${msg_onclick}; "" style="text-decoration: none; " id="btnSalvar" class="teste" ><span class="spanAlert" style="color: #93B6C8 !important;display:inline;padding: 0;background-color:initial;font-size: 1.7rem;">Salvar</span></a> 
-      																</div>
-            													
-       														</div>
-       
-                                           					</div>
-                                           					
-                                           					</div>
-                                           					
-                                           					
-                                           					</li>
+												<ul id="alert_list" class="notification-area notvisible">
+													#if($notifications.size()> 0)
+				                                   	<div class="table_inc" id="msg_table" style="color:black;" >
+				                                   	#else
+				                                   	<div class="table_inc" id="msg_table" style="display:none;color:black;" >
+				                                   	#end
+				                                   		<div class="" style="display:inline; width:100%;">
+															<span class="spanAlert" style="color:black; display:inline;	padding: 0; background-color:initial;">$notificationsMsg | </span>
+															
+															<a href="#" onclick="javascript:tabber_right(11, 'inbox.jsp');showAlert(); ">Show All</a>
+															</div>
+															<div id="table_notifications" style="">
+															
+														</div>
+					                           		</div>
+												</ul>
+												<div id="schedule_list" class="schedule_box notification-area notvisible rounded">
+					               					<div class="col-md-12" style="margin-top:5%; height: 4rem; border-bottom: 1px solid black;">
+					               						<div class="col-md-3"><img class="" src="images/arrow_left.png" width="16" height="16" onclick="showSchedule();"/></div>
+					               						<div class="col-md-9"><span class="spanAlert" style="color:black; display:inline;padding: 0; background-color:initial;">Escolher data e hora</span></div>
+					               					</div>
+					               					
+					               					<div class="col-md-12" style="margin-top: 4%;height: 4rem;">
+					               						<div class="col-md-3" style="width:16px;"></div>
+					               							<div class="col-md-9 col-sm-6">
+														  	<div class="form-group">
+															<div class='input-group date' id='calendar'>
+																 <input type='text' class="form-control" id='suspend_date'/>
+																	<span class="input-group-addon">
+																	<span class="glyphicon glyphicon-calendar"></span>
+																	</span>
+																</div>
+															</div>
+														</div>
+													</div>
+													
+													<div class="col-md-12" style="margin-top:2%;">	               						
+													  	<div class="form-group pull-right">
+															<a href="#" style="text-decoration: none; " id="btnSalvar" class="teste"><span class="spanAlert" style="color: #93B6C8 !important;display:inline;padding: 0;background-color:initial;font-size: 1.7rem;">Salvar</span></a> 
+														</div>										
+													</div>                                           				
+											</div>							
+											</li>
+											<!-- NEW -->
+											
                                           #end
                                           
 
@@ -852,50 +784,31 @@
 				
 		</div>
 		
-		<script>
+		<script>					
+			
+			$(function () {
+                $('#calendar').datetimepicker({
+	                inline: true,
+	                sideBySide: true
+	            });
+	       	});
+            	
+			function runScript(e) {
+	    		if (e.keyCode == 13) {
+	    			e.preventDefault();
+	    		
+	        	tabber_right(8, 'user_procs.jsp', get_params(document.search_index));
+	        	return false;
+	   		 	}
+			}
 		
-		$('#calendar').datepicker.dates['pt'] = {
-    		days: ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],
-    		daysShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-   			daysMin: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
-    		months: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
-    		monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    		today: "Today",
-    		clear: "Clear",
-    		format: "mm/dd/yyyy",
-    		titleFormat: "MM yyyy", /* Leverages same syntax as 'format' */
-    		weekStart: 0
-		};
-		
-		
-		$('#calendar').datepicker({
-		    language: 'pt',
-    		format: 'yyyy-mm-dd',
-    		weekStart: 1,
-            autoclose: true,
-            todayHighlight: true
-   			
-		});
+			function attributeValueSchedule(value){
+				//document.getElementById('btnSalvar').href = 'javascript:markNotification_alert(' + value + ', \'S\',document.getElementById(\'suspend_date\').value);showSchedule();';
+				document.getElementById('btnSalvar').href = 'javascript:showSchedule();markNotification_alert(' + value + ', \'S\',document.getElementById(\'suspend_date\').value);';
 				
-		function runScript(e) {
-    		if (e.keyCode == 13) {
-    			e.preventDefault();
-    		
-        	tabber_right(8, 'user_procs.jsp', get_params(document.search_index));
-        	return false;
-   		 	}
-		}
-		
-		</script>
-		
-		<script>
-		function attributeValueSchedule(value){
+				return false;	    
+			}
 			
-		document.getElementById('btnSalvar').href = "javascript:markNotification_schedule(" + value + ", 'S')";
-			
-	    return false;
-	    
-		}
 		</script>
 		
 	</body>

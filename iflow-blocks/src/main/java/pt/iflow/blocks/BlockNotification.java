@@ -1,6 +1,7 @@
 package pt.iflow.blocks;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import pt.iflow.api.core.AuthProfile;
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.flows.IFlowData;
 import pt.iflow.api.notification.NotificationManager;
+import pt.iflow.api.presentation.DateUtility;
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
@@ -48,6 +50,9 @@ public class BlockNotification extends Block {
   protected static final String toTypeIntervenients = "intervenient"; //$NON-NLS-1$
   
   protected static final String slinkDetalhe = "linkDetalhe";
+  protected final static String sEXTERNAL_LINK = "external_link"; //$NON-NLS-1$
+  protected final static String sPICK_TASK = "pick_task"; //$NON-NLS-1$
+  protected final static String sACTIVE_DATE = "active_date"; //$NON-NLS-1$
 
   protected static final String sSEPARATOR = ";"; //$NON-NLS-1$
   
@@ -120,6 +125,34 @@ public class BlockNotification extends Block {
         catch (Exception ee) {        
         }
       }
+      
+      Boolean pickTask = false;
+      try {
+    	  pickTask = Boolean.valueOf(procData.transform(userInfo, getAttribute(sPICK_TASK)));
+      }catch (Exception e) {}
+      
+      String externalLink = "";
+      try {
+    	  externalLink = procData.transform(userInfo, getAttribute(sEXTERNAL_LINK));
+      }catch (Exception e) {}
+      
+      Date activeDate = null;
+      try {
+    	  Object varValue = procData.get(getAttribute(sACTIVE_DATE)).getValue();
+    	  if (varValue instanceof Date) {
+    		  activeDate = (Date)varValue;
+    	  }
+    	  else {
+    		  if (varValue instanceof String) {
+    			  activeDate = DateUtility.parseFormDate(userInfo, (String)varValue);
+    		  }
+    		  else if (varValue instanceof Long) {
+    			  activeDate = new Date((Long)varValue);
+    		  }
+    	  }    	  
+      }catch (Exception e) {
+    	  activeDate = null;
+      }
 
       AuthProfile ap = BeanFactory.getAuthProfileBean();
 
@@ -175,7 +208,7 @@ public class BlockNotification extends Block {
         	linkparams = "false";
         
         String message = procData.transform(userInfo, getAttribute("message"));
-        int r = BeanFactory.getNotificationManagerBean().notifyUsers(userInfo, from, usersToNotify, message, linkparams);
+        int r = BeanFactory.getNotificationManagerBean().notifyUsers(userInfo, from, usersToNotify, message, linkparams, pickTask, externalLink, activeDate);
         if (r == NotificationManager.NOTIFICATION_OK) {
           outPort = portSuccess;
         }

@@ -867,6 +867,11 @@ create table user_notifications (
   userid varchar(100) not null,
   notificationid int not null,
   isread int(1) not null default 0,
+  suspend DATETIME NULL,
+  picktask smallint,
+  showdetail smallint,
+  externallink varchar(512),
+  activedate DATETIME NULL,
   constraint user_notifications_pk primary key (userid,notificationid),
   CONSTRAINT fk_user_notifications FOREIGN KEY (notificationid)
     REFERENCES notifications (id)

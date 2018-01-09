@@ -16,9 +16,12 @@ public class NotificationImpl implements Serializable, Notification {
 	private String link = "";
 	private String openFlowid;
 	private Date suspend;
+	private Boolean pickTask;
+	private String externalLink;
 
 	public NotificationImpl() {
-
+		this.setPickTask(false);
+		this.setExternalLink("");
 	}
 
 	public NotificationImpl(int id, String sender, Date created, String message, boolean read, Date suspend) {
@@ -28,6 +31,8 @@ public class NotificationImpl implements Serializable, Notification {
 		this.message = message;
 		this.read = read;
 		this.suspend= suspend;
+		this.setPickTask(false);
+		this.setExternalLink("");
 	}
 
 	/*
@@ -170,5 +175,26 @@ public class NotificationImpl implements Serializable, Notification {
 
 	public void setOpenFlowid(String openFlowid) {
 		this.openFlowid = openFlowid;
+	}
+
+	public Boolean getPickTask() {
+		return pickTask;
+	}
+
+	public void setPickTask(Boolean pickTask) {
+		this.pickTask = pickTask;
+	}
+
+	public String getExternalLink() {
+		return externalLink;
+	}
+
+	public void setExternalLink(String externalLink) {
+		this.externalLink = externalLink;
+	}
+
+	@Override
+	public Boolean isPickTask() {
+		return pickTask;
 	}
 }

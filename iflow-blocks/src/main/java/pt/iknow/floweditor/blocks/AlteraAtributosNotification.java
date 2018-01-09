@@ -57,12 +57,18 @@ public class AlteraAtributosNotification extends AbstractAlteraAtributos impleme
   protected final static String sNOTIFICATION_TO = "to"; //$NON-NLS-1$
   protected final static String sNOTIFICATION_TO_PROFILE = "profile"; //$NON-NLS-1$
   protected final static String sNOTIFICATION_MESSAGE = "message"; //$NON-NLS-1$
+  protected final static String sPICK_TASK = "pick_task"; //$NON-NLS-1$
+  protected final static String sEXTERNAL_LINK = "external_link"; //$NON-NLS-1$
+  protected final static String sACTIVE_DATE = "active_date"; //$NON-NLS-1$
 
   public final String sNOTIFICATION_TO_TYPE_DESC;
   public final String sNOTIFICATION_TO_PERFIL_DESC;
   public final String sNOTIFICATION_TO_PERFILTEXTO_DESC;
   public final String sNOTIFICATION_TO_USER_DESC;
   public final String sNOTIFICATION_MESSAGE_DESC;
+  public final String sPICK_TASK_DESC;
+  public final String sEXTERNAL_LINK_DESC;
+  public final String sACTIVE_DATE_DESC;
   public final String sNOTIFICATION_NA_DESC;
 
   private final String[] toTypeModes;
@@ -79,6 +85,9 @@ public class AlteraAtributosNotification extends AbstractAlteraAtributos impleme
 
   JTextField _jtfToPerfilTexto = null;
   JTextField _jtfMessage = null;
+  JTextField _jtfPickTask = null;
+  JTextField _jtfExternalLink = null;
+  JTextField _jtfActiveDate = null;
   JComboBox _jcbToTypeModes = null;
   JComboBox _jcbToPerfil = null;
 
@@ -103,7 +112,10 @@ public class AlteraAtributosNotification extends AbstractAlteraAtributos impleme
     sNOTIFICATION_TO_PERFILTEXTO_DESC = adapter.getString("AlteraAtributosNotification.toTextProfile"); //$NON-NLS-1$
     sNOTIFICATION_TO_USER_DESC = adapter.getString("AlteraAtributosNotification.toUser"); //$NON-NLS-1$
     sNOTIFICATION_MESSAGE_DESC = adapter.getString("AlteraAtributosNotification.message"); //$NON-NLS-1$
+    sPICK_TASK_DESC = adapter.getString("AlteraAtributosNotification.pickTask"); //$NON-NLS-1$
+    sEXTERNAL_LINK_DESC = adapter.getString("AlteraAtributosNotification.externalLink"); //$NON-NLS-1$
     sNOTIFICATION_NA_DESC = adapter.getString("AlteraAtributosNotification.na"); //$NON-NLS-1$
+    sACTIVE_DATE_DESC = "Data de activação"; //$NON-NLS-1$
 
     toTypeModes = new String[]{ _sSELECT, toTypeUserDesc, toTypeIntervenientesDesc, toTypePerfilDesc, toTypePerfilTextoDesc };
     AlteraAtributosColumnNames = new String[]{ adapter.getString("AlteraAtributosNotification.name"), adapter.getString("AlteraAtributosNotification.value") }; //$NON-NLS-1$ //$NON-NLS-2$
@@ -150,8 +162,8 @@ public class AlteraAtributosNotification extends AbstractAlteraAtributos impleme
       size = 4;
     }
      
-    if(size == 4) size = 5;
-    
+    if(size == 4) size = 7;
+    size = 8;
     data = new String[size][2];
 
     String stmp = null;
@@ -210,14 +222,50 @@ public class AlteraAtributosNotification extends AbstractAlteraAtributos impleme
     data[3][1] = stmp;
     this._jtfMessage = new JTextField();
     this._jtfMessage.setText((String) data[3][1]);
-
-    String[][] dataAux = new  String[4][2];
     
-for(int i= 0; i < 4 ; i++){
-    dataAux[i][0] = data[i][0];
-    dataAux[i][1] = data[i][1];
-}
+    stmp = null;
+    data[5][0] = sPICK_TASK_DESC;
+    if (atributos.size() > 5 && atributos.get(5) != null)
+      stmp = new String(((Atributo) atributos.get(5)).getValor());
+    if (StringUtilities.isEmpty(stmp))
+      stmp = ""; //$NON-NLS-1$
+    data[5][1] = stmp;
+    this._jtfPickTask = new JTextField();
+    this._jtfPickTask.setText((String) data[5][1]);
 	
+	stmp = null;
+    data[6][0] = sEXTERNAL_LINK_DESC;
+    if (atributos.size() > 6 && atributos.get(6) != null)
+      stmp = new String(((Atributo) atributos.get(6)).getValor());
+    if (StringUtilities.isEmpty(stmp))
+      stmp = ""; //$NON-NLS-1$
+    data[6][1] = stmp;
+    this._jtfExternalLink = new JTextField();
+    this._jtfExternalLink.setText((String) data[6][1]);
+    
+    stmp = null;
+    data[7][0] = sACTIVE_DATE_DESC;
+    if (atributos.size() > 7 && atributos.get(7) != null)
+      stmp = new String(((Atributo) atributos.get(7)).getValor());
+    if (StringUtilities.isEmpty(stmp))
+      stmp = ""; //$NON-NLS-1$
+    data[7][1] = stmp;
+    this._jtfActiveDate = new JTextField();
+    this._jtfActiveDate.setText((String) data[7][1]);
+
+    String[][] dataAux = new  String[7][2];
+    
+	for(int i= 0; i <5 ; i++){
+	    dataAux[i][0] = data[i][0];
+	    dataAux[i][1] = data[i][1];
+	}
+	dataAux[4][0] = data[5][0];
+    dataAux[4][1] = data[5][1];
+	dataAux[5][0] = data[6][0];
+    dataAux[5][1] = data[6][1];
+    dataAux[6][0] = data[7][0];
+    dataAux[6][1] = data[7][1];
+
     jTable1 = new MyJTableX(dataAux, AlteraAtributosColumnNames);
 
     /* table model -> can not edit 1st collunn */
@@ -241,6 +289,12 @@ for(int i= 0; i < 4 ; i++){
     rm.addEditorForCell(2, 1, ed);
     ed = new DefaultCellEditor(this._jtfMessage);
     rm.addEditorForCell(3, 1, ed);
+    ed = new DefaultCellEditor(this._jtfPickTask);
+    rm.addEditorForCell(4, 1, ed);
+	ed = new DefaultCellEditor(this._jtfExternalLink);
+    rm.addEditorForCell(5, 1, ed);
+    ed = new DefaultCellEditor(this._jtfActiveDate);
+    rm.addEditorForCell(6, 1, ed);
 
     this._jcbToTypeModes.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -254,6 +308,7 @@ for(int i= 0; i < 4 ; i++){
   	  if(atributo.getNome().equals(slinkDetalhe)){
   	    data[4][0] = slinkDetalhe;
   	    data[4][1] = atributo.getValor();
+  	    break;
   	  }
     }
     
@@ -372,7 +427,7 @@ for(int i= 0; i < 4 ; i++){
     JPanel fillerPanel = new JPanel();
 //    this.getContentPane().add(fillerPanel, BorderLayout.NORTH);
 
-    //CHECKBOX NOTIFICAO
+    //CHECKBOX NOTIFICA
     JPanel checkPanel = new JPanel();
     link.setText("Incluir link para detalhes do processo");
     link.setSelected(Boolean.valueOf("" + data[4][1]));
@@ -407,6 +462,15 @@ for(int i= 0; i < 4 ; i++){
 
     data[4][0] = slinkDetalhe;
     data[4][1] = ""+link.isSelected();
+    
+    data[5][0] = sPICK_TASK;
+    data[5][1] = jTable1.getStringAt(4, 1);
+	
+	data[6][0] = sEXTERNAL_LINK;
+    data[6][1] = jTable1.getStringAt(5, 1);
+    
+    data[7][0] = sACTIVE_DATE;
+    data[7][1] = jTable1.getStringAt(6, 1);
     
     exitStatus = EXIT_STATUS_OK;
     dispose();

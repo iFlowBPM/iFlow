@@ -152,7 +152,7 @@
     
     //int nNOTIFICATION_LIMIT = 10;
     
- // prepare notification data
+  // prepare notification data
     Collection<Notification> notifications = BeanFactory.getNotificationManagerBean().listAllNotifications(userInfo);
 	Collection<Map<String,String>> notes = new ArrayList<Map<String,String>>();
 	int n = 0;
@@ -205,10 +205,7 @@
     hsSubst.put("notificationsMsg", messages.getString("main_content.notifications.notificationsMsg"));
        
     hsSubst.put("notificationtitle", messages.getString("inbox.notificationtitle"));
-    hsSubst.put("notificationitem", messages.getString("inbox.notificationitem"));
-    
- 
-	
+    hsSubst.put("notificationitem", messages.getString("inbox.notificationitem"));    
 	// tutorial and help stuff
 
 	boolean helpMode = userInfo.getUserSettings().isHelpMode();
@@ -361,8 +358,7 @@
 	hsSubst.put("menuLocation", orgTheme.getMenuLocation());
 	hsSubst.put("procMenuVisible", orgTheme.getProcMenuVisible() ? "yes" : "no");
 
-	//Collection<Notification> notifications = BeanFactory.getNotificationManagerBean()
-			//.listNotifications(userInfo);
+	notifications = BeanFactory.getNotificationManagerBean().listNotifications(userInfo);
 	Collection<DelegationInfoData> delegations = BeanFactory.getDelegationInfoBean()
 			.getDeployedReceivedDelegations(userInfo);
 	Collection<Notification> msgs = BeanFactory.getNotificationManagerBean().listAllNotifications(userInfo);

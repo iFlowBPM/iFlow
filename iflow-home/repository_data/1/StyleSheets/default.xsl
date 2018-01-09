@@ -808,12 +808,10 @@
 					window.parent.onresize = function(event) {
 					initProcFrame();};					
 				</script>
-				<script type="text/javascript">
-				alert(1);				
+				<script type="text/javascript">			
 				$jQuery(document).ready(function () {
 					$jQuery("table").stickyTableHeaders();
-				});
-				alert(2);
+				});				
 				</script>
 			</body>
 		</html>
