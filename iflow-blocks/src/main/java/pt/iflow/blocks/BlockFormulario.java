@@ -2445,7 +2445,7 @@ public class BlockFormulario extends Block implements FormOperations {
 
 						// files must be explicitly removed, hence:
 						for (ProcessListItem docItem : removedDocs) {
-							if (docItem.getValue() == null) {
+							if (docItem.getValue() != null) {
 								docsVar.removeItem(docItem);
 							}
 						}
