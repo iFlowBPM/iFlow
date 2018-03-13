@@ -974,14 +974,15 @@ public class BlockFormulario extends Block implements FormOperations {
 						if (StringUtils.isEmpty(stmp3)) {
 							stmp3 = null;
 						} else {
-							if (stmp3.indexOf("\"") > -1) {
-								// try to string parse
-								stmp4 = procData.transform(userInfo, stmp3);
-								if (StringUtils.isNotEmpty(stmp4)) {
-									stmp3 = stmp4;
-								}
-								stmp4 = null;
-							}
+							stmp3 = procData.transform(userInfo, stmp3);
+//							if (stmp3.indexOf("\"") > -1) {
+//								// try to string parse
+//								stmp4 = procData.transform(userInfo, stmp3);
+//								if (StringUtils.isNotEmpty(stmp4)) {
+//									stmp3 = stmp4;
+//								}
+//								stmp4 = null;
+//							}
 						}
 					}
 					if (stmp3 != null) {
