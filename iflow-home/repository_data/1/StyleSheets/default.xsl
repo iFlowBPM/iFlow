@@ -109,8 +109,7 @@
 				<script type="text/javascript"
 					src="{$url_prefix}/javascript/sexy-combo/jquery.sexy-combo.js" />
 				<script type="text/javascript" src="{$url_prefix}/javascript/ckeditor/ckeditor.js" />
-				<script type="text/javascript"
-					src="{$url_prefix}/javascript/ckeditor/adapters/jquery.js" />
+				<script type="text/javascript" src="{$url_prefix}/javascript/ckeditor/adapters/jquery.js" />
 				<!-- Carrega codigo javacript de interaccao com a applet e prepara o 
 					ambiente -->
 				<script type="text/javascript" src="{$url_prefix}/javascript/applet_functions.js"></script>
@@ -459,7 +458,7 @@
 
 					li.field {
 					margin: 2px 0;
-					text-align: right;
+					text-align: initial;
 					clear: both;
 					min-height:
 					1.3em;
@@ -1402,37 +1401,32 @@
 					<xsl:if test="type='rich_textarea'">
 						<div class="" align="right">
 							<xsl:attribute name="style">
-					<xsl:choose>
-						<xsl:when test="string-length(height) &gt; 0">
-							<xsl:text>height:</xsl:text><xsl:value-of select="height/text()+165" />;
-						</xsl:when>
-						<xsl:otherwise>
-							<xsl:text>height:465;</xsl:text>
-						</xsl:otherwise>
-					</xsl:choose>
-				</xsl:attribute>
-							<textarea name="{variable}">
+								<xsl:choose>
+									<xsl:when test="string-length(height) &gt; 0">
+										<xsl:text>height:</xsl:text><xsl:value-of select="height/text()+165" />;
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:text>height:465;</xsl:text>
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:attribute>
+							<textarea name="{variable}" >
 								<xsl:attribute name="id">
-						<xsl:value-of select="variable/text()" />
-					</xsl:attribute>
+									<xsl:value-of select="variable/text()" />
+								</xsl:attribute>
 								<xsl:attribute name="class">
-						<xsl:text></xsl:text>
-						<xsl:if test="disabled='true' or readonly='true'">
-							<xsl:text> readonly</xsl:text>
-						</xsl:if>
-						</xsl:attribute>
+									<xsl:text></xsl:text>
+									<xsl:if test="disabled='true' or readonly='true'">
+										<xsl:text> readonly</xsl:text>
+									</xsl:if>
+									</xsl:attribute>
 								<xsl:if test="disabled='true' or readonly='true'">
 									<xsl:attribute name="readonly">
-							<xsl:text>readonly</xsl:text>
-						</xsl:attribute>
+										<xsl:text>readonly</xsl:text>
+									</xsl:attribute>
 								</xsl:if>
 								<xsl:apply-templates select="value/text()" />
-							</textarea>
-							<script type="text/javascript">
-								ajaxSavedRichTextAreaValues.push('
-								<xsl:value-of select="variable/text()" />
-								');
-							</script>
+							</textarea>							
 						</div>
 						<xsl:if test="string-length(is_rich_text_area) &gt; 0">
 							<script type="text/javascript">
@@ -1512,22 +1506,22 @@
 						</label>
 						<select class="txt form-control pull-right combobox" style="width:250px;">
 							<xsl:attribute name="name">
-			<xsl:value-of select="variable/text()" />
-		</xsl:attribute>
+								<xsl:value-of select="variable/text()" />
+							</xsl:attribute>
 							<xsl:if test="string-length(onchange_submit) &gt; 0">
 								<xsl:attribute name="onChange">
-				<xsl:apply-templates select="onchange_submit" />
-			</xsl:attribute>
+									<xsl:apply-templates select="onchange_submit" />
+								</xsl:attribute>
 							</xsl:if>
 							<xsl:for-each select="option">
 								<option>
 									<xsl:attribute name="value">
-				<xsl:value-of select="value/text()" />
-			</xsl:attribute>
+										<xsl:value-of select="value/text()" />
+									</xsl:attribute>
 									<xsl:if test="selected='yes'">
 										<xsl:attribute name="selected">
-				<xsl:text>selected</xsl:text>
-				</xsl:attribute>
+											<xsl:text>selected</xsl:text>
+										</xsl:attribute>
 									</xsl:if>
 									<xsl:value-of select="text/text()" />
 								</option>
@@ -2077,8 +2071,8 @@
 														</xsl:when>
 														<xsl:otherwise>
 															<div id="{variable}_add_container form-group">
-																<div class="btn btn-default"
-																	style="width:350px;height:55px;position:relative;top:2px; padding: 15px 22px;">Arraste ou pressione para carregar ficheiro</div>
+																<div class="button btn btn-default"
+																	style="position:relative;top:2px; ">Arraste ou pressione para carregar ficheiro</div>
 																<input type="file" name="{variable}_add" size="20"
 																	style="width:335px;opacity:0;position:relative;top:-35px;height:35px">
 																	<xsl:if test="accept!=''">

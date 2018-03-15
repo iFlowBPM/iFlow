@@ -95,6 +95,7 @@ public class BlockDataImportInvisible extends Block {
 
       retObj = this.importSpreadSheet(userInfo, procData, "auto", doc.getFileName(), doc.getContent());
     } catch (Exception e) {
+    	Logger.error(userInfo.getUserId(), this, "after", procData.getSignature() + "Exception caught: ", e);    	
       return portError;
     }
     return portSuccess;

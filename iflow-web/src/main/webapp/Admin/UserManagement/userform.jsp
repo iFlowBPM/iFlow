@@ -341,9 +341,9 @@
 <% } %>
 
 
-<%--  
+ 
 
-Vai buscar as propriedades extras existentes nas propriedades do utilizador
+<!--  Vai buscar as propriedades extras existentes nas propriedades do utilizador-->
 
 
 <% for (int i = 0; i < listExtraValues.length; i++) { 
@@ -351,7 +351,7 @@ Vai buscar as propriedades extras existentes nas propriedades do utilizador
   <if:formInput name="<%=\"extra_\"+listExtraProperties[i]%>" labelkey="<%=fieldText%>" type="text" value='<%=listExtraValues[i]%>' edit="<%=bEdit%>" required="false" maxlength="50" />
 <% } %>
 
---%>
+
 <% if(!Const.bUSE_EMAIL && bEdit) { %>
 <% if("add".equals(newAction)) { %>
   <if:formInput name="__xxxxx__" label="&nbsp;" type="text" value="" edit="false" required="false" />

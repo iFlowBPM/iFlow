@@ -145,8 +145,8 @@ public class BlockFileDataImport extends Block {
     try {
       String sType = procData.transform(userInfo, sTypeVar);
       ProcessListVariable docsVar = procData.getList(sDocumentVar);
-      Document doc = docBean.getDocument(userInfo, procData, ((Long) docsVar.getItem(0).getValue()).intValue());
-
+      //Document doc = docBean.getDocument(userInfo, procData, ((Long) docsVar.getItem(0).getValue()).intValue());
+      Document doc = docBean.getDocument(userInfo, procData, Integer.valueOf(docsVar.getItem(0).getValue().toString()));
       retObj = this.importSpreadSheet(userInfo, procData, "auto", doc.getFileName(), doc.getContent());
     } catch (Exception e) {
       return portError;

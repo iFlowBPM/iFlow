@@ -11,6 +11,7 @@ div.sexy {
     margin: 0;
     padding: 0;
     width: 146px;
+    padding-top:42px;
 }
 
 div.sexy input {
@@ -58,7 +59,7 @@ div.sexy div.list-wrapper {
 }
 
 div.sexy div.list-wrapper-up {
-    top: auto;
+    /*top: auto;*/
     bottom: 21px;
 }
 

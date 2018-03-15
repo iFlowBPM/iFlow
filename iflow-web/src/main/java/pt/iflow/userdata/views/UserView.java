@@ -130,4 +130,19 @@ public String getOrgAdm() {
     return get(ORGADM_USERS);
   }
 
+@Override
+public String getDepartment() {
+	return get(DEPARTMENT);
+}
+
+@Override
+public String getManager() {
+	return get(MANAGER);
+}
+
+@Override
+public String getTitle() {
+	return get(TITLE);
+}
+
 }

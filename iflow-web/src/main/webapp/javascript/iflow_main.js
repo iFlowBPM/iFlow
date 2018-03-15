@@ -1656,44 +1656,8 @@ function setScrollPosition(yPosition) {
 }
 
 function InicializeRichTextField(elementName, richTextComponentTitle, richTextComponentWidth, richTextComponentHeight){
-	$jQuery('#'+elementName).ckeditor();	
-/*
- * var isReadOnly = document.getElementById(elementName).readOnly; var
- * collapseToolbar = true;
- * 
- * //Setup some private variables var Dom = YAHOO.util.Dom; var Event =
- * YAHOO.util.Event; var richTextEditorComponent = null;
- * 
- * var timer = null;
- * 
- * var update = function(ev) { if (timer) { clearTimeout(timer); } timer =
- * setTimeout(function() { Dom.get(elementName).innerHTML =
- * richTextEditorComponent.cleanHTML(); richTextEditorComponent.saveHTML(); },
- * 100); };
- * 
- * richTextComponentWidth = document.getElementById('main').clientWidth + 'px';
- * if (richTextComponentWidth == undefined){ richTextComponentWidth = '600px'; }
- * if (richTextComponentHeight == undefined){ richTextComponentHeight = '300px'; }
- * if (richTextComponentTitle == undefined || richTextComponentTitle == ''){
- * richTextComponentTitle = "Text Editing Tools"; }
- * 
- * //The SimpleEditor config var richTextEditorComponentConfiguration = {
- * height: richTextComponentHeight, width: richTextComponentWidth, dompath:
- * false, //Turns on the bar at the bottom animate: true //Animates the opening,
- * closing and moving of Editor windows };
- * 
- * richTextEditorComponent = new
- * YAHOO.widget.Editor(document.getElementById(elementName),
- * richTextEditorComponentConfiguration);
- * richTextEditorComponent.on('afterNodeChange', update);
- * richTextEditorComponent.on('editorKeyDown', update);
- * 
- * richTextEditorComponent._defaultToolbar.titlebar = richTextComponentTitle;
- * 
- * 
- * richTextEditorComponent.render(); var cleanPaste = new
- * CleanPaste(richTextEditorComponent);
- */
+	var editor = CKEDITOR.replace(elementName);
+	editor.resize(richTextComponentWidth, richTextComponentHeight, true);
 }
 
 function blockPopupCallerForm(){
