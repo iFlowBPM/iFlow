@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -323,8 +324,12 @@ public class DocumentsBean implements Documents {
       pst.setString(1, adoc.getFileName());
       String filePath = null;
       if (docDataInDB) {
-        ByteArrayInputStream isBody = new ByteArrayInputStream(adoc.getContent());
-        pst.setBinaryStream(2, isBody, adoc.getContent().length);
+        if(adoc instanceof DocumentDataStream){
+        	pst.setBinaryStream(2, ((DocumentDataStream) adoc).getContentStream());
+        } else {
+        	ByteArrayInputStream isBody = new ByteArrayInputStream(adoc.getContent());
+            pst.setBinaryStream(2, isBody, adoc.getContent().length);            
+        }
       } else {
         pst.setBinaryStream(2, null, 0);
       }
@@ -349,9 +354,13 @@ public class DocumentsBean implements Documents {
           pst.setString(1, filePath);
           pst.setInt(2, adoc.getDocId());
           pst.executeUpdate();
-          FileOutputStream fos = new FileOutputStream(filePath);
-          fos.write(adoc.getContent());
-          fos.close();
+          if(adoc instanceof DocumentDataStream){
+        	  java.nio.file.Files.copy(((DocumentDataStream) adoc).getContentStream(), new File(filePath).toPath(), StandardCopyOption.REPLACE_EXISTING);         	
+          } else {
+        	  FileOutputStream fos = new FileOutputStream(filePath);              
+        	  fos.write(adoc.getContent());
+        	  fos.close();
+          }          
         } catch(FileNotFoundException ex) {
           Logger.error(userInfo.getUtilizador(), this, "addDocument", procData.getSignature() + " File not Found.", ex);
         } catch(IOException ioe) {
