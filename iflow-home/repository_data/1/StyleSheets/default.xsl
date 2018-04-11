@@ -458,7 +458,7 @@
 
 					li.field {
 					margin: 2px 0;
-					text-align: initial;
+					text-align: right;
 					clear: both;
 					min-height:
 					1.3em;
@@ -1488,17 +1488,17 @@
 					</xsl:if>
 
 					<xsl:if test="type='selection'">
-						<label>
+						<label style="text-align: initial">
 							<xsl:attribute name="class">
-			<xsl:value-of select="type" />
-			<xsl:text> field</xsl:text>
-			<xsl:if test="$multicol &gt; 1">
-				<xsl:text> multicol</xsl:text>
-			</xsl:if>
-		</xsl:attribute>
+								<xsl:value-of select="type" />
+								<xsl:text> field</xsl:text>
+								<xsl:if test="$multicol &gt; 1">
+									<xsl:text> multicol</xsl:text>
+								</xsl:if>
+							</xsl:attribute>
 							<xsl:attribute name="for">
-			<xsl:value-of select="variable/text()" />
-		</xsl:attribute>
+								<xsl:value-of select="variable/text()" />
+							</xsl:attribute>
 							<xsl:apply-templates select="text" />
 							<xsl:if test="obligatory='true'">
 								<em>*</em>
