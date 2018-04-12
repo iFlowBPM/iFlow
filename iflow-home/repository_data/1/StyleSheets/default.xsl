@@ -488,7 +488,7 @@
 					{
 					font-weight: bold;
 					min-height:20px;
-					/*height:auto !important;*/
+					height:auto !important;
 					height:45px;
 					padding: 5px 5px 2px 0;
 					/*background-color: #e0e0e0;*/
@@ -1022,7 +1022,7 @@
 					</xsl:if>
 
 					<xsl:if test="type = 'textlabel'">
-						<label>
+						<label style="text-align: left;">
 							<xsl:attribute name="class">
 				<xsl:value-of select="type" />
 				<xsl:text> field</xsl:text>
