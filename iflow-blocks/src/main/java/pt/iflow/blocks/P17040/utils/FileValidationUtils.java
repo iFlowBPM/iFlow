@@ -1,10 +1,19 @@
 package pt.iflow.blocks.P17040.utils;
 
+import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
+
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+
+import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+
+import pt.iflow.api.processdata.ProcessData;
+import pt.iflow.api.utils.UserInfoInterface;
 
 public class FileValidationUtils {
     
@@ -63,4 +72,26 @@ public class FileValidationUtils {
         return check == checkDigit;
         
       }
+    
+    public static boolean isValidDomainValue(UserInfoInterface userInfo, DataSource datasource, String domain, String value) throws SQLException{
+    	if(value==null)
+    		return true;
+    	
+    	return retrieveSimpleField(datasource, userInfo,
+				"select * from {0} where codigo = {1} ", new Object[] {domain, value }).size() == 1 ;
+    }
+    
+    public static boolean isValidIdEntEN008(UserInfoInterface userInfo, DataSource datasource, HashMap<String, Object> idEntValues) throws SQLException{
+    	if (StringUtils.equalsIgnoreCase("" + idEntValues.get("type"), "i1")
+				&& StringUtils.isAlpha(idEntValues.get("nif_nipc").toString()))
+			return false;
+    	return true;
+	}
+    
+    public static boolean isValidIdEntEN010(UserInfoInterface userInfo, DataSource datasource, HashMap<String, Object> idEntValues) throws SQLException{
+		if (StringUtils.equalsIgnoreCase("" + idEntValues.get("type"), "i1")
+				&& !FileValidationUtils.isValidNif(idEntValues.get("nif_nipc").toString()))
+			return false;
+		return true;
+    }
 }

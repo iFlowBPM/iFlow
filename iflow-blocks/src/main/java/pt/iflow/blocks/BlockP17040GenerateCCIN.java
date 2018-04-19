@@ -38,6 +38,8 @@ public class BlockP17040GenerateCCIN extends BlockP17040Generate {
 				new Object[] { crcId });
 		for (Integer infInstId : infInstIdList) {
 			writer.writeStartElement("infInst");
+			fillAtributtes(writer, datasource, userInfo,
+					"select * from infInst where id = {0} ", new Object[] { infInstId });
 			
 			//lstInfRiscoInst
 			writer.writeStartElement("lstInfRiscoInst");
