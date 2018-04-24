@@ -1,0 +1,90 @@
+package pt.iflow.blocks.P17040.utils;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.Date;
+
+import javax.sql.DataSource;
+
+import pt.iflow.api.db.DatabaseInterface;
+import pt.iflow.api.utils.Logger;
+
+public class GestaoCrc {
+
+	public static enum Status {
+		IMPORTED(0), VALID(1), NOT_VALID(2), BDP_SENT(3), BDP_RECEIVED(4);
+		private int value;
+
+		private Status(int value) {
+			this.value = value;
+		}
+
+		public int getValue() {
+			return value;
+		}
+	}
+
+	public static Integer markAsImported(Integer crcId, Integer originalInputDocumentId, String username,
+			DataSource datasource) throws SQLException {
+		Connection db = datasource.getConnection();
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			String query = "insert into u_gestao(out_id, status_id, importdate, importuser, out_docid) values(?,?,?,?,?)";
+			pst = db.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			pst.setInt(1, crcId);
+			pst.setInt(2, Status.IMPORTED.getValue());
+			pst.setTimestamp(3, new Timestamp((new Date()).getTime()));
+			pst.setString(4, username);
+			pst.setInt(5, originalInputDocumentId);
+			pst.executeQuery();
+			rs = pst.getGeneratedKeys();
+
+			return rs.getInt(1);
+		} catch (Exception e) {
+			Logger.error(username, "GestaoCrc", "markAsImported", e.getMessage(), e);
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+
+		return null;
+	}
+
+	public static Boolean idEntAlreadyCreated(String idEntValue, String username, DataSource datasource)
+			throws SQLException {
+		Connection db = datasource.getConnection();
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			String query = "select idEnt.id " 
+					+ "from u_gestao, conteudo, avisRec, fichAce, regMsg, idEnt "
+					+ "where idEnt.id = regMsg.idEnt_id   " 
+					+ "	and regMsg.fichAce_id = fichAce.id "
+					+ "	and fichAce.avisRec_id = avisRec.id " 
+					+ "    and avisRec.conteudo_id = conteudo.id "
+					+ "    and conteudo.id = u_gestao.in_id " 
+					+ "    and u_gestao.status_id = 4 "
+					+ "    and regMsg.id not in (select regMsg_id from msg) "
+					+ "    and (idEnt.nif_nipc = ? or idEnt.codigo_fonte = ?)";
+			
+			pst = db.prepareStatement(query);
+			pst.setString(1, idEntValue);
+			pst.setString(2, idEntValue);
+			rs = pst.executeQuery();
+			
+			if(rs.next())
+				return true;
+			else 
+				return false;
+		} catch (Exception e) {
+			Logger.error(username, "GestaoCrc", "markAsImported", e.getMessage(), e);
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+		return false;
+		}
+}
