@@ -1,8 +1,10 @@
 package pt.iflow.blocks;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -97,12 +99,14 @@ public abstract class BlockP17040Import extends Block {
 
 		try {
 			ProcessListVariable docsVar = procData.getList(sInputDocumentVar);
-			Document inputDoc = docBean.getDocument(userInfo, procData,((Integer) docsVar.getItem(0).getValue()).intValue());
+			Document inputDoc = docBean.getDocument(userInfo, procData,((Long) docsVar.getItem(0).getValue()).intValue());
 			String originalNameInputDoc = inputDoc.getFileName();			
 			InputStream inputDocStream = new ByteArrayInputStream(inputDoc.getContent());
 			File tmpOutputErrorDocumentFile = File.createTempFile(this.getClass().getName() + OUTPUT_ERROR_DOCUMENT, ".tmp");
 			File tmpOutputActionDocumentFile = File.createTempFile(this.getClass().getName() + OUTPUT_ACTION_DOCUMENT, ".tmp");
-			Integer crcId = importFile(datasource, inputDocStream, tmpOutputErrorDocumentFile, tmpOutputActionDocumentFile, userInfo);
+			BufferedWriter errorOutput = new BufferedWriter(new FileWriter(tmpOutputErrorDocumentFile, true));
+			BufferedWriter actionOutput = new BufferedWriter(new FileWriter(tmpOutputActionDocumentFile, true));
+			Integer crcId = importFile(datasource, inputDocStream, errorOutput, actionOutput, userInfo);
 			
 			//set errors file
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
@@ -139,8 +143,8 @@ public abstract class BlockP17040Import extends Block {
 		return doc;
 	}
 
-	public abstract Integer importFile(DataSource datasource2, InputStream inputDocStream, File tmpOutputErrorDocumentFile,
-			File tmpOutputActionDocumentFile, UserInfoInterface userInfo) throws IOException, SQLException;
+	public abstract Integer importFile(DataSource datasource, InputStream inputDocStream, BufferedWriter errorOutput,
+			BufferedWriter actionOutput, UserInfoInterface userInfo) throws IOException, SQLException;
 
 	@Override
 	public String getDescription(UserInfoInterface userInfo, ProcessData procData) {
