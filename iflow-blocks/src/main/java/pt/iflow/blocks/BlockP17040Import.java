@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.sql.DataSource;
@@ -24,6 +25,8 @@ import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
+import pt.iflow.blocks.P17040.utils.ImportAction;
+import pt.iflow.blocks.P17040.utils.ValidationError;
 import pt.iflow.connector.document.Document;
 import pt.iknow.utils.StringUtilities;
 
@@ -34,6 +37,7 @@ public abstract class BlockP17040Import extends Block {
 	private static final String OUTPUT_ERROR_DOCUMENT = "outputErrorDocument";
 	private static final String OUTPUT_ACTION_DOCUMENT = "outputActionDocument";
 	private static final String DATASOURCE = "Datasource";
+	private static final String CRC_ID = "crc_id";
 
 	public BlockP17040Import(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
@@ -102,22 +106,23 @@ public abstract class BlockP17040Import extends Block {
 			Document inputDoc = docBean.getDocument(userInfo, procData,((Long) docsVar.getItem(0).getValue()).intValue());
 			String originalNameInputDoc = inputDoc.getFileName();			
 			InputStream inputDocStream = new ByteArrayInputStream(inputDoc.getContent());
-			File tmpOutputErrorDocumentFile = File.createTempFile(this.getClass().getName() + OUTPUT_ERROR_DOCUMENT, ".tmp");
-			File tmpOutputActionDocumentFile = File.createTempFile(this.getClass().getName() + OUTPUT_ACTION_DOCUMENT, ".tmp");
-			BufferedWriter errorOutput = new BufferedWriter(new FileWriter(tmpOutputErrorDocumentFile, true));
-			BufferedWriter actionOutput = new BufferedWriter(new FileWriter(tmpOutputActionDocumentFile, true));
-			Integer crcId = importFile(datasource, inputDocStream, errorOutput, actionOutput, userInfo);
+			
+			ArrayList<ValidationError> errorList = new ArrayList<>();
+			ArrayList<ImportAction> actionList = new ArrayList<>();			
+			Integer crcId = importFile(datasource, inputDocStream, errorList, actionList, userInfo);
 			
 			//set errors file
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
-			Document doc = saveFileAsDocument("E" +originalNameInputDoc+ "." +sdf.format(new Date())+ ".txt", tmpOutputErrorDocumentFile,  userInfo,  procData);
+			Document doc = saveFileAsDocument("E" +originalNameInputDoc+ "." +sdf.format(new Date())+ ".txt", errorList,  userInfo,  procData);
 			procData.getList(sOutputErrorDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));						
 			//set actions file
-			doc = saveFileAsDocument("R"+originalNameInputDoc+"." +sdf.format(new Date())+ ".txt", tmpOutputActionDocumentFile,  userInfo,  procData);
+			doc = saveFileAsDocument("R"+originalNameInputDoc+"." +sdf.format(new Date())+ ".txt", actionList,  userInfo,  procData);
 			procData.getList(sOutputActionDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));
 								
-			if(crcId!=null)
+			if(crcId!=null && errorList.isEmpty()){
 				GestaoCrc.markAsImported(crcId, inputDoc.getDocId(), userInfo.getUtilizador(), datasource);
+				procData.set(this.getAttribute(CRC_ID), crcId);
+			}
 			else
 				outPort = portError;
 							
@@ -132,19 +137,27 @@ public abstract class BlockP17040Import extends Block {
 		return outPort;
 	}
 	
-	private Document saveFileAsDocument(String filename, File fileContent, UserInfoInterface userInfo, ProcessData procData) throws Exception{
+	private Document saveFileAsDocument(String filename, ArrayList<?> errorList, UserInfoInterface userInfo, ProcessData procData) throws Exception{
+		File tmpFile = File.createTempFile(this.getClass().getName(), ".tmp");
+		BufferedWriter tmpOutput = new BufferedWriter(new FileWriter(tmpFile, true));
+		for(Object aux: errorList){
+			tmpOutput.write(aux.toString());
+			tmpOutput.newLine();
+		}
+		tmpOutput.close();
+		
 		Documents docBean = BeanFactory.getDocumentsBean();
 		Document doc = new DocumentDataStream(0, null, null, null, 0, 0, 0);
 		doc.setFileName(filename);
-		FileInputStream fis = new FileInputStream(fileContent);
+		FileInputStream fis = new FileInputStream(tmpFile);
 		((DocumentDataStream) doc).setContentStream(fis);
 		doc = docBean.addDocument(userInfo, procData, doc);
-		fileContent.delete();
+		tmpFile.delete();
 		return doc;
 	}
 
-	public abstract Integer importFile(DataSource datasource, InputStream inputDocStream, BufferedWriter errorOutput,
-			BufferedWriter actionOutput, UserInfoInterface userInfo) throws IOException, SQLException;
+	public abstract Integer importFile(DataSource datasource, InputStream inputDocStream, ArrayList<ValidationError> errorList,
+			ArrayList<ImportAction> actionList, UserInfoInterface userInfo) throws IOException, SQLException;
 
 	@Override
 	public String getDescription(UserInfoInterface userInfo, ProcessData procData) {

@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
@@ -23,7 +24,7 @@ import pt.iflow.api.utils.UserInfoInterface;
 public class FileImportUtils {
 
 	public static HashMap<String, Object> parseLine(Integer lineNumber, String line, Properties properties, String separator,
-		BufferedWriter errorOutput) throws IOException {
+		ArrayList<ValidationError> errorList) throws IOException {
 		HashMap<String, Object> result = new HashMap<>();
 		String[] lineValuesAux = StringUtils.splitPreserveAllTokens(line, separator);
 		Enumeration<?> collumns = properties.propertyNames();
@@ -36,7 +37,11 @@ public class FileImportUtils {
 				String type = properties.getProperty("p17040_type_" + name);
 
 				if (StringUtils.equalsIgnoreCase(type, "VARCHAR")) {
-					result.put(name, lineValuesAux[Integer.parseInt(valueIndex)]);
+					String valueAux = lineValuesAux[Integer.parseInt(valueIndex)]; 
+					if(StringUtils.isBlank(valueAux))
+						result.put(name, null);
+					else
+						result.put(name, valueAux);
 				} else if (StringUtils.equalsIgnoreCase(type, "DATE")) {			
 					SimpleDateFormat sdf = new SimpleDateFormat(properties.getProperty("p17040_dateFormat"));
 					try{
@@ -46,9 +51,7 @@ public class FileImportUtils {
 						else
 							result.put(name, sdf.parse(valueAux));
 					} catch (Exception e){
-						errorOutput.write(lineNumber + separator + separator + separator
-								+ "Data inválida" + separator + name);
-						errorOutput.newLine();
+						errorList.add(new ValidationError("Data inválida", "", name, lineNumber));
 					}
 				} else if (StringUtils.equalsIgnoreCase(type, "TIMESTAMP")) {			
 					SimpleDateFormat sdf = new SimpleDateFormat(properties.getProperty("p17040_dateTimeFormat"));
@@ -59,9 +62,7 @@ public class FileImportUtils {
 						else
 							result.put(name, sdf.parse(valueAux));
 					} catch (Exception e){
-						errorOutput.write(lineNumber + separator + separator + separator
-								+ "DataTempo inválida" + separator + name);
-						errorOutput.newLine();
+						errorList.add(new ValidationError("DataTempo inválida", "", name, lineNumber));
 					}
 				} else if (StringUtils.equalsIgnoreCase(type, "DECIMAL")) {			
 					try{
@@ -71,9 +72,7 @@ public class FileImportUtils {
 						else
 							result.put(name, Double.parseDouble(valueAux));
 					} catch (Exception e){
-						errorOutput.write(lineNumber + separator + separator + separator
-								+ "Valor decimal inválido" + separator + name);
-						errorOutput.newLine();
+						errorList.add(new ValidationError("Valor decimal inválido", "", name, lineNumber));
 					}
 				} else if (StringUtils.equalsIgnoreCase(type, "BOOLEAN")) {								
 					String aux = lineValuesAux[Integer.parseInt(valueIndex)];
@@ -84,9 +83,7 @@ public class FileImportUtils {
 					else if(StringUtils.isBlank(aux)){
 						result.put(name, null);
 					} else {
-					errorOutput.write(lineNumber + separator + separator + separator
-							+ "Valor booleano inválido" + separator + name);
-					errorOutput.newLine();
+						errorList.add(new ValidationError("Valor booleano inválido", "", name, lineNumber));
 					}				
 				} else if (StringUtils.equalsIgnoreCase(type, "INTEGER")) {			
 					try{
@@ -95,10 +92,8 @@ public class FileImportUtils {
 							result.put(name, null);
 						else
 							result.put(name, Integer.parseInt(valueAux));						
-					} catch (Exception e){
-						errorOutput.write(lineNumber + separator + separator + separator
-								+ "Valor inteiro inválido" + separator + name);
-						errorOutput.newLine();
+					} catch (Exception e){						
+						errorList.add(new ValidationError("Valor inteiro inválido", "", name, lineNumber));
 					}
 				}
 				

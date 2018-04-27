@@ -2,25 +2,36 @@ package pt.iflow.blocks;
 
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.sql.DataSource;
 
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
+import pt.iflow.api.core.BeanFactory;
+import pt.iflow.api.documents.DocumentDataStream;
+import pt.iflow.api.documents.Documents;
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
+import pt.iflow.blocks.P17040.utils.GestaoCrc;
 import pt.iflow.blocks.P17040.utils.ValidationError;
+import pt.iflow.connector.document.Document;
 
 public abstract class BlockP17040Validate extends Block {
 	public Port portIn, portSuccess, portEmpty, portError;
 
 	private static final String DATASOURCE = "Datasource";
 	private static final String CRCID = "crc_id";
-	private static final String ERRORS = "errors";
+	private static final String OUTPUT_ERROR_DOCUMENT = "outputErrorDocument";
 
 	public BlockP17040Validate(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
@@ -68,7 +79,7 @@ public abstract class BlockP17040Validate extends Block {
 
 		DataSource datasource = null;
 		Integer crcId = null;
-
+		String sOutputErrorDocumentVar = this.getAttribute(OUTPUT_ERROR_DOCUMENT);
 		try {
 			datasource = Utils.getUserDataSource(procData.transform(userInfo, getAttribute(DATASOURCE)));
 			crcId = Integer.parseInt(procData.transform(userInfo, getAttribute(CRCID)));
@@ -87,8 +98,21 @@ public abstract class BlockP17040Validate extends Block {
 
 		try {
 			result = validate(userInfo, procData, datasource, crcId);
+						
+			//set errors file
+			Integer docid = retrieveSimpleField(datasource, userInfo, "select out_docid from u_gestao where out_id = {0} ",
+					new Object[] { crcId }).get(0);
+			Document doc = BeanFactory.getDocumentsBean().getDocument(userInfo, procData, docid);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
+			doc = saveFileAsDocument("E" +doc.getFileName()+ "." +sdf.format(new Date())+ ".txt", result,  userInfo,  procData);
+			procData.getList(sOutputErrorDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));		
 			
-			outPort = portSuccess;
+			if(result.isEmpty()){
+				outPort = portSuccess;
+				GestaoCrc.markAsValidated(crcId, userInfo.getUtilizador(), datasource);
+			}
+			else
+				outPort = portError;
 		} catch (Exception e) {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
 			outPort = portError;
@@ -100,6 +124,25 @@ public abstract class BlockP17040Validate extends Block {
 		return outPort;
 	}
 
+	private Document saveFileAsDocument(String filename, ArrayList<?> errorList, UserInfoInterface userInfo, ProcessData procData) throws Exception{
+		File tmpFile = File.createTempFile(this.getClass().getName(), ".tmp");
+		BufferedWriter tmpOutput = new BufferedWriter(new FileWriter(tmpFile, true));
+		for(Object aux: errorList){
+			tmpOutput.write(aux.toString());
+			tmpOutput.newLine();
+		}
+		tmpOutput.close();
+		
+		Documents docBean = BeanFactory.getDocumentsBean();
+		Document doc = new DocumentDataStream(0, null, null, null, 0, 0, 0);
+		doc.setFileName(filename);
+		FileInputStream fis = new FileInputStream(tmpFile);
+		((DocumentDataStream) doc).setContentStream(fis);
+		doc = docBean.addDocument(userInfo, procData, doc);
+		tmpFile.delete();
+		return doc;
+	}
+	
 	public abstract ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData,
 			DataSource datasource2, Integer crcId) throws SQLException;
 

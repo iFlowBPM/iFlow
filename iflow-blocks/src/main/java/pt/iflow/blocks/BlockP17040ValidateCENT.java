@@ -2,6 +2,7 @@ package pt.iflow.blocks;
 
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
+import static pt.iflow.blocks.P17040.utils.FileValidationUtils.isValidDomainValue;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -55,8 +56,7 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 
 			// tpEnt
 			String tpEntCheck = (String) infEntValues.get("tpEnt");
-			if (tpEntCheck != null && retrieveSimpleField(datasource, userInfo,
-					"select * from T_TEN where codigo = {0} ", new Object[] { tpEntCheck }).size() != 1)
+			if (tpEntCheck != null && !isValidDomainValue(userInfo, datasource, "T_TEN",tpEntCheck))
 				result.add(new ValidationError("EN013", "infEnt", "tpEnt", infEntId));
 
 			// nome
@@ -68,8 +68,7 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 			String paisResdCheck = (String) infEntValues.get("paisResd");
 			if (StringUtils.isBlank(paisResdCheck))
 				result.add(new ValidationError("EN033", "infEnt", "paisResd", infEntId));
-			if (paisResdCheck != null && retrieveSimpleField(datasource, userInfo,
-					"select * from T_TER where codigo = {0} ", new Object[] { paisResdCheck }).size() != 1)
+			if (paisResdCheck != null && !isValidDomainValue(userInfo, datasource, "T_TER","" + paisResdCheck))
 				result.add(new ValidationError("EN034", "infEnt", "paisResd", infEntId));
 
 			// altIdEnt
@@ -97,14 +96,12 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 							new ValidationError("EN035", "dadosEnt", "dtNasc", (Integer) dadosEntt1Values.get("id")));
 				// genero
 				String generoCheck = (String) dadosEntt1Values.get("genero");
-				if (generoCheck != null && retrieveSimpleField(datasource, userInfo,
-						"select * from T_GEN where codigo = {0} ", new Object[] { generoCheck }).size() != 1)
+				if (generoCheck != null && !isValidDomainValue(userInfo, datasource, "T_GEN","" + generoCheck))
 					result.add(
 							new ValidationError("EN036", "dadosEnt", "genero", (Integer) dadosEntt1Values.get("id")));
 				// sitProf
 				String sitProfCheck = (String) dadosEntt1Values.get("sitProf");
-				if (sitProfCheck != null && retrieveSimpleField(datasource, userInfo,
-						"select * from T_SPF where codigo = {0} ", new Object[] { sitProfCheck }).size() != 1)
+				if (sitProfCheck != null && !isValidDomainValue(userInfo, datasource, "T_SPF","" + sitProfCheck))
 					result.add(
 							new ValidationError("EN037", "dadosEnt", "sitProf", (Integer) dadosEntt1Values.get("id")));
 				// agregFam
@@ -114,8 +111,7 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 							new ValidationError("EN038", "dadosEnt", "sitProf", (Integer) dadosEntt1Values.get("id")));
 				// habLit
 				String habitLitcheck = (String) dadosEntt1Values.get("habLit");
-				if (habitLitcheck != null && retrieveSimpleField(datasource, userInfo,
-						"select * from T_HAL where codigo = {0} ", new Object[] { habitLitcheck }).size() != 1)
+				if (habitLitcheck != null && !isValidDomainValue(userInfo, datasource, "T_HAL","" + habitLitcheck))
 					result.add(
 							new ValidationError("EN039", "dadosEnt", "habLit", (Integer) dadosEntt1Values.get("id")));
 				// nacionalidade
@@ -124,8 +120,7 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 					result.add(new ValidationError("EN031", "dadosEnt", "nacionalidade",
 							(Integer) dadosEntt1Values.get("id")));
 				if (!StringUtils.isBlank(nacionalidadeCheck)
-						&& retrieveSimpleField(datasource, userInfo, "select * from T_TER where codigo = {0} ",
-								new Object[] { nacionalidadeCheck }).size() != 1)
+						&& !isValidDomainValue(userInfo, datasource, "T_TER","" + nacionalidadeCheck))
 					result.add(new ValidationError("EN032", "dadosEnt", "nacionalidade",
 							(Integer) dadosEntt1Values.get("id")));
 
@@ -136,19 +131,16 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 						"select * from dadosEntt2 where infEnt_id = {0} ", new Object[] { infEntId });
 				// formJurid
 				String formJuridcheck = (String) dadosEntt2Values.get("formJurid");
-				if (formJuridcheck != null && retrieveSimpleField(datasource, userInfo,
-						"select * from T_JUR where codigo = {0} ", new Object[] { formJuridcheck }).size() != 1)
+				if (formJuridcheck != null && !isValidDomainValue(userInfo, datasource, "T_JUR","" + formJuridcheck))
 					result.add(new ValidationError("EN044", "dadosEnt", "formJurid",
 							(Integer) dadosEntt2Values.get("id")));
 				// PSE
 				String PSECheck = (String) dadosEntt2Values.get("PSE");
-				if (PSECheck != null && retrieveSimpleField(datasource, userInfo,
-						"select * from T_PSE where codigo = {0} ", new Object[] { PSECheck }).size() != 1)
+				if (PSECheck != null && !isValidDomainValue(userInfo, datasource, "T_PSE","" + PSECheck))
 					result.add(new ValidationError("EN045", "dadosEnt", "PSE", (Integer) dadosEntt2Values.get("id")));
 				// SI
 				String SICheck = (String) dadosEntt2Values.get("SI");
-				if (SICheck != null && retrieveSimpleField(datasource, userInfo,
-						"select * from T_STI where codigo = {0} ", new Object[] { SICheck }).size() != 1)
+				if (SICheck != null && !isValidDomainValue(userInfo, datasource, "T_STI","" + SICheck))
 					result.add(new ValidationError("EN049", "dadosEnt", "SI", (Integer) dadosEntt2Values.get("id")));
 			}
 
@@ -160,8 +152,7 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 						"select * from docId where id = {0} ", new Object[] { docIdId });
 				// tpDoc
 				String tpDocCheck = (String) docIdValues.get("tpDoc");
-				if (tpDocCheck != null && retrieveSimpleField(datasource, userInfo,
-						"select * from T_TID where codigo = {0} ", new Object[] { tpDocCheck }).size() != 1)
+				if (tpDocCheck != null && !isValidDomainValue(userInfo, datasource, "T_TID","" + tpDocCheck))
 					result.add(new ValidationError("EN023", "docId", "tpDoc", (Integer) docIdValues.get("id")));
 				// numDoc
 				String numDocCheck = (String) docIdValues.get("numDoc");
@@ -170,8 +161,7 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 				// paisEmissao
 				String paisEmissaoCheck = (String) docIdValues.get("paisEmissao");
 				if (paisEmissaoCheck != null
-						&& retrieveSimpleField(datasource, userInfo, "select * from T_TER where codigo = {0} ",
-								new Object[] { paisEmissaoCheck }).size() != 1)
+						&& !isValidDomainValue(userInfo, datasource, "T_TER","" + paisEmissaoCheck))
 					result.add(new ValidationError("EN026", "docId", "paisEmissao", (Integer) docIdValues.get("id")));
 				// dtEmissao
 				Date dtEmissaoCheck = (Date) docIdValues.get("dtEmissao");

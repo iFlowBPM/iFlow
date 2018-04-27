@@ -15,6 +15,8 @@ import java.util.List;
 import javax.sql.DataSource;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.lang.StringUtils;
+
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
@@ -89,6 +91,43 @@ public class FileGeneratorUtils {
 				}
 		} catch (Exception e) {
 			Logger.error(userInfo.getUtilizador(), "FileGeneratorUtils", "fillAtributtes",
+					filledQuery + e.getMessage(), e);
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+
+		return resultAux;
+	}
+	
+	public static HashMap<String, Object> fillAtributtesIdEnt(XMLStreamWriter writer, DataSource datasource,
+			UserInfoInterface userInfo, Object idEnt_id) throws SQLException {
+		Connection db = datasource.getConnection();
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		String filledQuery = null;
+		HashMap<String, Object> resultAux = new HashMap<>();
+		String query = "select * from idEnt where id = {0} ";
+		try {
+			db = datasource.getConnection();
+			filledQuery = MessageFormat.format(query, new Object[]{idEnt_id});
+			pst = db.prepareStatement(filledQuery);
+			rs = pst.executeQuery();			
+			
+			if(rs.next()){
+				resultAux.put("id", rs.getInt("id"));
+				resultAux.put("type", rs.getString("type"));
+				resultAux.put("nif_nipc", rs.getString("nif_nipc"));
+				resultAux.put("codigo_fonte", rs.getString("codigo_fonte"));
+				
+				writer.writeAttribute("type", rs.getString("type"));
+				if(StringUtils.equals("i1", rs.getString("type")))
+					writer.writeCharacters(rs.getString("nif_nipc"));
+				else
+					writer.writeCharacters(rs.getString("codigo_fonte"));
+			}
+				
+		} catch (Exception e) {
+			Logger.error(userInfo.getUtilizador(), "FileGeneratorUtils", "fillAtributtesIdEnt",
 					filledQuery + e.getMessage(), e);
 		} finally {
 			DatabaseInterface.closeResources(db, pst, rs);

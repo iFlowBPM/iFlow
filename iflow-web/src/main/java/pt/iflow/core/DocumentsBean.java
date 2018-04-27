@@ -178,7 +178,7 @@ public class DocumentsBean implements Documents {
       
       //final check if ok
       Document checkDoc = getDocument(userInfo, procData, doc);
-      if(checkDoc==null || checkDoc.getDocId()<0 || checkDoc.getContent()==null || checkDoc.getContent().length==0)
+      if(checkDoc==null || checkDoc.getDocId()<0)
     	  throw new IOException("addDocument failed");
       
     } catch (Exception e) {

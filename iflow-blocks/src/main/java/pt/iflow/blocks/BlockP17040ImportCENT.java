@@ -2,13 +2,13 @@ package pt.iflow.blocks;
 
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +24,8 @@ import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.FileImportUtils;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
+import pt.iflow.blocks.P17040.utils.ImportAction;
+import pt.iflow.blocks.P17040.utils.ValidationError;
 
 public class BlockP17040ImportCENT extends BlockP17040Import {
 
@@ -33,8 +35,8 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 	}
 
 	@Override
-	public Integer importFile(DataSource datasource, InputStream inputDocStream, BufferedWriter errorOutput,
-			BufferedWriter actionOutput, UserInfoInterface userInfo) throws IOException, SQLException {
+	public Integer importFile(DataSource datasource, InputStream inputDocStream, ArrayList<ValidationError> errorList,
+			ArrayList<ImportAction> actionList, UserInfoInterface userInfo) throws IOException, SQLException {
 
 		Properties properties = Setup.readPropertiesFile("p17040" + File.separator + "cent_import.properties");
 		String separator = properties.getProperty("p17040_separator", "|");
@@ -44,47 +46,40 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 		try {
 			List<String> lines = IOUtils.readLines(inputDocStream);
 			for (int lineNumber = startLine; lineNumber < lines.size(); lineNumber++) {
-				// HashMap<String, String> lineValues = null;
+				if(StringUtils.isBlank(lines.get(lineNumber)))
+					continue;
 				HashMap<String, Object> lineValues = null;
 				// obter valores da linha
 				try {
 					lineValues = FileImportUtils.parseLine(lineNumber, lines.get(lineNumber), properties, separator,
-							errorOutput);
+							errorList);
 				} catch (Exception e) {
-					errorOutput.write(lineNumber + separator + separator + separator
-							+ "Linha com número de campos errado" + separator);
-					errorOutput.newLine();
+					errorList.add(new ValidationError("Linha com número de campos errado", "", "", lineNumber));
 					return null;
 				}
 				// validar Identificação da entidade
 				String idEnt = lineValues.get("idEnt").toString();
 				if (StringUtils.isBlank(idEnt)) {
-					errorOutput.write(lineNumber + separator + separator + separator
-							+ "Identificação da entidade em falta" + separator);
-					errorOutput.newLine();
+					errorList.add(new ValidationError("Identificação da entidade em falta", "", "", lineNumber));
 					return null;
 				}
 				// determinar se é insert ou update
 				String type = GestaoCrc.idEntAlreadyCreated(idEnt, "", datasource) ? "EU" : "EI";
 				// adicionar acçao
-				actionOutput.write(idEnt + separator + (StringUtils.equals(type, "EU") ? "A" : "C"));
-				actionOutput.newLine();
+				actionList.add(new ImportAction((StringUtils.equals(type, "EU") ?ImportAction.ImportActionType.UPDATE : ImportAction.ImportActionType.UPDATE), idEnt));
 				// inserir na bd
 				crcIdResult = importCentLine(datasource, userInfo, crcIdResult, lineValues, properties, type,
-						errorOutput);
+						errorList);
 			}
 		} catch (Exception e) {
 			throw e;
-		} finally {
-			errorOutput.close();
-			actionOutput.close();
-		}
+		} 
 
 		return crcIdResult;
 	}
 
 	public Integer importCentLine(DataSource datasource, UserInfoInterface userInfo, Integer crcIdResult,
-			HashMap<String, Object> lineValues, Properties properties, String type, BufferedWriter errorOutput)
+			HashMap<String, Object> lineValues, Properties properties, String type, ArrayList<ValidationError> errorList)
 			throws SQLException {
 
 		SimpleDateFormat sdf = new SimpleDateFormat(properties.getProperty("p17040_dateFormat"));
@@ -99,14 +94,13 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 
 		// insert if not yet idEnt
 		Integer idEnt_id;
+		String idEntAux = StringUtils.equals(properties.getProperty("p17040_idEnt_type"), "i1") ? "nif_nipc": "codigo_fonte";
 		List<Integer> idEntList = retrieveSimpleField(datasource, userInfo,
-				"select idEnt.id from idEnt where nif_nipc = ''{0}'' or codigo_fonte = ''{1}''",
-				new Object[] { lineValues.get("idEnt"), lineValues.get("idEnt") });
+				"select idEnt.id from idEnt where " +idEntAux+ "= ''{0}''",
+				new Object[] { lineValues.get("idEnt")});
 		if (!idEntList.isEmpty())
 			idEnt_id = idEntList.get(0);
-		else {
-			String idEntAux = StringUtils.equals(properties.getProperty("p17040_idEnt_type"), "i1") ? "nif_nipc"
-					: "codigo_fonte";
+		else {			
 			idEnt_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
 					"insert into idEnt(type, " + idEntAux + ") values(?,?)",
 					new Object[] { properties.getProperty("p17040_idEnt_type"), lineValues.get("idEnt") });
@@ -122,15 +116,15 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 		FileImportUtils.insertSimpleLine(datasource, userInfo,
 				"insert into docId(tpDoc,numDoc,paisEmissao,dtEmissao,dtValidade,infEnt_id) values(?,?,?,?,?,?)",
 				new Object[] { lineValues.get("tpDoc"), lineValues.get("numDoc"), lineValues.get("paisEmissao"),
-						lineValues.get("dtEmissao"), lineValues.get("dtValidade"), idEnt_id });
+						lineValues.get("dtEmissao"), lineValues.get("dtValidade"), infEnt_id });
 
 		// insert dadosEnt t1 or t2
 		if (StringUtils.equals("001", lineValues.get("tpEnt").toString()))
 			FileImportUtils.insertSimpleLine(datasource, userInfo,
 					"insert into dadosEntt1(type, dtNasc, genero, sitProf, agregFam, habLit, nacionalidade, infEnt_id) values(?,?,?,?,?,?,?,?)",
 					new Object[] { "t1", lineValues.get("dtNasc"), lineValues.get("genero"), lineValues.get("sitProf"),
-							lineValues.get("agregFam"), lineValues.get("habitLit"), lineValues.get("nacionalidade"),
-							idEnt_id });
+							lineValues.get("agregFam"), lineValues.get("habLit"), lineValues.get("nacionalidade"),
+							infEnt_id });
 
 		else {
 			Integer morada_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
@@ -139,7 +133,7 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 			FileImportUtils.insertSimpleLine(datasource, userInfo,
 					"insert into dadosEntt2(type, morada_id, formJurid, PSE, SI, infEnt_id) values(?,?,?,?,?,?)",
 					new Object[] { "t2", morada_id, lineValues.get("formJurid"), lineValues.get("PSE"),
-							lineValues.get("SI"), idEnt_id });
+							lineValues.get("SI"), infEnt_id });
 		}
 		return crcIdResult;
 	}
@@ -153,8 +147,11 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 
 			FileImportUtils.insertSimpleLine(datasource, userInfo,
 					"insert into controlo(crc_id, entObserv, entReport, dtCriacao, idDest, idFichRelac) values(?,?,?,?,?,?)",
-					new Object[] { properties.get("p17040_entObserv").toString(),
-							properties.get("p17040_entReport").toString(), new Timestamp((new Date()).getTime()),
+					new Object[] { 
+							crcIdResult,
+							properties.get("p17040_entObserv").toString(),
+							properties.get("p17040_entReport").toString(), 
+							new Timestamp((new Date()).getTime()),
 							properties.get("p17040_idDest").toString(),
 							properties.get("p17040_idFichRelac").toString() });
 

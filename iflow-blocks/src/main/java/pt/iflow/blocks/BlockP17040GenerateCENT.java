@@ -12,6 +12,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import pt.iflow.api.utils.UserInfoInterface;
+import pt.iflow.blocks.P17040.utils.FileGeneratorUtils;
 
 public class BlockP17040GenerateCENT extends BlockP17040Generate {
 
@@ -43,8 +44,7 @@ public class BlockP17040GenerateCENT extends BlockP17040Generate {
 
 			// idEnt
 			writer.writeStartElement("idEnt");
-			fillAtributtes(writer, datasource, userInfo, "select * from idEnt where id = {0} ",
-					new Object[] { infEntValues.get("idEnt_id") });
+			FileGeneratorUtils.fillAtributtesIdEnt(writer, datasource, userInfo, infEntValues.get("idEnt_id") );
 			writer.writeEndElement();
 
 			// dadosEnt
@@ -56,8 +56,10 @@ public class BlockP17040GenerateCENT extends BlockP17040Generate {
 			} else {
 				HashMap<String, Object> dadosEntt2Values = fillAtributtes(writer, datasource, userInfo,
 						"select * from dadosEntt2 where infEnt_id = {0} ", new Object[] { infEntId });
-				fillAtributtes(writer, datasource, userInfo, "select * from morada where id = {0} ",
-						new Object[] { dadosEntt2Values.get("morada_id") });
+				writer.writeStartElement("morada");
+					fillAtributtes(writer, datasource, userInfo, "select * from morada where id = {0} ",
+							new Object[] { dadosEntt2Values.get("morada_id") });
+				writer.writeEndElement();
 			}
 			writer.writeEndElement();
 

@@ -15,7 +15,7 @@ import pt.iflow.api.utils.Logger;
 
 public class GestaoCrc {
 
-	public static enum Status {
+	static enum Status {
 		IMPORTED(0), VALID(1), NOT_VALID(2), BDP_SENT(3), BDP_RECEIVED(4);
 		private int value;
 
@@ -41,17 +41,18 @@ public class GestaoCrc {
 			pst.setTimestamp(3, new Timestamp((new Date()).getTime()));
 			pst.setString(4, username);
 			pst.setInt(5, originalInputDocumentId);
-			pst.executeQuery();
+			pst.executeUpdate();
 			rs = pst.getGeneratedKeys();
-
-			return rs.getInt(1);
+			if(rs.next())
+				return rs.getInt(1);
+			else 
+				return null;
 		} catch (Exception e) {
 			Logger.error(username, "GestaoCrc", "markAsImported", e.getMessage(), e);
+			throw e;
 		} finally {
 			DatabaseInterface.closeResources(db, pst, rs);
 		}
-
-		return null;
 	}
 
 	public static Boolean idEntAlreadyCreated(String idEntValue, String username, DataSource datasource)
@@ -87,4 +88,25 @@ public class GestaoCrc {
 		}
 		return false;
 		}
+
+	public static void markAsValidated(Integer crcId, String utilizador, DataSource datasource) throws SQLException {
+		Connection db = datasource.getConnection();
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			String query = "update u_gestao set status_id = ?, validationdate=?, validationuser=? where out_id = ?";
+			pst = db.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			pst.setInt(1, Status.VALID.getValue());
+			pst.setTimestamp(2, new Timestamp((new Date()).getTime()));
+			pst.setString(3, utilizador);
+			pst.setInt(4, crcId);
+			pst.executeUpdate();
+	
+		} catch (Exception e) {
+			Logger.error(utilizador, "GestaoCrc", "markAsValidated", e.getMessage(), e);
+			throw e;
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+	}
 }

@@ -36,5 +36,12 @@ public class ValidationError {
 		this.table = table;
 		this.field = field;
 		this.id = id;
+	}
+	
+	@Override
+	public String toString() {
+		return id + ";" + code + ";" + table + ";" + field ;
 	}	
+	
+	
 }

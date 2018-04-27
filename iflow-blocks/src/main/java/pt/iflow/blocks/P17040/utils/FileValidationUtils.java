@@ -78,7 +78,7 @@ public class FileValidationUtils {
     		return true;
     	
     	return retrieveSimpleField(datasource, userInfo,
-				"select * from {0} where codigo = {1} ", new Object[] {domain, value }).size() == 1 ;
+				"select count(*) from {0} where codigo = ''{1}'' ", new Object[] {domain, value }).get(0) == 1 ;
     }
     
     public static boolean isValidIdEntEN008(UserInfoInterface userInfo, DataSource datasource, HashMap<String, Object> idEntValues) throws SQLException{
