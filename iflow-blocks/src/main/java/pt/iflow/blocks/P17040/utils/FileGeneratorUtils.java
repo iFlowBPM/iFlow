@@ -75,9 +75,8 @@ public class FileGeneratorUtils {
 					} else if (rsm.getColumnType(i) == java.sql.Types.TIMESTAMP) {
 						SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
 						SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss");
-						writer.writeAttribute(rsm.getColumnName(i), sdfDate.format(rs.getTimestamp(i)));
-						writer.writeAttribute(rsm.getColumnName(i), "T");
-						writer.writeAttribute(rsm.getColumnName(i), sdfTime.format(rs.getTimestamp(i)));
+						String timeAux = sdfDate.format(rs.getTimestamp(i))+"T"+sdfTime.format(rs.getTimestamp(i));
+						writer.writeAttribute(rsm.getColumnName(i), timeAux);
 					} else if (rsm.getColumnType(i) == java.sql.Types.DECIMAL) {
 						DecimalFormat df = new DecimalFormat(
 								"##################################################.############################");

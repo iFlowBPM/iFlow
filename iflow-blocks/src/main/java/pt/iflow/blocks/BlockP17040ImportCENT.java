@@ -42,10 +42,10 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 		String separator = properties.getProperty("p17040_separator", "|");
 		Integer startLine = Integer.parseInt(properties.getProperty("p17040_startLine", "0"));
 		Integer crcIdResult = null;
-
+		int lineNumber =0;
 		try {
 			List<String> lines = IOUtils.readLines(inputDocStream);
-			for (int lineNumber = startLine; lineNumber < lines.size(); lineNumber++) {
+			for (lineNumber = startLine; lineNumber < lines.size(); lineNumber++) {
 				if(StringUtils.isBlank(lines.get(lineNumber)))
 					continue;
 				HashMap<String, Object> lineValues = null;
@@ -66,13 +66,13 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 				// determinar se é insert ou update
 				String type = GestaoCrc.idEntAlreadyCreated(idEnt, "", datasource) ? "EU" : "EI";
 				// adicionar acçao
-				actionList.add(new ImportAction((StringUtils.equals(type, "EU") ?ImportAction.ImportActionType.UPDATE : ImportAction.ImportActionType.UPDATE), idEnt));
+				actionList.add(new ImportAction((StringUtils.equals(type, "EU") ?ImportAction.ImportActionType.UPDATE : ImportAction.ImportActionType.CREATE), idEnt));
 				// inserir na bd
 				crcIdResult = importCentLine(datasource, userInfo, crcIdResult, lineValues, properties, type,
 						errorList);
 			}
 		} catch (Exception e) {
-			throw e;
+			errorList.add(new ValidationError("Erro nos dados", "", e.getMessage(), lineNumber));
 		} 
 
 		return crcIdResult;
@@ -86,11 +86,20 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 		String separator = properties.getProperty("p17040_separator");
 
 		if (crcIdResult == null)
-			crcIdResult = createNewCrcCENT(datasource, properties, userInfo);
+			crcIdResult = createNewCrc(datasource, properties, userInfo);
 
-		List<Integer> comEntIdList = retrieveSimpleField(datasource, userInfo,
-				"select comEnt.id from comEnt, conteudo where comEnt.conteudo_id = conteudo.id and conteudo.crc_id = {0} ",
+		List<Integer> conteudoIdList = retrieveSimpleField(datasource, userInfo,
+				"select id from conteudo crc_id = {0} ",
 				new Object[] { crcIdResult });
+		
+		Integer comEnt_id =  null;
+		List<Integer> comEntIdList = retrieveSimpleField(datasource, userInfo,
+				"select id from comEnt where conteudo_id = {0} ", new Object[] {conteudoIdList.get(0)});
+		if(comEntIdList.isEmpty())
+			comEnt_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+					"insert into comEnt(conteudo_id) values(?)", new Object[] { conteudoIdList.get(0) });
+		else
+			comEnt_id = comEntIdList.get(0);
 
 		// insert if not yet idEnt
 		Integer idEnt_id;
@@ -107,10 +116,10 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 		}
 		// insert infEnt
 		Integer infEnt_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
-				"insert into infEnt(comEnt_id,type,dtRefEnt,idEnt_id,tpEnt,LEI,refExtEnt,nome,paisResd,altIdEnt_id) values(?,?,?,?,?,?,?,?,?,?)",
-				new Object[] { comEntIdList.get(0), type, lineValues.get("dtRefEnt"), idEnt_id, lineValues.get("tpEnt"),
+				"insert into infEnt(comEnt_id,type,dtRefEnt,idEnt_id,tpEnt,LEI,refExtEnt,nome,paisResd,altIdEnt_id, SI) values(?,?,?,?,?,?,?,?,?,?)",
+				new Object[] { comEnt_id, type, lineValues.get("dtRefEnt"), idEnt_id, lineValues.get("tpEnt"),
 						lineValues.get("LEI"), lineValues.get("refExtEnt"), lineValues.get("nome"),
-						lineValues.get("paisResd"), null });
+						lineValues.get("paisResd"), null, lineValues.get("SI")});
 
 		// insert docId
 		FileImportUtils.insertSimpleLine(datasource, userInfo,
@@ -135,38 +144,6 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 					new Object[] { "t2", morada_id, lineValues.get("formJurid"), lineValues.get("PSE"),
 							lineValues.get("SI"), infEnt_id });
 		}
-		return crcIdResult;
-	}
-
-	private Integer createNewCrcCENT(DataSource datasource, Properties properties, UserInfoInterface userInfo)
-			throws SQLException {
-		Integer crcIdResult = 0;
-		try {
-			crcIdResult = FileImportUtils.insertSimpleLine(datasource, userInfo,
-					"insert into crc(versao) values('1.0')", new Object[] {});
-
-			FileImportUtils.insertSimpleLine(datasource, userInfo,
-					"insert into controlo(crc_id, entObserv, entReport, dtCriacao, idDest, idFichRelac) values(?,?,?,?,?,?)",
-					new Object[] { 
-							crcIdResult,
-							properties.get("p17040_entObserv").toString(),
-							properties.get("p17040_entReport").toString(), 
-							new Timestamp((new Date()).getTime()),
-							properties.get("p17040_idDest").toString(),
-							properties.get("p17040_idFichRelac").toString() });
-
-			Integer conteudo_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
-					"insert into conteudo(crc_id) values(?)", new Object[] { crcIdResult });
-
-			FileImportUtils.insertSimpleLine(datasource, userInfo, "insert into comEnt(conteudo_id) values(?)",
-					new Object[] { conteudo_id });
-			;
-
-		} catch (Exception e) {
-			Logger.error("ADMIN", "FileImportUtils", "createNewCrcCENT, check if cent_import.properties is complete!",
-					e.getMessage(), e);
-		}
-
 		return crcIdResult;
 	}
 }

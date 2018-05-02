@@ -8,9 +8,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -24,6 +26,7 @@ import pt.iflow.api.processdata.ProcessListVariable;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
+import pt.iflow.blocks.P17040.utils.FileImportUtils;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
 import pt.iflow.blocks.P17040.utils.ImportAction;
 import pt.iflow.blocks.P17040.utils.ValidationError;
@@ -154,6 +157,35 @@ public abstract class BlockP17040Import extends Block {
 		doc = docBean.addDocument(userInfo, procData, doc);
 		tmpFile.delete();
 		return doc;
+	}
+	
+	public Integer createNewCrc(DataSource datasource, Properties properties, UserInfoInterface userInfo)
+			throws SQLException {
+		Integer crcIdResult = 0;
+		try {
+			crcIdResult = FileImportUtils.insertSimpleLine(datasource, userInfo,
+					"insert into crc(versao) values('1.0')", new Object[] {});
+
+			FileImportUtils.insertSimpleLine(datasource, userInfo,
+					"insert into controlo(crc_id, entObserv, entReport, dtCriacao, idDest, idFichRelac) values(?,?,?,?,?,?)",
+					new Object[] { 
+							crcIdResult,
+							properties.get("p17040_entObserv").toString(),
+							properties.get("p17040_entReport").toString(), 
+							new Timestamp((new Date()).getTime()),
+							properties.get("p17040_idDest").toString(),
+							properties.get("p17040_idFichRelac").toString() });
+
+			FileImportUtils.insertSimpleLine(datasource, userInfo,
+					"insert into conteudo(crc_id) values(?)", new Object[] { crcIdResult });
+			
+
+		} catch (Exception e) {
+			Logger.error("ADMIN", "FileImportUtils", "createNewCrcCENT, check if cent_import.properties is complete!",
+					e.getMessage(), e);
+		}
+
+		return crcIdResult;
 	}
 
 	public abstract Integer importFile(DataSource datasource, InputStream inputDocStream, ArrayList<ValidationError> errorList,

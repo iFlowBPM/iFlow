@@ -73,11 +73,11 @@
 			<description>Entity observed in reported files</description>
 			<value />
 		</XmlAttribute>
-		<image></image>
+		<image>bpmn_task.png</image>
 		<description>GenerateCENT</description>
 		<i18n>library.dms.block.p17040.generate.cent</i18n>
 	</XmlBlock>
-	
+ 
 		<XmlBlock>
 		<class>BlockP17040GenerateCPRT</class>
         <XmlPort>
@@ -141,11 +141,11 @@
 			<description>Entity observed in reported files</description>
 			<value />
 		</XmlAttribute>
-		<image></image>
+		<image>bpmn_task.png</image>
 		<description>GenerateCPRT</description>
 		<i18n>library.dms.block.p17040.generate.cprt</i18n>
 	</XmlBlock>
-	
+<!-- 	
 		<XmlBlock>
 		<class>BlockP17040GenerateCCIN</class>
         <XmlPort>
@@ -209,7 +209,7 @@
 			<description>Entity observed in reported files</description>
 			<value />
 		</XmlAttribute>
-		<image></image>
+		<image>bpmn_task.png</image>
 		<description>GenerateCCIN</description>
 		<i18n>library.dms.block.p17040.generate.ccin</i18n>
 	</XmlBlock>
@@ -277,7 +277,7 @@
 			<description>Entity observed in reported files</description>
 			<value />
 		</XmlAttribute>
-		<image></image>
+		<image>bpmn_task.png</image>
 		<description>GenerateCERA</description>
 		<i18n>library.dms.block.p17040.generate.cera</i18n>
 	</XmlBlock>
@@ -345,7 +345,7 @@
 			<description>Entity observed in reported files</description>
 			<value />
 		</XmlAttribute>
-		<image></image>
+		<image>bpmn_task.png</image>
 		<description>GenerateCERP</description>
 		<i18n>library.dms.block.p17040.generate.cerp</i18n>
 	</XmlBlock>
@@ -413,7 +413,7 @@
 			<description>Entity observed in reported files</description>
 			<value />
 		</XmlAttribute>
-		<image></image>
+		<image>bpmn_task.png</image>
 		<description>GenerateCINA</description>
 		<i18n>library.dms.block.p17040.generate.cina</i18n>
 	</XmlBlock>
@@ -481,7 +481,7 @@
 			<description>Entity observed in reported files</description>
 			<value />
 		</XmlAttribute>
-		<image></image>
+		<image>bpmn_task.png</image>
 		<description>GenerateCINP</description>
 		<i18n>library.dms.block.p17040.generate.cinp</i18n>
 	</XmlBlock>
@@ -549,11 +549,11 @@
 			<description>Entity observed in reported files</description>
 			<value />
 		</XmlAttribute>
-		<image></image>
+		<image>bpmn_task.png</image>
 		<description>GenerateCIND</description>
 		<i18n>library.dms.block.p17040.generate.cind</i18n>
 	</XmlBlock>
-	
+	-->
 	<XmlBlock>
 		<class>BlockP17040ImportCENT</class>
         <XmlPort>
@@ -617,7 +617,7 @@
 			<description>Id of created Crc</description>
 			<value />
 		</XmlAttribute>
-		<image></image>
+		<image>bpmn_task.png</image>
 		<description>ImportCENT</description>
 		<i18n>library.dms.block.p17040.import.cent</i18n>
 	</XmlBlock>
@@ -675,9 +675,76 @@
 			<description>Id of Crc</description>
 			<value />
 		</XmlAttribute>
-		<image></image>
+		<image>bpmn_task.png</image>
 		<description>ValidateCENT</description>
 		<i18n>library.dms.block.p17040.validate.cent</i18n>
 	</XmlBlock>
 	
+	<XmlBlock>
+		<class>BlockP17040ImportCPRT</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portEmpty</name>
+            <description>portEmpty</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>30</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+		<XmlAttribute>
+			<name>inputDocument</name>
+			<description>Document holder for input file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>errors file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputActionDocument</name>
+			<description>actions file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>Datasource</name>
+			<description>Datasource</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>crc_id</name>
+			<description>Id of created Crc</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>ImportCPRT</description>
+		<i18n>library.dms.block.p17040.import.cprt</i18n>
+	</XmlBlock>
 </XmlLibrary>

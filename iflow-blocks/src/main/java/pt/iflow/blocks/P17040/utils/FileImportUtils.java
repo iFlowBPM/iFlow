@@ -1,10 +1,10 @@
 package pt.iflow.blocks.P17040.utils;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -103,7 +103,7 @@ public class FileImportUtils {
 	}	
 
 	public static Integer insertSimpleLine(DataSource datasource, UserInfoInterface userInfo, String query,
-			Object[] parameters) {
+			Object[] parameters) throws SQLException {
 		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
@@ -120,9 +120,10 @@ public class FileImportUtils {
 
 			if (rs.next())
 				resultAux = rs.getInt(1);
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			Logger.error(userInfo.getUtilizador(), "FileImportUtils", "insertSimpleLine", filledQuery + e.getMessage(),
 					e);
+			throw e;
 		} finally {
 			DatabaseInterface.closeResources(db, pst, rs);
 		}
