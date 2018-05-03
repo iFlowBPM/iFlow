@@ -68,7 +68,7 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 				// adicionar acçao
 				actionList.add(new ImportAction((StringUtils.equals(type, "EU") ?ImportAction.ImportActionType.UPDATE : ImportAction.ImportActionType.CREATE), idEnt));
 				// inserir na bd
-				crcIdResult = importCentLine(datasource, userInfo, crcIdResult, lineValues, properties, type,
+				crcIdResult = importLine(datasource, userInfo, crcIdResult, lineValues, properties, type,
 						errorList);
 			}
 		} catch (Exception e) {
@@ -78,7 +78,7 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 		return crcIdResult;
 	}
 
-	public Integer importCentLine(DataSource datasource, UserInfoInterface userInfo, Integer crcIdResult,
+	public Integer importLine(DataSource datasource, UserInfoInterface userInfo, Integer crcIdResult,
 			HashMap<String, Object> lineValues, Properties properties, String type, ArrayList<ValidationError> errorList)
 			throws SQLException {
 

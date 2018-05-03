@@ -35,9 +35,9 @@ public class FileImportUtils {
 			if (!StringUtils.startsWithIgnoreCase(name, "p17040")) {
 				String valueIndex = properties.getProperty(name);
 				String type = properties.getProperty("p17040_type_" + name);
-
+				String valueAux = checkForDefaultValue(lineValuesAux,valueIndex);
+				
 				if (StringUtils.equalsIgnoreCase(type, "VARCHAR")) {
-					String valueAux = lineValuesAux[Integer.parseInt(valueIndex)]; 
 					if(StringUtils.isBlank(valueAux))
 						result.put(name, null);
 					else
@@ -45,7 +45,6 @@ public class FileImportUtils {
 				} else if (StringUtils.equalsIgnoreCase(type, "DATE")) {			
 					SimpleDateFormat sdf = new SimpleDateFormat(properties.getProperty("p17040_dateFormat"));
 					try{
-						String valueAux = lineValuesAux[Integer.parseInt(valueIndex)];
 						if(StringUtils.isBlank(valueAux))
 							result.put(name, null);
 						else
@@ -56,7 +55,6 @@ public class FileImportUtils {
 				} else if (StringUtils.equalsIgnoreCase(type, "TIMESTAMP")) {			
 					SimpleDateFormat sdf = new SimpleDateFormat(properties.getProperty("p17040_dateTimeFormat"));
 					try{
-						String valueAux = lineValuesAux[Integer.parseInt(valueIndex)];
 						if(StringUtils.isBlank(valueAux))
 							result.put(name, null);
 						else
@@ -66,7 +64,6 @@ public class FileImportUtils {
 					}
 				} else if (StringUtils.equalsIgnoreCase(type, "DECIMAL")) {			
 					try{
-						String valueAux = lineValuesAux[Integer.parseInt(valueIndex)];
 						if(StringUtils.isBlank(valueAux))
 							result.put(name, null);
 						else
@@ -75,19 +72,17 @@ public class FileImportUtils {
 						errorList.add(new ValidationError("Valor decimal inválido", "", name, lineNumber));
 					}
 				} else if (StringUtils.equalsIgnoreCase(type, "BOOLEAN")) {								
-					String aux = lineValuesAux[Integer.parseInt(valueIndex)];
-					if(StringUtils.equals("1", aux))
+					if(StringUtils.equals("1", valueAux))
 						result.put(name,Boolean.TRUE);
-					else if(StringUtils.equals("0", aux))
+					else if(StringUtils.equals("0", valueAux))
 						result.put(name,Boolean.FALSE);
-					else if(StringUtils.isBlank(aux)){
+					else if(StringUtils.isBlank(valueAux)){
 						result.put(name, null);
 					} else {
 						errorList.add(new ValidationError("Valor booleano inválido", "", name, lineNumber));
 					}				
 				} else if (StringUtils.equalsIgnoreCase(type, "INTEGER")) {			
 					try{
-						String valueAux = lineValuesAux[Integer.parseInt(valueIndex)];
 						if(StringUtils.isBlank(valueAux))
 							result.put(name, null);
 						else
@@ -101,6 +96,19 @@ public class FileImportUtils {
 		}
 		return result;
 	}	
+	
+	private static String checkForDefaultValue(String []lineValuesAux, String index){
+		String aux=null;
+		if((StringUtils.startsWith(index, "\"") && StringUtils.endsWith(index, "\"")) || (StringUtils.startsWith(index, "'") && StringUtils.endsWith(index, "'"))){
+			aux = StringUtils.removeStart(index,  "\"");
+			aux = StringUtils.removeStart(aux, "'");
+			aux = StringUtils.removeEnd(aux,  "\"");
+			aux = StringUtils.removeEnd(aux, "'");
+		} else
+			aux = lineValuesAux[Integer.parseInt(index)];
+		
+		return aux;
+	}
 
 	public static Integer insertSimpleLine(DataSource datasource, UserInfoInterface userInfo, String query,
 			Object[] parameters) throws SQLException {

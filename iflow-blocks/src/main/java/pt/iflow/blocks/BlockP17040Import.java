@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -190,6 +191,10 @@ public abstract class BlockP17040Import extends Block {
 
 	public abstract Integer importFile(DataSource datasource, InputStream inputDocStream, ArrayList<ValidationError> errorList,
 			ArrayList<ImportAction> actionList, UserInfoInterface userInfo) throws IOException, SQLException;
+	
+	public abstract Integer importLine(DataSource datasource, UserInfoInterface userInfo, Integer crcIdResult,
+			HashMap<String, Object> lineValues, Properties properties, String type,
+			ArrayList<ValidationError> errorList) throws SQLException;
 
 	@Override
 	public String getDescription(UserInfoInterface userInfo, ProcessData procData) {

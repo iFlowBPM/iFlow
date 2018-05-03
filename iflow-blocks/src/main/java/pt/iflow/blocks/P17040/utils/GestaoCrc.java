@@ -140,4 +140,38 @@ public class GestaoCrc {
 		}
 		return false;
 		}
+
+	public static boolean idContIdInstAlreadyCreated(String idCont, String idInst, String username,
+			DataSource datasource) throws SQLException {
+		Connection db = datasource.getConnection();
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			String query = "select regMsg.idProt " 
+					+ "from u_gestao, conteudo, avisRec, fichAce, regMsg "
+					+ "where regMsg.idCont = ? "
+					+ " and regMsg.idInst = ? " 
+					+ "	and regMsg.fichAce_id = fichAce.id "
+					+ "	and fichAce.avisRec_id = avisRec.id " 
+					+ "    and avisRec.conteudo_id = conteudo.id "
+					+ "    and conteudo.id = u_gestao.in_id " 
+					+ "    and u_gestao.status_id = 4 "
+					+ "    and regMsg.id not in (select regMsg_id from msg) ";
+			
+			pst = db.prepareStatement(query);
+			pst.setString(1, idCont);
+			pst.setString(2, idInst);
+			rs = pst.executeQuery();
+			
+			if(rs.next())
+				return true;
+			else 
+				return false;
+		} catch (Exception e) {
+			Logger.error(username, "GestaoCrc", "markAsImported", e.getMessage(), e);
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+		return false;
+		}
 }

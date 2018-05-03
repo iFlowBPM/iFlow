@@ -69,7 +69,7 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 				actionList.add(new ImportAction((StringUtils.equals(type, "PTU") ? ImportAction.ImportActionType.UPDATE
 						: ImportAction.ImportActionType.CREATE), idProt));
 				// inserir na bd
-				crcIdResult = importCprtLine(datasource, userInfo, crcIdResult, lineValues, properties, type,
+				crcIdResult = importLine(datasource, userInfo, crcIdResult, lineValues, properties, type,
 						errorList);
 			}
 		} catch (Exception e) {
@@ -79,7 +79,7 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 		return crcIdResult;
 	}
 
-	public Integer importCprtLine(DataSource datasource, UserInfoInterface userInfo, Integer crcIdResult,
+	public Integer importLine(DataSource datasource, UserInfoInterface userInfo, Integer crcIdResult,
 			HashMap<String, Object> lineValues, Properties properties, String type,
 			ArrayList<ValidationError> errorList) throws SQLException {
 
@@ -106,8 +106,7 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 				: "codigo_fonte";
 		List<Integer> idEntList = retrieveSimpleField(datasource, userInfo,
 				"select idEnt.id from idEnt where " + idEntAux + "= ''{0}''", new Object[] { lineValues.get("idEnt") });
-		Integer idEnt_id = idEntList.size()>0?idEntList.get(0):null;
-		
+		Integer idEnt_id = idEntList.size()>0?idEntList.get(0):null;		
 		
 		// insert infProt
 		FileImportUtils.insertSimpleLine(datasource, userInfo,
