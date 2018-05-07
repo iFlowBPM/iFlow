@@ -63,11 +63,19 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 					errorList.add(new ValidationError("Identificação da protecção em falta", "", "", lineNumber));
 					return null;
 				}
+				// validar data de referencia
+				Date dtRefProt = (Date) lineValues.get("dtRefProt");
+				if (dtRefProt==null) {
+					errorList.add(new ValidationError("Data de referência dos dados em falta", "", "", lineNumber));
+					return null;
+				}	
 				// determinar se é insert ou update
-				String type = GestaoCrc.idProtAlreadyCreated(idProt, "", datasource) ? "PTU" : "PTI";
+				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfProtType(idProt, dtRefProt, userInfo.getUtilizador(), datasource);
+				if(actionOnLine==null)
+					continue;
 				// adicionar acçao
-				actionList.add(new ImportAction((StringUtils.equals(type, "PTU") ? ImportAction.ImportActionType.UPDATE
-						: ImportAction.ImportActionType.CREATE), idProt));
+				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? "PTI" : "PTU";
+				actionList.add(new ImportAction(actionOnLine, idProt));				
 				// inserir na bd
 				crcIdResult = importLine(datasource, userInfo, crcIdResult, lineValues, properties, type,
 						errorList);

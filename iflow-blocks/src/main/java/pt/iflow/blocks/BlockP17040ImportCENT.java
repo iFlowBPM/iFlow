@@ -63,10 +63,19 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 					errorList.add(new ValidationError("Identificação da entidade em falta", "", "", lineNumber));
 					return null;
 				}
+				// validar data de referencia
+				Date dtRefEnt = (Date) lineValues.get("dtRefEnt");
+				if (dtRefEnt==null) {
+					errorList.add(new ValidationError("Data de referência dos dados em falta", "", "", lineNumber));
+					return null;
+				}				
 				// determinar se é insert ou update
-				String type = GestaoCrc.idEntAlreadyCreated(idEnt, "", datasource) ? "EU" : "EI";
+				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfEntType(idEnt, dtRefEnt, userInfo.getUtilizador(), datasource);
+				if(actionOnLine==null)
+					continue;
 				// adicionar acçao
-				actionList.add(new ImportAction((StringUtils.equals(type, "EU") ?ImportAction.ImportActionType.UPDATE : ImportAction.ImportActionType.CREATE), idEnt));
+				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? "EI" : "EU";
+				actionList.add(new ImportAction(actionOnLine, idEnt));
 				// inserir na bd
 				crcIdResult = importLine(datasource, userInfo, crcIdResult, lineValues, properties, type,
 						errorList);

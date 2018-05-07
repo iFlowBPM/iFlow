@@ -64,11 +64,19 @@ public class BlockP17040ImportCCIN extends BlockP17040Import {
 					errorList.add(new ValidationError("Identificação de Contrato/Instrumentos em falta", "", "", lineNumber));
 					return null;
 				}
+				// validar data de referencia
+				Date dtRefInst = (Date) lineValues.get("dtRefInst");
+				if (dtRefInst==null) {
+					errorList.add(new ValidationError("Data de referência dos dados em falta", "", "", lineNumber));
+					return null;
+				}	
 				// determinar se é insert ou update
-				String type = GestaoCrc.idContIdInstAlreadyCreated(idCont, idInst, "", datasource) ? "CIU" : "CII";
+				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfInstType(idCont, idInst, dtRefInst, userInfo.getUtilizador(), datasource);
+				if(actionOnLine==null)
+					continue;
 				// adicionar acçao
-				actionList.add(new ImportAction((StringUtils.equals(type, "CIU") ? ImportAction.ImportActionType.UPDATE
-						: ImportAction.ImportActionType.CREATE), idCont + " " + idInst));
+				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? "CII" : "CIU";
+				actionList.add(new ImportAction(actionOnLine,  idCont + "-" + idInst));
 				// inserir na bd
 				crcIdResult = importLine(datasource, userInfo, crcIdResult, lineValues, properties, type,
 						errorList);

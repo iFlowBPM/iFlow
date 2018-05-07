@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.utils.Logger;
+import pt.iflow.blocks.P17040.utils.ImportAction.ImportActionType;
 
 public class GestaoCrc {
 
@@ -173,5 +174,184 @@ public class GestaoCrc {
 			DatabaseInterface.closeResources(db, pst, rs);
 		}
 		return false;
+		}
+
+	public static ImportActionType checkInfEntType(String idEntValue, Date dtRefEnt, String username,
+			DataSource datasource) throws SQLException {
+		Connection db = datasource.getConnection();
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			String query = "select u_gestao.id, infEnt.dtRefEnt, idEnt.id, infEnt.type " +
+				"from u_gestao, crc, conteudo, comEnt, infEnt, idEnt " +
+				"where u_gestao.out_id = crc.id and " +
+				"	crc.id = conteudo.crc_id and " +
+				"    conteudo.id = comEnt.conteudo_id and " +
+				"    comEnt.id = infEnt.id and " +
+				"    infEnt.idEnt_id = idEnt.id and " +
+				"    u_gestao.status_id= 4 and " +
+				"	((idEnt.nif_nipc = ? and idEnt.type='i1') or (idEnt.codigo_fonte = ? and idEnt.type='i2')) " +     
+				"    order by u_gestao.receivedate desc;";
+			
+			pst = db.prepareStatement(query);
+			pst.setString(1, idEntValue);
+			pst.setString(2, idEntValue);
+			rs = pst.executeQuery();
+			
+			if(!rs.next())
+				return ImportActionType.CREATE;
+			
+			Integer u_gestao_id = rs.getInt(1);
+			Date dtRefEntAux = rs.getDate(2);
+			Integer idEnt_id = rs.getInt(3);
+			pst.close();
+			rs.close();
+			
+			query = "select fichAce.id "+
+				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
+				"where  u_gestao.in_id = crc.id and "+
+				"	crc.id = conteudo.crc_id and "+
+				"	conteudo.id = avisRec.conteudo_id and "+
+				"	avisRec.id = fichAce.avisRec_id and "+
+				"   u_gestao.id = ? and "+
+				"   fichAce.id not in  "+
+				"		( select regMsg.fichAce_id from regMsg "+
+				"			where regMsg.idEnt_id = ?); ";
+			
+			pst = db.prepareStatement(query);
+			pst.setInt(1, u_gestao_id);
+			pst.setInt(2, idEnt_id);
+			rs = pst.executeQuery();
+			
+			if(!rs.next() && dtRefEntAux.before(dtRefEnt))
+				return ImportActionType.UPDATE;			
+			else 
+				return null;
+			
+		} catch (Exception e) {
+			Logger.error(username, "GestaoCrc", "checkInfEntType", e.getMessage(), e);
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+		return null;
+		}
+
+	public static ImportActionType checkInfProtType(String idProt, Date dtRefProt, String utilizador,
+			DataSource datasource) throws SQLException {
+		Connection db = datasource.getConnection();
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			String query = "select u_gestao.id, infProt.dtRefProt "+
+				"from u_gestao, crc, conteudo, comProt, infProt "+
+				"where u_gestao.out_id = crc.id and "+
+				"	crc.id = conteudo.crc_id and "+
+				"    conteudo.id = comProt.conteudo_id and "+
+				"    comProt.id = infProt.comProt_id and "+
+				"    infProt.idProt = ? and "+
+				"    u_gestao.status_id= 4  "+
+				"    order by u_gestao.receivedate desc;";
+			
+			pst = db.prepareStatement(query);
+			pst.setString(1, idProt);
+			rs = pst.executeQuery();
+			
+			if(!rs.next())
+				return ImportActionType.CREATE;
+			
+			Integer u_gestao_id = rs.getInt(1);
+			Date dtRefProtAux = rs.getDate(2);
+			
+			pst.close();
+			rs.close();
+			
+			query = "select fichAce.id "+
+				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
+				"where  u_gestao.in_id = crc.id and "+
+				"	crc.id = conteudo.crc_id and "+
+				"	conteudo.id = avisRec.conteudo_id and "+
+				"	avisRec.id = fichAce.avisRec_id and "+
+				"   u_gestao.id = ? and "+
+				"   fichAce.id not in  "+
+				"		( select regMsg.fichAce_id from regMsg "+
+				"			where regMsg.idProt = ?); ";
+			
+			pst = db.prepareStatement(query);
+			pst.setInt(1, u_gestao_id);
+			pst.setString(2, idProt);
+			rs = pst.executeQuery();
+			
+			if(!rs.next() && dtRefProtAux.before(dtRefProt))
+				return ImportActionType.UPDATE;			
+			else 
+				return null;
+			
+		} catch (Exception e) {
+			Logger.error(utilizador, "GestaoCrc", "checkInfProtType", e.getMessage(), e);
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+		return null;
+		}
+
+	public static ImportActionType checkInfInstType(String idCont, String idInst, Date dtRefInst, String utilizador,
+			DataSource datasource) throws SQLException {
+		Connection db = datasource.getConnection();
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			String query = "select u_gestao.id, infProt.dtRefProt "+
+				"from u_gestao, crc, conteudo, comCInst, infInst "+
+				"where u_gestao.out_id = crc.id and "+
+				"	crc.id = conteudo.crc_id and "+
+				"    conteudo.id = comCInst.conteudo_id and "+
+				"    comCInst.id = infInst.comCInst_id and "+
+				"    infInst.idCont = ? and "+
+				"    infInst.idInst = ? and "+
+				"    u_gestao.status_id= 4  "+
+				"    order by u_gestao.receivedate desc;";
+			
+			pst = db.prepareStatement(query);
+			pst.setString(1, idCont);
+			pst.setString(1, idInst);
+			rs = pst.executeQuery();
+			
+			if(!rs.next())
+				return ImportActionType.CREATE;
+			
+			Integer u_gestao_id = rs.getInt(1);
+			Date dtRefInstAux = rs.getDate(2);
+			
+			pst.close();
+			rs.close();
+			
+			query = "select fichAce.id "+
+				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
+				"where  u_gestao.in_id = crc.id and "+
+				"	crc.id = conteudo.crc_id and "+
+				"	conteudo.id = avisRec.conteudo_id and "+
+				"	avisRec.id = fichAce.avisRec_id and "+
+				"   u_gestao.id = ? and "+
+				"   fichAce.id not in  "+
+				"		( select regMsg.fichAce_id from regMsg "+
+				"			where regMsg.idCont = ? and regMsg.idInst = ?); ";
+			
+			pst = db.prepareStatement(query);
+			pst.setInt(1, u_gestao_id);
+			pst.setString(2, idCont);
+			pst.setString(2, idInst);
+			rs = pst.executeQuery();
+			
+			if(!rs.next() && dtRefInstAux.before(dtRefInst))
+				return ImportActionType.UPDATE;			
+			else 
+				return null;
+			
+		} catch (Exception e) {
+			Logger.error(utilizador, "GestaoCrc", "checkinfInstType", e.getMessage(), e);
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+		return null;
 		}
 }
