@@ -98,7 +98,7 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 			crcIdResult = createNewCrc(datasource, properties, userInfo);
 
 		List<Integer> conteudoIdList = retrieveSimpleField(datasource, userInfo,
-				"select id from conteudo crc_id = {0} ",
+				"select id from conteudo where crc_id = {0} ",
 				new Object[] { crcIdResult });
 		
 		Integer comEnt_id =  null;
@@ -125,10 +125,10 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 		}
 		// insert infEnt
 		Integer infEnt_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
-				"insert into infEnt(comEnt_id,type,dtRefEnt,idEnt_id,tpEnt,LEI,refExtEnt,nome,paisResd,altIdEnt_id, SI) values(?,?,?,?,?,?,?,?,?,?)",
+				"insert into infEnt(comEnt_id,type,dtRefEnt,idEnt_id,tpEnt,LEI,refExtEnt,nome,paisResd,altIdEnt_id) values(?,?,?,?,?,?,?,?,?,?)",
 				new Object[] { comEnt_id, type, lineValues.get("dtRefEnt"), idEnt_id, lineValues.get("tpEnt"),
 						lineValues.get("LEI"), lineValues.get("refExtEnt"), lineValues.get("nome"),
-						lineValues.get("paisResd"), null, lineValues.get("SI")});
+						lineValues.get("paisResd"), null});
 
 		// insert docId
 		FileImportUtils.insertSimpleLine(datasource, userInfo,

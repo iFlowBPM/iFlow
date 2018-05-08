@@ -1,5 +1,7 @@
 package pt.iflow.blocks.P17040.utils;
 
+import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,11 +9,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.utils.Logger;
+import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.ImportAction.ImportActionType;
 
 public class GestaoCrc {
@@ -216,7 +220,7 @@ public class GestaoCrc {
 				"   u_gestao.id = ? and "+
 				"   fichAce.id not in  "+
 				"		( select regMsg.fichAce_id from regMsg "+
-				"			where regMsg.idEnt_id = ?); ";
+				"			where regMsg.idEnt_id = ? and (operOrig='EI' or operOrig='EU')); ";
 			
 			pst = db.prepareStatement(query);
 			pst.setInt(1, u_gestao_id);
@@ -300,7 +304,7 @@ public class GestaoCrc {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
-			String query = "select u_gestao.id, infProt.dtRefProt "+
+			String query = "select u_gestao.id, infInst.dtRefInst "+
 				"from u_gestao, crc, conteudo, comCInst, infInst "+
 				"where u_gestao.out_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
@@ -313,7 +317,7 @@ public class GestaoCrc {
 			
 			pst = db.prepareStatement(query);
 			pst.setString(1, idCont);
-			pst.setString(1, idInst);
+			pst.setString(2, idInst);
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
@@ -339,7 +343,7 @@ public class GestaoCrc {
 			pst = db.prepareStatement(query);
 			pst.setInt(1, u_gestao_id);
 			pst.setString(2, idCont);
-			pst.setString(2, idInst);
+			pst.setString(3, idInst);
 			rs = pst.executeQuery();
 			
 			if(!rs.next() && dtRefInstAux.before(dtRefInst))
@@ -349,6 +353,75 @@ public class GestaoCrc {
 			
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "checkinfInstType", e.getMessage(), e);
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+		return null;
+		}
+	
+	public static Integer findIdEnt(String idEnt, UserInfoInterface userInfo,DataSource datasource) throws SQLException{
+		List<Integer> idEntList = retrieveSimpleField(datasource, userInfo,
+				"select idEnt.id from idEnt where ((idEnt.nif_nipc = ''{0}'' and idEnt.type=''i1'') or (idEnt.codigo_fonte = ''{1}'' and idEnt.type=''i2''))", new Object[] {idEnt, idEnt});
+		Integer idEnt_id = idEntList.size()>0?idEntList.get(0):null;
+		
+		return idEnt_id;
+	}
+
+	public static ImportActionType checkRiscoEntType(String idEnt, Date dtRef, String utilizador,
+			DataSource datasource) throws SQLException {
+		Connection db = datasource.getConnection();
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			String query = "select u_gestao.id, comRiscoEnt.dtRef, idEnt.id "+
+				"from u_gestao, crc, conteudo, comRiscoEnt, riscoEnt, idEnt "+
+				"where u_gestao.out_id = crc.id and "+
+				"	crc.id = conteudo.crc_id and "+
+				"    conteudo.id = comRiscoEnt.conteudo_id and "+
+				"    comRiscoEnt.id = riscoEnt.comRiscoEnt_id and "+
+				"    riscoEnt.idEnt_id = idEnt.id and "+
+				"    u_gestao.status_id= 4  and "+
+				"	((idEnt.nif_nipc = ? and idEnt.type='i1') or (idEnt.codigo_fonte = ? and idEnt.type='i2')) " +
+				"    order by u_gestao.receivedate desc;";
+			
+			pst = db.prepareStatement(query);
+			pst.setString(1, idEnt);
+			pst.setString(2, idEnt);
+			rs = pst.executeQuery();
+			
+			if(!rs.next())
+				return ImportActionType.CREATE;
+			
+			Integer u_gestao_id = rs.getInt(1);
+			Date dtRefAux = rs.getDate(2);
+			Integer idEnt_id= rs.getInt(3);
+			
+			pst.close();
+			rs.close();
+			
+			query = "select fichAce.id "+
+				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
+				"where  u_gestao.in_id = crc.id and "+
+				"	crc.id = conteudo.crc_id and "+
+				"	conteudo.id = avisRec.conteudo_id and "+
+				"	avisRec.id = fichAce.avisRec_id and "+
+				"   u_gestao.id = ? and "+
+				"   fichAce.id not in  "+
+				"		( select regMsg.fichAce_id from regMsg "+
+				"			where regMsg.idEnt_id = ? and (operOrig='ERI' or operOrig='ERU')); ";
+			
+			pst = db.prepareStatement(query);
+			pst.setInt(1, u_gestao_id);
+			pst.setInt(2, idEnt_id);
+			rs = pst.executeQuery();
+			
+			if(!rs.next() && dtRefAux.before(dtRef))
+				return ImportActionType.UPDATE;			
+			else 
+				return null;
+			
+		} catch (Exception e) {
+			Logger.error(utilizador, "GestaoCrc", "checkRiscoEntType", e.getMessage(), e);
 		} finally {
 			DatabaseInterface.closeResources(db, pst, rs);
 		}

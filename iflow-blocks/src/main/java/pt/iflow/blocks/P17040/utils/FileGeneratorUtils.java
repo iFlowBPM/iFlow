@@ -67,6 +67,8 @@ public class FileGeneratorUtils {
 		
 					if (rsm.getColumnName(i).endsWith("_id") || rsm.getColumnName(i).equals("id") || writer==null)
 						continue;
+					else if(rs.getObject(i)==null)
+						continue;
 					else if (rsm.getColumnType(i) == java.sql.Types.VARCHAR) {
 						writer.writeAttribute(rsm.getColumnName(i), rs.getString(i));
 					} else if (rsm.getColumnType(i) == java.sql.Types.DATE) {

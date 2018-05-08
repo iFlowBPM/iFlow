@@ -127,8 +127,8 @@ public abstract class BlockP17040Import extends Block {
 				GestaoCrc.markAsImported(crcId, inputDoc.getDocId(), userInfo.getUtilizador(), datasource);
 				procData.set(this.getAttribute(CRC_ID), crcId);
 			}
-			else
-				outPort = portError;
+//			else
+//				outPort = portError;
 							
 		} catch (Exception e) {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
