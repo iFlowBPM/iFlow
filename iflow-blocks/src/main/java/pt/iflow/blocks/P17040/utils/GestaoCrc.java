@@ -427,4 +427,68 @@ public class GestaoCrc {
 		}
 		return null;
 		}
+
+	public static ImportActionType checkInfPerInstType(String idCont, String idInst, Date dtRef, String[] types,
+			String utilizador, DataSource datasource) throws SQLException {
+		Connection db = datasource.getConnection();
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			String query = "select u_gestao.id, comInfInst.dtRef "+
+				"from u_gestao, crc, conteudo, comInfInst, infPerInst "+
+				"where u_gestao.out_id = crc.id and "+
+				"	crc.id = conteudo.crc_id and "+
+				"    conteudo.id = comCInst.conteudo_id and "+
+				"    comInfInst.id = infPerInst.comInfInst_id and "+
+				"    infPerInst.idCont = ? and "+
+				"    infPerInst.idInst = ? and "+
+				"    u_gestao.status_id= 4  "+
+				"    order by u_gestao.receivedate desc;";
+			
+			pst = db.prepareStatement(query);
+			pst.setString(1, idCont);
+			pst.setString(2, idInst);
+			rs = pst.executeQuery();
+			
+			if(!rs.next())
+				return ImportActionType.CREATE;
+			
+			Integer u_gestao_id = rs.getInt(1);
+			Date dtRefAux = rs.getDate(2);
+			
+			pst.close();
+			rs.close();
+			
+			query = "select fichAce.id "+
+				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
+				"where  u_gestao.in_id = crc.id and "+
+				"	crc.id = conteudo.crc_id and "+
+				"	conteudo.id = avisRec.conteudo_id and "+
+				"	avisRec.id = fichAce.avisRec_id and "+
+				"   u_gestao.id = ? and "+
+				"   fichAce.id not in  "+
+				"		( select regMsg.fichAce_id from regMsg "+
+				"			where regMsg.idCont = ? and regMsg.idInst = ? " + 
+				"           and (operOrig=? or operOrig=?) ); ";
+			
+			pst = db.prepareStatement(query);
+			pst.setInt(1, u_gestao_id);
+			pst.setString(2, idCont);
+			pst.setString(3, idInst);
+			pst.setString(4, types[0]);
+			pst.setString(5, types[1]);
+			rs = pst.executeQuery();
+			
+			if(!rs.next() && dtRefAux.before(dtRef))
+				return ImportActionType.UPDATE;			
+			else 
+				return null;
+			
+		} catch (Exception e) {
+			Logger.error(utilizador, "GestaoCrc", "checkInfPerInstType", e.getMessage(), e);
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+		return null;
+		}
 }

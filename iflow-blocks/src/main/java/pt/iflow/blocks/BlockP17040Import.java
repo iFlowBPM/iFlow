@@ -38,6 +38,8 @@ public abstract class BlockP17040Import extends Block {
 	public Port portIn, portSuccess, portEmpty, portError;
 
 	private static final String INPUT_DOCUMENT = "inputDocument";
+	private static final String INPUT_DOCUMENT2 = "inputDocument2";
+	private static final String INPUT_DOCUMENT3 = "inputDocument3";
 	private static final String OUTPUT_ERROR_DOCUMENT = "outputErrorDocument";
 	private static final String OUTPUT_ACTION_DOCUMENT = "outputActionDocument";
 	private static final String DATASOURCE = "Datasource";
@@ -88,6 +90,8 @@ public abstract class BlockP17040Import extends Block {
 		Documents docBean = BeanFactory.getDocumentsBean();
 
 		String sInputDocumentVar = this.getAttribute(INPUT_DOCUMENT);
+		String sInputDocumentVar2 = this.getAttribute(INPUT_DOCUMENT2);
+		String sInputDocumentVar3 = this.getAttribute(INPUT_DOCUMENT3);
 		String sOutputErrorDocumentVar = this.getAttribute(OUTPUT_ERROR_DOCUMENT);
 		String sOutputActionDocumentVar = this.getAttribute(OUTPUT_ACTION_DOCUMENT);
 		DataSource datasource = null;
@@ -98,7 +102,7 @@ public abstract class BlockP17040Import extends Block {
 		} catch (Exception e1) {
 			Logger.error(login, this, "after", procData.getSignature() + "error transforming attributes", e1);
 		}
-		if (StringUtilities.isEmpty(sInputDocumentVar) || datasource == null
+		if (StringUtilities.isEmpty(sInputDocumentVar) || StringUtilities.isEmpty(sInputDocumentVar2) || StringUtilities.isEmpty(sInputDocumentVar3) || datasource == null
 				|| StringUtilities.isEmpty(sOutputErrorDocumentVar)
 				|| StringUtilities.isEmpty(sOutputActionDocumentVar)) {
 			Logger.error(login, this, "after", procData.getSignature() + "empty value for attributes");
@@ -107,21 +111,33 @@ public abstract class BlockP17040Import extends Block {
 
 		try {
 			ProcessListVariable docsVar = procData.getList(sInputDocumentVar);
-			Document inputDoc = docBean.getDocument(userInfo, procData,((Long) docsVar.getItem(0).getValue()).intValue());
-			String originalNameInputDoc = inputDoc.getFileName();			
+			Document inputDoc = docBean.getDocument(userInfo, procData,new Integer(docsVar.getItem(0).getValue().toString()));
 			InputStream inputDocStream = new ByteArrayInputStream(inputDoc.getContent());
+			
+			ProcessListVariable docsVar2 = procData.getList(sInputDocumentVar2);
+			Document inputDoc2 = docBean.getDocument(userInfo, procData,new Integer(docsVar2.getItem(0).getValue().toString()));
+			InputStream inputDocStream2 = new ByteArrayInputStream(inputDoc2.getContent());
+			
+			ProcessListVariable docsVar3 = procData.getList(sInputDocumentVar3);
+			Document inputDoc3 = docBean.getDocument(userInfo, procData,new Integer(docsVar3.getItem(0).getValue().toString()));
+			InputStream inputDocStream3 = new ByteArrayInputStream(inputDoc3.getContent());
+			
+			
+			String originalNameInputDoc = inputDoc.getFileName()+ "_" +inputDoc2.getFileName() + "_" + inputDoc3.getFileName();
 			
 			ArrayList<ValidationError> errorList = new ArrayList<>();
 			ArrayList<ImportAction> actionList = new ArrayList<>();			
-			Integer crcId = importFile(datasource, inputDocStream, errorList, actionList, userInfo);
+			Integer crcId = importFile(datasource, errorList, actionList, userInfo, inputDocStream, inputDocStream2, inputDocStream3);
 			
 			//set errors file
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
 			Document doc = saveFileAsDocument("E" +originalNameInputDoc+ "." +sdf.format(new Date())+ ".txt", errorList,  userInfo,  procData);
-			procData.getList(sOutputErrorDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));						
+			if(doc!=null)
+				procData.getList(sOutputErrorDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));						
 			//set actions file
 			doc = saveFileAsDocument("R"+originalNameInputDoc+"." +sdf.format(new Date())+ ".txt", actionList,  userInfo,  procData);
-			procData.getList(sOutputActionDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));
+			if(doc!=null)
+				procData.getList(sOutputActionDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));
 								
 			if(crcId!=null && errorList.isEmpty()){
 				GestaoCrc.markAsImported(crcId, inputDoc.getDocId(), userInfo.getUtilizador(), datasource);
@@ -142,6 +158,9 @@ public abstract class BlockP17040Import extends Block {
 	}
 	
 	private Document saveFileAsDocument(String filename, ArrayList<?> errorList, UserInfoInterface userInfo, ProcessData procData) throws Exception{
+		if(errorList.isEmpty())
+			return null;
+		
 		File tmpFile = File.createTempFile(this.getClass().getName(), ".tmp");
 		BufferedWriter tmpOutput = new BufferedWriter(new FileWriter(tmpFile, true));
 		for(Object aux: errorList){
@@ -189,8 +208,8 @@ public abstract class BlockP17040Import extends Block {
 		return crcIdResult;
 	}
 
-	public abstract Integer importFile(DataSource datasource, InputStream inputDocStream, ArrayList<ValidationError> errorList,
-			ArrayList<ImportAction> actionList, UserInfoInterface userInfo) throws IOException, SQLException;
+	public abstract Integer importFile(DataSource datasource, ArrayList<ValidationError> errorList,
+			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream... inputDocStream) throws IOException, SQLException;
 	
 	public abstract Integer importLine(DataSource datasource, UserInfoInterface userInfo, Integer crcIdResult,
 			HashMap<String, Object> lineValues, Properties properties, String type,

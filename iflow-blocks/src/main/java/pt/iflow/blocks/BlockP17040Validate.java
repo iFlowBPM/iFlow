@@ -105,14 +105,11 @@ public abstract class BlockP17040Validate extends Block {
 			Document doc = BeanFactory.getDocumentsBean().getDocument(userInfo, procData, docid);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
 			doc = saveFileAsDocument("E" +doc.getFileName()+ "." +sdf.format(new Date())+ ".txt", result,  userInfo,  procData);
-			procData.getList(sOutputErrorDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));		
-			
-			if(result.isEmpty()){
-				outPort = portSuccess;
-				GestaoCrc.markAsValidated(crcId, userInfo.getUtilizador(), datasource);
-			}
-			else
-				outPort = portError;
+			if(doc!=null)
+				procData.getList(sOutputErrorDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));		
+						
+			GestaoCrc.markAsValidated(crcId, userInfo.getUtilizador(), datasource);
+			outPort = portSuccess;
 		} catch (Exception e) {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
 			outPort = portError;
@@ -125,6 +122,8 @@ public abstract class BlockP17040Validate extends Block {
 	}
 
 	private Document saveFileAsDocument(String filename, ArrayList<?> errorList, UserInfoInterface userInfo, ProcessData procData) throws Exception{
+		if(errorList.isEmpty())
+			return null;
 		File tmpFile = File.createTempFile(this.getClass().getName(), ".tmp");
 		BufferedWriter tmpOutput = new BufferedWriter(new FileWriter(tmpFile, true));
 		for(Object aux: errorList){

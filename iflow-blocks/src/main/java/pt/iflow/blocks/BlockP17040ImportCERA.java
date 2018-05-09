@@ -35,8 +35,8 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 	static String propertiesFile = "cera_import.properties";
 	
 	@Override
-	public Integer importFile(DataSource datasource, InputStream inputDocStream, ArrayList<ValidationError> errorList,
-			ArrayList<ImportAction> actionList, UserInfoInterface userInfo) throws IOException, SQLException {
+	public Integer importFile(DataSource datasource, ArrayList<ValidationError> errorList,
+			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream... inputDocStream) throws IOException, SQLException {
 
 		Properties properties = Setup.readPropertiesFile("p17040" + File.separator + propertiesFile);
 		String separator = properties.getProperty("p17040_separator", "|");
@@ -44,7 +44,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 		Integer crcIdResult = null;
 		int lineNumber = 0;
 		try {
-			List<String> lines = IOUtils.readLines(inputDocStream);
+			List<String> lines = IOUtils.readLines(inputDocStream[0]);
 			for (lineNumber = startLine; lineNumber < lines.size(); lineNumber++) {
 				if (StringUtils.isBlank(lines.get(lineNumber)))
 					continue;
