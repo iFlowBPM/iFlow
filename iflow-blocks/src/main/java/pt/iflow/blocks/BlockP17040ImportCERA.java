@@ -52,7 +52,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				// obter valores da linha
 				try {
 					lineValues = FileImportUtils.parseLine(lineNumber, lines.get(lineNumber), properties, separator,
-							errorList);
+							errorList,"");
 				} catch (Exception e) {
 					errorList.add(new ValidationError("Linha com número de campos errado", "", "", lineNumber));
 					return null;

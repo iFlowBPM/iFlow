@@ -438,7 +438,7 @@ public class GestaoCrc {
 				"from u_gestao, crc, conteudo, comInfInst, infPerInst "+
 				"where u_gestao.out_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
-				"    conteudo.id = comCInst.conteudo_id and "+
+				"    conteudo.id = comInfInst.conteudo_id and "+
 				"    comInfInst.id = infPerInst.comInfInst_id and "+
 				"    infPerInst.idCont = ? and "+
 				"    infPerInst.idInst = ? and "+

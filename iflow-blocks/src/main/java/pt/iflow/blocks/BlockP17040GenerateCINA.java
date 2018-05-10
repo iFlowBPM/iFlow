@@ -60,7 +60,9 @@ public class BlockP17040GenerateCINA extends BlockP17040Generate {
 							HashMap<String,Object> respEntInstValues = fillAtributtes(writer, datasource, userInfo, "select * from respEntInst where id = {0} ",
 									new Object[] { respEntInstId });
 								//idEnt
-								FileGeneratorUtils.fillAtributtesIdEnt(writer, datasource, userInfo, respEntInstValues.get("idEnt_id") );
+								writer.writeStartElement("idEnt");
+									FileGeneratorUtils.fillAtributtesIdEnt(writer, datasource, userInfo, respEntInstValues.get("idEnt_id") );
+								writer.writeEndElement();
 							writer.writeEndElement();
 						}
 						

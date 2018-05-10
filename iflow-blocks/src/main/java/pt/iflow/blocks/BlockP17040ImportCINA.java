@@ -28,6 +28,32 @@ import pt.iflow.blocks.P17040.utils.ImportAction;
 import pt.iflow.blocks.P17040.utils.ValidationError;
 
 public class BlockP17040ImportCINA extends BlockP17040Import {
+	
+	static enum ReportType {
+		IF("IFI","IFU","cina_if_import.properties"), IC("ICI","ICU","cina_ic_import.properties"), IR("IRI","IRU","cina_ir_import.properties");
+		
+		private String create;
+		private String update;
+		private String properties;
+		
+		ReportType(String create, String update, String properties){
+			this.create = create;
+			this.update=update;
+			this.properties=properties;
+		}
+
+		public String getCreate() {
+			return create;
+		}
+
+		public String getUpdate() {
+			return update;
+		}
+		
+		public String getProperties() {
+			return properties;
+		}
+	}		
 
 	public BlockP17040ImportCINA(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
@@ -40,23 +66,22 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 			throws IOException, SQLException {
 
 		Integer crcIdResult = importSubFile(datasource, errorList, actionList, userInfo, inputDocStream[0],
-				"cina_if_import.properties", new String[] { "IFI", "IFU" });
+				ReportType.IF.properties, ReportType.IF, null);
 		crcIdResult = importSubFile(datasource, errorList, actionList, userInfo, inputDocStream[1],
-				"cina_ic_import.properties", new String[] { "ICI", "ICU" });
+				ReportType.IC.properties, ReportType.IC, crcIdResult);
 		crcIdResult = importSubFile(datasource, errorList, actionList, userInfo, inputDocStream[2],
-				"cina_ir_import.properties", new String[] { "IRI", "IRU" });
+				ReportType.IR.properties, ReportType.IR, crcIdResult);
 
 		return crcIdResult;
 	}
 
 	private Integer importSubFile(DataSource datasource, ArrayList<ValidationError> errorList,
 			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream inputStream,
-			String propertiesFile, String[] types) {
+			String propertiesFile, ReportType reportType, Integer crcIdResult) {
 
 		Properties properties = Setup.readPropertiesFile("p17040" + File.separator + propertiesFile);
 		String separator = properties.getProperty("p17040_separator", "|");
 		Integer startLine = Integer.parseInt(properties.getProperty("p17040_startLine", "0"));
-		Integer crcIdResult = null;
 		int lineNumber = 0;
 		try {
 			List<String> lines = IOUtils.readLines(inputStream);
@@ -67,9 +92,9 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 				// obter valores da linha
 				try {
 					lineValues = FileImportUtils.parseLine(lineNumber, lines.get(lineNumber), properties, separator,
-							errorList);
+							errorList, reportType.toString());
 				} catch (Exception e) {
-					errorList.add(new ValidationError("Linha com número de campos errado", "", "", lineNumber));
+					errorList.add(new ValidationError("Linha com número de campos errado", reportType.toString(), "", lineNumber));
 					return null;
 				}
 				// validar Identificação
@@ -77,28 +102,28 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 				String idInst = lineValues.get("idInst").toString();
 				if (StringUtils.isBlank(idCont) || StringUtils.isBlank(idInst)) {
 					errorList.add(
-							new ValidationError("Identificação de Contrato/Instrumentos em falta", "", "", lineNumber));
+							new ValidationError("Identificação de Contrato/Instrumentos em falta", reportType.toString(), "", lineNumber));
 					return null;
 				}
 				// validar data de referencia
 				Date dtRef = (Date) lineValues.get("dtRef");
 				if (dtRef == null) {
-					errorList.add(new ValidationError("Data de referência dos dados em falta", "", "", lineNumber));
+					errorList.add(new ValidationError("Data de referência dos dados em falta", reportType.toString(), "", lineNumber));
 					return null;
 				}
 				// determinar se é insert ou update
-				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfPerInstType(idCont, idInst, dtRef, types,
+				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfPerInstType(idCont, idInst, dtRef, new String[]{reportType.getCreate(), reportType.getUpdate()},
 						userInfo.getUtilizador(), datasource);
 				if (actionOnLine == null)
 					continue;
 				// adicionar acçao
-				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? types[0] : types[1];
-				actionList.add(new ImportAction(actionOnLine, idCont + "-" + idInst + "-" + dtRef));
+				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? reportType.getCreate() : reportType.getUpdate();
+				actionList.add(new ImportAction(actionOnLine,reportType.toString()+":"+ idCont + "-" + idInst + "-" + dtRef));
 				// inserir na bd
 				crcIdResult = importLine(datasource, userInfo, crcIdResult, lineValues, properties, type, errorList);
 			}
 		} catch (Exception e) {
-			errorList.add(new ValidationError("Erro nos dados", "", e.getMessage(), lineNumber));
+			errorList.add(new ValidationError("Erro nos dados", reportType.toString(), e.getMessage(), lineNumber));
 		}
 
 		return crcIdResult;
@@ -133,22 +158,22 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 				new Object[] { comInfInst_id, lineValues.get("idCont"), lineValues.get("idInst") });
 		if (infPerInstList.isEmpty())
 			infPerInst_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
-					"insert into infPerInst(comInfInst_id, idCont, idRef) values(?,?,?)",
+					"insert into infPerInst(comInfInst_id, idCont, idInst) values(?,?,?)",
 					new Object[] { comInfInst_id, lineValues.get("idCont"), lineValues.get("idInst") });
 		else
 			infPerInst_id = infPerInstList.get(0);
 
-		if (StringUtils.contains("IFI IFU", type))
+		if (StringUtils.equals(type, ReportType.IF.create) ||  StringUtils.equals(type, ReportType.IF.update))
 			importInfFinInst(datasource, userInfo, type, lineValues, infPerInst_id);
-		else if (StringUtils.contains("ICI ICU", type))
+		else if (StringUtils.equals(type, ReportType.IC.create) ||  StringUtils.equals(type, ReportType.IC.update))
 			importInfContbInst(datasource, userInfo, type, lineValues, infPerInst_id);
-		else if (StringUtils.contains("IRI IRU", type))
+		else if (StringUtils.equals(type, ReportType.IR.create) ||  StringUtils.equals(type, ReportType.IR.update))
 			importInfRInst(datasource, userInfo, type, lineValues, infPerInst_id);
 
 		return crcIdResult;
 	}
 
-	private void importInfRInst(DataSource datasource, UserInfoInterface userInfo, String type,
+	private void importInfFinInst(DataSource datasource, UserInfoInterface userInfo, String type,
 			HashMap<String, Object> lineValues, Integer infPerInst_id) throws SQLException {
 		// infFinInst
 		Integer infFinInst_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
@@ -198,7 +223,7 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 				"INSERT INTO `infContbInst` (`infPerInst_id`, `type`, `classContbInst`, `recBal`, "
 				+ "`formaConstOnus`, `montAcumImp`, `tpImp`, `metValImp`, `valAcumRC`, `perfStat`, "
 				+ "`dtPerfStat`, `provPRExtp`, `sitDifReneg`, `recAcumIncump`, `dtEstDifReneg`, `cartPrud`, `montEscrit`) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
 				new Object[] { infPerInst_id, type, lineValues.get("classContbInst"), lineValues.get("recBal"),
 						lineValues.get("formaConstOnus"), lineValues.get("montAcumImp"),
 						lineValues.get("tpImp"), lineValues.get("metValImp"), lineValues.get("valAcumRC"),
@@ -206,7 +231,7 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 						lineValues.get("recAcumIncump"), lineValues.get("dtEstDifReneg"), lineValues.get("cartPrud"), lineValues.get("montEscrit")});
 	}
 
-	private void importInfFinInst(DataSource datasource, UserInfoInterface userInfo, String type,
+	private void importInfRInst(DataSource datasource, UserInfoInterface userInfo, String type,
 			HashMap<String, Object> lineValues, Integer infPerInst_id) throws SQLException {
 		Integer infRInst_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
 				"INSERT INTO `infRInst` (`infPerInst_id`, `type`, `idExp`, `tpExp`, `classExpCRR`, "

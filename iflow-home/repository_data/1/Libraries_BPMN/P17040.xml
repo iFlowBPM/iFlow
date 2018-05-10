@@ -281,7 +281,7 @@
 		<description>GenerateCERA</description>
 		<i18n>library.dms.block.p17040.generate.cera</i18n>
 	</XmlBlock>
-<!-- 		
+		
 		<XmlBlock>
 		<class>BlockP17040GenerateCERP</class>
         <XmlPort>
@@ -485,7 +485,7 @@
 		<description>GenerateCINP</description>
 		<i18n>library.dms.block.p17040.generate.cinp</i18n>
 	</XmlBlock>
-	
+<!-- 	
 		<XmlBlock>
 		<class>BlockP17040GenerateCIND</class>
         <XmlPort>
@@ -883,4 +883,229 @@
 		<description>ImportCERA</description>
 		<i18n>library.dms.block.p17040.import.cera</i18n>
 	</XmlBlock>
+	
+	<XmlBlock>
+		<class>BlockP17040ImportCERP</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portEmpty</name>
+            <description>portEmpty</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>30</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+		<XmlAttribute>
+			<name>inputDocument</name>
+			<description>Document holder for input file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>errors file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputActionDocument</name>
+			<description>actions file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>Datasource</name>
+			<description>Datasource</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>crc_id</name>
+			<description>Id of created Crc</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>ImportCERP</description>
+		<i18n>library.dms.block.p17040.import.cerp</i18n>
+	</XmlBlock>
+	
+	<XmlBlock>
+		<class>BlockP17040ImportCINA</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portEmpty</name>
+            <description>portEmpty</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>30</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+		<XmlAttribute>
+			<name>inputDocument</name>
+			<description>Input file IF</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputDocument2</name>
+			<description>Input file IC</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputDocument3</name>
+			<description>Input file IR</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>errors file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputActionDocument</name>
+			<description>actions file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>Datasource</name>
+			<description>Datasource</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>crc_id</name>
+			<description>Id of created Crc</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>ImportCINA</description>
+		<i18n>library.dms.block.p17040.import.cina</i18n>
+	</XmlBlock>
+	
+	<XmlBlock>
+		<class>BlockP17040ImportCINP</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portEmpty</name>
+            <description>portEmpty</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>30</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+		<XmlAttribute>
+			<name>inputDocument</name>
+			<description>Input file IF</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputDocument2</name>
+			<description>Input file IC</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputDocument3</name>
+			<description>Input file IR</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>errors file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputActionDocument</name>
+			<description>actions file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>Datasource</name>
+			<description>Datasource</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>crc_id</name>
+			<description>Id of created Crc</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>ImportCINP</description>
+		<i18n>library.dms.block.p17040.import.cinp</i18n>
+	</XmlBlock>
+	
 </XmlLibrary>

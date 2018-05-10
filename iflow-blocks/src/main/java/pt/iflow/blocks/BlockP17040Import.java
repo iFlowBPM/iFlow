@@ -17,6 +17,8 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang.StringUtils;
+
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
 import pt.iflow.api.core.BeanFactory;
@@ -102,7 +104,7 @@ public abstract class BlockP17040Import extends Block {
 		} catch (Exception e1) {
 			Logger.error(login, this, "after", procData.getSignature() + "error transforming attributes", e1);
 		}
-		if (StringUtilities.isEmpty(sInputDocumentVar) || StringUtilities.isEmpty(sInputDocumentVar2) || StringUtilities.isEmpty(sInputDocumentVar3) || datasource == null
+		if (StringUtilities.isEmpty(sInputDocumentVar) || datasource == null
 				|| StringUtilities.isEmpty(sOutputErrorDocumentVar)
 				|| StringUtilities.isEmpty(sOutputActionDocumentVar)) {
 			Logger.error(login, this, "after", procData.getSignature() + "empty value for attributes");
@@ -113,17 +115,19 @@ public abstract class BlockP17040Import extends Block {
 			ProcessListVariable docsVar = procData.getList(sInputDocumentVar);
 			Document inputDoc = docBean.getDocument(userInfo, procData,new Integer(docsVar.getItem(0).getValue().toString()));
 			InputStream inputDocStream = new ByteArrayInputStream(inputDoc.getContent());
+			InputStream inputDocStream2=null,inputDocStream3=null;
+			if(StringUtils.isNotBlank(sInputDocumentVar2)){
+				ProcessListVariable docsVar2 = procData.getList(sInputDocumentVar2);
+				Document inputDoc2 = docBean.getDocument(userInfo, procData,new Integer(docsVar2.getItem(0).getValue().toString()));
+				 inputDocStream2 = new ByteArrayInputStream(inputDoc2.getContent());
+			}
+			if(StringUtils.isNotBlank(sInputDocumentVar3)){
+				ProcessListVariable docsVar3 = procData.getList(sInputDocumentVar3);
+				Document inputDoc3 = docBean.getDocument(userInfo, procData,new Integer(docsVar3.getItem(0).getValue().toString()));
+				 inputDocStream3 = new ByteArrayInputStream(inputDoc3.getContent());
+			}
 			
-			ProcessListVariable docsVar2 = procData.getList(sInputDocumentVar2);
-			Document inputDoc2 = docBean.getDocument(userInfo, procData,new Integer(docsVar2.getItem(0).getValue().toString()));
-			InputStream inputDocStream2 = new ByteArrayInputStream(inputDoc2.getContent());
-			
-			ProcessListVariable docsVar3 = procData.getList(sInputDocumentVar3);
-			Document inputDoc3 = docBean.getDocument(userInfo, procData,new Integer(docsVar3.getItem(0).getValue().toString()));
-			InputStream inputDocStream3 = new ByteArrayInputStream(inputDoc3.getContent());
-			
-			
-			String originalNameInputDoc = inputDoc.getFileName()+ "_" +inputDoc2.getFileName() + "_" + inputDoc3.getFileName();
+			String originalNameInputDoc = inputDoc.getFileName();
 			
 			ArrayList<ValidationError> errorList = new ArrayList<>();
 			ArrayList<ImportAction> actionList = new ArrayList<>();			
