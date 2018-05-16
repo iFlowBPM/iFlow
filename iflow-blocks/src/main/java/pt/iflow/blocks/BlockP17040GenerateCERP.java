@@ -1,8 +1,8 @@
 package pt.iflow.blocks;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -15,8 +15,8 @@ public class BlockP17040GenerateCERP extends BlockP17040GenerateCERA {
 		// TODO Auto-generated constructor stub
 	}
 
-	public String createFileContent(XMLStreamWriter writer, DataSource datasource, UserInfoInterface userInfo, Integer crcId) throws XMLStreamException, SQLException{
-		super.createFileContent(writer, datasource, userInfo, crcId);
+	public String createFileContent(XMLStreamWriter writer, Connection connection, UserInfoInterface userInfo, Integer crcId) throws XMLStreamException, SQLException{
+		super.createFileContent(writer, connection, userInfo, crcId);
 		return "CERP";
 		}
 }

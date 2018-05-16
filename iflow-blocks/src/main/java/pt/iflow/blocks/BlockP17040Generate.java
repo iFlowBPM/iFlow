@@ -5,6 +5,7 @@ import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleFiel
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,6 +18,7 @@ import javax.xml.stream.XMLStreamWriter;
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
 import pt.iflow.api.core.BeanFactory;
+import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.documents.DocumentDataStream;
 import pt.iflow.api.documents.Documents;
 import pt.iflow.api.processdata.ProcessData;
@@ -85,6 +87,7 @@ public abstract class BlockP17040Generate extends Block {
 		Integer crcId = null;
 		String reportingEntity=null;
 		String observedEntity=null;
+		Connection connection = null;
 		
 		try {
 			datasource = Utils.getUserDataSource(procData.transform(userInfo, getAttribute(DATASOURCE)));
@@ -95,7 +98,8 @@ public abstract class BlockP17040Generate extends Block {
 			Logger.error(login, this, "after", procData.getSignature() + "error transforming attributes", e1);
 		}		
 		try{
-			boolean existsCrc = retrieveSimpleField(datasource, userInfo,"select count(id) from crc where id = {0} ",new Object[] { crcId }).size()==1;
+			connection = datasource.getConnection();
+			boolean existsCrc = retrieveSimpleField(connection, userInfo,"select count(id) from crc where id = {0} ",new Object[] { crcId }).size()==1;
 			if(!existsCrc)
 				throw new Exception("no crc found for id");
 		} catch(Exception e){
@@ -108,11 +112,12 @@ public abstract class BlockP17040Generate extends Block {
 		} 
 			
 		try {
+			
 			XMLOutputFactory f = XMLOutputFactory.newInstance();
 			File tmpFile = File.createTempFile(this.getClass().getName(), ".tmp");
 			FileOutputStream fos = new FileOutputStream(tmpFile);
 			XMLStreamWriter writer = f.createXMLStreamWriter(fos, "UTF-8");			
-			String code = createFileContent(writer, datasource, userInfo, crcId);
+			String code = createFileContent(writer, connection, userInfo, crcId);
 			writer.flush();
 			fos.flush();
 			fos.close();
@@ -134,6 +139,7 @@ public abstract class BlockP17040Generate extends Block {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
 			outPort = portError;
 		} finally {
+			DatabaseInterface.closeResources(connection);
 			logMsg.append("Using '" + outPort.getName() + "';");
 			Logger.logFlowState(userInfo, procData, this, logMsg.toString());					
 		}
@@ -141,7 +147,7 @@ public abstract class BlockP17040Generate extends Block {
 		return outPort;
 	}
 
-	public abstract String createFileContent(XMLStreamWriter writer, DataSource datasource, UserInfoInterface userInfo, Integer crcId) throws XMLStreamException, SQLException;
+	public abstract String createFileContent(XMLStreamWriter writer, Connection connection, UserInfoInterface userInfo, Integer crcId) throws XMLStreamException, SQLException;
 
 	@Override
 	public String getDescription(UserInfoInterface userInfo, ProcessData procData) {

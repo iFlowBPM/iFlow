@@ -22,6 +22,8 @@ import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 
 public class FileImportUtils {
+	
+	public static final String UTF8_BOM = "\uFEFF";
 
 	public static HashMap<String, Object> parseLine(Integer lineNumber, String line, Properties properties, String separator,
 		ArrayList<ValidationError> errorList, String errorExtraInfo) throws IOException {
@@ -107,12 +109,18 @@ public class FileImportUtils {
 			aux = StringUtils.removeEnd(aux,  "\"");
 			aux = StringUtils.removeEnd(aux, "'");
 		} else
-			aux = lineValuesAux[Integer.parseInt(index)];
+			aux = removeUTF8BOM(lineValuesAux[Integer.parseInt(index)]);		
 		
 		return aux;
 	}
 
-	public static Integer insertSimpleLine(DataSource datasource, UserInfoInterface userInfo, String query,
+	private static String removeUTF8BOM(String s) {
+        s = StringUtils.removeStart(s, UTF8_BOM);
+        s = StringUtils.removeStart(s, "ï»¿");
+        return s;
+    }
+	
+	public static Integer insertSimpleLine(Connection connection, UserInfoInterface userInfo, String query,
 			Object[] parameters) throws SQLException {
 		Connection db = null;
 		PreparedStatement pst = null;
@@ -120,9 +128,9 @@ public class FileImportUtils {
 		String filledQuery = null;
 		Integer resultAux = null;
 		try {
-			db = datasource.getConnection();
+			db = null;
 			filledQuery = MessageFormat.format(query, parameters);
-			pst = db.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			for (int i = 0; i < parameters.length; i++)
 				pst.setObject((i + 1), parameters[i]);
 			pst.executeUpdate();

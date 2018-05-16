@@ -5,8 +5,8 @@ import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleFiel
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,12 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
-import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.FileImportUtils;
@@ -61,21 +58,21 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 	}
 
 	@Override
-	public Integer importFile(DataSource datasource, ArrayList<ValidationError> errorList,
+	public Integer importFile(Connection connection, ArrayList<ValidationError> errorList,
 			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream... inputDocStream)
 			throws IOException, SQLException {
 
-		Integer crcIdResult = importSubFile(datasource, errorList, actionList, userInfo, inputDocStream[0],
+		Integer crcIdResult = importSubFile(connection, errorList, actionList, userInfo, inputDocStream[0],
 				ReportType.IF.properties, ReportType.IF, null);
-		crcIdResult = importSubFile(datasource, errorList, actionList, userInfo, inputDocStream[1],
+		crcIdResult = importSubFile(connection, errorList, actionList, userInfo, inputDocStream[1],
 				ReportType.IC.properties, ReportType.IC, crcIdResult);
-		crcIdResult = importSubFile(datasource, errorList, actionList, userInfo, inputDocStream[2],
+		crcIdResult = importSubFile(connection, errorList, actionList, userInfo, inputDocStream[2],
 				ReportType.IR.properties, ReportType.IR, crcIdResult);
 
 		return crcIdResult;
 	}
 
-	private Integer importSubFile(DataSource datasource, ArrayList<ValidationError> errorList,
+	private Integer importSubFile(Connection connection, ArrayList<ValidationError> errorList,
 			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream inputStream,
 			String propertiesFile, ReportType reportType, Integer crcIdResult) {
 
@@ -113,14 +110,14 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 				}
 				// determinar se é insert ou update
 				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfPerInstType(idCont, idInst, dtRef, new String[]{reportType.getCreate(), reportType.getUpdate()},
-						userInfo.getUtilizador(), datasource);
+						userInfo.getUtilizador(), connection);
 				if (actionOnLine == null)
 					continue;
 				// adicionar acçao
 				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? reportType.getCreate() : reportType.getUpdate();
 				actionList.add(new ImportAction(actionOnLine,reportType.toString()+":"+ idCont + "-" + idInst + "-" + dtRef));
 				// inserir na bd
-				crcIdResult = importLine(datasource, userInfo, crcIdResult, lineValues, properties, type, errorList);
+				crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type, errorList);
 			}
 		} catch (Exception e) {
 			errorList.add(new ValidationError("Erro nos dados", reportType.toString(), e.getMessage(), lineNumber));
@@ -129,7 +126,7 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 		return crcIdResult;
 	}
 
-	public Integer importLine(DataSource datasource, UserInfoInterface userInfo, Integer crcIdResult,
+	public Integer importLine(Connection connection, UserInfoInterface userInfo, Integer crcIdResult,
 			HashMap<String, Object> lineValues, Properties properties, String type,
 			ArrayList<ValidationError> errorList) throws SQLException {
 
@@ -137,46 +134,46 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 		String separator = properties.getProperty("p17040_separator");
 
 		if (crcIdResult == null)
-			crcIdResult = createNewCrc(datasource, properties, userInfo);
+			crcIdResult = createNewCrc(connection, properties, userInfo);
 
-		List<Integer> conteudoIdList = retrieveSimpleField(datasource, userInfo,
+		List<Integer> conteudoIdList = retrieveSimpleField(connection, userInfo,
 				"select id from conteudo where crc_id = {0} ", new Object[] { crcIdResult });
 
 		Integer comInfInst_id = null;
-		List<Integer> comInfInstList = retrieveSimpleField(datasource, userInfo,
+		List<Integer> comInfInstList = retrieveSimpleField(connection, userInfo,
 				"select id from comInfInst where conteudo_id = {0} ", new Object[] { conteudoIdList.get(0) });
 		if (comInfInstList.isEmpty())
-			comInfInst_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+			comInfInst_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into comInfInst(conteudo_id, dtRef) values(?,?)",
 					new Object[] { conteudoIdList.get(0), lineValues.get("dtRef") });
 		else
 			comInfInst_id = comInfInstList.get(0);
 
 		Integer infPerInst_id = null;
-		List<Integer> infPerInstList = retrieveSimpleField(datasource, userInfo,
+		List<Integer> infPerInstList = retrieveSimpleField(connection, userInfo,
 				"select id from infPerInst where comInfInst_id = {0} and idCont = ''{1}'' and idInst=''{2}''",
 				new Object[] { comInfInst_id, lineValues.get("idCont"), lineValues.get("idInst") });
 		if (infPerInstList.isEmpty())
-			infPerInst_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+			infPerInst_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into infPerInst(comInfInst_id, idCont, idInst) values(?,?,?)",
 					new Object[] { comInfInst_id, lineValues.get("idCont"), lineValues.get("idInst") });
 		else
 			infPerInst_id = infPerInstList.get(0);
 
 		if (StringUtils.equals(type, ReportType.IF.create) ||  StringUtils.equals(type, ReportType.IF.update))
-			importInfFinInst(datasource, userInfo, type, lineValues, infPerInst_id);
+			importInfFinInst(connection, userInfo, type, lineValues, infPerInst_id);
 		else if (StringUtils.equals(type, ReportType.IC.create) ||  StringUtils.equals(type, ReportType.IC.update))
-			importInfContbInst(datasource, userInfo, type, lineValues, infPerInst_id);
+			importInfContbInst(connection, userInfo, type, lineValues, infPerInst_id);
 		else if (StringUtils.equals(type, ReportType.IR.create) ||  StringUtils.equals(type, ReportType.IR.update))
-			importInfRInst(datasource, userInfo, type, lineValues, infPerInst_id);
+			importInfRInst(connection, userInfo, type, lineValues, infPerInst_id);
 
 		return crcIdResult;
 	}
 
-	private void importInfFinInst(DataSource datasource, UserInfoInterface userInfo, String type,
+	private void importInfFinInst(Connection connection, UserInfoInterface userInfo, String type,
 			HashMap<String, Object> lineValues, Integer infPerInst_id) throws SQLException {
 		// infFinInst
-		Integer infFinInst_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+		Integer infFinInst_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `infFinInst` ( `infPerInst_id`, `type`, `montVivo`, `TAA`, `estIncInst`, "
 						+ "`dtEstIncInst`, `montVenc`, `jurVencBal`, `jurVencExtp`, `comDespBal`, `comDespExtp`, "
 						+ "`dtInstVenc`, `dtAtualizTxJur`, `montTransf`, `credConv`, `credAlarg`, `jurCorr`, "
@@ -192,13 +189,13 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 						lineValues.get("tpReembAntc"), lineValues.get("montReembAntc"), lineValues.get("instFinal") });
 
 		// respEntInst
-		Integer idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("idEnt"), userInfo, datasource);
+		Integer idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("idEnt"), userInfo, connection);
 		if (lineValues.get("idEnt") == null)
 			throw new SQLException("respEntInst.idEnt é valor obrigatório");
 		if (idEnt_id == null)
 			throw new SQLException("respEntInst.idEnt ainda não está registado no sistema");
 
-		FileImportUtils.insertSimpleLine(datasource, userInfo,
+		FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `respEntInst` (`idEnt_id`, `infFinInst_id`, `tpRespEnt`, `montToEnt`, "
 						+ "`montVencEnt`, `montPotRevEnt`, `montPotIrrevEnt`, `montAbAtvEnt`, `valPrestEnt`) "
 						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
@@ -209,7 +206,7 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 
 		// protInst
 		if (lineValues.get("idProt") != null)
-			FileImportUtils.insertSimpleLine(datasource, userInfo,
+			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"INSERT INTO `protInst` (`infFinInst_id`, `idProt`, `valAlocProt`, `credPrior`, `estExecProtInst`, `valExecProtInst`) "
 							+ "VALUES (?, ?, ?, ?, ?, ?);",
 					new Object[] { infFinInst_id, lineValues.get("idProt"), lineValues.get("valAlocProt"),
@@ -217,9 +214,9 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 							lineValues.get("valExecProtInst") });
 	}
 
-	private void importInfContbInst(DataSource datasource, UserInfoInterface userInfo, String type,
+	private void importInfContbInst(Connection connection, UserInfoInterface userInfo, String type,
 			HashMap<String, Object> lineValues, Integer infPerInst_id) throws SQLException {		
-		FileImportUtils.insertSimpleLine(datasource, userInfo,
+		FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `infContbInst` (`infPerInst_id`, `type`, `classContbInst`, `recBal`, "
 				+ "`formaConstOnus`, `montAcumImp`, `tpImp`, `metValImp`, `valAcumRC`, `perfStat`, "
 				+ "`dtPerfStat`, `provPRExtp`, `sitDifReneg`, `recAcumIncump`, `dtEstDifReneg`, `cartPrud`, `montEscrit`) "
@@ -231,9 +228,9 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 						lineValues.get("recAcumIncump"), lineValues.get("dtEstDifReneg"), lineValues.get("cartPrud"), lineValues.get("montEscrit")});
 	}
 
-	private void importInfRInst(DataSource datasource, UserInfoInterface userInfo, String type,
+	private void importInfRInst(Connection connection, UserInfoInterface userInfo, String type,
 			HashMap<String, Object> lineValues, Integer infPerInst_id) throws SQLException {
-		Integer infRInst_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+		Integer infRInst_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `infRInst` (`infPerInst_id`, `type`, `idExp`, `tpExp`, `classExpCRR`, "
 				+ "`metCalcFinsPrud`, `valAjustColFin`, `montPondExpRisco`, `riscoPond`, `LGDPerEcN`, "
 				+ "`LGDRec`, `valExp`, `preFConv`, `montPerEsp`, `expPMERedRC`, `fConvCred`) "
@@ -245,7 +242,7 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 						lineValues.get("montPerEsp"), lineValues.get("expPMERedRC"), lineValues.get("fConvCred")});
 		
 		if (lineValues.get("idProt") != null)
-			FileImportUtils.insertSimpleLine(datasource, userInfo,
+			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"INSERT INTO `p17040`.`protExp` (`infRInst_id`, `idProt`) VALUES (?, ?);",
 					new Object[] { infRInst_id, lineValues.get("idProt")});
 	}

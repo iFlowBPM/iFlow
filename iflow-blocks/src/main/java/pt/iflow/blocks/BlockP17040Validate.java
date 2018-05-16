@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import javax.sql.DataSource;
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
 import pt.iflow.api.core.BeanFactory;
+import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.documents.DocumentDataStream;
 import pt.iflow.api.documents.Documents;
 import pt.iflow.api.processdata.ProcessData;
@@ -76,18 +78,19 @@ public abstract class BlockP17040Validate extends Block {
 		String login = userInfo.getUtilizador();
 		StringBuffer logMsg = new StringBuffer();
 		ArrayList<ValidationError> result = new ArrayList<>();
-
+		Connection connection=null;
 		DataSource datasource = null;
 		Integer crcId = null;
 		String sOutputErrorDocumentVar = this.getAttribute(OUTPUT_ERROR_DOCUMENT);
 		try {
 			datasource = Utils.getUserDataSource(procData.transform(userInfo, getAttribute(DATASOURCE)));
 			crcId = Integer.parseInt(procData.transform(userInfo, getAttribute(CRCID)));
+			connection = datasource.getConnection();
 		} catch (Exception e1) {
 			Logger.error(login, this, "after", procData.getSignature() + "error transforming attributes", e1);
 		}
 		try {
-			boolean existsCrc = retrieveSimpleField(datasource, userInfo, "select count(id) from crc where id = {0} ",
+			boolean existsCrc = retrieveSimpleField(connection, userInfo, "select count(id) from crc where id = {0} ",
 					new Object[] { crcId }).size() == 1;
 			if (!existsCrc)
 				throw new Exception("no crc found for id");
@@ -97,10 +100,10 @@ public abstract class BlockP17040Validate extends Block {
 		}
 
 		try {
-			result = validate(userInfo, procData, datasource, crcId);
+			result = validate(userInfo, procData, connection, crcId);
 						
 			//set errors file
-			Integer docid = retrieveSimpleField(datasource, userInfo, "select out_docid from u_gestao where out_id = {0} ",
+			Integer docid = retrieveSimpleField(connection, userInfo, "select out_docid from u_gestao where out_id = {0} ",
 					new Object[] { crcId }).get(0);
 			Document doc = BeanFactory.getDocumentsBean().getDocument(userInfo, procData, docid);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
@@ -108,12 +111,13 @@ public abstract class BlockP17040Validate extends Block {
 			if(doc!=null)
 				procData.getList(sOutputErrorDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));		
 						
-			GestaoCrc.markAsValidated(crcId, userInfo.getUtilizador(), datasource);
+			GestaoCrc.markAsValidated(crcId, userInfo.getUtilizador(), connection);
 			outPort = portSuccess;
 		} catch (Exception e) {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
 			outPort = portError;
 		} finally {
+			DatabaseInterface.closeResources(connection);
 			logMsg.append("Using '" + outPort.getName() + "';");
 			Logger.logFlowState(userInfo, procData, this, logMsg.toString());
 		}
@@ -143,7 +147,7 @@ public abstract class BlockP17040Validate extends Block {
 	}
 	
 	public abstract ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData,
-			DataSource datasource2, Integer crcId) throws SQLException;
+			Connection connection, Integer crcId) throws SQLException;
 
 	@Override
 	public String getDescription(UserInfoInterface userInfo, ProcessData procData) {

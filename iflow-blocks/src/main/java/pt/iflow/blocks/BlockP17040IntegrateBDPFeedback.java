@@ -5,14 +5,13 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.sql.SQLException;
+import java.sql.Connection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Properties;
+import java.util.Date;
 
 import javax.sql.DataSource;
 import javax.xml.stream.XMLInputFactory;
@@ -23,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
 import pt.iflow.api.core.BeanFactory;
+import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.documents.DocumentDataStream;
 import pt.iflow.api.documents.Documents;
 import pt.iflow.api.processdata.ProcessData;
@@ -32,8 +32,6 @@ import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
 import pt.iflow.blocks.P17040.utils.FileImportUtils;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
-import pt.iflow.blocks.P17040.utils.ImportAction;
-import pt.iflow.blocks.P17040.utils.ValidationError;
 import pt.iflow.connector.document.Document;
 import pt.iknow.utils.StringUtilities;
 
@@ -93,7 +91,8 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 		String sBdpInputDocumentVar = this.getAttribute(BDP_INPUT_DOCUMENT);
 		DataSource datasource = null;
 		Integer crcId = null;
-
+		ArrayList<String> result = new ArrayList<>();
+		Connection connection = null;
 		try {
 			datasource = Utils.getUserDataSource(procData.transform(userInfo, getAttribute(DATASOURCE)));
 			crcId = Integer.parseInt(procData.transform(userInfo, getAttribute(CRC_ID)));
@@ -107,27 +106,27 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 		}
 
 		try {
+			connection = datasource.getConnection();
 			// read file
 			ProcessListVariable docsVar = procData.getList(sBdpInputDocumentVar);
 			Document inputDoc = docBean.getDocument(userInfo, procData,
 					new Integer(docsVar.getItem(0).getValue().toString()));
 
-			//
 			XMLInputFactory factory = XMLInputFactory.newInstance();
 			Reader reader = new InputStreamReader(new ByteArrayInputStream(inputDoc.getContent()));
 			XMLStreamReader streamReader = factory.createXMLStreamReader(reader);
 
-			Integer crc_id = null, controlo_id = null, avisRec_id = null, fichAce_id = null;
+			Integer crc_id = null, controlo_id = null, avisRec_id = null, fichAce_id = null, regMsg_id = null;
 			while (streamReader.hasNext()) {
 				streamReader.next();
 				if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
 					if (StringUtils.equals("crc", streamReader.getLocalName()))
-						crc_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+						crc_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 								"insert into crc(versao) values(?)",
 								new Object[] { streamReader.getAttributeValue(null, "versao") });
 
 					else if (StringUtils.equals("controlo", streamReader.getLocalName())) {
-						controlo_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+						controlo_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 								"INSERT INTO `controlo` (`crc_id`, `entObserv`, `entReport`, `dtCriacao`, `idDest`, `idFichRelac`) "
 										+ "VALUES (?, ?, ?, ?, ?, ?);",
 								new Object[] { crc_id, streamReader.getAttributeValue(null, "entObserv"),
@@ -136,79 +135,94 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 										streamReader.getAttributeValue(null, "idDest"),
 										streamReader.getAttributeValue(null, "idFichRelac") });
 
-						Integer conteudo_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+						Integer conteudo_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 								"INSERT INTO `conteudo` (`crc_id`) VALUES (?);", new Object[] { crc_id });
 
-						avisRec_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+						avisRec_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 								"INSERT INTO `avisRec` (`conteudo_id`) VALUES (?);", new Object[] { conteudo_id });
-					}
-					else if (StringUtils.equals("erro", streamReader.getLocalName())) {
-						FileImportUtils.insertSimpleLine(datasource, userInfo,
+					} else if (StringUtils.equals("erro", streamReader.getLocalName())) {
+						FileImportUtils.insertSimpleLine(connection, userInfo,
 								"INSERT INTO `erro` (`avisRec_id`, `codErro`, `descErro`) VALUES ( ?, ?, ?);",
 								new Object[] { avisRec_id, streamReader.getAttributeValue(null, "codErro"),
 										streamReader.getAttributeValue(null, "descErro") });
-					}
-					else if (StringUtils.equals("fichAce", streamReader.getLocalName())) {
-						fichAce_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+						result.add(streamReader.getAttributeValue(null, "codErro") + ","
+								+ streamReader.getAttributeValue(null, "descErro"));
+					} else if (StringUtils.equals("fichAce", streamReader.getLocalName())) {
+						fichAce_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 								"INSERT INTO `fichAce` (`avisRec_id`, `numRegRec`, `numRegAce`, `numRegRej`, `numRegAlert`) VALUES (?, ?, ?, ?, ?);",
 								new Object[] { avisRec_id, streamReader.getAttributeValue(null, "numRegRec"),
 										streamReader.getAttributeValue(null, "numRegAce"),
 										streamReader.getAttributeValue(null, "numRegRej"),
 										streamReader.getAttributeValue(null, "numRegAlert") });
-					}
-					else if (StringUtils.equals("regAlert", streamReader.getLocalName())) {
-						FileImportUtils.insertSimpleLine(datasource, userInfo,
+						result.add("numRegRec=" + streamReader.getAttributeValue(null, "numRegRec") + ", numRegAce="
+								+ streamReader.getAttributeValue(null, "numRegAce") + ", numRegRej="
+								+ streamReader.getAttributeValue(null, "numRegRej") + ", numRegAlert="
+								+ streamReader.getAttributeValue(null, "numRegAlert"));
+					} else if (StringUtils.equals("regAlert", streamReader.getLocalName())) {
+						FileImportUtils.insertSimpleLine(connection, userInfo,
 								"INSERT INTO `regAlert` (`fichAce_id`, `numReg`, `nvAlert`) VALUES (?, ?, ?);",
 								new Object[] { fichAce_id, streamReader.getAttributeValue(null, "numReg"),
 										streamReader.getAttributeValue(null, "nvAlert") });
-					}
-					else if (StringUtils.equals("regMsg", streamReader.getLocalName())) {
-						Integer regMsg_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+					} else if (StringUtils.equals("regMsg", streamReader.getLocalName())) {
+						Date dtRefAux = null;
+						try {
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+							sdf.setLenient(false);
+							dtRefAux = sdf.parse(streamReader.getAttributeValue(null, "dtRef"));
+						} catch (ParseException e) {
+							dtRefAux = null;
+						}
+						regMsg_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 								"INSERT INTO `regMsg` (`fichAce_id`, `operOrig`, `idCont`, `idInst`, `dtRef`, `idProt`, `LEI`) "
-										+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+										+ "VALUES (?, ?, ?, ?, ?, ?, ?);",
 								new Object[] { fichAce_id, streamReader.getAttributeValue(null, "operOrig"),
 										streamReader.getAttributeValue(null, "idCont"),
-										streamReader.getAttributeValue(null, "idInst"),
-										streamReader.getAttributeValue(null, "dtRef"),
+										streamReader.getAttributeValue(null, "idInst"), dtRefAux,
 										streamReader.getAttributeValue(null, "idProt"),
 										streamReader.getAttributeValue(null, "LEI") });
-
-						streamReader.next();
-						while (StringUtils.equals("regMsg", streamReader.getLocalName())
-								&& streamReader.getEventType() != XMLStreamReader.START_ELEMENT) {
-
-							if (StringUtils.equals("idEnt", streamReader.getLocalName())
-									&& streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
-								Integer idEnt_id = GestaoCrc.findIdEnt(streamReader.getText(), userInfo, datasource);
-								FileImportUtils.insertSimpleLine(datasource, userInfo,
-										"UPDATE `regMsg` WHERE regMsg_id = ?  " + " SET idEnt_id = ? ",
-										new Object[] { regMsg_id, idEnt_id });
-							}
-							if (StringUtils.equals("msgReg", streamReader.getLocalName())
-									&& streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
-								FileImportUtils.insertSimpleLine(datasource, userInfo,
-										"INSERT INTO `msg` (`regMsg_id`, `codMsg`, `descMseg`, `campoMsg`) "
-												+ "VALUES (?, ?, ?, ?);",
-										new Object[] { regMsg_id, streamReader.getAttributeValue(null, "codMsg"),
-												streamReader.getAttributeValue(null, "descMseg"),
-												streamReader.getAttributeValue(null, "campoMsg") });
-							}
-							streamReader.next();
+						result.add("operOrig=" + streamReader.getAttributeValue(null, "operOrig") + ", idCont="
+								+ streamReader.getAttributeValue(null, "idCont") + ", idInst="
+								+ streamReader.getAttributeValue(null, "idInst") + ", dtRef="
+								+ streamReader.getAttributeValue(null, "dtRef") + ", idProt="
+								+ streamReader.getAttributeValue(null, "idProt") + ", LEI="
+								+ streamReader.getAttributeValue(null, "LEI") + ", idEnt=");
+					} else if (StringUtils.equals("idEnt", streamReader.getLocalName())
+							&& streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
+						String idEnt_idAux = streamReader.getElementText();
+						if (StringUtils.isNotBlank(idEnt_idAux)) {
+							Integer idEnt_id = GestaoCrc.findIdEnt(idEnt_idAux, userInfo, connection);
+							FileImportUtils.insertSimpleLine(connection, userInfo,
+									"UPDATE `regMsg` SET idEnt_id = ? WHERE id = ?  ",
+									new Object[] { idEnt_id, regMsg_id });
+							result.set(result.size() - 1, result.get(result.size() - 1) + idEnt_idAux);
 						}
+					} else if (StringUtils.equals("msgReg", streamReader.getLocalName())
+							&& streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
+						FileImportUtils.insertSimpleLine(connection, userInfo,
+								"INSERT INTO `msg` (`regMsg_id`, `codMsg`, `nvCrit`, `campoMsg`) "
+										+ "VALUES (?, ?, ?, ?);",
+								new Object[] { regMsg_id, streamReader.getAttributeValue(null, "codMsg"),
+										streamReader.getAttributeValue(null, "nvCrit"),
+										streamReader.getAttributeValue(null, "campoMsg") });
+						result.add("codMsg=" + streamReader.getAttributeValue(null, "codMsg") + ", nvCrit="
+								+ streamReader.getAttributeValue(null, "nvCrit") + ", campoMsg="
+								+ streamReader.getAttributeValue(null, "campoMsg"));
 					}
 				}
 			}
 
 			// output file
-			Document outputDoc;
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
+			Document outputDoc = saveFileAsDocument("F" +inputDoc.getFileName()+ "." +sdf.format(new Date())+ ".txt", result, userInfo,procData);
+			if(outputDoc!=null)
+				procData.getList(sOutputDocumentVar).parseAndAddNewItem(String.valueOf(outputDoc.getDocId()));	
 
-			// GestaoCrc.markAsIntegrated(crcId, inputDoc.getDocId(),
-			// outputDoc.getDocId(), userInfo.getUtilizador(), datasource);
-
+			GestaoCrc.markAsIntegrated(crcId, crc_id, inputDoc.getDocId(), userInfo.getUtilizador(), connection);
 		} catch (Exception e) {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
 			outPort = portError;
 		} finally {
+			DatabaseInterface.closeResources(connection);
 			logMsg.append("Using '" + outPort.getName() + "';");
 			Logger.logFlowState(userInfo, procData, this, logMsg.toString());
 		}

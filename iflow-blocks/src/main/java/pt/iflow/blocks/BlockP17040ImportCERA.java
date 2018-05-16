@@ -5,6 +5,7 @@ import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleFiel
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,8 +13,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
-
-import javax.sql.DataSource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,7 +34,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 	static String propertiesFile = "cera_import.properties";
 	
 	@Override
-	public Integer importFile(DataSource datasource, ArrayList<ValidationError> errorList,
+	public Integer importFile(Connection connection, ArrayList<ValidationError> errorList,
 			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream... inputDocStream) throws IOException, SQLException {
 
 		Properties properties = Setup.readPropertiesFile("p17040" + File.separator + propertiesFile);
@@ -71,14 +70,14 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				}
 				// determinar se é insert ou update
 				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkRiscoEntType(idEnt, dtRef,
-						userInfo.getUtilizador(), datasource);
+						userInfo.getUtilizador(), connection);
 				if (actionOnLine == null)
 					continue;
 				// adicionar acçao
 				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? "ERI" : "ERU";
 				actionList.add(new ImportAction(actionOnLine, idEnt));
 				// inserir na bd
-				crcIdResult = importLine(datasource, userInfo, crcIdResult, lineValues, properties, type, errorList);
+				crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type, errorList);
 			}
 		} catch (Exception e) {
 			errorList.add(new ValidationError("Erro nos dados", "", e.getMessage(), lineNumber));
@@ -87,7 +86,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 		return crcIdResult;
 	}
 
-	public Integer importLine(DataSource datasource, UserInfoInterface userInfo, Integer crcIdResult,
+	public Integer importLine(Connection connection, UserInfoInterface userInfo, Integer crcIdResult,
 			HashMap<String, Object> lineValues, Properties properties, String type,
 			ArrayList<ValidationError> errorList) throws SQLException {
 
@@ -95,40 +94,40 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 		String separator = properties.getProperty("p17040_separator");
 
 		if (crcIdResult == null)
-			crcIdResult = createNewCrc(datasource, properties, userInfo);
+			crcIdResult = createNewCrc(connection, properties, userInfo);
 
-		List<Integer> conteudoIdList = retrieveSimpleField(datasource, userInfo,
+		List<Integer> conteudoIdList = retrieveSimpleField(connection, userInfo,
 				"select id from conteudo where crc_id = {0} ", new Object[] { crcIdResult });
 
 		Integer comRiscoEnt_id = null;
-		List<Integer> comRiscoEntIdList = retrieveSimpleField(datasource, userInfo,
+		List<Integer> comRiscoEntIdList = retrieveSimpleField(connection, userInfo,
 				"select id from comRiscoEnt where conteudo_id = {0} ", new Object[] { conteudoIdList.get(0) });
 		if (comRiscoEntIdList.isEmpty())
-			comRiscoEnt_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+			comRiscoEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into comRiscoEnt(conteudo_id, dtRef) values(?,?)",
 					new Object[] { conteudoIdList.get(0), lineValues.get("dtRef") });
 		else
 			comRiscoEnt_id = comRiscoEntIdList.get(0);
 
 		// insert riscoEnt
-		Integer idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("idEnt"), userInfo, datasource);
+		Integer idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("idEnt"), userInfo, connection);
 		if(idEnt_id==null)
 			throw new SQLException("riscoEnt.idEnt ainda não está registado no sistema");
-		Integer riscoEnt_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+		Integer riscoEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `riscoEnt` ( `comRiscoEnt_id`, `idEnt_id`) VALUES (?, ?);",
 				new Object[] { comRiscoEnt_id, idEnt_id });
 
 		// insert clienteRel
-		idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("clienteRel_idEnt"), userInfo, datasource);
+		idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("clienteRel_idEnt"), userInfo, connection);
 		if(lineValues.get("clienteRel_idEnt")!=null && idEnt_id==null)
 			throw new SQLException("clienteRel.idEnt ainda não está registado no sistema");
 		if(idEnt_id!=null )
-			FileImportUtils.insertSimpleLine(datasource, userInfo,
+			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"INSERT INTO `clienteRel` ( `riscoEnt_id`, `idEnt_id`, `motivoRel`) VALUES ( ?, ?, ?);",
 					new Object[] { riscoEnt_id, idEnt_id, lineValues.get("motivoRel") });
 
 		// insert infRiscoEnt
-		Integer infRiscoEnt_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+		Integer infRiscoEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `infRiscoEnt` ( `riscoEnt_id`, `type`, `estadoInc`, `dtAltEstadoInc`, "
 						+ "`grExposicao`, `entAcompanhada`, `txEsf`, `dtApurTxEsf`, "
 						+ "`tpAtualizTxEsf`) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);",
@@ -138,7 +137,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 						lineValues.get("tpAtualizTxEsf") });
 		
 		// insert avalRiscoEnt
-		FileImportUtils.insertSimpleLine(datasource, userInfo,
+		FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `avalRiscoEnt` ( `infRiscoEnt_id`, `PD`, `dtDemoFin`, `tpAvalRisco`, "
 				+ "`sistAvalRisco`, `dtAvalRisco`, `modIRB`, `notacaoCred`, `tipoPD`) "
 				+ "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);",

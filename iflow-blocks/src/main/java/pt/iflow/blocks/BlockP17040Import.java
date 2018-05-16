@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
 import pt.iflow.api.core.BeanFactory;
+import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.documents.DocumentDataStream;
 import pt.iflow.api.documents.Documents;
 import pt.iflow.api.processdata.ProcessData;
@@ -97,6 +99,7 @@ public abstract class BlockP17040Import extends Block {
 		String sOutputErrorDocumentVar = this.getAttribute(OUTPUT_ERROR_DOCUMENT);
 		String sOutputActionDocumentVar = this.getAttribute(OUTPUT_ACTION_DOCUMENT);
 		DataSource datasource = null;
+		Connection connection = null;
 
 		try {
 			datasource = Utils.getUserDataSource(procData.transform(userInfo, getAttribute(DATASOURCE)));
@@ -110,8 +113,9 @@ public abstract class BlockP17040Import extends Block {
 			Logger.error(login, this, "after", procData.getSignature() + "empty value for attributes");
 			outPort = portError;
 		}
-
+		
 		try {
+			connection = datasource.getConnection();
 			ProcessListVariable docsVar = procData.getList(sInputDocumentVar);
 			Document inputDoc = docBean.getDocument(userInfo, procData,new Integer(docsVar.getItem(0).getValue().toString()));
 			InputStream inputDocStream = new ByteArrayInputStream(inputDoc.getContent());
@@ -131,7 +135,7 @@ public abstract class BlockP17040Import extends Block {
 			
 			ArrayList<ValidationError> errorList = new ArrayList<>();
 			ArrayList<ImportAction> actionList = new ArrayList<>();			
-			Integer crcId = importFile(datasource, errorList, actionList, userInfo, inputDocStream, inputDocStream2, inputDocStream3);
+			Integer crcId = importFile(connection, errorList, actionList, userInfo, inputDocStream, inputDocStream2, inputDocStream3);
 			
 			//set errors file
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
@@ -144,7 +148,7 @@ public abstract class BlockP17040Import extends Block {
 				procData.getList(sOutputActionDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));
 								
 			if(crcId!=null && errorList.isEmpty()){
-				GestaoCrc.markAsImported(crcId, inputDoc.getDocId(), userInfo.getUtilizador(), datasource);
+				GestaoCrc.markAsImported(crcId, inputDoc.getDocId(), userInfo.getUtilizador(), connection);
 				procData.set(this.getAttribute(CRC_ID), crcId);
 			}
 //			else
@@ -154,6 +158,7 @@ public abstract class BlockP17040Import extends Block {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
 			outPort = portError;
 		} finally {
+			DatabaseInterface.closeResources(connection);
 			logMsg.append("Using '" + outPort.getName() + "';");
 			Logger.logFlowState(userInfo, procData, this, logMsg.toString());
 		}
@@ -183,14 +188,14 @@ public abstract class BlockP17040Import extends Block {
 		return doc;
 	}
 	
-	public Integer createNewCrc(DataSource datasource, Properties properties, UserInfoInterface userInfo)
+	public Integer createNewCrc(Connection connection, Properties properties, UserInfoInterface userInfo)
 			throws SQLException {
 		Integer crcIdResult = 0;
 		try {
-			crcIdResult = FileImportUtils.insertSimpleLine(datasource, userInfo,
+			crcIdResult = FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into crc(versao) values('1.0')", new Object[] {});
 
-			FileImportUtils.insertSimpleLine(datasource, userInfo,
+			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into controlo(crc_id, entObserv, entReport, dtCriacao, idDest, idFichRelac) values(?,?,?,?,?,?)",
 					new Object[] { 
 							crcIdResult,
@@ -200,7 +205,7 @@ public abstract class BlockP17040Import extends Block {
 							properties.get("p17040_idDest").toString(),
 							properties.get("p17040_idFichRelac").toString() });
 
-			FileImportUtils.insertSimpleLine(datasource, userInfo,
+			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into conteudo(crc_id) values(?)", new Object[] { crcIdResult });
 			
 
@@ -212,13 +217,9 @@ public abstract class BlockP17040Import extends Block {
 		return crcIdResult;
 	}
 
-	public abstract Integer importFile(DataSource datasource, ArrayList<ValidationError> errorList,
+	public abstract Integer importFile(Connection connection, ArrayList<ValidationError> errorList,
 			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream... inputDocStream) throws IOException, SQLException;
-	
-	public abstract Integer importLine(DataSource datasource, UserInfoInterface userInfo, Integer crcIdResult,
-			HashMap<String, Object> lineValues, Properties properties, String type,
-			ArrayList<ValidationError> errorList) throws SQLException;
-
+		
 	@Override
 	public String getDescription(UserInfoInterface userInfo, ProcessData procData) {
 		// TODO Auto-generated method stub

@@ -11,8 +11,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
@@ -34,13 +32,13 @@ public class GestaoCrc {
 	}
 
 	public static Integer markAsImported(Integer crcId, Integer originalInputDocumentId, String username,
-			DataSource datasource) throws SQLException {
-		Connection db = datasource.getConnection();
+			Connection connection) throws SQLException {
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
-			String query = "insert into u_gestao(out_id, status_id, importdate, importuser, out_docid) values(?,?,?,?,?)";
-			pst = db.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			String query = "insert into u_gestao(out_id, status_id, importdate, importuser, original_docid) values(?,?,?,?,?)";
+			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			pst.setInt(1, crcId);
 			pst.setInt(2, Status.IMPORTED.getValue());
 			pst.setTimestamp(3, new Timestamp((new Date()).getTime()));
@@ -60,9 +58,9 @@ public class GestaoCrc {
 		}
 	}
 
-	public static Boolean idEntAlreadyCreated(String idEntValue, String username, DataSource datasource)
+	public static Boolean idEntAlreadyCreated(String idEntValue, String username, Connection connection)
 			throws SQLException {
-		Connection db = datasource.getConnection();
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
@@ -77,7 +75,7 @@ public class GestaoCrc {
 					+ "    and regMsg.id not in (select regMsg_id from msg) "
 					+ "    and (idEnt.nif_nipc = ? or idEnt.codigo_fonte = ?)";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setString(1, idEntValue);
 			pst.setString(2, idEntValue);
 			rs = pst.executeQuery();
@@ -94,13 +92,13 @@ public class GestaoCrc {
 		return false;
 		}
 
-	public static void markAsValidated(Integer crcId, String utilizador, DataSource datasource) throws SQLException {
-		Connection db = datasource.getConnection();
+	public static void markAsValidated(Integer crcId, String utilizador, Connection connection) throws SQLException {
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
 			String query = "update u_gestao set status_id = ?, validationdate=?, validationuser=? where out_id = ?";
-			pst = db.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			pst.setInt(1, Status.VALID.getValue());
 			pst.setTimestamp(2, new Timestamp((new Date()).getTime()));
 			pst.setString(3, utilizador);
@@ -115,8 +113,8 @@ public class GestaoCrc {
 		}
 	}
 
-	public static boolean idProtAlreadyCreated(String idProt, String username, DataSource datasource) throws SQLException {
-		Connection db = datasource.getConnection();
+	public static boolean idProtAlreadyCreated(String idProt, String username, Connection connection) throws SQLException {
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
@@ -130,7 +128,7 @@ public class GestaoCrc {
 					+ "    and u_gestao.status_id = 4 "
 					+ "    and regMsg.id not in (select regMsg_id from msg) ";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setString(1, idProt);
 			rs = pst.executeQuery();
 			
@@ -147,8 +145,8 @@ public class GestaoCrc {
 		}
 
 	public static boolean idContIdInstAlreadyCreated(String idCont, String idInst, String username,
-			DataSource datasource) throws SQLException {
-		Connection db = datasource.getConnection();
+			Connection connection) throws SQLException {
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
@@ -163,7 +161,7 @@ public class GestaoCrc {
 					+ "    and u_gestao.status_id = 4 "
 					+ "    and regMsg.id not in (select regMsg_id from msg) ";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setString(1, idCont);
 			pst.setString(2, idInst);
 			rs = pst.executeQuery();
@@ -181,8 +179,8 @@ public class GestaoCrc {
 		}
 
 	public static ImportActionType checkInfEntType(String idEntValue, Date dtRefEnt, String username,
-			DataSource datasource) throws SQLException {
-		Connection db = datasource.getConnection();
+			Connection connection) throws SQLException {
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
@@ -197,7 +195,7 @@ public class GestaoCrc {
 				"	((idEnt.nif_nipc = ? and idEnt.type='i1') or (idEnt.codigo_fonte = ? and idEnt.type='i2')) " +     
 				"    order by u_gestao.receivedate desc;";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setString(1, idEntValue);
 			pst.setString(2, idEntValue);
 			rs = pst.executeQuery();
@@ -222,7 +220,7 @@ public class GestaoCrc {
 				"		( select regMsg.fichAce_id from regMsg "+
 				"			where regMsg.idEnt_id = ? and (operOrig='EI' or operOrig='EU')); ";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setInt(1, u_gestao_id);
 			pst.setInt(2, idEnt_id);
 			rs = pst.executeQuery();
@@ -231,7 +229,7 @@ public class GestaoCrc {
 				return ImportActionType.UPDATE;			
 			else 
 				return null;
-			
+						
 		} catch (Exception e) {
 			Logger.error(username, "GestaoCrc", "checkInfEntType", e.getMessage(), e);
 		} finally {
@@ -241,8 +239,8 @@ public class GestaoCrc {
 		}
 
 	public static ImportActionType checkInfProtType(String idProt, Date dtRefProt, String utilizador,
-			DataSource datasource) throws SQLException {
-		Connection db = datasource.getConnection();
+			Connection connection) throws SQLException {
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
@@ -256,7 +254,7 @@ public class GestaoCrc {
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setString(1, idProt);
 			rs = pst.executeQuery();
 			
@@ -280,7 +278,7 @@ public class GestaoCrc {
 				"		( select regMsg.fichAce_id from regMsg "+
 				"			where regMsg.idProt = ?); ";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setInt(1, u_gestao_id);
 			pst.setString(2, idProt);
 			rs = pst.executeQuery();
@@ -291,16 +289,22 @@ public class GestaoCrc {
 				return null;
 			
 		} catch (Exception e) {
+			rs.close();
+			pst.close();
+			connection.close();
 			Logger.error(utilizador, "GestaoCrc", "checkInfProtType", e.getMessage(), e);
 		} finally {
+			rs.close();
+			pst.close();
+			connection.close();
 			DatabaseInterface.closeResources(db, pst, rs);
 		}
 		return null;
 		}
 
 	public static ImportActionType checkInfInstType(String idCont, String idInst, Date dtRefInst, String utilizador,
-			DataSource datasource) throws SQLException {
-		Connection db = datasource.getConnection();
+			Connection connection) throws SQLException {
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
@@ -315,7 +319,7 @@ public class GestaoCrc {
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setString(1, idCont);
 			pst.setString(2, idInst);
 			rs = pst.executeQuery();
@@ -341,7 +345,7 @@ public class GestaoCrc {
 				"			where regMsg.idCont = ? and regMsg.idInst = ? " +
 				"			and (operOrig='CII' or operOrig='CIU')); ";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setInt(1, u_gestao_id);
 			pst.setString(2, idCont);
 			pst.setString(3, idInst);
@@ -360,8 +364,8 @@ public class GestaoCrc {
 		return null;
 		}
 	
-	public static Integer findIdEnt(String idEnt, UserInfoInterface userInfo,DataSource datasource) throws SQLException{
-		List<Integer> idEntList = retrieveSimpleField(datasource, userInfo,
+	public static Integer findIdEnt(String idEnt, UserInfoInterface userInfo,Connection connection) throws SQLException{
+		List<Integer> idEntList = retrieveSimpleField(connection, userInfo,
 				"select idEnt.id from idEnt where ((idEnt.nif_nipc = ''{0}'' and idEnt.type=''i1'') or (idEnt.codigo_fonte = ''{1}'' and idEnt.type=''i2''))", new Object[] {idEnt, idEnt});
 		Integer idEnt_id = idEntList.size()>0?idEntList.get(0):null;
 		
@@ -369,8 +373,8 @@ public class GestaoCrc {
 	}
 
 	public static ImportActionType checkRiscoEntType(String idEnt, Date dtRef, String utilizador,
-			DataSource datasource) throws SQLException {
-		Connection db = datasource.getConnection();
+			Connection connection) throws SQLException {
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
@@ -385,7 +389,7 @@ public class GestaoCrc {
 				"	((idEnt.nif_nipc = ? and idEnt.type='i1') or (idEnt.codigo_fonte = ? and idEnt.type='i2')) " +
 				"    order by u_gestao.receivedate desc;";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setString(1, idEnt);
 			pst.setString(2, idEnt);
 			rs = pst.executeQuery();
@@ -411,7 +415,7 @@ public class GestaoCrc {
 				"		( select regMsg.fichAce_id from regMsg "+
 				"			where regMsg.idEnt_id = ? and (operOrig='ERI' or operOrig='ERU')); ";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setInt(1, u_gestao_id);
 			pst.setInt(2, idEnt_id);
 			rs = pst.executeQuery();
@@ -430,8 +434,8 @@ public class GestaoCrc {
 		}
 
 	public static ImportActionType checkInfPerInstType(String idCont, String idInst, Date dtRef, String[] types,
-			String utilizador, DataSource datasource) throws SQLException {
-		Connection db = datasource.getConnection();
+			String utilizador, Connection connection) throws SQLException {
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
@@ -446,7 +450,7 @@ public class GestaoCrc {
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setString(1, idCont);
 			pst.setString(2, idInst);
 			rs = pst.executeQuery();
@@ -472,7 +476,7 @@ public class GestaoCrc {
 				"			where regMsg.idCont = ? and regMsg.idInst = ? " + 
 				"           and (operOrig=? or operOrig=?) ); ";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setInt(1, u_gestao_id);
 			pst.setString(2, idCont);
 			pst.setString(3, idInst);
@@ -494,8 +498,8 @@ public class GestaoCrc {
 		}
 
 	public static ImportActionType checkInfDiaInstFin(Date dtRefInfDia, String idCont, String idInst, String utilizador,
-			DataSource datasource) throws SQLException {
-		Connection db = datasource.getConnection();
+			Connection connection) throws SQLException {
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
@@ -510,7 +514,7 @@ public class GestaoCrc {
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setString(1, idCont);
 			pst.setString(2, idInst);
 			rs = pst.executeQuery();
@@ -536,7 +540,7 @@ public class GestaoCrc {
 				"			where regMsg.idCont = ? and regMsg.idInst = ? "+
 				"           and (operOrig='DII' or operOrig='DIU')); ";
 			
-			pst = db.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			pst.setInt(1, u_gestao_id);
 			pst.setString(2, idCont);
 			pst.setString(3, idInst);
@@ -554,4 +558,28 @@ public class GestaoCrc {
 		}
 		return null;
 		}
+
+	public static void markAsIntegrated(Integer originalCrcId, Integer newCrcId, int receivedDocId, String utilizador,
+			Connection connection) throws SQLException {
+		Connection db = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			String query = "update u_gestao set status_id = ?, receivedate=?, receiveuser=?, in_id=?, in_docid=? where out_id = ?";
+			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			pst.setInt(1, Status.BDP_RECEIVED.getValue());
+			pst.setTimestamp(2, new Timestamp((new Date()).getTime()));
+			pst.setString(3, utilizador);
+			pst.setInt(4, newCrcId);
+			pst.setInt(5, receivedDocId);
+			pst.setInt(6, originalCrcId);
+			pst.executeUpdate();
+	
+		} catch (Exception e) {
+			Logger.error(utilizador, "GestaoCrc", "markAsIntegrated", e.getMessage(), e);
+			throw e;
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+	}
 }

@@ -5,8 +5,8 @@ import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleFiel
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,12 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
-import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.FileImportUtils;
@@ -35,7 +32,7 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 	}
 
 	@Override
-	public Integer importFile(DataSource datasource, ArrayList<ValidationError> errorList,
+	public Integer importFile(Connection connection, ArrayList<ValidationError> errorList,
 			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream... inputDocStream) throws IOException, SQLException {
 
 		Properties properties = Setup.readPropertiesFile("p17040" + File.separator + "cprt_import.properties");
@@ -70,14 +67,14 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 					return null;
 				}	
 				// determinar se é insert ou update
-				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfProtType(idProt, dtRefProt, userInfo.getUtilizador(), datasource);
+				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfProtType(idProt, dtRefProt, userInfo.getUtilizador(), connection);
 				if(actionOnLine==null)
 					continue;
 				// adicionar acçao
 				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? "PTI" : "PTU";
 				actionList.add(new ImportAction(actionOnLine, idProt));				
 				// inserir na bd
-				crcIdResult = importLine(datasource, userInfo, crcIdResult, lineValues, properties, type,
+				crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type,
 						errorList);
 			}
 		} catch (Exception e) {
@@ -87,7 +84,7 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 		return crcIdResult;
 	}
 
-	public Integer importLine(DataSource datasource, UserInfoInterface userInfo, Integer crcIdResult,
+	public Integer importLine(Connection connection, UserInfoInterface userInfo, Integer crcIdResult,
 			HashMap<String, Object> lineValues, Properties properties, String type,
 			ArrayList<ValidationError> errorList) throws SQLException {
 
@@ -95,16 +92,16 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 		String separator = properties.getProperty("p17040_separator");
 
 		if (crcIdResult == null)
-			crcIdResult = createNewCrc(datasource, properties, userInfo);
+			crcIdResult = createNewCrc(connection, properties, userInfo);
 
-		List<Integer> conteudoIdList = retrieveSimpleField(datasource, userInfo,
+		List<Integer> conteudoIdList = retrieveSimpleField(connection, userInfo,
 				"select id from conteudo where crc_id = {0} ", new Object[] { crcIdResult });
 
 		Integer comProt_id = null;
-		List<Integer> comProtIdList = retrieveSimpleField(datasource, userInfo,
+		List<Integer> comProtIdList = retrieveSimpleField(connection, userInfo,
 				"select id from comProt where conteudo_id = {0} ", new Object[] {conteudoIdList.get(0)});
 		if(comProtIdList.isEmpty())
-			comProt_id = FileImportUtils.insertSimpleLine(datasource, userInfo,
+			comProt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into comProt(conteudo_id) values(?)", new Object[] { conteudoIdList.get(0) });
 		else
 			comProt_id = comProtIdList.get(0);
@@ -112,12 +109,12 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 		// get infEnt_id
 		String idEntAux = StringUtils.equals(properties.getProperty("p17040_idEnt_type"), "i1") ? "nif_nipc"
 				: "codigo_fonte";
-		List<Integer> idEntList = retrieveSimpleField(datasource, userInfo,
+		List<Integer> idEntList = retrieveSimpleField(connection, userInfo,
 				"select idEnt.id from idEnt where " + idEntAux + "= ''{0}''", new Object[] { lineValues.get("idEnt") });
 		Integer idEnt_id = idEntList.size()>0?idEntList.get(0):null;		
 		
 		// insert infProt
-		FileImportUtils.insertSimpleLine(datasource, userInfo,
+		FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO infProt (type, comProt_id, idEnt_id, dtRefProt, idProt, tpProt, refExtProt, valProt, "
 						+ "tpValProt, dtMatProt, paisLocProt, regLocProt, dtUltAval, tpAval, valOriProt, dtValOriProt, hierqProt, "
 						+ "precoAquisImovel, numRegProt, estExecProt, dtExecProt, valAcumExecProt) "

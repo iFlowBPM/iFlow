@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.sql.DataSource;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
@@ -23,17 +22,17 @@ import pt.iflow.api.utils.UserInfoInterface;
 
 public class FileGeneratorUtils {
 	
-	public static List<Integer> retrieveSimpleField(DataSource datasource2, UserInfoInterface userInfo, String query,
+	public static List<Integer> retrieveSimpleField(Connection connection, UserInfoInterface userInfo, String query,
 			Object[] parameters) throws SQLException {
-		Connection db = datasource2.getConnection();
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		String filledQuery = null;
 		List<Integer> resultAux = new ArrayList<Integer>();
 		try {
-			db =datasource2.getConnection();
+			db =null;
 			filledQuery = MessageFormat.format(query, parameters);
-			pst = db.prepareStatement(filledQuery);
+			pst = connection.prepareStatement(filledQuery);
 			rs = pst.executeQuery();
 
 			while (rs.next())
@@ -47,17 +46,20 @@ public class FileGeneratorUtils {
 		return resultAux;
 	}
 
-	public static HashMap<String, Object> fillAtributtes(XMLStreamWriter writer, DataSource datasource,
+	public static HashMap<String, Object> fillAtributtes(XMLStreamWriter writer, Connection connection,
 			UserInfoInterface userInfo, String query, Object[] parameters) throws SQLException {
-		Connection db = datasource.getConnection();
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		String filledQuery = null;
 		HashMap<String, Object> resultAux = new HashMap<>();
 		try {
-			db = datasource.getConnection();
+			db = null;
+			for(int i=0; i<parameters.length; i++)
+				if(parameters[i] instanceof Integer)
+					parameters[i] = StringUtils.remove(StringUtils.remove(parameters[i].toString(),','),'.');
 			filledQuery = MessageFormat.format(query, parameters);
-			pst = db.prepareStatement(filledQuery);
+			pst = connection.prepareStatement(filledQuery);
 			rs = pst.executeQuery();
 			ResultSetMetaData rsm = rs.getMetaData();
 			
@@ -100,18 +102,18 @@ public class FileGeneratorUtils {
 		return resultAux;
 	}
 	
-	public static HashMap<String, Object> fillAtributtesIdEnt(XMLStreamWriter writer, DataSource datasource,
+	public static HashMap<String, Object> fillAtributtesIdEnt(XMLStreamWriter writer, Connection connection,
 			UserInfoInterface userInfo, Object idEnt_id) throws SQLException {
-		Connection db = datasource.getConnection();
+		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		String filledQuery = null;
 		HashMap<String, Object> resultAux = new HashMap<>();
 		String query = "select * from idEnt where id = {0} ";
 		try {
-			db = datasource.getConnection();
+			db = null;
 			filledQuery = MessageFormat.format(query, new Object[]{idEnt_id});
-			pst = db.prepareStatement(filledQuery);
+			pst = connection.prepareStatement(filledQuery);
 			rs = pst.executeQuery();			
 			
 			if(rs.next()){

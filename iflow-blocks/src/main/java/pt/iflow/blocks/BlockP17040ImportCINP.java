@@ -1,32 +1,5 @@
 package pt.iflow.blocks;
 
-import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-
-import pt.iflow.api.utils.Logger;
-import pt.iflow.api.utils.Setup;
-import pt.iflow.api.utils.UserInfoInterface;
-import pt.iflow.blocks.P17040.utils.FileImportUtils;
-import pt.iflow.blocks.P17040.utils.GestaoCrc;
-import pt.iflow.blocks.P17040.utils.ImportAction;
-import pt.iflow.blocks.P17040.utils.ValidationError;
-
 public class BlockP17040ImportCINP extends BlockP17040ImportCINA {
 	
 	public BlockP17040ImportCINP(int anFlowId, int id, int subflowblockid, String filename) {

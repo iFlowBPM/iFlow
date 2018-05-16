@@ -4,13 +4,12 @@ import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
 import static pt.iflow.blocks.P17040.utils.FileValidationUtils.isValidDomainValue;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.sql.DataSource;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -26,17 +25,17 @@ public class BlockP17040ValidateCPRT extends BlockP17040Validate {
 	}
 
 	@Override
-	public ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData, DataSource datasource,
+	public ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData, Connection connection,
 			Integer crcId) throws SQLException {
 
 		ArrayList<ValidationError> result = new ArrayList<>();
 
-		List<Integer> infProtIdList = retrieveSimpleField(datasource, userInfo,
+		List<Integer> infProtIdList = retrieveSimpleField(connection, userInfo,
 				"select infProt.id from infProt, comProt, conteudo where infProt.comProt_id=comProt.id and comProt.conteudo_id = conteudo.id and conteudo.crc_id = {0} ",
 				new Object[] { crcId });
 		//infProt
 		for (Integer infProtId : infProtIdList) {
-			HashMap<String, Object> infProtValues = fillAtributtes(null, datasource, userInfo,
+			HashMap<String, Object> infProtValues = fillAtributtes(null, connection, userInfo,
 					"select * from infProt where id = {0} ", new Object[] { infProtId });
 
 			//dtRefProt
@@ -48,12 +47,12 @@ public class BlockP17040ValidateCPRT extends BlockP17040Validate {
 
 			//idProt
 			String idProt = (String) infProtValues.get("idProt");
-			if(retrieveSimpleField(datasource, userInfo,
+			if(retrieveSimpleField(connection, userInfo,
 					"select * from infProt where idProt = {0}",	new Object[] { idProt }).size() > 1)
 				result.add(new ValidationError("EF011", "infProt", "idProt", infProtId));
 			
 			//tpProt
-			if(!isValidDomainValue(userInfo, datasource, "T_TPG","" + infProtValues.get("tpProt")))
+			if(!isValidDomainValue(userInfo, connection, "T_TPG","" + infProtValues.get("tpProt")))
 				result.add(new ValidationError("PT009", "infProt", "tpProt", infProtId));
 			if(StringUtils.isBlank((String) infProtValues.get("tpProt")))
 				result.add(new ValidationError("PT008", "infProt", "tpProt", infProtId));
@@ -64,19 +63,19 @@ public class BlockP17040ValidateCPRT extends BlockP17040Validate {
 				result.add(new ValidationError("PT012", "infProt", "valProt", infProtId));
 			
 			//tpValProt
-			if(!isValidDomainValue(userInfo, datasource, "T_TVG","" + infProtValues.get("tpValProt")))
+			if(!isValidDomainValue(userInfo, connection, "T_TVG","" + infProtValues.get("tpValProt")))
 				result.add(new ValidationError("PT013", "infProt", "tpValProt", infProtId));
 			
 			//paisLocProt
-			if(!isValidDomainValue(userInfo, datasource, "T_TER","" + infProtValues.get("paisLocProt")))
+			if(!isValidDomainValue(userInfo, connection, "T_TER","" + infProtValues.get("paisLocProt")))
 				result.add(new ValidationError("PT018", "infProt", "paisLocProt", infProtId));
 			
 			//regLocProt
-			if(!isValidDomainValue(userInfo, datasource, "T_REG","" + infProtValues.get("regLocProt")))
+			if(!isValidDomainValue(userInfo, connection, "T_REG","" + infProtValues.get("regLocProt")))
 				result.add(new ValidationError("PT021", "infProt", "regLocProt", infProtId));
 			
 			//tpAval
-			if(!isValidDomainValue(userInfo, datasource, "T_TAC","" + infProtValues.get("tpAval")))
+			if(!isValidDomainValue(userInfo, connection, "T_TAC","" + infProtValues.get("tpAval")))
 				result.add(new ValidationError("PT026", "infProt", "tpAval", infProtId));
 			
 			//valOriProt
@@ -90,7 +89,7 @@ public class BlockP17040ValidateCPRT extends BlockP17040Validate {
 				result.add(new ValidationError("PT035", "infProt", "hierqProt", infProtId));
 			
 			//estExecProt
-			if(!isValidDomainValue(userInfo, datasource, "T_EEG","" + infProtValues.get("estExecProt")))
+			if(!isValidDomainValue(userInfo, connection, "T_EEG","" + infProtValues.get("estExecProt")))
 				result.add(new ValidationError("PT026", "infProt", "estExecProt", infProtId));
 			
 			//valAcumExecProt
