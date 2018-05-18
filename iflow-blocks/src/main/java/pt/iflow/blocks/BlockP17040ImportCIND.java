@@ -64,29 +64,29 @@ public class BlockP17040ImportCIND extends BlockP17040Import {
 					return null;
 				}
 				// validar Identificação Contrato
-				String idCont = lineValues.get("idCont").toString();
+				String idCont = (String) lineValues.get("idCont");
 				if (StringUtils.isBlank(idCont)) {
 					errorList.add(new ValidationError("Identificação de Contrato em falta", "", "", lineNumber));
 					return null;
 				}
 				// validar Identificação Instrumento
-				String idInst = lineValues.get("idInst").toString();
+				String idInst = (String) lineValues.get("idInst");
 				if (StringUtils.isBlank(idInst)) {
 					errorList.add(new ValidationError("Identificação de Instrumento em falta", "", "", lineNumber));
 					return null;
 				}
 				// validar Entidade do Instrumento
-				String entInstDia_idEnt = lineValues.get("entInstDia_idEnt").toString();
+				String entInstDia_idEnt = (String) lineValues.get("entInstDia_idEnt");
 				if (StringUtils.isBlank(entInstDia_idEnt)) {
 					errorList.add(new ValidationError("Identificação de Entidade do Instrumento em falta", "", "", lineNumber));
 					return null;
 				}
 				// validar Informação diaria de Entidade
-				String infDiaEnt_idEnt = lineValues.get("infDiaEnt_idEnt").toString();
-				if (StringUtils.isBlank(infDiaEnt_idEnt)) {
-					errorList.add(new ValidationError("Identificação de Informação diaria de Entidade em falta", "", "", lineNumber));
-					return null;
-				}
+//				String infDiaEnt_idEnt = (String) lineValues.get("infDiaEnt_idEnt");
+//				if (StringUtils.isBlank(infDiaEnt_idEnt)) {
+//					errorList.add(new ValidationError("Identificação de Informação diaria de Entidade em falta", "", "", lineNumber));
+//					return null;
+//				}
 				// determinar se é insert ou update
 				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfDiaInstFin(dtRefInfDia, idCont, idInst,
 						userInfo.getUtilizador(), connection);
@@ -150,17 +150,18 @@ public class BlockP17040ImportCIND extends BlockP17040Import {
 						, lineValues.get("tpEventDia"), lineValues.get("tpRespDia")});
 		
 		//infDiaEnt
-		idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("infDiaEnt_idEnt"), userInfo, connection);
-		if(idEnt_id==null)
-			throw new SQLException("infDiaEnt.idEnt ainda não está registado no sistema");
-		
-		FileImportUtils.insertSimpleLine(connection, userInfo,
-				"INSERT INTO `infDiaEnt` (`comInfDia_id`, `idEnt_id`, `dtAvalRiscoDia`, `PDDia`, `tpAvalRiscoDia`, "
-				+ "`sistAvalRiscoDia`, `modIRBDia`, `notacaoCredDia`, `infDiaEntcol`) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
-				new Object[] { comInfDia_id, idEnt_id, lineValues.get("dtAvalRiscoDia"), lineValues.get("PDDia"), lineValues.get("tpAvalRiscoDia")
-						, lineValues.get("sistAvalRiscoDia"), lineValues.get("modIRBDia"), lineValues.get("notacaoCredDia"), lineValues.get("infDiaEntcol")});
-						
+		if(lineValues.get("infDiaEnt_idEnt")!=null){
+			idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("infDiaEnt_idEnt"), userInfo, connection);
+			if(idEnt_id==null)
+				throw new SQLException("infDiaEnt.idEnt ainda não está registado no sistema");
+			
+			FileImportUtils.insertSimpleLine(connection, userInfo,
+					"INSERT INTO `infDiaEnt` (`comInfDia_id`, `idEnt_id`, `dtAvalRiscoDia`, `PDDia`, `tpAvalRiscoDia`, "
+					+ "`sistAvalRiscoDia`, `modIRBDia`, `notacaoCredDia`, `infDiaEntcol`) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
+					new Object[] { comInfDia_id, idEnt_id, lineValues.get("dtAvalRiscoDia"), lineValues.get("PDDia"), lineValues.get("tpAvalRiscoDia")
+							, lineValues.get("sistAvalRiscoDia"), lineValues.get("modIRBDia"), lineValues.get("notacaoCredDia"), lineValues.get("infDiaEntcol")});
+		}
 		return crcIdResult;
 	}
 

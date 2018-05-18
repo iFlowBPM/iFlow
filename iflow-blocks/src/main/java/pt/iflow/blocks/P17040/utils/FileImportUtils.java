@@ -76,9 +76,9 @@ public class FileImportUtils {
 						errorList.add(new ValidationError("Valor decimal inválido", errorExtraInfo, name, lineNumber));
 					}
 				} else if (StringUtils.equalsIgnoreCase(type, "BOOLEAN")) {								
-					if(StringUtils.equals("1", valueAux))
+					if(StringUtils.equals("1", valueAux) || StringUtils.equalsIgnoreCase("true", valueAux))
 						result.put(name,Boolean.TRUE);
-					else if(StringUtils.equals("0", valueAux))
+					else if(StringUtils.equals("0", valueAux) || StringUtils.equalsIgnoreCase("false", valueAux))
 						result.put(name,Boolean.FALSE);
 					else if(StringUtils.isBlank(valueAux)){
 						result.put(name, null);

@@ -1174,4 +1174,68 @@
 		<description>ImportCIND</description>
 		<i18n>library.dms.block.p17040.import.cind</i18n>
 	</XmlBlock>
+	
+	<XmlBlock>
+		<class>BlockP17040IntegrateBDPFeedback</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portEmpty</name>
+            <description>portEmpty</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>30</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+		<XmlAttribute>
+			<name>outputDocument</name>
+			<description>Feedback file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>bdpInputDocument</name>
+			<description>Document received from BDP</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>Datasource</name>
+			<description>Datasource</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>crc_id</name>
+			<description>Id of created Crc</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>ImportCIND</description>
+		<i18n>library.dms.block.p17040.import.cind</i18n>
+	</XmlBlock>
+	
 </XmlLibrary>

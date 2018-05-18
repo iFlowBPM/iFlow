@@ -31,6 +31,9 @@ public class FileGeneratorUtils {
 		List<Integer> resultAux = new ArrayList<Integer>();
 		try {
 			db =null;
+			for(int i=0; i<parameters.length; i++)
+				if(parameters[i] instanceof Integer)
+					parameters[i] = StringUtils.remove(StringUtils.remove(parameters[i].toString(),','),'.');
 			filledQuery = MessageFormat.format(query, parameters);
 			pst = connection.prepareStatement(filledQuery);
 			rs = pst.executeQuery();
@@ -85,7 +88,7 @@ public class FileGeneratorUtils {
 						DecimalFormat df = new DecimalFormat(
 								"##################################################.############################");
 						writer.writeAttribute(rsm.getColumnName(i), df.format(rs.getDouble(i)));
-					} else if (rsm.getColumnType(i) == java.sql.Types.BOOLEAN) {
+					} else if (rsm.getColumnType(i) == java.sql.Types.BOOLEAN || rsm.getColumnType(i) == java.sql.Types.TINYINT) {
 						int valAux = rs.getBoolean(i) ? 1 : 0;
 						writer.writeAttribute(rsm.getColumnName(i), "" + valAux);
 					} else if (rsm.getColumnType(i) == java.sql.Types.INTEGER) {
@@ -109,11 +112,12 @@ public class FileGeneratorUtils {
 		ResultSet rs = null;
 		String filledQuery = null;
 		HashMap<String, Object> resultAux = new HashMap<>();
-		String query = "select * from idEnt where id = {0} ";
+		String query = "select * from idEnt where id = ? ";
 		try {
 			db = null;
 			filledQuery = MessageFormat.format(query, new Object[]{idEnt_id});
-			pst = connection.prepareStatement(filledQuery);
+			pst = connection.prepareStatement(query);
+			pst.setObject(1, idEnt_id);
 			rs = pst.executeQuery();			
 			
 			if(rs.next()){

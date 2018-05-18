@@ -289,14 +289,8 @@ public class GestaoCrc {
 				return null;
 			
 		} catch (Exception e) {
-			rs.close();
-			pst.close();
-			connection.close();
 			Logger.error(utilizador, "GestaoCrc", "checkInfProtType", e.getMessage(), e);
 		} finally {
-			rs.close();
-			pst.close();
-			connection.close();
 			DatabaseInterface.closeResources(db, pst, rs);
 		}
 		return null;

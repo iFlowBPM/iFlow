@@ -141,7 +141,7 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 							lineValues.get("agregFam"), lineValues.get("habLit"), lineValues.get("nacionalidade"),
 							infEnt_id });
 
-		else {
+		else if(StringUtils.isNotBlank((String) lineValues.get("rua")) || StringUtils.isNotBlank((String) lineValues.get("localidade")) || StringUtils.isNotBlank((String) lineValues.get("codPost"))){
 			Integer morada_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into morada(rua, localidade, codPost) values(?,?,?)",
 					new Object[] { lineValues.get("rua"), lineValues.get("localidade"), lineValues.get("codPost") });
