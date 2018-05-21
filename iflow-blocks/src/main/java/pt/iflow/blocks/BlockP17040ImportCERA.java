@@ -32,10 +32,11 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 	}
 
 	static String propertiesFile = "cera_import.properties";
-	
+
 	@Override
 	public Integer importFile(Connection connection, ArrayList<ValidationError> errorList,
-			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream... inputDocStream) throws IOException, SQLException {
+			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream... inputDocStream)
+			throws IOException, SQLException {
 
 		Properties properties = Setup.readPropertiesFile("p17040" + File.separator + propertiesFile);
 		String separator = properties.getProperty("p17040_separator", "|");
@@ -51,7 +52,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				// obter valores da linha
 				try {
 					lineValues = FileImportUtils.parseLine(lineNumber, lines.get(lineNumber), properties, separator,
-							errorList,"");
+							errorList, "");
 				} catch (Exception e) {
 					errorList.add(new ValidationError("Linha com número de campos errado", "", "", lineNumber));
 					return null;
@@ -76,8 +77,13 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				// adicionar acçao
 				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? "ERI" : "ERU";
 				actionList.add(new ImportAction(actionOnLine, idEnt));
-				// inserir na bd
-				crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type, errorList);
+				try {
+					// inserir na bd
+					crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type,
+							errorList);
+				} catch (Exception e) {
+					errorList.add(new ValidationError("", "", e.getMessage(), lineNumber));
+				}
 			}
 		} catch (Exception e) {
 			errorList.add(new ValidationError("Erro nos dados", "", e.getMessage(), lineNumber));
@@ -111,7 +117,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 
 		// insert riscoEnt
 		Integer idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("idEnt"), userInfo, connection);
-		if(idEnt_id==null)
+		if (idEnt_id == null)
 			throw new SQLException("riscoEnt.idEnt ainda não está registado no sistema");
 		Integer riscoEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `riscoEnt` ( `comRiscoEnt_id`, `idEnt_id`) VALUES (?, ?);",
@@ -119,9 +125,9 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 
 		// insert clienteRel
 		idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("clienteRel_idEnt"), userInfo, connection);
-		if(lineValues.get("clienteRel_idEnt")!=null && idEnt_id==null)
+		if (lineValues.get("clienteRel_idEnt") != null && idEnt_id == null)
 			throw new SQLException("clienteRel.idEnt ainda não está registado no sistema");
-		if(idEnt_id!=null )
+		if (idEnt_id != null)
 			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"INSERT INTO `clienteRel` ( `riscoEnt_id`, `idEnt_id`, `motivoRel`) VALUES ( ?, ?, ?);",
 					new Object[] { riscoEnt_id, idEnt_id, lineValues.get("motivoRel") });
@@ -132,20 +138,18 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 						+ "`grExposicao`, `entAcompanhada`, `txEsf`, `dtApurTxEsf`, "
 						+ "`tpAtualizTxEsf`) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);",
 				new Object[] { riscoEnt_id, type, lineValues.get("estadoInc"), lineValues.get("dtAltEstadoInc"),
-						lineValues.get("grExposicao"),
-						lineValues.get("entAcompanhada"), lineValues.get("txEsf"), lineValues.get("dtApurTxEsf"),
-						lineValues.get("tpAtualizTxEsf") });
-		
+						lineValues.get("grExposicao"), lineValues.get("entAcompanhada"), lineValues.get("txEsf"),
+						lineValues.get("dtApurTxEsf"), lineValues.get("tpAtualizTxEsf") });
+
 		// insert avalRiscoEnt
 		FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `avalRiscoEnt` ( `infRiscoEnt_id`, `PD`, `dtDemoFin`, `tpAvalRisco`, "
-				+ "`sistAvalRisco`, `dtAvalRisco`, `modIRB`, `notacaoCred`, `tipoPD`) "
-				+ "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+						+ "`sistAvalRisco`, `dtAvalRisco`, `modIRB`, `notacaoCred`, `tipoPD`) "
+						+ "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);",
 				new Object[] { infRiscoEnt_id, lineValues.get("PD"), lineValues.get("dtDemoFin"),
-						lineValues.get("tpAvalRisco"), lineValues.get("sistAvalRisco"),
-						lineValues.get("dtAvalRisco"), lineValues.get("modIRB"), lineValues.get("notacaoCred"),
-						lineValues.get("tipoPD") });
-		
+						lineValues.get("tpAvalRisco"), lineValues.get("sistAvalRisco"), lineValues.get("dtAvalRisco"),
+						lineValues.get("modIRB"), lineValues.get("notacaoCred"), lineValues.get("tipoPD") });
+
 		return crcIdResult;
 	}
 

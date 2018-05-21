@@ -73,9 +73,13 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 				// adicionar acçao
 				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? "PTI" : "PTU";
 				actionList.add(new ImportAction(actionOnLine, idProt));				
-				// inserir na bd
-				crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type,
-						errorList);
+				try {
+					// inserir na bd
+					crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type,
+							errorList);
+				} catch (Exception e) {
+					errorList.add(new ValidationError("", "", e.getMessage(), lineNumber));
+				}
 			}
 		} catch (Exception e) {
 			errorList.add(new ValidationError("Erro nos dados", "", e.getMessage(), lineNumber));

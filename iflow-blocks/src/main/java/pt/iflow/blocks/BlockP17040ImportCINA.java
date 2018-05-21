@@ -116,8 +116,13 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 				// adicionar acçao
 				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? reportType.getCreate() : reportType.getUpdate();
 				actionList.add(new ImportAction(actionOnLine,reportType.toString()+":"+ idCont + "-" + idInst + "-" + dtRef));
-				// inserir na bd
-				crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type, errorList);
+				try {
+					// inserir na bd
+					crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type,
+							errorList);
+				} catch (Exception e) {
+					errorList.add(new ValidationError("", "", e.getMessage(), lineNumber));
+				}
 			}
 		} catch (Exception e) {
 			errorList.add(new ValidationError("Erro nos dados", reportType.toString(), e.getMessage(), lineNumber));

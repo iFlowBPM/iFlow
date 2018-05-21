@@ -73,9 +73,13 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 				// adicionar acçao
 				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? "EI" : "EU";
 				actionList.add(new ImportAction(actionOnLine, idEnt));
-				// inserir na bd
-				crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type,
-						errorList);
+				try {
+					// inserir na bd
+					crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type,
+							errorList);
+				} catch (Exception e) {
+					errorList.add(new ValidationError("", "", e.getMessage(), lineNumber));
+				}
 			}
 		} catch (Exception e) {
 			errorList.add(new ValidationError("Erro nos dados", "", e.getMessage(), lineNumber));
@@ -134,14 +138,14 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 						lineValues.get("dtEmissao"), lineValues.get("dtValidade"), infEnt_id });
 
 		// insert dadosEnt t1 or t2
-		if (StringUtils.equals("001", lineValues.get("tpEnt").toString()))
+		if (StringUtils.equals("002", lineValues.get("tpEnt").toString()))
 			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into dadosEntt1(type, dtNasc, genero, sitProf, agregFam, habLit, nacionalidade, infEnt_id) values(?,?,?,?,?,?,?,?)",
 					new Object[] { "t1", lineValues.get("dtNasc"), lineValues.get("genero"), lineValues.get("sitProf"),
 							lineValues.get("agregFam"), lineValues.get("habLit"), lineValues.get("nacionalidade"),
 							infEnt_id });
 
-		else if(StringUtils.isNotBlank((String) lineValues.get("rua")) || StringUtils.isNotBlank((String) lineValues.get("localidade")) || StringUtils.isNotBlank((String) lineValues.get("codPost"))){
+		else {
 			Integer morada_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into morada(rua, localidade, codPost) values(?,?,?)",
 					new Object[] { lineValues.get("rua"), lineValues.get("localidade"), lineValues.get("codPost") });

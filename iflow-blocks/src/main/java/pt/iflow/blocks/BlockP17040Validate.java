@@ -27,13 +27,18 @@ import pt.iflow.api.utils.Utils;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
 import pt.iflow.blocks.P17040.utils.ValidationError;
 import pt.iflow.connector.document.Document;
+import pt.iknow.utils.StringUtilities;
 
 public abstract class BlockP17040Validate extends Block {
 	public Port portIn, portSuccess, portEmpty, portError;
 
 	private static final String DATASOURCE = "Datasource";
 	private static final String CRCID = "crc_id";
-	private static final String OUTPUT_ERROR_DOCUMENT = "outputErrorDocument";
+	private static final String OUTPUT_ERROR_CODE = "outputErrorCode";
+	private static final String OUTPUT_ERROR_TABLE = "outputErrorTable";
+	private static final String OUTPUT_ERROR_FIELD = "outputErrorField";
+	private static final String OUTPUT_ERROR_IDBDP = "outputErrorIdBdp";
+	private static final String OUTPUT_ERROR_ID = "outputErrorId";
 
 	public BlockP17040Validate(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
@@ -81,7 +86,22 @@ public abstract class BlockP17040Validate extends Block {
 		Connection connection=null;
 		DataSource datasource = null;
 		Integer crcId = null;
-		String sOutputErrorDocumentVar = this.getAttribute(OUTPUT_ERROR_DOCUMENT);
+		
+		String outputErrorCodeVar= this.getAttribute(OUTPUT_ERROR_CODE); 
+		String outputErrorTableVar=this.getAttribute(OUTPUT_ERROR_TABLE); 
+		String outputErrorFieldVar=this.getAttribute(OUTPUT_ERROR_FIELD); 		
+		String outputErrorIdBdpVar=this.getAttribute(OUTPUT_ERROR_IDBDP); 
+		String outputErrorIdVar=this.getAttribute(OUTPUT_ERROR_ID); 
+		
+		if (StringUtilities.isEmpty(outputErrorCodeVar) || 
+				StringUtilities.isEmpty(outputErrorTableVar) || 
+				StringUtilities.isEmpty(outputErrorFieldVar) ||
+				
+				StringUtilities.isEmpty(outputErrorIdBdpVar) ||
+				StringUtilities.isEmpty(outputErrorIdVar)) {
+			Logger.error(login, this, "after", procData.getSignature() + "empty value for return lists");
+			outPort = portError;
+		} 			
 		try {
 			datasource = Utils.getUserDataSource(procData.transform(userInfo, getAttribute(DATASOURCE)));
 			crcId = Integer.parseInt(procData.transform(userInfo, getAttribute(CRCID)));
@@ -102,16 +122,24 @@ public abstract class BlockP17040Validate extends Block {
 		try {
 			result = validate(userInfo, procData, connection, crcId);
 						
-			//set errors file
-			Integer docid = retrieveSimpleField(connection, userInfo, "select out_docid from u_gestao where out_id = {0} ",
-					new Object[] { crcId }).get(0);
-			Document doc = BeanFactory.getDocumentsBean().getDocument(userInfo, procData, docid);
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
-			doc = saveFileAsDocument("E" +doc.getFileName()+ "." +sdf.format(new Date())+ ".txt", result,  userInfo,  procData);
-			if(doc!=null)
-				procData.getList(sOutputErrorDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));		
-						
-			GestaoCrc.markAsValidated(crcId, userInfo.getUtilizador(), connection);
+			
+			if(result.isEmpty())
+				GestaoCrc.markAsValidated(crcId, userInfo.getUtilizador(), connection);
+			
+			procData.getList(outputErrorCodeVar).clear();
+			procData.getList(outputErrorTableVar).clear();
+			procData.getList(outputErrorFieldVar).clear();
+			
+			procData.getList(outputErrorIdBdpVar).clear();
+			procData.getList(outputErrorIdVar).clear();
+			for(ValidationError error: result){
+				procData.getList(outputErrorCodeVar).parseAndAddNewItem(error.getCode());
+				procData.getList(outputErrorTableVar).parseAndAddNewItem(error.getTable());
+				procData.getList(outputErrorFieldVar).parseAndAddNewItem(error.getField());
+				procData.getList(outputErrorIdBdpVar).parseAndAddNewItem(error.getIdBdp());
+				procData.getList(outputErrorIdVar).addNewItem(error.getId());
+			}
+			
 			outPort = portSuccess;
 		} catch (Exception e) {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
@@ -125,27 +153,6 @@ public abstract class BlockP17040Validate extends Block {
 		return outPort;
 	}
 
-	private Document saveFileAsDocument(String filename, ArrayList<?> errorList, UserInfoInterface userInfo, ProcessData procData) throws Exception{
-		if(errorList.isEmpty())
-			return null;
-		File tmpFile = File.createTempFile(this.getClass().getName(), ".tmp");
-		BufferedWriter tmpOutput = new BufferedWriter(new FileWriter(tmpFile, true));
-		for(Object aux: errorList){
-			tmpOutput.write(aux.toString());
-			tmpOutput.newLine();
-		}
-		tmpOutput.close();
-		
-		Documents docBean = BeanFactory.getDocumentsBean();
-		Document doc = new DocumentDataStream(0, null, null, null, 0, 0, 0);
-		doc.setFileName(filename);
-		FileInputStream fis = new FileInputStream(tmpFile);
-		((DocumentDataStream) doc).setContentStream(fis);
-		doc = docBean.addDocument(userInfo, procData, doc);
-		tmpFile.delete();
-		return doc;
-	}
-	
 	public abstract ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData,
 			Connection connection, Integer crcId) throws SQLException;
 

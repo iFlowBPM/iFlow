@@ -660,11 +660,33 @@
                 <y>45</y>
             </position>
         </XmlPort>
+        
 		<XmlAttribute>
-			<name>outputErrorDocument</name>
-			<description>errors file</description>
+			<name>outputErrorCode</name>
+			<description>Error code</description>
 			<value />
 		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorTable</name>
+			<description>Error at table</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorField</name>
+			<description>Error at field</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorIdBdp</name>
+			<description>Error in BDP object</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorId</name>
+			<description>Error in Id</description>
+			<value />
+		</XmlAttribute>
+		
 		<XmlAttribute>
 			<name>Datasource</name>
 			<description>Datasource</description>
