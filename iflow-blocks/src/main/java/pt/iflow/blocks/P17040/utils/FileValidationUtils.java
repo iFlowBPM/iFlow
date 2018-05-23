@@ -75,7 +75,7 @@ public class FileValidationUtils {
       }
     
     public static boolean isValidDomainValue(UserInfoInterface userInfo, Connection connection, String domain, String value) throws SQLException{
-    	if(value==null)
+    	if(StringUtils.isBlank(value))
     		return true;
     	
     	return retrieveSimpleField(connection, userInfo,
