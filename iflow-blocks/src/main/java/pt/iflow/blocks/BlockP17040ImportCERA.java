@@ -1,5 +1,6 @@
 package pt.iflow.blocks;
 
+import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
 
 import java.io.File;
@@ -11,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
@@ -124,13 +126,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				new Object[] { comRiscoEnt_id, idEnt_id });
 
 		// insert clienteRel
-		idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("clienteRel_idEnt"), userInfo, connection);
-		if (lineValues.get("clienteRel_idEnt") != null && idEnt_id == null)
-			throw new SQLException("clienteRel.idEnt ainda não está registado no sistema");
-		if (idEnt_id != null)
-			FileImportUtils.insertSimpleLine(connection, userInfo,
-					"INSERT INTO `clienteRel` ( `riscoEnt_id`, `idEnt_id`, `motivoRel`) VALUES ( ?, ?, ?);",
-					new Object[] { riscoEnt_id, idEnt_id, lineValues.get("motivoRel") });
+		insertEntidadeRelacionada(lineValues,  connection,  userInfo, conteudoIdList, riscoEnt_id);							
 
 		// insert infRiscoEnt
 		Integer infRiscoEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
@@ -151,6 +147,63 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 						lineValues.get("modIRB"), lineValues.get("notacaoCred"), lineValues.get("tipoPD") });
 
 		return crcIdResult;
+	}
+	
+	private ArrayList<Integer> insertEntidadeRelacionada(HashMap<String, Object> lineValues, Connection connection, UserInfoInterface userInfo, List<Integer> conteudoIdList, Integer riscoEnt_id) throws SQLException{
+		ArrayList<Integer> idEntIdList = new ArrayList<>();		
+		List<Integer> u_clienteRelIdList = retrieveSimpleField(connection, userInfo,
+				"select id from u_clienteRel where idEnt=''{0}'' ", new Object[] {lineValues.get("idEnt")});
+		
+		for(Integer u_clienteRelId: u_clienteRelIdList){
+			HashMap<String,Object> u_clienteRelValues = fillAtributtes(null, connection, userInfo, "select * from u_clienteRel where id={0} ",
+					new Object[] {u_clienteRelId});
+			
+			if(u_clienteRelValues.get("idEnt")==null)
+				continue;
+			
+			String typeAux = StringUtils.equalsIgnoreCase("PRT", (String) u_clienteRelValues.get("paisEmissao"))?"nif_nipc":"codigo_fonte";
+			Integer idEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+					"insert into idEnt(type, " + typeAux + ") values(?,?)",
+					new Object[] { (StringUtils.equals("nif_nipc", typeAux)?"i1":"i2"), u_clienteRelValues.get("idEnt") });			
+			
+			idEntIdList.add(idEnt_id);
+			
+			Integer comEnt_id =  null;
+			List<Integer> comEntIdList = retrieveSimpleField(connection, userInfo,
+					"select id from comEnt where conteudo_id = {0} ", new Object[] {conteudoIdList.get(0)});
+			if(comEntIdList.isEmpty())
+				comEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+						"insert into comEnt(conteudo_id) values(?)", new Object[] { conteudoIdList.get(0) });
+			else
+				comEnt_id = comEntIdList.get(0);
+			
+			// insert infEnt
+			Integer infEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+					"insert into infEnt(comEnt_id,type,dtRefEnt,idEnt_id,tpEnt,LEI,nome,paisResd) values(?,?,?,?,?,?,?,?)",
+					new Object[] { comEnt_id, "EI", lineValues.get("dtRef"), idEnt_id, u_clienteRelValues.get("tpEnt"), u_clienteRelValues.get("LEI"), u_clienteRelValues.get("nome"), u_clienteRelValues.get("paisResd")});
+
+			// insert docId
+			FileImportUtils.insertSimpleLine(connection, userInfo,
+					"insert into docId(tpDoc,numDoc,paisEmissao,dtEmissao,dtValidade,infEnt_id) values(?,?,?,?,?,?)",
+					new Object[] { u_clienteRelValues.get("tpDoc"), u_clienteRelValues.get("numDoc"), u_clienteRelValues.get("paisEmissao"),
+							u_clienteRelValues.get("dtEmissao"), u_clienteRelValues.get("dtValidade"), infEnt_id });
+			
+			//dadosEntt2
+			Integer morada_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+					"insert into morada(rua, localidade, codPost) values(?,?,?)",
+					new Object[] { u_clienteRelValues.get("rua"), u_clienteRelValues.get("localidade"), u_clienteRelValues.get("codPost") });
+			FileImportUtils.insertSimpleLine(connection, userInfo,
+					"insert into dadosEntt2(type, morada_id, formJurid, PSE, SI, infEnt_id) values(?,?,?,?,?,?)",
+					new Object[] { "t2", morada_id, u_clienteRelValues.get("formJurid"), u_clienteRelValues.get("PSE"),
+							u_clienteRelValues.get("SI"), infEnt_id });
+
+			FileImportUtils.insertSimpleLine(connection, userInfo,
+					"INSERT INTO `clienteRel` ( `riscoEnt_id`, `idEnt_id`, `motivoRel`) VALUES ( ?, ?, ?);",
+					new Object[] { riscoEnt_id, idEnt_id, u_clienteRelValues.get("motivoRel") });
+		}
+		
+				
+		return idEntIdList;
 	}
 
 }

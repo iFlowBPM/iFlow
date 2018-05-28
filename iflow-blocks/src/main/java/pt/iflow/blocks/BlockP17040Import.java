@@ -139,11 +139,11 @@ public abstract class BlockP17040Import extends Block {
 			
 			//set errors file
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
-			Document doc = saveFileAsDocument("E" +originalNameInputDoc+ "." +sdf.format(new Date())+ ".txt", errorList,  userInfo,  procData);
+			Document doc = saveFileAsDocument("E" +originalNameInputDoc+ /*"." +sdf.format(new Date())*/ ".txt", errorList,  userInfo,  procData);
 			if(doc!=null)
 				procData.getList(sOutputErrorDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));						
 			//set actions file
-			doc = saveFileAsDocument("R"+originalNameInputDoc+"." +sdf.format(new Date())+ ".txt", actionList,  userInfo,  procData);
+			doc = saveFileAsDocument("R"+originalNameInputDoc+/*"." +sdf.format(new Date())*/ ".txt", actionList,  userInfo,  procData);
 			if(doc!=null)
 				procData.getList(sOutputActionDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));
 								
