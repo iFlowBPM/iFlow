@@ -1,5 +1,6 @@
 package pt.iflow.blocks;
 
+import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
 
 import java.io.File;
@@ -9,6 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.sql.DataSource;
 import javax.xml.stream.XMLOutputFactory;
@@ -124,9 +126,15 @@ public abstract class BlockP17040Generate extends Block {
 			writer.close();
 
 			// update process data and finalize
+			HashMap<String,Object> controloValues = fillAtributtes(null, connection, userInfo, "select * from controlo where crc_id = {0} ",new Object[] { crcId });
+			Date dtCriacao = (Date) controloValues.get("dtCriacao");
+			String entObserv = (String) controloValues.get("entObserv");
+			String entReport = (String) controloValues.get("entReport");
+			
+			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
 			Document doc = new DocumentDataStream(0, null, null, null, 0, 0, 0);
-			doc.setFileName("CRC.BdP." +reportingEntity+ "." +observedEntity+ "." +code+ "." + sdf.format(new Date()) + ".xml");
+			doc.setFileName("CRC.BdP." +entObserv+ "." +entReport+ "." +code+ "." + sdf.format(dtCriacao) + ".xml");
 			FileInputStream fis = new FileInputStream(tmpFile);
 			((DocumentDataStream) doc).setContentStream(fis);
 			doc = docBean.addDocument(userInfo, procData, doc);
