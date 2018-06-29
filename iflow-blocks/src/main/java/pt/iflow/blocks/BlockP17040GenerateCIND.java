@@ -22,12 +22,13 @@ public class BlockP17040GenerateCIND extends BlockP17040Generate {
 	}
 
 	public String createFileContent(XMLStreamWriter writer, Connection connection, UserInfoInterface userInfo, Integer crcId) throws XMLStreamException, SQLException{
-		writer.writeStartDocument("UTF-8", "1.0");
-		writer.writeStartElement("crc");
+		writer.writeStartDocument("UTF-8", "1.0");		
+		writer.writeStartElement( "crc");
+		writer.writeNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 		writer.writeAttribute("versao", "1.0");
 		// controlo
 		writer.writeStartElement("controlo");
-		fillAtributtes(writer, connection, userInfo, "select * from controlo where crc_id = {0} ",
+		fillAtributtes(writer, connection, userInfo, "select entObserv,entReport,dtCriacao,idDest from controlo where crc_id = {0} ",
 				new Object[] { crcId });
 		writer.writeEndElement();
 		// conteudo
@@ -67,23 +68,24 @@ public class BlockP17040GenerateCIND extends BlockP17040Generate {
 			writer.writeEndElement();
 		
 			//lstInfDiaEnt
-			writer.writeStartElement("lstInfDiaEnt");
-				//infDiaEnt
-				List<Integer> infDiaEntIdList = retrieveSimpleField(connection, userInfo,
-						"select id from infDiaEnt where comInfDia_id in ( select id from comInfDia where conteudo_id in ( select id from conteudo where crc_id = {0} )) ",
-						new Object[] {crcId});
-				for(Integer infDiaEntId :  infDiaEntIdList){
-					writer.writeStartElement("infDiaEnt");
-					HashMap<String,Object> infDiaEntValues = fillAtributtes(writer, connection, userInfo, "select * from infDiaEnt where id = {0} ",
-							new Object[] { infDiaEntId });
-						//idEnt
-						writer.writeStartElement("idEnt");
-						FileGeneratorUtils.fillAtributtesIdEnt(writer, connection, userInfo, infDiaEntValues.get("idEnt_id") );
+			List<Integer> infDiaEntIdList = retrieveSimpleField(connection, userInfo,
+					"select id from infDiaEnt where comInfDia_id in ( select id from comInfDia where conteudo_id in ( select id from conteudo where crc_id = {0} )) ",
+					new Object[] {crcId});
+			if(!infDiaEntIdList.isEmpty()){
+				writer.writeStartElement("lstInfDiaEnt");
+					//infDiaEnt				
+					for(Integer infDiaEntId :  infDiaEntIdList){
+						writer.writeStartElement("infDiaEnt");
+						HashMap<String,Object> infDiaEntValues = fillAtributtes(writer, connection, userInfo, "select * from infDiaEnt where id = {0} ",
+								new Object[] { infDiaEntId });
+							//idEnt
+							writer.writeStartElement("idEnt");
+							FileGeneratorUtils.fillAtributtesIdEnt(writer, connection, userInfo, infDiaEntValues.get("idEnt_id") );
+							writer.writeEndElement();
 						writer.writeEndElement();
-					writer.writeEndElement();
-				}					
-			writer.writeEndElement();
-		
+					}					
+				writer.writeEndElement();
+			}
 		writer.writeEndElement();
 		writer.writeEndElement();
 		writer.writeEndElement();

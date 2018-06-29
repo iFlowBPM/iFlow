@@ -22,12 +22,13 @@ public class BlockP17040GenerateCENT extends BlockP17040Generate {
 	}
 
 	public String createFileContent(XMLStreamWriter writer, Connection connection, UserInfoInterface userInfo, Integer crcId) throws XMLStreamException, SQLException{
-		writer.writeStartDocument("UTF-8", "1.0");
-		writer.writeStartElement("crc");
+		writer.writeStartDocument("UTF-8", "1.0");		
+		writer.writeStartElement( "crc");
+		writer.writeNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 		writer.writeAttribute("versao", "1.0");
 		// controlo
 		writer.writeStartElement("controlo");
-		fillAtributtes(writer, connection, userInfo, "select * from controlo where crc_id = {0} ",
+		fillAtributtes(writer, connection, userInfo, "select entObserv,entReport,dtCriacao,idDest from controlo where crc_id = {0} ",
 				new Object[] { crcId });
 		writer.writeEndElement();
 		// conteudo
@@ -65,11 +66,11 @@ public class BlockP17040GenerateCENT extends BlockP17040Generate {
 			writer.writeEndElement();
 
 			// lstDocId
-			writer.writeStartElement("lstDocid");
+			writer.writeStartElement("lstDocId");
 			List<Integer> docIdList = retrieveSimpleField(connection, userInfo,
 					"select docId.id from docId where infEnt_id = {0} ", new Object[] { infEntId });
 			for (Integer docIdId : docIdList){
-				writer.writeStartElement("docid");
+				writer.writeStartElement("docId");
 				fillAtributtes(writer, connection, userInfo, "select * from docId where id = {0} ",
 						new Object[] { docIdId });
 				writer.writeEndElement();
@@ -77,10 +78,14 @@ public class BlockP17040GenerateCENT extends BlockP17040Generate {
 			writer.writeEndElement();
 
 			// altIdEnt
-			writer.writeStartElement("altIdEnt");
-			fillAtributtes(writer, connection, userInfo, "select * from altIdEnt where id = {0} ",
+			HashMap altIdEntValues = fillAtributtes(null, connection, userInfo, "select * from altIdEnt where id = {0} ",
 					new Object[] { infEntValues.get("altIdEnt_id") });
-			writer.writeEndElement();
+			if(!altIdEntValues.isEmpty()){
+				writer.writeStartElement("altIdEnt");
+				fillAtributtes(writer, connection, userInfo, "select * from altIdEnt where id = {0} ",
+						new Object[] { infEntValues.get("altIdEnt_id") });
+				writer.writeEndElement();
+			}
 
 			writer.writeEndElement();
 		}

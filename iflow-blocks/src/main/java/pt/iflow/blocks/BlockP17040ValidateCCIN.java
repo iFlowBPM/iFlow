@@ -37,8 +37,8 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 				"select infInst.id from infInst, comCInst, conteudo where infInst.comCInst_id=comCInst.id and comCInst.conteudo_id = conteudo.id and conteudo.crc_id = {0} ",
 				new Object[] { crcId });
 		for (Integer infInstId : infInstIdList) {
-			// lstCaractEsp
-			ArrayList<String> tpCaractEspAux = validateLstCaractEsp( connection,  userInfo, result, infInstId);
+			// lstCaracEsp
+			ArrayList<String> tpCaractEspAux = validatelstCaracEsp( connection,  userInfo, result, infInstId);
 			
 			HashMap<String, Object> infInstValues = fillAtributtes(null, connection, userInfo,
 					"select * from infInst where id = {0} ", new Object[] { infInstId });
@@ -208,10 +208,10 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			if (dtFimCarCap != null && dtIniInst != null && dtFimCarCap.before(dtIniInst))
 				result.add(new ValidationError("CI043", "infInst", "dtFimCarCap", infInstId, dtFimCarCap));
 
-			// dirReemblme
-			if (!isValidDomainValue(userInfo, connection, "T_REB", (String) infInstValues.get("dirReemblme")))
-				result.add(new ValidationError("CI044", "infInst", "dirReemblme", infInstId,
-						(String) infInstValues.get("dirReemblme")));
+			// dirReembIme
+			if (!isValidDomainValue(userInfo, connection, "T_REB", (String) infInstValues.get("dirReembIme")))
+				result.add(new ValidationError("CI044", "infInst", "dirReembIme", infInstId,
+						(String) infInstValues.get("dirReembIme")));
 
 			// recurso
 			String recurso = (String) infInstValues.get("recurso");
@@ -470,15 +470,15 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 		return result;
 	}
 
-	private ArrayList<String> validateLstCaractEsp(Connection connection, UserInfoInterface userInfo,
+	private ArrayList<String> validatelstCaracEsp(Connection connection, UserInfoInterface userInfo,
 			List<ValidationError> result, Integer infInstId) throws SQLException {
-		// lstCaractEsp
+		// lstCaracEsp
 		ArrayList<String> tpCaractEspAux = new ArrayList<>();
 		Boolean tpCaractEsp000 = false, tpCaractEspxxx = false;
-		List<Integer> lstCaractEspIdList = retrieveSimpleField(connection, userInfo,
+		List<Integer> lstCaracEspIdList = retrieveSimpleField(connection, userInfo,
 				"select id from caractEsp where infInst_id = {0} ", new Object[] { infInstId });
 		// caractEsp
-		for (Integer caractEspId : lstCaractEspIdList) {
+		for (Integer caractEspId : lstCaracEspIdList) {
 			HashMap<String, Object> caractEspValues = fillAtributtes(null, connection, userInfo,
 					"select * from caractEsp where id = {0} ", new Object[] { caractEspId });
 
@@ -495,7 +495,7 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			tpCaractEspAux.add(tpCaractEsp);
 		}
 		if (tpCaractEsp000 && tpCaractEspxxx)
-			result.add(new ValidationError("CI109", "caractEsp", "tpCaractEsp", lstCaractEspIdList.get(0)));
+			result.add(new ValidationError("CI109", "caractEsp", "tpCaractEsp", lstCaracEspIdList.get(0)));
 
 		return tpCaractEspAux;
 	}

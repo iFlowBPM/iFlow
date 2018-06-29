@@ -116,7 +116,7 @@ public class BlockP17040ImportCCIN extends BlockP17040Import {
 				"INSERT INTO infInst (`comCInst_id`, `type`, `dtRefInst`, `idCont`, `idInst`, `balcao`, `projFinan`, "
 				+ "`idContSind`, `litigJud`, `IEB`, `paisLegis`, `canalComer`, `clausRenun`, `subvProtocolo`, `refExtInst`, "
 				+ "`tpInst`, `moeda`, `dtUtilFund`, `dtIniInst`, `dtOriMat`, `dtMat`, `dtIniCarJur`, `dtFimCarJur`, "
-				+ "`dtIniCarCap`, `dtFimCarCap`, `dirReemblme`, `recurso`, `tpTxJuro`, `freqAtualizTx`, `txRef`, `TAEG`, "
+				+ "`dtIniCarCap`, `dtFimCarCap`, `dirReembIme`, `recurso`, `tpTxJuro`, `freqAtualizTx`, `txRef`, `TAEG`, "
 				+ "`TAE`, `spread`, `txMax`, `txMin`, `perFixTx`, `durPlanoFin`, `finalidade`, `tpAmort`, `freqPagam`, "
 				+ "`divSubor`, `instFiduc`, `montIni`, `varFV`, `dtReneg`, `tpNeg`, `percDifCap`, `tpTitulariz`, `seguros`) "
 				+ "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
@@ -129,7 +129,7 @@ public class BlockP17040ImportCCIN extends BlockP17040Import {
 						lineValues.get("moeda"), lineValues.get("dtUtilFund"), lineValues.get("dtIniInst"), 
 						lineValues.get("dtOriMat"), lineValues.get("dtMat"), lineValues.get("dtIniCarJur"), 
 						lineValues.get("dtFimCarJur"), lineValues.get("dtIniCarCap"), lineValues.get("dtFimCarCap"),
-						lineValues.get("dirReemblme"), lineValues.get("recurso"), lineValues.get("tpTxJuro"), 
+						lineValues.get("dirReembIme"), lineValues.get("recurso"), lineValues.get("tpTxJuro"), 
 						lineValues.get("freqAtualizTx"), lineValues.get("txRef"), lineValues.get("TAEG"), 
 						lineValues.get("TAE"), lineValues.get("spread"), lineValues.get("txMax"), 
 						lineValues.get("txMin"), lineValues.get("perFixTx"), lineValues.get("durPlanoFin"), 

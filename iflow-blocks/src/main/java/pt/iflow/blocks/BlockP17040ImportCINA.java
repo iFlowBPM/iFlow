@@ -201,10 +201,10 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 			throw new SQLException("respEntInst.idEnt ainda não está registado no sistema");
 
 		FileImportUtils.insertSimpleLine(connection, userInfo,
-				"INSERT INTO `respEntInst` (`idEnt_id`, `infFinInst_id`, `tpRespEnt`, `montToEnt`, "
+				"INSERT INTO `respEntInst` (`idEnt_id`, `infFinInst_id`, `tpRespEnt`, `montTotEnt`, "
 						+ "`montVencEnt`, `montPotRevEnt`, `montPotIrrevEnt`, `montAbAtvEnt`, `valPrestEnt`) "
 						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
-				new Object[] { idEnt_id, infFinInst_id, lineValues.get("tpRespEnt"), lineValues.get("montToEnt"),
+				new Object[] { idEnt_id, infFinInst_id, lineValues.get("tpRespEnt"), lineValues.get("montTotEnt"),
 						lineValues.get("montVencEnt"), lineValues.get("montPotRevEnt"),
 						lineValues.get("montPotIrrevEnt"), lineValues.get("montAbAtvEnt"),
 						lineValues.get("valPrestEnt") });
@@ -223,12 +223,12 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 			HashMap<String, Object> lineValues, Integer infPerInst_id) throws SQLException {		
 		FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `infContbInst` (`infPerInst_id`, `type`, `classContbInst`, `recBal`, "
-				+ "`formaConstOnus`, `montAcumImp`, `tpImp`, `metValImp`, `valAcumRC`, `perfStat`, "
+				+ "`formaConstOnus`, `montAcumImp`, `tpImp`, `metValImp`, `varAcumRC`, `perfStat`, "
 				+ "`dtPerfStat`, `provPRExtp`, `sitDifReneg`, `recAcumIncump`, `dtEstDifReneg`, `cartPrud`, `montEscrit`) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
 				new Object[] { infPerInst_id, type, lineValues.get("classContbInst"), lineValues.get("recBal"),
 						lineValues.get("formaConstOnus"), lineValues.get("montAcumImp"),
-						lineValues.get("tpImp"), lineValues.get("metValImp"), lineValues.get("valAcumRC"),
+						lineValues.get("tpImp"), lineValues.get("metValImp"), lineValues.get("varAcumRC"),
 						lineValues.get("perfStat"), lineValues.get("dtPerfStat"), lineValues.get("provPRExtp"), lineValues.get("sitDifReneg"),
 						lineValues.get("recAcumIncump"), lineValues.get("dtEstDifReneg"), lineValues.get("cartPrud"), lineValues.get("montEscrit")});
 	}

@@ -22,12 +22,13 @@ public class BlockP17040GenerateCERA extends BlockP17040Generate {
 	}
 
 	public String createFileContent(XMLStreamWriter writer, Connection connection, UserInfoInterface userInfo, Integer crcId) throws XMLStreamException, SQLException{
-		writer.writeStartDocument("UTF-8", "1.0");
-		writer.writeStartElement("crc");
+		writer.writeStartDocument("UTF-8", "1.0");		
+		writer.writeStartElement( "crc");
+		writer.writeNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 		writer.writeAttribute("versao", "1.0");
 		// controlo
 		writer.writeStartElement("controlo");
-		fillAtributtes(writer, connection, userInfo, "select * from controlo where crc_id = {0} ",
+		fillAtributtes(writer, connection, userInfo, "select entObserv,entReport,dtCriacao,idDest from controlo where crc_id = {0} ",
 				new Object[] { crcId });
 		writer.writeEndElement();
 		// conteudo
@@ -55,10 +56,18 @@ public class BlockP17040GenerateCERA extends BlockP17040Generate {
 					HashMap<String,Object> infRiscoEntValues = fillAtributtes(writer, connection, userInfo,
 							"select * from infRiscoEnt where riscoEnt_id = {0} ", new Object[] {riscoEntId});
 						//avalRiscoEnt
-						writer.writeStartElement("infRiscoEnt");
-						fillAtributtes(writer, connection, userInfo,
-								"select * from avalRiscoEnt where infRiscoEnt_id = {0} ", new Object[] {infRiscoEntValues.get("id")});
-						writer.writeEndElement();
+						List<Integer> avalRiscoEntIdList = retrieveSimpleField(connection, userInfo,
+								"select id from avalRiscoEnt where infRiscoEnt_id = {0} ", new Object[] {infRiscoEntValues.get("id")});
+						if(!avalRiscoEntIdList.isEmpty()){
+							writer.writeStartElement("lstAvalRiscoEnt");
+								for(Integer avalRiscoEnt : avalRiscoEntIdList){
+								writer.writeStartElement("avalRiscoEnt");
+									fillAtributtes(writer, connection, userInfo,
+											"select * from avalRiscoEnt where infRiscoEnt_id = {0} ", new Object[] {avalRiscoEnt});
+									writer.writeEndElement();
+								}
+							writer.writeEndElement();
+						}
 					writer.writeEndElement();
 					
 					//lstClienteRel

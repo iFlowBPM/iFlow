@@ -74,6 +74,8 @@ public class FileGeneratorUtils {
 						continue;
 					else if(rs.getObject(i)==null)
 						continue;
+					else if(StringUtils.equalsIgnoreCase(rsm.getColumnName(i),"type"))
+						writer.writeAttribute("xsi","",rsm.getColumnName(i), rs.getString(i));
 					else if (rsm.getColumnType(i) == java.sql.Types.VARCHAR) {
 						writer.writeAttribute(rsm.getColumnName(i), rs.getString(i));
 					} else if (rsm.getColumnType(i) == java.sql.Types.DATE) {
@@ -126,7 +128,7 @@ public class FileGeneratorUtils {
 				resultAux.put("nif_nipc", rs.getString("nif_nipc"));
 				resultAux.put("codigo_fonte", rs.getString("codigo_fonte"));
 				
-				writer.writeAttribute("type", rs.getString("type"));
+				writer.writeAttribute("xsi","","type", rs.getString("type"));
 				if(StringUtils.equals("i1", rs.getString("type")))
 					writer.writeCharacters(rs.getString("nif_nipc"));
 				else

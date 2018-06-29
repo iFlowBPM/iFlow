@@ -22,12 +22,13 @@ public class BlockP17040GenerateCINA extends BlockP17040Generate {
 	}
 
 	public String createFileContent(XMLStreamWriter writer, Connection connection, UserInfoInterface userInfo, Integer crcId) throws XMLStreamException, SQLException{
-		writer.writeStartDocument("UTF-8", "1.0");
-		writer.writeStartElement("crc");
+		writer.writeStartDocument("UTF-8", "1.0");		
+		writer.writeStartElement( "crc");
+		writer.writeNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 		writer.writeAttribute("versao", "1.0");
 		// controlo
 		writer.writeStartElement("controlo");
-		fillAtributtes(writer, connection, userInfo, "select * from controlo where crc_id = {0} ",
+		fillAtributtes(writer, connection, userInfo, "select entObserv,entReport,dtCriacao,idDest from controlo where crc_id = {0} ",
 				new Object[] { crcId });
 		writer.writeEndElement();
 		// conteudo
@@ -54,18 +55,21 @@ public class BlockP17040GenerateCINA extends BlockP17040Generate {
 						List<Integer> respEntInstIdList = retrieveSimpleField(connection, userInfo,
 								"select respEntInst.id from respEntInst where infFinInst_id = {0} ",
 								new Object[] { infFinInstValues.get("id") });
-						for(Integer respEntInstId : respEntInstIdList){
-							//respEntInst
-							writer.writeStartElement("respEntInst");
-							HashMap<String,Object> respEntInstValues = fillAtributtes(writer, connection, userInfo, "select * from respEntInst where id = {0} ",
-									new Object[] { respEntInstId });
-								//idEnt
-								writer.writeStartElement("idEnt");
-									FileGeneratorUtils.fillAtributtesIdEnt(writer, connection, userInfo, respEntInstValues.get("idEnt_id") );
-								writer.writeEndElement();
+						if(!respEntInstIdList.isEmpty()){
+							writer.writeStartElement("lstRespEntInst");
+								for(Integer respEntInstId : respEntInstIdList){
+									//respEntInst
+									writer.writeStartElement("respEntInst");
+									HashMap<String,Object> respEntInstValues = fillAtributtes(writer, connection, userInfo, "select * from respEntInst where id = {0} ",
+											new Object[] { respEntInstId });
+										//idEnt
+										writer.writeStartElement("idEnt");
+											FileGeneratorUtils.fillAtributtesIdEnt(writer, connection, userInfo, respEntInstValues.get("idEnt_id") );
+										writer.writeEndElement();
+									writer.writeEndElement();
+								}
 							writer.writeEndElement();
 						}
-						
 						//lstProtInst
 						writer.writeStartElement("lstProtInst");
 						List<Integer> protInstIdList = retrieveSimpleField(connection, userInfo,
@@ -88,7 +92,7 @@ public class BlockP17040GenerateCINA extends BlockP17040Generate {
 					writer.writeEndElement();
 					
 					//lstIntRInst
-					writer.writeStartElement("lstIntRInst");
+					writer.writeStartElement("lstInfRInst");
 					List<Integer> infRInstIdList = retrieveSimpleField(connection, userInfo,
 							"select infRInst.id from infRInst where infPerInst_id = {0} ",
 							new Object[] {infPerInstId});
