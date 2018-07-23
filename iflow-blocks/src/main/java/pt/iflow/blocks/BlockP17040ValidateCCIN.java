@@ -56,7 +56,7 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			// idInst
 			String idInst = (String) infInstValues.get("idInst");
 			if (retrieveSimpleField(connection, userInfo,
-					"select infInst.idInst from infInst, comCInst, conteudo where infInst.comCInst_id=comCInst.id and comCInst.conteudo_id = conteudo.id and conteudo.crc_id = {0} and infInst.idInst = '{1}' ",
+					"select infInst.id from infInst, comCInst, conteudo where infInst.comCInst_id=comCInst.id and comCInst.conteudo_id = conteudo.id and conteudo.crc_id = {0} and infInst.idInst = ''{1}'' ",
 					new Object[] { crcId, idInst }).size() > 1)
 				result.add(new ValidationError("EF012", "infInst", "idInst", infInstId));
 
@@ -120,7 +120,7 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			if (StringUtils.isBlank(refExtInst))
 				result.add(new ValidationError("CI099", "infInst", "refExtInst", infInstId));
 			if (retrieveSimpleField(connection, userInfo,
-					"select id from infInst where refExtInst = ''{1}'' and idCont!= ''{1}'' )",
+					"select id from infInst where refExtInst = ''{1}'' and idCont!= ''{1}''",
 					new Object[] { refExtInst, idCont }).size() > 0)
 				result.add(new ValidationError("CI112", "infInst", "refExtInst", infInstId, refExtInst));
 
@@ -332,7 +332,7 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			// varFV
 			BigDecimal varFV = (BigDecimal) infInstValues.get("varFV");
 			if (varFV == null && retrieveSimpleField(connection, userInfo,
-					"select from ligInst where tpLigInst='003' and infInst_id = {0} ", new Object[] { infInstId })
+					"select id from ligInst where tpLigInst='003' and infInst_id = {0} ", new Object[] { infInstId })
 							.size() > 0)
 				result.add(new ValidationError("CI116", "infInst", "varFV", infInstId));
 

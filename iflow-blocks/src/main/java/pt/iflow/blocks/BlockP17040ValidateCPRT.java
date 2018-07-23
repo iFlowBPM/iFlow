@@ -49,7 +49,7 @@ public class BlockP17040ValidateCPRT extends BlockP17040Validate {
 			//idProt
 			String idProt = (String) infProtValues.get("idProt");
 			if(retrieveSimpleField(connection, userInfo,
-					"select * from infProt where idProt = {0}",	new Object[] { idProt }).size() > 1)
+					"select * from infProt where idProt = ''{0}''",	new Object[] { idProt }).size() > 1)
 				result.add(new ValidationError("EF011", "infProt", "idProt", infProtId, idProt));
 			
 			//idEnt

@@ -1536,7 +1536,8 @@ public class FlowHolderBean implements FlowHolder {
             return "O fluxo n&atilde;o existe ou n&atilde;o est&aacute; dispon&iacute;vel";
         
         FlowData flow = refreshFlow(userInfo, flowId);
-        // if(null == flow) return "Fluxo invalido.";
+        if(null == flow) 
+        	return "Fluxo invalido.";
         boolean online = flow != null && flow.isDeployed();
         flow.setOnline(online);
         notifyDeploy(userInfo, flowId, online);

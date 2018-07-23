@@ -163,8 +163,8 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 			
 			String typeAux = StringUtils.equalsIgnoreCase("PRT", (String) u_clienteRelValues.get("paisEmissao"))?"nif_nipc":"codigo_fonte";
 			Integer idEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
-					"insert into idEnt(type, " + typeAux + ") values(?,?)",
-					new Object[] { (StringUtils.equals("nif_nipc", typeAux)?"i1":"i2"), u_clienteRelValues.get("idEnt") });			
+						"insert into idEnt(type, nif_nipc, codigo_fonte) values(?,?,?)",
+						new Object[] { (StringUtils.equals("nif_nipc", typeAux)?"i1":"i2"), u_clienteRelValues.get("idEnt"), StringUtils.equals("nif_nipc", typeAux) ? null : u_clienteRelValues.get("idEnt") });	
 			
 			idEntIdList.add(idEnt_id);
 			

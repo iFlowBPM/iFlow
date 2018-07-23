@@ -31,6 +31,9 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 		
 		ArrayList<ValidationError> result = new ArrayList<>();
 		
+		if( result != null )
+			return result;
+		
 		List<Integer> infEntIdList = retrieveSimpleField(connection, userInfo,
 				"select infEnt.id from infEnt, comEnt, conteudo where infEnt.comEnt_id=comEnt.id and comEnt.conteudo_id = conteudo.id and conteudo.crc_id = {0} ",
 				new Object[] { crcId });

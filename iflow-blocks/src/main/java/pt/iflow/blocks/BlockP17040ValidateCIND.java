@@ -83,7 +83,7 @@ public class BlockP17040ValidateCIND extends BlockP17040Validate {
 			String idInst = (String) infDiaEntValues.get("idInst");
 			if(retrieveSimpleField(connection, userInfo,
 					"select id from infDiaInstFin where idCont = ''{0}'' and idInst= ''{1}'' and id = {2}",
-					new Object[] {idCont, idInst}).size()>1)
+					new Object[] {idCont, idInst, infDiaInstFin_id}).size()>1)
 				result.add(new ValidationError("EF015", "infDiaInstFin", "idInst", infDiaInstFin_id, idInst));
 			//TAADia
 			//capitalVivo
