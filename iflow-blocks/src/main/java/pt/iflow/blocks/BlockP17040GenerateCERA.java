@@ -71,11 +71,12 @@ public class BlockP17040GenerateCERA extends BlockP17040Generate {
 					writer.writeEndElement();
 					
 					//lstClienteRel
+					List<Integer> clienteRelIdList = retrieveSimpleField(connection, userInfo,
+							"select clienteRel.id from clienteRel where riscoEnt_id = {0} ",
+							new Object[] {riscoEntId});
+					if(!clienteRelIdList.isEmpty()){
 					writer.writeStartElement("lstClienteRel");
-						//clienteRel
-						List<Integer> clienteRelIdList = retrieveSimpleField(connection, userInfo,
-								"select clienteRel.id from clienteRel where riscoEnt_id = {0} ",
-								new Object[] {riscoEntId});
+						//clienteRel						
 						for(Integer clienteRelId : clienteRelIdList){
 							writer.writeStartElement("clienteRel");
 							HashMap<String,Object> clienteRelValues = fillAtributtes(writer, connection, userInfo,
@@ -88,7 +89,7 @@ public class BlockP17040GenerateCERA extends BlockP17040Generate {
 							writer.writeEndElement();
 						}
 					writer.writeEndElement();
-					
+					}
 				writer.writeEndElement();
 			}		
 		writer.writeEndElement();

@@ -47,9 +47,11 @@ public class BlockP17040GenerateCINA extends BlockP17040Generate {
 						new Object[] { infPerInstId });
 					
 					//infFinInst
-					writer.writeStartElement("infFinInst");
 					HashMap<String,Object> infFinInstValues = fillAtributtes(writer, connection, userInfo, "select * from infFinInst where infPerInst_id = {0} ",
-							new Object[] { infPerInstId });
+						new Object[] { infPerInstId });
+					if(!infFinInstValues.isEmpty()){
+					writer.writeStartElement("infFinInst");
+					
 						
 						//lstRespEntInst
 						List<Integer> respEntInstIdList = retrieveSimpleField(connection, userInfo,
@@ -70,11 +72,12 @@ public class BlockP17040GenerateCINA extends BlockP17040Generate {
 								}
 							writer.writeEndElement();
 						}
-						//lstProtInst
-						writer.writeStartElement("lstProtInst");
+						//lstProtInst						
 						List<Integer> protInstIdList = retrieveSimpleField(connection, userInfo,
 								"select protInst.id from protInst where infFinInst_id = {0} ",
 								new Object[] { infFinInstValues.get("id") });
+						if(!protInstIdList.isEmpty()){
+						writer.writeStartElement("lstProtInst");
 							for(Integer protInstId : protInstIdList){
 								//protInst
 								writer.writeStartElement("protInst");
@@ -83,8 +86,9 @@ public class BlockP17040GenerateCINA extends BlockP17040Generate {
 								writer.writeEndElement();
 							}
 						writer.writeEndElement();
+						}
 					writer.writeEndElement();
-				
+					}
 					//infContbInst
 					writer.writeStartElement("infContbInst");
 					fillAtributtes(writer, connection, userInfo, "select * from infContbInst where infPerInst_id = {0} ",
