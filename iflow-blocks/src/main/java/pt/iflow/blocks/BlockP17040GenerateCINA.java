@@ -96,10 +96,12 @@ public class BlockP17040GenerateCINA extends BlockP17040Generate {
 					writer.writeEndElement();
 					
 					//lstIntRInst
-					writer.writeStartElement("lstInfRInst");
 					List<Integer> infRInstIdList = retrieveSimpleField(connection, userInfo,
 							"select infRInst.id from infRInst where infPerInst_id = {0} ",
 							new Object[] {infPerInstId});
+					if(!infRInstIdList.isEmpty()){
+					writer.writeStartElement("lstInfRInst");
+					
 						//infRInst
 						for(Integer infRInstId: infRInstIdList){
 							writer.writeStartElement("infRInst");
@@ -108,7 +110,7 @@ public class BlockP17040GenerateCINA extends BlockP17040Generate {
 							writer.writeEndElement();
 						}
 					writer.writeEndElement();
-					
+					}
 				writer.writeEndElement();
 			}
 		writer.writeEndElement();

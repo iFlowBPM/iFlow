@@ -116,6 +116,8 @@ public class FileGeneratorUtils {
 		HashMap<String, Object> resultAux = new HashMap<>();
 		String query = "select * from idEnt where id = ? ";
 		try {
+			if (idEnt_id==null)
+				return resultAux;
 			db = null;
 			filledQuery = MessageFormat.format(query, new Object[]{idEnt_id});
 			pst = connection.prepareStatement(query);
