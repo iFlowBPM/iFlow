@@ -47,11 +47,12 @@ public class BlockP17040GenerateCINA extends BlockP17040Generate {
 						new Object[] { infPerInstId });
 					
 					//infFinInst
-					HashMap<String,Object> infFinInstValues = fillAtributtes(writer, connection, userInfo, "select * from infFinInst where infPerInst_id = {0} ",
+					HashMap<String,Object> infFinInstValues = fillAtributtes(null, connection, userInfo, "select * from infFinInst where infPerInst_id = {0} ",
 						new Object[] { infPerInstId });
 					if(!infFinInstValues.isEmpty()){
 					writer.writeStartElement("infFinInst");
-					
+						fillAtributtes(writer, connection, userInfo, "select * from infFinInst where infPerInst_id = {0} ",
+								new Object[] { infPerInstId });
 						
 						//lstRespEntInst
 						List<Integer> respEntInstIdList = retrieveSimpleField(connection, userInfo,

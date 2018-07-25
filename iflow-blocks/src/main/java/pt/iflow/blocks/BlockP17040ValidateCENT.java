@@ -29,10 +29,7 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 	public ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData, Connection connection,
 			Integer crcId) throws SQLException {
 		
-		ArrayList<ValidationError> result = new ArrayList<>();
-		
-		if( result != null )
-			return result;
+		ArrayList<ValidationError> result = new ArrayList<>();		
 		
 		List<Integer> infEntIdList = retrieveSimpleField(connection, userInfo,
 				"select infEnt.id from infEnt, comEnt, conteudo where infEnt.comEnt_id=comEnt.id and comEnt.conteudo_id = conteudo.id and conteudo.crc_id = {0} ",
