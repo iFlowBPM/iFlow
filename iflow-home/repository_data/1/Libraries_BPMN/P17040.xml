@@ -1711,12 +1711,12 @@
 		</XmlAttribute>
 		<XmlAttribute>
 			<name>crc_id</name>
-			<description>Id of created Crc</description>
+			<description>Id of Crc sent to BDP</description>
 			<value />
 		</XmlAttribute>
 		<image>bpmn_task.png</image>
-		<description>ImportCIND</description>
-		<i18n>library.dms.block.p17040.import.cind</i18n>
+		<description>Integrate BDP</description>
+		<i18n>library.dms.block.p17040.integrate.bdp</i18n>
 	</XmlBlock>
 	
 </XmlLibrary>

@@ -225,10 +225,10 @@ public class GestaoCrc {
 			pst.setInt(2, idEnt_id);
 			rs = pst.executeQuery();
 			
-			if(!rs.next() && dtRefEntAux.before(dtRefEnt))
+			if(rs.next() && dtRefEntAux.before(dtRefEnt))
 				return ImportActionType.UPDATE;			
 			else 
-				return null;
+				return ImportActionType.CREATE;
 						
 		} catch (Exception e) {
 			Logger.error(username, "GestaoCrc", "checkInfEntType", e.getMessage(), e);
@@ -283,10 +283,10 @@ public class GestaoCrc {
 			pst.setString(2, idProt);
 			rs = pst.executeQuery();
 			
-			if(!rs.next() && dtRefProtAux.before(dtRefProt))
+			if(rs.next() && dtRefProtAux.before(dtRefProt))
 				return ImportActionType.UPDATE;			
 			else 
-				return null;
+				return ImportActionType.CREATE;
 			
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "checkInfProtType", e.getMessage(), e);
@@ -345,10 +345,10 @@ public class GestaoCrc {
 			pst.setString(3, idInst);
 			rs = pst.executeQuery();
 			
-			if(!rs.next() && dtRefInstAux.before(dtRefInst))
+			if(rs.next() && dtRefInstAux.before(dtRefInst))
 				return ImportActionType.UPDATE;			
 			else 
-				return null;
+				return ImportActionType.CREATE;
 			
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "checkinfInstType", e.getMessage(), e);
@@ -414,10 +414,10 @@ public class GestaoCrc {
 			pst.setInt(2, idEnt_id);
 			rs = pst.executeQuery();
 			
-			if(!rs.next() && dtRefAux.before(dtRef))
+			if(rs.next() && dtRefAux.before(dtRef))
 				return ImportActionType.UPDATE;			
 			else 
-				return null;
+				return ImportActionType.CREATE;
 			
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "checkRiscoEntType", e.getMessage(), e);
@@ -478,10 +478,10 @@ public class GestaoCrc {
 			pst.setString(5, types[1]);
 			rs = pst.executeQuery();
 			
-			if(!rs.next() && dtRefAux.before(dtRef))
+			if(rs.next() && dtRefAux.before(dtRef))
 				return ImportActionType.UPDATE;			
 			else 
-				return null;
+				return ImportActionType.CREATE;
 			
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "checkInfPerInstType", e.getMessage(), e);
@@ -540,10 +540,10 @@ public class GestaoCrc {
 			pst.setString(3, idInst);
 			rs = pst.executeQuery();
 			
-			if(!rs.next() && dtRefInfDiaAux.before(dtRefInfDia))
+			if(rs.next() && dtRefInfDiaAux.before(dtRefInfDia))
 				return ImportActionType.UPDATE;			
 			else 
-				return null;
+				return ImportActionType.CREATE;
 			
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "checkInfDiaInstFin", e.getMessage(), e);

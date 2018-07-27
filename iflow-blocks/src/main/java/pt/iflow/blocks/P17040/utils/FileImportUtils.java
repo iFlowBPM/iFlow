@@ -114,7 +114,7 @@ public class FileImportUtils {
 		return aux;
 	}
 
-	private static String removeUTF8BOM(String s) {
+	public static String removeUTF8BOM(String s) {
         s = StringUtils.removeStart(s, UTF8_BOM);
         s = StringUtils.removeStart(s, "ï»¿");
         return s;

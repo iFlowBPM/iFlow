@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -112,10 +113,13 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 			Document inputDoc = docBean.getDocument(userInfo, procData,
 					new Integer(docsVar.getItem(0).getValue().toString()));
 
+			String readerAux = new String(inputDoc.getContent());
+			readerAux = FileImportUtils.removeUTF8BOM(readerAux);
+			
 			XMLInputFactory factory = XMLInputFactory.newInstance();
-			Reader reader = new InputStreamReader(new ByteArrayInputStream(inputDoc.getContent()));
-			XMLStreamReader streamReader = factory.createXMLStreamReader(reader);
-
+			StringReader sr = new StringReader(readerAux);
+			XMLStreamReader streamReader = factory.createXMLStreamReader(sr);
+									
 			Integer crc_id = null, controlo_id = null, avisRec_id = null, fichAce_id = null, regMsg_id = null;
 			while (streamReader.hasNext()) {
 				streamReader.next();
@@ -169,7 +173,7 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 							sdf.setLenient(false);
 							dtRefAux = sdf.parse(streamReader.getAttributeValue(null, "dtRef"));
-						} catch (ParseException e) {
+						} catch (Exception e) {
 							dtRefAux = null;
 						}
 						regMsg_id = FileImportUtils.insertSimpleLine(connection, userInfo,
