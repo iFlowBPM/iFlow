@@ -28,17 +28,6 @@ public interface IFlowData {
 	public static final String sDETAIL_FORM_EXISTINGBLOCKFORM = "existingform"; //$NON-NLS-1$
 	public static final String sDETAIL_FORM_BID = "detailFormBID"; //$NON-NLS-1$
 
-	// Preview
-
-	public static final String sPREVIEW = "preview_"; //$NON-NLS-1$
-	public static final String sPREVIEW_CLASS = "previewClass"; //$NON-NLS-1$
-	public static final String sPREVIEW_FORM = "previewForm"; //$NON-NLS-1$
-	public static final String sPREVIEW_FORM_NODETAIL = "no"; //$NON-NLS-1$
-	public static final String sPREVIEW_FORM_DEFAULT = "default"; //$NON-NLS-1$
-	public static final String sPREVIEW_FORM_BLOCKFORM = "form"; //$NON-NLS-1$
-	public static final String sPREVIEW_FORM_EXISTINGBLOCKFORM = "existingform"; //$NON-NLS-1$
-	public static final String sPREVIEW_FORM_BID = "previewFormBID"; //$NON-NLS-1$
-
 	public static final int NO_SERIES = 0;
 
 	public static final String sMAIL_START_INFO_PREFIX = "msinfo_"; //$NON-NLS-1$

@@ -72,11 +72,6 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 	public static final String sDETAIL_CLASS = "detailClass"; //$NON-NLS-1$
 	public static final String sDETAIL_CLASS_BLOCK_NAME = "BlockDetailForm"; //$NON-NLS-1$
 
-	// Preview
-	public static final String sPREVIEW = "preview_";
-	public static final String sPREVIEW_CLASS = "previewClass"; //$NON-NLS-1$
-	public static final String sPREVIEW_CLASS_BLOCK_NAME = "BlockPreviewForm"; //$NON-NLS-1$
-
 	// Detail
 	public static final String sDETAIL_FORM = "detailForm"; //$NON-NLS-1$
 	public static final String sDETAIL_FORM_NODETAIL = "no"; //$NON-NLS-1$
@@ -85,14 +80,7 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 	public static final String sDETAIL_FORM_EXISTINGBLOCKFORM = "existingform"; //$NON-NLS-1$
 	public static final String sDETAIL_FORM_BID = "detailFormBID"; //$NON-NLS-1$
 
-	// Preview
-	public static final String sPREVIEW_FORM = "previewForm"; //$NON-NLS-1$
-	public static final String sPREVIEW_FORM_NODETAIL = "no"; //$NON-NLS-1$
-	public static final String sPREVIEW_FORM_DEFAULT = "default"; //$NON-NLS-1$
-	public static final String sPREVIEW_FORM_BLOCKFORM = "form"; //$NON-NLS-1$
-	public static final String sPREVIEW_FORM_EXISTINGBLOCKFORM = "existingform"; //$NON-NLS-1$
-	public static final String sPREVIEW_FORM_BID = "previewFormBID"; //$NON-NLS-1$
-
+	
 	private final String[] columnNamesCatalog;
 
 	private final String[] columnNamesProps;
@@ -118,9 +106,7 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 	private JButton jButtonOK = new JButton();
 	private JButton jButtonCancel = new JButton();
 	private JButton jButtonDetail = new JButton();
-	private JButton jButtonPreview = new JButton();
 	private JTextField jTextBID = new JTextField();
-	private JTextField jTextBIDPreview = new JTextField();
 
 	// Catalogo
 	private JPanel jPanelCatalog = new JPanel();
@@ -142,10 +128,7 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 	private JButton jButtonPropsDel = new JButton();
 	private JPanel jPanelFlowDetail = new JPanel();
 
-	// Preview
-
-	private JPanel jPanelFlowPreview = new JPanel();
-
+	
 	// mail start
 	private JPanel jPanelMS = new JPanel();
 	private JTextField jtfMSFromName = new JTextField(20);
@@ -162,15 +145,11 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 	private int exitStatus = EXIT_STATUS_CANCEL;
 	private Object[][] dataProps, dataWSVars, dataCatalog, dataMSVars;
 	private String[][] dataDetail;
-	private String[][] dataPreview;
 
 	private String detailType = sDETAIL_FORM_DEFAULT;
 	private String detailFormBID = "";
 
-	// Preview
-	private String previewType = sPREVIEW_FORM_DEFAULT;
-	private String previewFormBID = "";
-
+	
 	// Reserved Data Size
 	private int reservedDataSize;
 
@@ -277,7 +256,7 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 			}
 		}
 
-		int attrSize = (condCountProps * 2) + condCountVars + dataDetail.length + dataPreview.length
+		int attrSize = (condCountProps * 2) + condCountVars + dataDetail.length
 				+ MAILSTART_INFO_PROP_COUNT + msvarscount + 3;
 		String[][] newAttributes = new String[attrSize][3];
 
@@ -317,18 +296,8 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 
 		beginIndex += dataDetail.length;
 
-		// Preview
-
-		j = 0;
-		for (String[] elem : dataPreview) {
-			newAttributes[beginIndex + j][0] = AlteraAtributosStart.sPREVIEW + elem[0];
-			newAttributes[beginIndex + j][1] = elem[1];
-			newAttributes[beginIndex + j][2] = elem[2];
-			j++;
-		}
-
-		beginIndex += dataPreview.length;
-
+		
+		
 		for (int i = 0, k = 0; i < dataMSVars.length; i++) {
 			String msprop = (String) dataMSVars[i][0];
 			String msvar = (String) dataMSVars[i][1];
@@ -385,17 +354,6 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 		newAttributes[newAttributes.length - 1][1] = detailType;
 		newAttributes[newAttributes.length - 1][2] = sDETAIL_FORM;
 
-		newAttributes[newAttributes.length - 3][0] = sPREVIEW_FORM_BID;
-		newAttributes[newAttributes.length - 3][1] = previewFormBID;
-		newAttributes[newAttributes.length - 3][2] = sPREVIEW_FORM_BID;
-
-		newAttributes[newAttributes.length - 2][0] = sPREVIEW_CLASS;
-		newAttributes[newAttributes.length - 2][1] = sPREVIEW_CLASS_BLOCK_NAME;
-		newAttributes[newAttributes.length - 2][2] = sPREVIEW_CLASS;
-
-		newAttributes[newAttributes.length - 1][0] = sPREVIEW_FORM;
-		newAttributes[newAttributes.length - 1][1] = previewType;
-		newAttributes[newAttributes.length - 1][2] = sPREVIEW_FORM;
 
 		return newAttributes;
 	}
@@ -416,7 +374,7 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 	 * @param atributos
 	 */
 	public void setDataIn(String title, List<Atributo> atributos) {
-		int condCountProps = 0, condCountVars = 0, detailVars = 0, msVars = 0, previewVars = 0;
+		int condCountProps = 0, condCountVars = 0, detailVars = 0, msVars = 0;
 		Atributo a = null;
 
 		for (int i = 0; atributos != null && i < atributos.size(); i++) {
@@ -436,19 +394,12 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 				detailFormBID = a.getValor();
 			} else if (a.getNome().startsWith(sMAIL_START_VARS_PREFIX + MAILSTART_MAIL_PROP)) {
 				msVars++;
-			} else if (a.getNome().startsWith(AlteraAtributosStart.sPREVIEW)) {
-				previewVars++;
-			} else if (a.getNome().equals(AlteraAtributosStart.sPREVIEW_FORM)) {
-				previewType = a.getValor();
-			} else if (a.getNome().equals(AlteraAtributosStart.sPREVIEW_FORM_BID)) {
-				previewFormBID = a.getValor();
-			}
+			} 
 		}
 
 		dataProps = new String[condCountProps][columnNamesProps.length];
 		dataWSVars = new String[condCountVars][columnNamesVars.length];
 		dataDetail = new String[detailVars][3]; // just like others
-		dataPreview = new String[previewVars][4]; // just like others
 		dataMSVars = new Object[msVars][columnNamesMailStart.length];
 		int detailPos = 0;
 		int previewPos = 0;
@@ -469,11 +420,6 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 				dataDetail[detailPos][1] = value;
 				dataDetail[detailPos][2] = a.getDescricao();
 				detailPos++;
-			} else if (name.startsWith(sPREVIEW)) {
-				dataPreview[previewPos][0] = name.substring(sPREVIEW.length());
-				dataPreview[previewPos][1] = value;
-				dataPreview[previewPos][2] = a.getDescricao();
-				previewPos++;
 			} else if (name.startsWith(sMAIL_START_INFO_PREFIX) && StringUtils.isNotEmpty(value)) {
 				if (StringUtils.equals(name, sMAIL_START_INFO_PREFIX + MAILSTART_FROM_EMAIL_PROP)) {
 					jtfMSFromEmail.setText(value);
@@ -619,7 +565,7 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 		jbInit();
 
 		// this.setSize(480, 640);
-		this.setSize(700, 640);
+		this.setSize(630, 640);
 		setLocationRelativeTo(getParent());
 		setVisible(true);
 	}
@@ -939,110 +885,6 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 			}
 			jTabbedPane.addTab(adapter.getString("AlteraAtributosStart.detail.tab"), jPanelFlowDetail); //$NON-NLS-1$
 
-			// Novo TAB PREVIEW
-
-			{
-				jPanelFlowPreview.setLayout(new GridBagLayout());
-				ButtonGroup group = new ButtonGroup();
-				// NO PREVIEW
-				JRadioButton noPreview = new JRadioButton(adapter.getString("AlteraAtributosStart.preview.radio.no"));
-				noPreview.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						previewType = sPREVIEW_FORM_NODETAIL;
-						jButtonPreview.setEnabled(false);
-						disablePreviewFormBIDField();
-					}
-				});
-				group.add(noPreview);
-
-				// DEFAULT PREVIEW
-				JRadioButton defaultPreview = new JRadioButton(
-						adapter.getString("AlteraAtributosStart.preview.radio.default"));
-				defaultPreview.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						previewType = sPREVIEW_FORM_DEFAULT;
-						jButtonPreview.setEnabled(false);
-						disablePreviewFormBIDField();
-					}
-				});
-				group.add(defaultPreview);
-
-				// FORM PREVIEW-CONFIGURE
-				JRadioButton formPreview = new JRadioButton(
-						adapter.getString("AlteraAtributosStart.preview.radio.form"));
-				formPreview.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						previewType = sPREVIEW_FORM_BLOCKFORM;
-						jButtonPreview.setEnabled(true);
-						disablePreviewFormBIDField();
-					}
-				});
-				group.add(formPreview);
-
-				jButtonPreview.setText(adapter.getString("AlteraAtributosStart.preview.configureForm"));
-				jButtonPreview.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						jButtonPreviewActionPerformed(e);
-						disablePreviewFormBIDField();
-					}
-				});
-				jButtonPreview.setEnabled(false);
-
-				// FORM DETAIL-BLOCKID
-				JRadioButton existFormPreview = new JRadioButton(
-						adapter.getString("AlteraAtributosStart.preview.radio.existingform"));
-				existFormPreview.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						previewType = sPREVIEW_FORM_EXISTINGBLOCKFORM;
-						jButtonPreview.setEnabled(false);
-						jTextBIDPreview.setEnabled(true);
-					}
-				});
-				group.add(existFormPreview);
-
-				disablePreviewFormBIDField();
-
-				// END DETAIL SETUP
-
-				String s = previewType;
-				if (null == s)
-					s = sPREVIEW_FORM_DEFAULT;
-				if (StringUtilities.isEqualIgnoreCase(s, sPREVIEW_FORM_BLOCKFORM)) {
-					formPreview.setSelected(true);
-					jButtonPreview.setEnabled(true);
-				} else if (StringUtilities.isEqualIgnoreCase(s, sPREVIEW_FORM_NODETAIL)) {
-					noPreview.setSelected(true);
-				} else if (StringUtilities.isEqualIgnoreCase(s, sPREVIEW_FORM_EXISTINGBLOCKFORM)) {
-					existFormPreview.setSelected(true);
-					jTextBIDPreview.setText(previewFormBID);
-					jTextBIDPreview.setEnabled(true);
-				} else {
-					defaultPreview.setSelected(true);
-				}
-
-				GridBagConstraints gc = new GridBagConstraints();
-				gc.gridwidth = GridBagConstraints.REMAINDER;
-				gc.fill = GridBagConstraints.HORIZONTAL;
-				gc.insets = new Insets(2, 2, 2, 2);
-				gc.gridx = 0;
-				gc.gridy = 0;
-				jPanelFlowPreview.add(new JLabel(adapter.getString("AlteraAtributosStart.preview.label")), gc);
-				gc.gridwidth = 1;
-				gc.gridy = 1;
-				jPanelFlowPreview.add(noPreview, gc);
-				gc.gridy = 2;
-				jPanelFlowPreview.add(defaultPreview, gc);
-				gc.gridy = 3;
-				jPanelFlowPreview.add(formPreview, gc);
-				gc.gridx = 1;
-				jPanelFlowPreview.add(jButtonPreview, gc);
-				gc.gridy = 4;
-				gc.gridx = 0;
-				jPanelFlowPreview.add(existFormPreview, gc);
-				gc.gridx = 1;
-				jPanelFlowPreview.add(jTextBIDPreview, gc);
-			}
-			jTabbedPane.addTab(adapter.getString("AlteraAtributosStart.preview.tab"), jPanelFlowPreview); //$NON-NLS-1$
 
 		}
 
@@ -1078,12 +920,7 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 		jTextBID.setEnabled(false);
 	}
 
-	// Preview
 
-	private void disablePreviewFormBIDField() {
-		jTextBIDPreview.setText("");
-		jTextBIDPreview.setEnabled(false);
-	}
 
 	private Object[][] getDataCatalog() {
 		List<Object[]> retObj = new ArrayList<Object[]>();
@@ -1178,28 +1015,6 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 			}
 		}
 
-		// Preview
-
-		if (!dataIsValid) {
-			String title = adapter.getString("DynamicBindDelegate.dialog.error.title");
-			StringBuffer message = new StringBuffer();
-			message.append(adapter.getString("DynamicBindDelegate.dialog.error.message"));
-			message.append(lineBreak);
-			message.append(errMsg);
-			JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
-		} else {
-			previewFormBID = jTextBIDPreview.getText();
-			boolean previewOk = !(previewType == sPREVIEW_FORM_EXISTINGBLOCKFORM
-					&& (StringUtils.isEmpty(previewFormBID) || !StringUtils.isNumeric(previewFormBID)));
-			dataIsValid = (dataIsValid && previewOk);
-			if (!dataIsValid) {
-				// FIXME - mensagens!!
-				String title = adapter.getString("AlteraAtributosStart.detail.error.title");
-				StringBuffer message = new StringBuffer();
-				message.append(adapter.getString("AlteraAtributosStart.detail.error.invalidExistingForm"));
-				JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
-			}
-		}
 
 		return dataIsValid;
 	}
@@ -1249,30 +1064,6 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 
 	}
 
-	/* Preview */
-	private void jButtonPreviewActionPerformed(ActionEvent e) {
-		ArrayList<Atributo> attrs = new ArrayList<Atributo>(dataPreview.length);
-		for (Object[] elem : dataPreview) {
-			attrs.add(adapter.newAtributo((String) elem[0], (String) elem[1], (String) elem[2]));
-		}
-
-		AlteraAtributosInterface alteraAttrs = new AlteraAtributoPreview(adapter);
-		alteraAttrs.setDataIn("Detalhe de Processo", attrs);
-		if (alteraAttrs.getExitStatus() == AlteraAtributosInterface.EXIT_STATUS_OK) {
-			String[][] preview = alteraAttrs.getNewAttributes();
-			dataPreview = new String[preview.length][3];
-			for (int i = 0; i < preview.length; i++) {
-				String[] elem = preview[i];
-				String desc = elem[0];
-				if (elem.length > 2)
-					desc = elem[2];
-				dataPreview[i][0] = elem[0];
-				dataPreview[i][1] = elem[1];
-				dataPreview[i][2] = desc;
-			}
-		}
-
-	}
 
 	/* + */
 	private void jButtonCatalogAddActionPerformed(ActionEvent e) {

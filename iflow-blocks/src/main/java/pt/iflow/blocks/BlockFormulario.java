@@ -116,7 +116,6 @@ public class BlockFormulario extends Block implements FormOperations {
 	protected static final int nTYPE_FORM = 0;
 	protected static final int nTYPE_DETALHE = 1;
 
-	protected static final int nTYPE_PREVIEW = 1;
 
 	public final static int nTXT_ATTR_IDX = 0;
 	public final static int nLIST_ATTR_IDX = 1;
@@ -900,7 +899,7 @@ public class BlockFormulario extends Block implements FormOperations {
 							btmp = procData.query(userInfo, stmp);
 						} catch (Exception ei) {
 							ProcessData ns = abBlock.nTYPE == nTYPE_DETALHE
-									|| abBlock.nTYPE == nTYPE_PREVIEW && procData2 != null ? procData2 : null;
+									 && procData2 != null ? procData2 : null;
 							;
 
 							if (ns != null) {
@@ -1090,7 +1089,7 @@ public class BlockFormulario extends Block implements FormOperations {
 						try {
 							useIt = procData.query(userInfo, showCond);
 						} catch (Exception ei) {
-							if (abBlock.nTYPE == nTYPE_DETALHE || abBlock.nTYPE == nTYPE_PREVIEW && procData2 != null) {
+							if (abBlock.nTYPE == nTYPE_DETALHE && procData2 != null) {
 								// try in main process
 								try {
 									useIt = procData2.query(userInfo, showCond);
@@ -1154,7 +1153,7 @@ public class BlockFormulario extends Block implements FormOperations {
 						break;
 					case RETURN_PARENT:
 						ProcessData pdLocal = abBlock.nTYPE == nTYPE_DETALHE
-								|| abBlock.nTYPE == nTYPE_PREVIEW && procData2 != null ? procData2 : procData;
+								 && procData2 != null ? procData2 : procData;
 						String switchRet = pdLocal.getTempData(Const.sSWITCH_PROC_RETURN_PARENT);
 						useIt = StringUtils.equals(switchRet, "true");
 						if (useIt) {

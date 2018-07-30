@@ -34,9 +34,9 @@
 	</modules>
 
 	<properties>
-		<iflow.baseversion>5.2.4</iflow.baseversion>
+		<iflow.baseversion>5.3.2</iflow.baseversion>
 
-		<iflow.buildnumber>20180410</iflow.buildnumber>
+		<iflow.buildnumber>20181204</iflow.buildnumber>
 
 		<iflow.version>${iflow.baseversion}-R${iflow.buildnumber}</iflow.version>
 		<dms-connector.version>0.0.7-R20100908</dms-connector.version>
