@@ -538,7 +538,7 @@ public class FlowBean implements Flow {
     }
     // Update Folder
     getFowardBlockUpdateFolderParams(userInfo, block, procData);   
-    //Index.updateProcessIndexing(procData);
+    Index.updateProcessIndexing(procData);
     return nextURL;
   }
 

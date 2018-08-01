@@ -836,7 +836,7 @@
 				<xsl:apply-templates select="error" />
 				<xsl:apply-templates select="blockdivision" />
 				<xsl:if test="count(.//button) &gt; 0">
-					<div class="blockdivision">
+					<div class="blockdivision" style="margin-top:10rem">
 						<div class="columndivision columnholder">
 							<div class="submit">
 								<xsl:apply-templates select="button" />
