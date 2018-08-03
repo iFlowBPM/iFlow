@@ -6,13 +6,13 @@ import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleFiel
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
@@ -96,7 +96,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 
 	public Integer importLine(Connection connection, UserInfoInterface userInfo, Integer crcIdResult,
 			HashMap<String, Object> lineValues, Properties properties, String type,
-			ArrayList<ValidationError> errorList) throws SQLException {
+			ArrayList<ValidationError> errorList) throws Exception {
 
 		SimpleDateFormat sdf = new SimpleDateFormat(properties.getProperty("p17040_dateFormat"));
 		String separator = properties.getProperty("p17040_separator");
@@ -126,7 +126,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				new Object[] { comRiscoEnt_id, idEnt_id });
 
 		// insert clienteRel
-		insertEntidadeRelacionada(lineValues,  connection,  userInfo, conteudoIdList, riscoEnt_id);							
+		//insertEntidadeRelacionada(lineValues,  connection,  userInfo, conteudoIdList, riscoEnt_id);							
 
 		// insert infRiscoEnt
 		Integer infRiscoEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
@@ -149,22 +149,21 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 		return crcIdResult;
 	}
 	
-	private ArrayList<Integer> insertEntidadeRelacionada(HashMap<String, Object> lineValues, Connection connection, UserInfoInterface userInfo, List<Integer> conteudoIdList, Integer riscoEnt_id) throws SQLException{
-		ArrayList<Integer> idEntIdList = new ArrayList<>();		
-		List<Integer> u_clienteRelIdList = retrieveSimpleField(connection, userInfo,
-				"select id from u_clienteRel where idEnt=''{0}'' ", new Object[] {lineValues.get("idEnt")});
+	private ArrayList<Integer> insertEntidadeRelacionada(HashMap<String, Object> lineValues, Connection connection, UserInfoInterface userInfo, List<Integer> conteudoIdList, Integer riscoEnt_id) throws Exception{
+		ArrayList<Integer> idEntIdList = new ArrayList<>();				
+		String response = FileImportUtils.callInfotrustWS(null, null, (String) lineValues.get("idEnt"));
+		List<String> lines = IOUtils.readLines(new StringReader(response));
 		
-		for(Integer u_clienteRelId: u_clienteRelIdList){
-			HashMap<String,Object> u_clienteRelValues = fillAtributtes(null, connection, userInfo, "select * from u_clienteRel where id={0} ",
-					new Object[] {u_clienteRelId});
-			
-			if(u_clienteRelValues.get("idEnt")==null)
+		for(String line: lines){
+			if(StringUtils.isBlank(line))
 				continue;
 			
-			String typeAux = StringUtils.equalsIgnoreCase("PRT", (String) u_clienteRelValues.get("paisEmissao"))?"nif_nipc":"codigo_fonte";
+			String[] lineValuesAux = StringUtils.splitPreserveAllTokens(line, "|");
+			
+			String typeAux = StringUtils.equalsIgnoreCase("PRT", (String) lineValuesAux[9])?"nif_nipc":"codigo_fonte";
 			Integer idEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 						"insert into idEnt(type, nif_nipc, codigo_fonte) values(?,?,?)",
-						new Object[] { (StringUtils.equals("nif_nipc", typeAux)?"i1":"i2"), u_clienteRelValues.get("idEnt"), StringUtils.equals("nif_nipc", typeAux) ? null : u_clienteRelValues.get("idEnt") });	
+						new Object[] { (StringUtils.equals("nif_nipc", typeAux)?"i1":"i2"), lineValuesAux[1], StringUtils.equals("nif_nipc", typeAux) ? null :lineValuesAux[1] });	
 			
 			idEntIdList.add(idEnt_id);
 			
@@ -180,28 +179,27 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 			// insert infEnt
 			Integer infEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into infEnt(comEnt_id,type,dtRefEnt,idEnt_id,tpEnt,LEI,nome,paisResd) values(?,?,?,?,?,?,?,?)",
-					new Object[] { comEnt_id, "EI", lineValues.get("dtRef"), idEnt_id, u_clienteRelValues.get("tpEnt"), u_clienteRelValues.get("LEI"), u_clienteRelValues.get("nome"), u_clienteRelValues.get("paisResd")});
+					new Object[] { comEnt_id, "EI", new Date(), idEnt_id, lineValuesAux[3], lineValuesAux[4], lineValuesAux[5], lineValuesAux[6]});
 
 			// insert docId
 			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into docId(tpDoc,numDoc,paisEmissao,dtEmissao,dtValidade,infEnt_id) values(?,?,?,?,?,?)",
-					new Object[] { u_clienteRelValues.get("tpDoc"), u_clienteRelValues.get("numDoc"), u_clienteRelValues.get("paisEmissao"),
-							u_clienteRelValues.get("dtEmissao"), u_clienteRelValues.get("dtValidade"), infEnt_id });
+					new Object[] { lineValuesAux[7], lineValuesAux[8], lineValuesAux[9],
+							lineValuesAux[10], lineValuesAux[11], infEnt_id });
 			
 			//dadosEntt2
 			Integer morada_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into morada(rua, localidade, codPost) values(?,?,?)",
-					new Object[] { u_clienteRelValues.get("rua"), u_clienteRelValues.get("localidade"), u_clienteRelValues.get("codPost") });
+					new Object[] { lineValuesAux[15], lineValuesAux[16], lineValuesAux[17] });
 			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into dadosEntt2(type, morada_id, formJurid, PSE, SI, infEnt_id) values(?,?,?,?,?,?)",
-					new Object[] { "t2", morada_id, u_clienteRelValues.get("formJurid"), u_clienteRelValues.get("PSE"),
-							u_clienteRelValues.get("SI"), infEnt_id });
+					new Object[] { "t2", morada_id, lineValuesAux[12], lineValuesAux[13],
+							lineValuesAux[14], infEnt_id });
 
 			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"INSERT INTO `clienteRel` ( `riscoEnt_id`, `idEnt_id`, `motivoRel`) VALUES ( ?, ?, ?);",
-					new Object[] { riscoEnt_id, idEnt_id, u_clienteRelValues.get("motivoRel") });
-		}
-		
+					new Object[] { riscoEnt_id, idEnt_id, lineValuesAux[2] });
+		}		
 				
 		return idEntIdList;
 	}

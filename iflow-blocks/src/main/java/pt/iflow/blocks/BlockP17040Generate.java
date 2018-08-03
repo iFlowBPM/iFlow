@@ -28,6 +28,7 @@ import pt.iflow.api.processdata.ProcessListVariable;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
+import pt.iflow.blocks.P17040.utils.GestaoCrc;
 import pt.iflow.connector.document.Document;
 import pt.iknow.utils.StringUtilities;
 
@@ -138,6 +139,9 @@ public abstract class BlockP17040Generate extends Block {
 			FileInputStream fis = new FileInputStream(tmpFile);
 			((DocumentDataStream) doc).setContentStream(fis);
 			doc = docBean.addDocument(userInfo, procData, doc);
+			
+			GestaoCrc.markAsGenerated(crcId, doc.getDocId(), userInfo.getUtilizador(), connection);
+			
 			ProcessListVariable docsVar = procData.getList(sDocumentVar);
 			docsVar.parseAndAddNewItem(String.valueOf(doc.getDocId()));
 			fis.close();

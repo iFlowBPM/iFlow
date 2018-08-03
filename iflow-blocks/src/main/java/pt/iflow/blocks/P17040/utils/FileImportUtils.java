@@ -1,6 +1,7 @@
 package pt.iflow.blocks.P17040.utils;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,8 +15,14 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import javax.sql.DataSource;
+import javax.xml.rpc.ServiceException;
+import javax.xml.soap.SOAPException;
 
+import org.apache.axis.client.Stub;
+import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.commons.lang.StringUtils;
+import org.tempuri.ServiceFCALocator;
+import org.tempuri.ServiceFCASoap;
 
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.utils.Logger;
@@ -148,4 +155,18 @@ public class FileImportUtils {
 		return resultAux;
 	}
 	
+	public static String callInfotrustWS(String username, String password, String nif) throws SOAPException, ServiceException, RemoteException{
+		ServiceFCALocator locator = new ServiceFCALocator();
+		ServiceFCASoap service = locator.getServiceFCASoap();
+		
+		//add SOAP header for authentication
+		SOAPHeaderElement authentication = new SOAPHeaderElement("http://tempuri.org/","Soap_Header");
+		SOAPHeaderElement userHeader = new SOAPHeaderElement("http://tempuri.org/","username", username);
+		SOAPHeaderElement passwordHeader = new SOAPHeaderElement("http://tempuri.org/","password", password);
+		authentication.addChild(userHeader);
+		authentication.addChild(passwordHeader);
+		((Stub)service).setHeader(authentication);
+						
+		return service.get(nif);
+	}
 }

@@ -217,15 +217,17 @@ public class GestaoCrc {
 				"	avisRec.id = fichAce.avisRec_id and "+
 				"   u_gestao.id = ? and "+
 				"   fichAce.id not in  "+
-				"		( select regMsg.fichAce_id from regMsg "+
-				"			where regMsg.idEnt_id = ? and (operOrig='EI' or operOrig='EU')); ";
+				"		( select regMsg.fichAce_id from regMsg, msg "+
+				"			where regMsg.id=msg.regMsg_id "+
+				"			and  msg.codMsg!='EN004' " +
+				"			and regMsg.idEnt_id = ? and (operOrig='EI' or operOrig='EU'))" ;
 			
 			pst = connection.prepareStatement(query);
 			pst.setInt(1, u_gestao_id);
 			pst.setInt(2, idEnt_id);
 			rs = pst.executeQuery();
 			
-			if(rs.next() && dtRefEntAux.before(dtRefEnt))
+			if(rs.next() && dtRefEntAux.getTime()<=dtRefEnt.getTime())
 				return ImportActionType.UPDATE;			
 			else 
 				return ImportActionType.CREATE;
@@ -275,15 +277,17 @@ public class GestaoCrc {
 				"	avisRec.id = fichAce.avisRec_id and "+
 				"   u_gestao.id = ? and "+
 				"   fichAce.id not in  "+
-				"		( select regMsg.fichAce_id from regMsg "+
-				"			where regMsg.idProt = ?); ";
+				"		( select regMsg.fichAce_id from regMsg, msg "+
+				"			where regMsg.id=msg.regMsg_id "+
+				"			and  msg.codMsg!='PT003' " +				
+				"			and regMsg.idProt = ?); ";
 			
 			pst = connection.prepareStatement(query);
 			pst.setInt(1, u_gestao_id);
 			pst.setString(2, idProt);
 			rs = pst.executeQuery();
 			
-			if(rs.next() && dtRefProtAux.before(dtRefProt))
+			if(rs.next() && dtRefProtAux.getTime()<=dtRefProt.getTime())
 				return ImportActionType.UPDATE;			
 			else 
 				return ImportActionType.CREATE;
@@ -335,8 +339,10 @@ public class GestaoCrc {
 				"	avisRec.id = fichAce.avisRec_id and "+
 				"   u_gestao.id = ? and "+
 				"   fichAce.id not in  "+
-				"		( select regMsg.fichAce_id from regMsg "+
-				"			where regMsg.idCont = ? and regMsg.idInst = ? " +
+				"		( select regMsg.fichAce_id from regMsg, msg "+
+				"			where regMsg.id=msg.regMsg_id "+
+				"			and  msg.codMsg!='CI003' " +
+				"			and regMsg.idCont = ? and regMsg.idInst = ? " +
 				"			and (operOrig='CII' or operOrig='CIU')); ";
 			
 			pst = connection.prepareStatement(query);
@@ -345,7 +351,7 @@ public class GestaoCrc {
 			pst.setString(3, idInst);
 			rs = pst.executeQuery();
 			
-			if(rs.next() && dtRefInstAux.before(dtRefInst))
+			if(rs.next() && dtRefInstAux.getTime()<=dtRefInst.getTime())
 				return ImportActionType.UPDATE;			
 			else 
 				return ImportActionType.CREATE;
@@ -406,15 +412,17 @@ public class GestaoCrc {
 				"	avisRec.id = fichAce.avisRec_id and "+
 				"   u_gestao.id = ? and "+
 				"   fichAce.id not in  "+
-				"		( select regMsg.fichAce_id from regMsg "+
-				"			where regMsg.idEnt_id = ? and (operOrig='ERI' or operOrig='ERU')); ";
+				"		( select regMsg.fichAce_id from regMsg, msg "+
+				"			where regMsg.id=msg.regMsg_id "+
+				"			and  msg.codMsg!='RE002' " +				
+				"			and regMsg.idEnt_id = ? and (operOrig='ERI' or operOrig='ERU')); ";
 			
 			pst = connection.prepareStatement(query);
 			pst.setInt(1, u_gestao_id);
 			pst.setInt(2, idEnt_id);
 			rs = pst.executeQuery();
 			
-			if(rs.next() && dtRefAux.before(dtRef))
+			if(rs.next() && dtRefAux.getTime()<=dtRef.getTime())
 				return ImportActionType.UPDATE;			
 			else 
 				return ImportActionType.CREATE;
@@ -465,9 +473,11 @@ public class GestaoCrc {
 				"	conteudo.id = avisRec.conteudo_id and "+
 				"	avisRec.id = fichAce.avisRec_id and "+
 				"   u_gestao.id = ? and "+
-				"   fichAce.id not in  "+
-				"		( select regMsg.fichAce_id from regMsg "+
-				"			where regMsg.idCont = ? and regMsg.idInst = ? " + 
+				"   fichAce.id not in  "+				
+				"		( select regMsg.fichAce_id from regMsg, msg "+
+				"			where regMsg.id=msg.regMsg_id "+
+				"			and  ((msg.codMsg!='IP002' and operOrig='IFI') or (msg.codMsg!='IP035' and operOrig='ICI') or (msg.codMsg!='IP058' and operOrig='IRI')) " +				
+				"			and regMsg.idCont = ? and regMsg.idInst = ? " + 
 				"           and (operOrig=? or operOrig=?) ); ";
 			
 			pst = connection.prepareStatement(query);
@@ -478,7 +488,7 @@ public class GestaoCrc {
 			pst.setString(5, types[1]);
 			rs = pst.executeQuery();
 			
-			if(rs.next() && dtRefAux.before(dtRef))
+			if(rs.next() && dtRefAux.getTime()<=dtRef.getTime())
 				return ImportActionType.UPDATE;			
 			else 
 				return ImportActionType.CREATE;
@@ -540,7 +550,7 @@ public class GestaoCrc {
 			pst.setString(3, idInst);
 			rs = pst.executeQuery();
 			
-			if(rs.next() && dtRefInfDiaAux.before(dtRefInfDia))
+			if(rs.next() && dtRefInfDiaAux.getTime()<=dtRefInfDia.getTime())
 				return ImportActionType.UPDATE;			
 			else 
 				return ImportActionType.CREATE;
@@ -571,6 +581,25 @@ public class GestaoCrc {
 	
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "markAsIntegrated", e.getMessage(), e);
+			throw e;
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+	}
+
+	public static void markAsGenerated(Integer crcId, int docId, String utilizador, Connection connection) throws Exception {
+		Connection db = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			String query = "update u_gestao set out_docid=? where out_id = ?";
+			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			pst.setInt(1, docId);
+			pst.setInt(2, crcId);
+			pst.executeUpdate();
+	
+		} catch (Exception e) {
+			Logger.error(utilizador, "GestaoCrc", "markAsGenerated", e.getMessage(), e);
 			throw e;
 		} finally {
 			DatabaseInterface.closeResources(db, pst, rs);

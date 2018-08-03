@@ -1,18 +1,19 @@
 package pt.iflow.blocks;
 
+import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
+import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
+
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.io.StringReader;
 import java.sql.Connection;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.sql.DataSource;
 import javax.xml.stream.XMLInputFactory;
@@ -40,7 +41,6 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 	public Port portIn, portSuccess, portEmpty, portError;
 
 	private static final String DATASOURCE = "Datasource";
-	private static final String CRC_ID = "crc_id";
 	private static final String OUTPUT_DOCUMENT = "outputDocument";
 	private static final String BDP_INPUT_DOCUMENT = "bdpInputDocument";
 
@@ -95,8 +95,7 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 		ArrayList<String> result = new ArrayList<>();
 		Connection connection = null;
 		try {
-			datasource = Utils.getUserDataSource(procData.transform(userInfo, getAttribute(DATASOURCE)));
-			crcId = Integer.parseInt(procData.transform(userInfo, getAttribute(CRC_ID)));
+			datasource = Utils.getUserDataSource(procData.transform(userInfo, getAttribute(DATASOURCE)));			
 		} catch (Exception e1) {
 			Logger.error(login, this, "after", procData.getSignature() + "error transforming attributes", e1);
 		}
@@ -121,6 +120,7 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 			XMLStreamReader streamReader = factory.createXMLStreamReader(sr);
 									
 			Integer crc_id = null, controlo_id = null, avisRec_id = null, fichAce_id = null, regMsg_id = null;
+			String idFichRelac = null;
 			while (streamReader.hasNext()) {
 				streamReader.next();
 				if (streamReader.getEventType() == XMLStreamReader.START_ELEMENT) {
@@ -130,6 +130,7 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 								new Object[] { streamReader.getAttributeValue(null, "versao") });
 
 					else if (StringUtils.equals("controlo", streamReader.getLocalName())) {
+						idFichRelac = streamReader.getAttributeValue(null, "idFichRelac");
 						controlo_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 								"INSERT INTO `controlo` (`crc_id`, `entObserv`, `entReport`, `dtCriacao`, `idDest`, `idFichRelac`) "
 										+ "VALUES (?, ?, ?, ?, ?, ?);",
@@ -214,14 +215,29 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 					}
 				}
 			}
-
-			// output file
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
-			Document outputDoc = saveFileAsDocument("F" +inputDoc.getFileName()+ "." +sdf.format(new Date())+ ".txt", result, userInfo,procData);
-			if(outputDoc!=null)
-				procData.getList(sOutputDocumentVar).parseAndAddNewItem(String.valueOf(outputDoc.getDocId()));	
-
-			GestaoCrc.markAsIntegrated(crcId, crc_id, inputDoc.getDocId(), userInfo.getUtilizador(), connection);
+//			//determine original file
+			Connection iFlowCon = DatabaseInterface.getConnection(userInfo);
+			List<Integer> docSentToBDPIdList = retrieveSimpleField(iFlowCon, userInfo,
+					"select docid from documents where filename = ''{0}'' order by docid desc",
+					new Object[] { idFichRelac });
+			iFlowCon.close();
+			
+			if(docSentToBDPIdList.isEmpty())
+				outPort = portEmpty; 
+			else{
+				Document docSentToBDP = docBean.getDocument(userInfo, procData,docSentToBDPIdList.get(0));			
+				HashMap<String, Object> u_gestaoValues = fillAtributtes(null, connection, userInfo,
+						"select * from u_gestao where out_docid = {0} ", new Object[] { docSentToBDP.getDocId() });
+				Document txtImportedOriginally = docBean.getDocument(userInfo, procData, (Integer) u_gestaoValues.get("original_docid"));
+				
+				// output file
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
+				Document outputDoc = saveFileAsDocument("F." +txtImportedOriginally.getFileName()+ "." +sdf.format(new Date())+ ".txt", result, userInfo,procData);
+				if(outputDoc!=null)
+					procData.getList(sOutputDocumentVar).parseAndAddNewItem(String.valueOf(outputDoc.getDocId()));	
+						
+				GestaoCrc.markAsIntegrated((Integer) u_gestaoValues.get("out_id"), crc_id, inputDoc.getDocId(), userInfo.getUtilizador(), connection);
+			}
 		} catch (Exception e) {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
 			outPort = portError;
