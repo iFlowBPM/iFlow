@@ -159,14 +159,47 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				continue;
 			
 			String[] lineValuesAux = StringUtils.splitPreserveAllTokens(line, "|");
+			String idEnt = lineValuesAux[0];
+			String idEntRel = lineValuesAux[1];
+			String motivoRel = lineValuesAux[2];
+			String tpEnt = lineValuesAux[3];
+			String LEI = lineValuesAux[4];
+			String nome = lineValuesAux[5];
+			String paisResd = lineValuesAux[6];
+			String tpDoc = lineValuesAux[7];
+			String numDoc = lineValuesAux[8];
+			String paisEmissao = lineValuesAux[9];
+			String dtEmissao = lineValuesAux[10];
+			String dtValidade = lineValuesAux[11];
+			String formJurid = lineValuesAux[12];
+			String PSE = lineValuesAux[13];
+			String SI = lineValuesAux[14];
+			String rua = lineValuesAux[15];
+			String localidade = lineValuesAux[16];
+			String codPost = lineValuesAux[17];		
+			Date dtRefEnt = new Date();
 			
-			String typeAux = StringUtils.equalsIgnoreCase("PRT", (String) lineValuesAux[9])?"nif_nipc":"codigo_fonte";
-			Integer idEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
-						"insert into idEnt(type, nif_nipc, codigo_fonte) values(?,?,?)",
-						new Object[] { (StringUtils.equals("nif_nipc", typeAux)?"i1":"i2"), lineValuesAux[1], StringUtils.equals("nif_nipc", typeAux) ? null :lineValuesAux[1] });	
+			//check if idEnt already exists and create if not
+			String idEntAux = StringUtils.equalsIgnoreCase("PRT", (String) paisEmissao)?"nif_nipc":"codigo_fonte";
+			Integer idEnt_id=null;			
+			ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfEntType(idEntRel, dtRefEnt, userInfo.getUtilizador(), connection);							
+			List<Integer> idEntList = retrieveSimpleField(connection, userInfo,
+					"select idEnt.id from idEnt where " +idEntAux+ "= ''{0}''",
+					new Object[] {idEntRel});
+			if (!idEntList.isEmpty())
+				idEnt_id = idEntList.get(0);
+			else {			
+				idEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+						"insert into idEnt(type, " + idEntAux + ") values(?,?)",
+						new Object[] {idEntAux, idEntRel });
+			}
+						
+			idEntIdList.add(idEnt_id);			
+			//if ident already exist no need to create
+			if(!actionOnLine.equals(ImportAction.ImportActionType.CREATE))
+				continue;			
 			
-			idEntIdList.add(idEnt_id);
-			
+			//add a new entity
 			Integer comEnt_id =  null;
 			List<Integer> comEntIdList = retrieveSimpleField(connection, userInfo,
 					"select id from comEnt where conteudo_id = {0} ", new Object[] {conteudoIdList.get(0)});
@@ -176,29 +209,27 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 			else
 				comEnt_id = comEntIdList.get(0);
 			
-			// insert infEnt
+			// insert infEnt						
 			Integer infEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into infEnt(comEnt_id,type,dtRefEnt,idEnt_id,tpEnt,LEI,nome,paisResd) values(?,?,?,?,?,?,?,?)",
-					new Object[] { comEnt_id, "EI", new Date(), idEnt_id, lineValuesAux[3], lineValuesAux[4], lineValuesAux[5], lineValuesAux[6]});
+					new Object[] { comEnt_id, "EI", dtRefEnt, idEnt_id, tpEnt,LEI,nome,paisResd});
 
 			// insert docId
 			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into docId(tpDoc,numDoc,paisEmissao,dtEmissao,dtValidade,infEnt_id) values(?,?,?,?,?,?)",
-					new Object[] { lineValuesAux[7], lineValuesAux[8], lineValuesAux[9],
-							lineValuesAux[10], lineValuesAux[11], infEnt_id });
+					new Object[] { tpDoc,numDoc,paisEmissao,dtEmissao,dtValidade, infEnt_id });
 			
 			//dadosEntt2
 			Integer morada_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into morada(rua, localidade, codPost) values(?,?,?)",
-					new Object[] { lineValuesAux[15], lineValuesAux[16], lineValuesAux[17] });
+					new Object[] { rua, localidade, codPost});
 			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"insert into dadosEntt2(type, morada_id, formJurid, PSE, SI, infEnt_id) values(?,?,?,?,?,?)",
-					new Object[] { "t2", morada_id, lineValuesAux[12], lineValuesAux[13],
-							lineValuesAux[14], infEnt_id });
+					new Object[] { "t2", morada_id, formJurid, PSE, SI, infEnt_id });
 
 			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"INSERT INTO `clienteRel` ( `riscoEnt_id`, `idEnt_id`, `motivoRel`) VALUES ( ?, ?, ?);",
-					new Object[] { riscoEnt_id, idEnt_id, lineValuesAux[2] });
+					new Object[] { riscoEnt_id, idEnt_id, motivoRel });
 		}		
 				
 		return idEntIdList;

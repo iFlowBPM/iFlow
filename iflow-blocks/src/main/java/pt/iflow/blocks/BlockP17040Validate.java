@@ -17,6 +17,7 @@ import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
+import pt.iflow.blocks.P17040.utils.FileValidationUtils;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
 import pt.iflow.blocks.P17040.utils.ValidationError;
 import pt.iknow.utils.StringUtilities;
@@ -136,7 +137,7 @@ public abstract class BlockP17040Validate extends Block {
 				procData.getList(outputErrorFieldVar).parseAndAddNewItem(error.getField());
 				procData.getList(outputErrorIdBdpVar).parseAndAddNewItem(error.getIdBdp());
 				procData.getList(outputErrorValueVar).parseAndAddNewItem(error.getValueFormatted());
-				procData.getList(outputErrorDescVar).parseAndAddNewItem(retrieveErrorBDPDescription(error.getCode(), connection, userInfo));
+				procData.getList(outputErrorDescVar).parseAndAddNewItem(FileValidationUtils.retrieveErrorBDPDescription(error.getCode(), connection, userInfo));
 				procData.getList(outputErrorIdVar).addNewItem(error.getId());
 			}
 			
@@ -151,18 +152,6 @@ public abstract class BlockP17040Validate extends Block {
 		}
 
 		return outPort;
-	}
-
-	private String retrieveErrorBDPDescription(String code, Connection connection, UserInfoInterface userInfo) {
-		try {
-			HashMap<String,Object> values = fillAtributtes(null, connection, userInfo,
-					"select * from u_bdp_erros where id = ''{0}'' ", new Object[] { code });
-			
-			return (String) values.get("descricao");
-		} catch (SQLException e) {
-			Logger.error(userInfo.getUtilizador(), this, "retrieveErrorBDPDescription","caught exception: " + e.getMessage(), e);
-		}
-		return null;
 	}
 
 	public abstract ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData,

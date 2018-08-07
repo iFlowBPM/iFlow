@@ -33,6 +33,7 @@ import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
 import pt.iflow.blocks.P17040.utils.FileImportUtils;
+import pt.iflow.blocks.P17040.utils.FileValidationUtils;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
 import pt.iflow.connector.document.Document;
 import pt.iknow.utils.StringUtilities;
@@ -211,7 +212,7 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 										streamReader.getAttributeValue(null, "campoMsg") });
 						result.add("codMsg=" + streamReader.getAttributeValue(null, "codMsg") + ", nvCrit="
 								+ streamReader.getAttributeValue(null, "nvCrit") + ", campoMsg="
-								+ streamReader.getAttributeValue(null, "campoMsg"));
+								+ streamReader.getAttributeValue(null, "campoMsg") + ", " + FileValidationUtils.retrieveErrorBDPDescription(streamReader.getAttributeValue(null, "codMsg"), connection, userInfo));
 					}
 				}
 			}

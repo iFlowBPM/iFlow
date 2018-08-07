@@ -1,5 +1,6 @@
 package pt.iflow.blocks.P17040.utils;
 
+import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
 
 import java.sql.Connection;
@@ -14,9 +15,22 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 
 import pt.iflow.api.processdata.ProcessData;
+import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 
 public class FileValidationUtils {
+	
+	public static String retrieveErrorBDPDescription(String code, Connection connection, UserInfoInterface userInfo) {
+		try {
+			HashMap<String,Object> values = fillAtributtes(null, connection, userInfo,
+					"select * from u_bdp_erros where id = ''{0}'' ", new Object[] { code });
+			
+			return (String) values.get("descricao");
+		} catch (SQLException e) {
+			Logger.error(userInfo.getUtilizador(), null, "retrieveErrorBDPDescription","caught exception: " + e.getMessage(), e);
+		}
+		return null;
+	}
     
 	
 	/**
