@@ -488,7 +488,7 @@
 					{
 					font-weight: bold;
 					min-height:20px;
-					height:auto !important;
+					/*height:auto !important;*/
 					height:45px;
 					padding: 5px 5px 2px 0;
 					/*background-color: #e0e0e0;*/
@@ -766,6 +766,9 @@
 
 					}
 
+					.noshow {
+					visibility: hidden;}
+
 					.viewer-responsive{
 					overflow:hidden;
 					padding-bottom:56.25%;
@@ -786,6 +789,8 @@
 
 
 			</head>
+
+
 
 			<body onload="reloadBootstrapElements(); initProcFrame();">
 				<div style="margin:auto;">
@@ -839,6 +844,9 @@
 					<div class="blockdivision" style="margin-top:10rem">
 						<div class="columndivision columnholder">
 							<div class="submit">
+								<input type="submit" class="noshow" valign="center" align="center"
+									name="_noop" value="NoOp" onclick="alertbutton();return false;"
+									title="NoOp" />
 								<xsl:apply-templates select="button" />
 							</div>
 						</div>
@@ -1022,7 +1030,7 @@
 					</xsl:if>
 
 					<xsl:if test="type = 'textlabel'">
-						<label style="text-align: left;">
+						<label>
 							<xsl:attribute name="class">
 				<xsl:value-of select="type" />
 				<xsl:text> field</xsl:text>

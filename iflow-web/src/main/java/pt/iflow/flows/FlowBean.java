@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletRequest;
@@ -172,13 +173,22 @@ public class FlowBean implements Flow {
     String transactionId = null;
 
     try {
-
+    
       if (useExistingTransaction && userInfo.inTransaction()) {
         conn = DatabaseInterface.getConnection(userInfo);
       } else {
         conn = Utils.getDataSource().getConnection();
         conn.setAutoCommit(false);
-        transactionId = userInfo.registerTransaction(new DBConnectionWrapper(conn));
+        int blockId = this.getFlowState(userInfo, procData);
+        block = this.getBlockById(userInfo, procData.getProcessHeader(), blockId);
+        if (!block.isForwardBlock()) {
+         transactionId = userInfo.registerTransaction(new DBConnectionWrapper(conn));
+        }
+        else
+         {
+        	 userInfo.unregisterTransaction(transactionId);
+         }
+        
       }
 
       int mid = Const.NO_MID;
@@ -537,7 +547,7 @@ public class FlowBean implements Flow {
       }
     }
     // Update Folder
-    getFowardBlockUpdateFolderParams(userInfo, block, procData);   
+    //getFowardBlockUpdateFolderParams(userInfo, block, procData);   
     Index.updateProcessIndexing(procData);
     return nextURL;
   }
@@ -628,6 +638,7 @@ public class FlowBean implements Flow {
     }
     return forwardBlockUpdateLabelParams;
   }
+  
 
   private void getFowardBlockUpdateFolderParams(UserInfoInterface userInfo, Block block, ProcessData procData) {
 

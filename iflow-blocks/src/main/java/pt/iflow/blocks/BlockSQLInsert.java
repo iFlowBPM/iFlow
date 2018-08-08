@@ -76,12 +76,12 @@ public class BlockSQLInsert extends BlockSQL {
 				sQuerySplit = procData.transform(userInfo, sQuerySplit, true);
 			}
 			
-			sQuerySplit = sQuerySplit.replace("&#x27;","'");
+			sQuery = sQuerySplit.replace("&#x27;","'");
 
 			char cValidate;
 
 			int count = 0;
-
+/*
 			for (int i = 0; sQuerySplit.length() > i; i++) {
 				cValidate = sQuerySplit.charAt(i);
 
@@ -117,6 +117,8 @@ public class BlockSQLInsert extends BlockSQL {
 				}
 			}
 
+			*/
+			
 			
 			if (StringUtils.isEmpty(sQuery))
 				sQuery = null;

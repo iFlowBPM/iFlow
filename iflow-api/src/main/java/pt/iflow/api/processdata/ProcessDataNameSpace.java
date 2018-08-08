@@ -274,7 +274,10 @@ public class ProcessDataNameSpace extends BshNameSpace {
         }
       }
       else {
-        if (forDB && clazz == java.lang.String.class) {
+    	  //TODO Validar se o forDB não irá proporcionar entropias no resto do processo
+    	  // Este ponto resolve a questão das plicas
+    	// Foi retirado do if o forDB porque estava deprecated
+        if (clazz == java.lang.String.class) {
           obj = StringEscapeUtils.escapeSql((String)obj);
         }
       }
