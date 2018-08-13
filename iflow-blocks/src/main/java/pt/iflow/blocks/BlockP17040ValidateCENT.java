@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
 
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.UserInfoInterface;
-import pt.iflow.blocks.P17040.utils.FileValidationUtils;
 import pt.iflow.blocks.P17040.utils.ValidationError;
 
 public class BlockP17040ValidateCENT extends BlockP17040Validate {
@@ -29,12 +29,14 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 	public ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData, Connection connection,
 			Integer crcId) throws SQLException {
 		
-		ArrayList<ValidationError> result = new ArrayList<>();		
+		ArrayList<ValidationError> resultFinal = new ArrayList<>();		
 		
 		List<Integer> infEntIdList = retrieveSimpleField(connection, userInfo,
 				"select infEnt.id from infEnt, comEnt, conteudo where infEnt.comEnt_id=comEnt.id and comEnt.conteudo_id = conteudo.id and conteudo.crc_id = {0} ",
 				new Object[] { crcId });
 		for (Integer infEntId : infEntIdList) {
+			ArrayList<ValidationError> result = new ArrayList<>();
+			
 			HashMap<String, Object> infEntValues = fillAtributtes(null, connection, userInfo,
 					"select * from infEnt where id = {0} ", new Object[] { infEntId });
 
@@ -44,15 +46,22 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 				result.add(new ValidationError("EN001", "infEnt", "dtRefEnt", "dtRefEnt", infEntId, dtRefEnt));
 						
 			// idEnt
+			String idEntValue = null;
 			HashMap<String, Object> idEntValues = fillAtributtes(null, connection, userInfo,
 					"select * from idEnt where id = {0} ", new Object[] { infEntValues.get("idEnt_id") });
 			if (StringUtils.equalsIgnoreCase("" + idEntValues.get("type"), "i2")
-					&& StringUtils.equalsIgnoreCase("PRT", (String) infEntValues.get("paisResd")))
-				result.add(new ValidationError("EN052", "infEnt", "idEnt", infEntId, idEntValues.get("codigo_fonte")));
+					&& StringUtils.equalsIgnoreCase("PRT", (String) infEntValues.get("paisResd"))){
+				result.add(new ValidationError("EN052", "infEnt", "idEnt", infEntId, idEntValues.get("codigo_fonte")));				
+			}
 			if (retrieveSimpleField(connection, userInfo,
 					"select * from infEnt where comEnt_id = {0} and idEnt_id = {1}",
-					new Object[] { infEntValues.get("comEnt_id"), infEntValues.get("idEnt_id") }).size() > 1)
-				result.add(new ValidationError("EF010", "infEnt", "idEnt", "idEnt", infEntId, idEntValues.get("nif_nipc")));
+					new Object[] { infEntValues.get("comEnt_id"), infEntValues.get("idEnt_id") }).size() > 1){
+				result.add(new ValidationError("EF010", "infEnt", "idEnt", "idEnt", infEntId, idEntValues.get("nif_nipc")));				
+			}
+			if(StringUtils.isBlank((String) idEntValues.get("nif_nipc")))
+				idEntValue = (String) idEntValues.get("codigo_fonte");
+			else
+				idEntValue = (String) idEntValues.get("nif_nipc");
 			
 			// tpEnt
 			String tpEntCheck = (String) infEntValues.get("tpEnt");
@@ -158,7 +167,7 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 				
 				//morada
 				HashMap<String, Object> moradaValues = fillAtributtes(null, connection, userInfo,
-						"select * from morada where dadosEntt2_id = {0} ", new Object[] { dadosEntt2Values.get("id") });
+						"select * from morada where id = {0} ", new Object[] { dadosEntt2Values.get("morada_id") });
 				//rua
 				String rua = (String) moradaValues.get("rua");
 				if(StringUtils.isBlank(rua) && !StringUtils.equalsIgnoreCase("PRT", paisResdCheck))
@@ -199,8 +208,12 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 				if (dtEmissaoCheck != null && dtEmissaoCheck != null && dtValidadeCheck.before(dtEmissaoCheck))
 					result.add(new ValidationError("EN051", "docId", "dtValidade", (Integer) docIdValues.get("id"), dtValidadeCheck));
 			}
+			for(ValidationError ve: result)
+				ve.setIdBdpValue(idEntValue);
+			resultFinal.addAll(result);
 		}
-		return result;
+		
+		return resultFinal;
 	}
 
 }

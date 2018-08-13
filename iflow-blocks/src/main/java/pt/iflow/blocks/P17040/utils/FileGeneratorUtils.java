@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
@@ -100,6 +101,12 @@ public class FileGeneratorUtils {
 		} catch (Exception e) {
 			Logger.error(userInfo.getUtilizador(), "FileGeneratorUtils", "fillAtributtes",
 					filledQuery + e.getMessage(), e);
+			try {
+				writer.writeAttribute("nome", "nome correcto");
+			} catch (XMLStreamException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		} finally {
 			DatabaseInterface.closeResources(db, pst, rs);
 		}
@@ -145,5 +152,11 @@ public class FileGeneratorUtils {
 		}
 
 		return resultAux;
+	}
+	
+	public static String CleanInvalidXmlChars(String text, String replacement) {
+		return text;
+//	    String re = "[^\\x09\\x0A\\x0D\\x20-\\xD7FF\\xE000-\\xFFFD\\x10000-x10FFFF]";
+//	    return text.replaceAll(re, replacement);
 	}
 }

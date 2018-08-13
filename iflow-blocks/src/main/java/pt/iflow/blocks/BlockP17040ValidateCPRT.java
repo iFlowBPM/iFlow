@@ -29,13 +29,14 @@ public class BlockP17040ValidateCPRT extends BlockP17040Validate {
 	public ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData, Connection connection,
 			Integer crcId) throws SQLException {
 
-		ArrayList<ValidationError> result = new ArrayList<>();
+		ArrayList<ValidationError> resultFinal = new ArrayList<>();
 
 		List<Integer> infProtIdList = retrieveSimpleField(connection, userInfo,
 				"select infProt.id from infProt, comProt, conteudo where infProt.comProt_id=comProt.id and comProt.conteudo_id = conteudo.id and conteudo.crc_id = {0} ",
 				new Object[] { crcId });
 		//infProt
 		for (Integer infProtId : infProtIdList) {
+			ArrayList<ValidationError> result = new ArrayList<>();
 			HashMap<String, Object> infProtValues = fillAtributtes(null, connection, userInfo,
 					"select * from infProt where id = {0} ", new Object[] { infProtId });
 
@@ -173,8 +174,12 @@ public class BlockP17040ValidateCPRT extends BlockP17040Validate {
 				result.add(new ValidationError("PT045", "infProt", "valAcumExecProt", infProtId, valAcumExecProt));
 			if(valAcumExecProt!=null && StringUtils.equalsIgnoreCase(estExecProt, "000"))
 				result.add(new ValidationError("PT053", "infProt", "valAcumExecProt", infProtId, valAcumExecProt));
+		
+			for(ValidationError ve: result)
+				ve.setIdBdpValue(idProt);
+			resultFinal.addAll(result);
 		}
-		return result;
+		return resultFinal;
 	}
 
 }

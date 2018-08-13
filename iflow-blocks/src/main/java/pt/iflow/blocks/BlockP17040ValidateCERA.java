@@ -30,7 +30,7 @@ public class BlockP17040ValidateCERA extends BlockP17040Validate {
 	public ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData, Connection connection,
 			Integer crcId) throws SQLException {
 
-		ArrayList<ValidationError> result = new ArrayList<>();
+		ArrayList<ValidationError> resultFinal = new ArrayList<>();
 
 		// comRiscoEnt
 		List<Integer> comRiscoEntIdList = retrieveSimpleField(connection, userInfo,
@@ -44,6 +44,7 @@ public class BlockP17040ValidateCERA extends BlockP17040Validate {
 					new Object[] { comRiscoEnt_id });
 
 			for (Integer riscoEnt_id : riscoEntIdList) {
+				ArrayList<ValidationError> result = new ArrayList<>();
 				HashMap<String, Object> riscoEntValues = fillAtributtes(null, connection, userInfo,
 						"select * from riscoEnt where id = {0} ", new Object[] { riscoEnt_id });
 				
@@ -53,6 +54,16 @@ public class BlockP17040ValidateCERA extends BlockP17040Validate {
 						"select id from riscoEnt where riscoEnt.comRiscoEnt_id = {0} and idEnt_id = {1}",
 						new Object[] { comRiscoEnt_id, idEnt_id}).size()>1)
 					result.add(new ValidationError("EF013", "riscoEnt", "idEnt_id", riscoEnt_id, idEnt_id));;
+					
+				String idEntValue = null;
+				HashMap<String, Object> idEntValues = fillAtributtes(null, connection, userInfo,
+						"select * from idEnt where id = {0} ", new Object[] {idEnt_id});
+				if (StringUtils.equalsIgnoreCase("" + idEntValues.get("type"), "i2")){
+					idEntValue = (String) idEntValues.get("codigo_fonte");
+				}
+				else {
+					idEntValue = (String) idEntValues.get("nif_nipc");
+				}
 				
 				// clienteRel
 				List<Integer> clienteRelIdList = retrieveSimpleField(connection, userInfo,
@@ -144,10 +155,13 @@ public class BlockP17040ValidateCERA extends BlockP17040Validate {
 							result.add(new ValidationError("RE026", "avalRiscoEnt", "tipoPD", avalRiscoEnt_id));
 					}
 				}
+			for(ValidationError ve: result)
+				ve.setIdBdpValue(idEntValue);
+			resultFinal.addAll(result);
 			}
 		}
 
-		return result;
+		return resultFinal;
 	}
 
 }

@@ -52,19 +52,19 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 							errorList,"");
 				} catch (Exception e) {
 					errorList.add(new ValidationError("Linha com número de campos errado", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// validar Identificação
 				String idProt = lineValues.get("idProt").toString();
 				if (StringUtils.isBlank(idProt)) {
 					errorList.add(new ValidationError("Identificação da protecção em falta", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// validar data de referencia
 				Date dtRefProt = (Date) lineValues.get("dtRefProt");
 				if (dtRefProt==null) {
 					errorList.add(new ValidationError("Data de referência dos dados em falta", "", "", lineNumber));
-					return null;
+					continue;
 				}	
 				// determinar se é insert ou update
 				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfProtType(idProt, dtRefProt, userInfo.getUtilizador(), connection);

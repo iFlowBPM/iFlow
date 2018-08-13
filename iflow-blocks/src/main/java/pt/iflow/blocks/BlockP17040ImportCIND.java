@@ -54,32 +54,32 @@ public class BlockP17040ImportCIND extends BlockP17040Import {
 							errorList,"");
 				} catch (Exception e) {
 					errorList.add(new ValidationError("Linha com número de campos errado", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				
 				// validar data de referencia
 				Date dtRefInfDia = (Date) lineValues.get("dtRefInfDia");
 				if (dtRefInfDia == null) {
 					errorList.add(new ValidationError("Data de referência dos dados em falta", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// validar Identificação Contrato
 				String idCont = (String) lineValues.get("idCont");
 				if (StringUtils.isBlank(idCont)) {
 					errorList.add(new ValidationError("Identificação de Contrato em falta", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// validar Identificação Instrumento
 				String idInst = (String) lineValues.get("idInst");
 				if (StringUtils.isBlank(idInst)) {
 					errorList.add(new ValidationError("Identificação de Instrumento em falta", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// validar Entidade do Instrumento
 				String entInstDia_idEnt = (String) lineValues.get("entInstDia_idEnt");
 				if (StringUtils.isBlank(entInstDia_idEnt)) {
 					errorList.add(new ValidationError("Identificação de Entidade do Instrumento em falta", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// validar Informação diaria de Entidade
 //				String infDiaEnt_idEnt = (String) lineValues.get("infDiaEnt_idEnt");

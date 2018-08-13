@@ -20,6 +20,7 @@ public class ValidationError {
 	private String table;
 	private String field;
 	private String idBdp;
+	private Object idBdpValue;
 	private Integer id;
 	private Object value;
 
@@ -88,6 +89,10 @@ public class ValidationError {
 	public String toString() {
 		return id + ";" + code + ";" + table + ";" + field;
 	}
+	
+	public String toString(Integer idPlus) {
+		return (id + idPlus) + ";" + code + ";" + table + ";" + field;
+	}
 
 	public String getIdBdp() {
 		return idBdp;
@@ -131,6 +136,14 @@ public class ValidationError {
 		}
 		else
 			return "N/A";
+	}
+
+	public Object getIdBdpValue() {
+		return idBdpValue;
+	}
+
+	public void setIdBdpValue(Object idBdpValue) {
+		this.idBdpValue = idBdpValue;
 	}
 
 }

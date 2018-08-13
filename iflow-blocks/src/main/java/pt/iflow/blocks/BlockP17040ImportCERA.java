@@ -57,19 +57,19 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 							errorList, "");
 				} catch (Exception e) {
 					errorList.add(new ValidationError("Linha com número de campos errado", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// validar Identificação
 				String idEnt = lineValues.get("idEnt").toString();
 				if (StringUtils.isBlank(idEnt)) {
 					errorList.add(new ValidationError("Identificação de Entidade em falta", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// validar data de referencia
 				Date dtRef = (Date) lineValues.get("dtRef");
 				if (dtRef == null) {
 					errorList.add(new ValidationError("Data de referência dos dados em falta", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// determinar se é insert ou update
 				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkRiscoEntType(idEnt, dtRef,

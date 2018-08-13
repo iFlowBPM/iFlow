@@ -52,20 +52,20 @@ public class BlockP17040ImportCCIN extends BlockP17040Import {
 							errorList,"");
 				} catch (Exception e) {
 					errorList.add(new ValidationError("Linha com número de campos errado", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// validar Identificação
 				String idCont = lineValues.get("idCont").toString();
 				String idInst = lineValues.get("idInst").toString();
 				if (StringUtils.isBlank(idCont) || StringUtils.isBlank(idInst)) {
 					errorList.add(new ValidationError("Identificação de Contrato/Instrumentos em falta", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// validar data de referencia
 				Date dtRefInst = (Date) lineValues.get("dtRefInst");
 				if (dtRefInst==null) {
 					errorList.add(new ValidationError("Data de referência dos dados em falta", "", "", lineNumber));
-					return null;
+					continue;
 				}	
 				// determinar se é insert ou update
 				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfInstType(idCont, idInst, dtRefInst, userInfo.getUtilizador(), connection);

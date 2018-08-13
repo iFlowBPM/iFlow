@@ -41,7 +41,7 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 		Integer crcIdResult = null;
 		int lineNumber =0;
 		try {
-			List<String> lines = IOUtils.readLines(inputDocStream[0]);
+			List<String> lines = IOUtils.readLines(inputDocStream[0],"UTF-8");
 			for (lineNumber = startLine; lineNumber < lines.size(); lineNumber++) {
 				if(StringUtils.isBlank(lines.get(lineNumber)))
 					continue;
@@ -52,19 +52,19 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 							errorList,"");
 				} catch (Exception e) {
 					errorList.add(new ValidationError("Linha com número de campos errado", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// validar Identificação da entidade
 				String idEnt = lineValues.get("idEnt").toString();
 				if (StringUtils.isBlank(idEnt)) {
 					errorList.add(new ValidationError("Identificação da entidade em falta", "", "", lineNumber));
-					return null;
+					continue;
 				}
 				// validar data de referencia
 				Date dtRefEnt = (Date) lineValues.get("dtRefEnt");
 				if (dtRefEnt==null) {
 					errorList.add(new ValidationError("Data de referência dos dados em falta", "", "", lineNumber));
-					return null;
+					continue;
 				}				
 				// determinar se é insert ou update
 				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfEntType(idEnt, dtRefEnt, userInfo.getUtilizador(), connection);

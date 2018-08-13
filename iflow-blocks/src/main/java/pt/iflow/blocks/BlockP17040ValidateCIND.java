@@ -28,7 +28,7 @@ public class BlockP17040ValidateCIND extends BlockP17040Validate {
 	public ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData, Connection connection,
 			Integer crcId) throws SQLException {
 
-		ArrayList<ValidationError> result = new ArrayList<>();
+		ArrayList<ValidationError> resultFinal = new ArrayList<>();
 
 		//infDiaEnt
 		List<Integer> infDiaEntIdList = retrieveSimpleField(connection, userInfo,
@@ -36,6 +36,7 @@ public class BlockP17040ValidateCIND extends BlockP17040Validate {
 				new Object[] { crcId });
 		
 		for(Integer infDiaEnt_id : infDiaEntIdList){
+			ArrayList<ValidationError> result = new ArrayList<>();
 			HashMap<String, Object> infDiaEntValues = fillAtributtes(null, connection, userInfo,
 					"select * from infDiaEnt where id = {0} ", new Object[] { infDiaEnt_id });
 			
@@ -45,6 +46,16 @@ public class BlockP17040ValidateCIND extends BlockP17040Validate {
 					"select id from infDiaEnt where id = {0} and idEnt_id= {1}",
 					new Object[] {infDiaEnt_id, idEnt_id}).size()>1)
 				result.add(new ValidationError("EF010", "infDiaEnt", "idEnt_id", infDiaEnt_id, idEnt_id));
+			
+			String idEntValue = null;
+			HashMap<String, Object> idEntValues = fillAtributtes(null, connection, userInfo,
+					"select * from idEnt where id = {0} ", new Object[] {idEnt_id});
+			if (StringUtils.equalsIgnoreCase("" + idEntValues.get("type"), "i2")){
+				idEntValue = (String) idEntValues.get("codigo_fonte");
+			}
+			else {
+				idEntValue = (String) idEntValues.get("nif_nipc");
+			}
 			
 			//dtAvalRiscoDia
 			//PDDia
@@ -65,6 +76,9 @@ public class BlockP17040ValidateCIND extends BlockP17040Validate {
 			//modIRBDia
 			//notacaoCredDia
 			
+			for(ValidationError ve: result)
+				ve.setIdBdpValue(idEntValue);
+			resultFinal.addAll(result);
 		}
 		
 		//infDiaInstFin
@@ -73,6 +87,7 @@ public class BlockP17040ValidateCIND extends BlockP17040Validate {
 				new Object[] { crcId });
 		
 		for(Integer infDiaInstFin_id : infDiaInstFinIdList){
+			ArrayList<ValidationError> result = new ArrayList<>();
 			HashMap<String, Object> infDiaEntValues = fillAtributtes(null, connection, userInfo,
 					"select * from infDiaInstFin where id = {0} ", new Object[] { infDiaInstFin_id });
 			
@@ -171,7 +186,11 @@ public class BlockP17040ValidateCIND extends BlockP17040Validate {
 				if(!isValidDomainValue(userInfo, connection, "T_TRS",tpRespDia))
 					result.add(new ValidationError("ID016", "entInstDiaValues", "tpRespDia", entInstDia_id, tpRespDia));
 			}
+			
+			for(ValidationError ve: result)
+				ve.setIdBdpValue(idCont + " " + idInst);
+			resultFinal.addAll(result);
 		}
-		return result;
+		return resultFinal;
 	}
 }

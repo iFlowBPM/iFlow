@@ -31,6 +31,26 @@ import pt.iflow.api.utils.UserInfoInterface;
 public class FileImportUtils {
 	
 	public static final String UTF8_BOM = "\uFEFF";
+	
+	public static Boolean isValidXMLString(String in){
+		if (in == null || ("".equals(in))) 
+        	return true;
+        
+		char current;
+        for (int i = 0; i < in.length(); i++) {
+            current = in.charAt(i);
+            if ((current == 0x9) ||
+                (current == 0xA) ||
+                (current == 0xD) ||
+                ((current >= 0x20) && (current <= 0xD7FF)) ||
+                ((current >= 0xE000) && (current <= 0xFFFD)) ||
+                ((current >= 0x10000) && (current <= 0x10FFFF)))   
+            	continue;
+            else
+            	return false;
+        }
+        return true;
+	}
 
 	public static HashMap<String, Object> parseLine(Integer lineNumber, String line, Properties properties, String separator,
 		ArrayList<ValidationError> errorList, String errorExtraInfo) throws IOException {
@@ -49,6 +69,8 @@ public class FileImportUtils {
 				if (StringUtils.equalsIgnoreCase(type, "VARCHAR")) {
 					if(StringUtils.isBlank(valueAux))
 						result.put(name, null);
+					else if(!isValidXMLString(valueAux))
+						errorList.add(new ValidationError("Valor de texto inválido para XML", errorExtraInfo, name, lineNumber));
 					else
 						result.put(name, valueAux);
 				} else if (StringUtils.equalsIgnoreCase(type, "DATE")) {			

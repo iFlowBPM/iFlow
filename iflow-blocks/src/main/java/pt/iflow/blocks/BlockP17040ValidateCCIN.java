@@ -30,13 +30,14 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 	public ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData, Connection connection,
 			Integer crcId) throws SQLException {
 
-		ArrayList<ValidationError> result = new ArrayList<>();
+		ArrayList<ValidationError> resultFinal = new ArrayList<>();
 
 		// infInstList
 		List<Integer> infInstIdList = retrieveSimpleField(connection, userInfo,
 				"select infInst.id from infInst, comCInst, conteudo where infInst.comCInst_id=comCInst.id and comCInst.conteudo_id = conteudo.id and conteudo.crc_id = {0} ",
 				new Object[] { crcId });
 		for (Integer infInstId : infInstIdList) {
+			ArrayList<ValidationError> result = new ArrayList<>();
 			// lstCaracEsp
 			ArrayList<String> tpCaractEspAux = validatelstCaracEsp( connection,  userInfo, result, infInstId);
 			
@@ -465,9 +466,11 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 				if (StringUtils.isBlank(relEntsind))
 					result.add(new ValidationError("CI017", "entSind", "relEntsind", entSindId));
 			}			
-			
+			for(ValidationError ve: result)
+				ve.setIdBdpValue(idCont + " " + idInst);
+			resultFinal.addAll(result);
 		}
-		return result;
+		return resultFinal;
 	}
 
 	private ArrayList<String> validatelstCaracEsp(Connection connection, UserInfoInterface userInfo,

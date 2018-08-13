@@ -173,6 +173,11 @@ public abstract class BlockP17040Import extends Block {
 		File tmpFile = File.createTempFile(this.getClass().getName(), ".tmp");
 		BufferedWriter tmpOutput = new BufferedWriter(new FileWriter(tmpFile, true));
 		for(Object aux: errorList){
+			if(aux instanceof ValidationError)
+				((ValidationError) aux).setId(((ValidationError) aux).getId()+1);
+			else if (aux instanceof ImportAction)
+				((ImportAction) aux).setId(((ImportAction) aux).getId()+1);
+			
 			tmpOutput.write(aux.toString());
 			tmpOutput.newLine();
 		}
