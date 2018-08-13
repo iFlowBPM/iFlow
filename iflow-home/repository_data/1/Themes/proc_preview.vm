@@ -130,7 +130,7 @@
 			-->
 			<div id="preview" class="Preview">
 			<button id="Aceder" style=" font-size: 24px; padding: 10px;" class="btn btn-default navbar-btn"
-				onclick="javascript:openProcess($procFlowid, '$response.encodeURL($url_prefix,$uri)', 'flowid=$procFlowid&pid=$procPid&subpid=$procSubpid', false, 3);"> #*$act.get("runMax")*#
+				onclick="javascript:setTimeout(openProcess($procFlowid, '$response.encodeURL($url_prefix,$uri)', 'flowid=$procFlowid&pid=$procPid&subpid=$procSubpid', false, 3),10000);"> #*$act.get("runMax")*#
 				Aceder
 			</button>
 		</div>

@@ -94,6 +94,8 @@ public class AppletServlet extends HttpServlet {
   }
 
   public void init() throws ServletException {
+	 // para não bloquear o inicio
+	  initComplete = true;
     resourceDir = new File(Const.fUPLOAD_TEMP_DIR,"appletData");
     resourceDir.mkdirs();
 

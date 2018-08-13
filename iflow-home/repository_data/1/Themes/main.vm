@@ -368,7 +368,7 @@
 		
 		</head>
 
-	<body onresize="javascript:mainResize()"  onload="updateNotifications()">
+	<body onresize="javascript:mainResize()"  /*onload="updateNotifications()"*/>
 	
 	<style type="text/css">
 		h1 {

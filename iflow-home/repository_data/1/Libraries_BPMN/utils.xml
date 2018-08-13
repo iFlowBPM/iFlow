@@ -788,6 +788,7 @@
         <description>Parse a TXT file either in CSV or space delimited</description>
         <i18n>library.dms.block.parse_txt_file</i18n>
     </XmlBlock>
+    
     <XmlBlock>
         <class>BlockAddToArray</class>
         <XmlPort>

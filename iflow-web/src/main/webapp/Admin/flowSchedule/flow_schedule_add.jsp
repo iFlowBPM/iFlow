@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://jakarta.apache.org/taglibs/core" prefix="c"%>
 <%@ taglib uri="http://www.iknow.pt/jsp/jstl/iflow" prefix="if"%>
 <%@ include file="../../inc/defs.jsp"%>
@@ -152,7 +151,7 @@ function validateFieldsToSubmit (){
 			</li>
 
 
-		<!--<if:formCalendar name="eventDate" edit="true" value="<%=sDate%>" labelkey="flow_schedule.add.field.start_date" required="true" /> -->
+		
 		
 		
 		<li class="form-group" style="height: 4rem;">

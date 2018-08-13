@@ -101,16 +101,17 @@ if (flow != null) {
       Set<String> hsFlows2ReDeploy = new HashSet<String>();
       
       // Não funciona
-      IFlowData[] fda = BeanFactory.getFlowHolderBean().listFlowsOnline(userInfo, null, FlowType.SEARCH);
-	  //
-      for (int i=0; saSubFlows != null && i < saSubFlows.length; i++) {
-        String subflow = saSubFlows[i];
-        for (int f=0; f < fda.length; f++) {
-          if (BeanFactory.getFlowHolderBean().getFlow(userInfo, fda[f].getId()).hasSubFlow(subflow)) {
-            hsFlows2ReDeploy.add(fda[f].getFileName());
-          }
-        }
-      }
+      //IFlowData[] fda = BeanFactory.getFlowHolderBean().listFlowsOnline(userInfo, null, FlowType.SEARCH);
+	  
+     // for (int i=0; saSubFlows != null && i < saSubFlows.length; i++) {
+       // String subflow = saSubFlows[i];
+       // for (int f=0; f < fda.length; f++) {
+         // if (BeanFactory.getFlowHolderBean().getFlow(userInfo, fda[f].getId()).hasSubFlow(subflow)) {
+          //  hsFlows2ReDeploy.add(fda[f].getFileName());
+         // }
+        //}
+      //}
+	  
 
       stmp2 = new String("");
       Iterator<String> it = hsFlows2ReDeploy.iterator();
