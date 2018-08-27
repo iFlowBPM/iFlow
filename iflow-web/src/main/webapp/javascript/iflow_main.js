@@ -2442,5 +2442,21 @@ function teste_review(){
 		return the_height;
 	}
 
+function fsmailer(isOn){
+	
+		if (typeof fs_mailconfig == 'undefined') {
+			
+			var trs = document.getElementsByClassName('openMailConfig');
+
+				for (var i=0; i < trs.length; i++) {
+					if (isOn == 'true')
+						trs[i].style.display='';
+					else
+						trs[i].style.display='none';
+				}		
+		}
+		}
+
+
 
 

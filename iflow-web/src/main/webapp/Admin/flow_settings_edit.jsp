@@ -341,10 +341,17 @@
 </script>
 
 
-<!-- Não funciona este script nesta versão -->
+<!-- Não funciona este script nesta versão - Corrigido no iflow_main -->
+<script>
+		document.addEventListener("DOMContentLoaded", function() {
+	  alert("teste");
+	});
+    </script>
+
+
 
 <script type="text/javascript">
-
+	function fs_mailconfig(isOn){
 	if (typeof fs_mailconfig == 'undefined') {
 		
 		var fs_mailconfig = function(isOn) {
@@ -822,7 +829,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 			<td><%=messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_ONOFF))%></td>
 			<td>Simple</td>
 			<td width="50%" class="txt" align="left">
-		  		<div class="col-md-3"><select class="txt form-control" name="<%=MailConfig.CONFIG_ONOFF%>" onChange="fs_mailconfig(this.value);">
+		  		<div class="col-md-3"><select class="txt form-control" name="<%=MailConfig.CONFIG_ONOFF%>" onChange="javascript:fsmailer(this.value);">
 					<option value="<%=MailConfig.CONFIG_OPTION_YES%>" <%=mailConfig.isOn() ? "selected" : ""%>><%=messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_OPTION_YES_DESC))%></option>
 					<option value="<%=MailConfig.CONFIG_OPTION_NO%>" <%=!mailConfig.isOn() ? "selected" : ""%>><%=messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_OPTION_NO_DESC))%></option>
 				</select></div>
@@ -1028,6 +1035,13 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 	onClick="javascript:document.flows.op.value='2';if (W != null) W.close();tabber_right(4, '<%=response.encodeURL("Admin/flow_settings_edit.jsp")%>','' + get_params(document.flows));" />
 
 </div>
+
+
+<script>
+function myFunction() {
+    alert("teste");
+}
+</script>
 
 </form>
 

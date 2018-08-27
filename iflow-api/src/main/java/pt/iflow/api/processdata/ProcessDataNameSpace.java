@@ -278,7 +278,8 @@ public class ProcessDataNameSpace extends BshNameSpace {
     	  // Este ponto resolve a questão das plicas
     	// Foi retirado do if o forDB porque estava deprecated
         if (clazz == java.lang.String.class) {
-          obj = StringEscapeUtils.escapeSql((String)obj);
+        	obj = obj.toString().replace("'", "´");
+          //obj = StringEscapeUtils.escapeSql((String)obj);
         }
       }
 
