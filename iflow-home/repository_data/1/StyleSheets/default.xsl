@@ -2376,6 +2376,7 @@
 				</xsl:choose>
 			</xsl:for-each>
 			</xsl:attribute>
+			<xsl:attribute name="onClick">disableForm(false)</xsl:attribute>
 				</xsl:otherwise>
 			</xsl:choose>
 			<xsl:value-of select="text/text()" />
