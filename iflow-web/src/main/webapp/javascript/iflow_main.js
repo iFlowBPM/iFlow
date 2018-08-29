@@ -1931,7 +1931,7 @@ function reloadBootstrapElements(){
       j++;
       var currTb = "#"+tbId;
       var inputId = "input_"+tbId;
-      var inputTot = '<input type="text" placeholder="Pesquisar" autofocus="" name="search" value="" id="'+inputId+'" onkeypress="runScript(event)" />';
+      var inputTot = '<input type="text" placeholder="Pesquisar"  name="search" value="" id="'+inputId+'" onkeypress="runScript(event)" />';
       var qs = "table"+currTb+" tbody tr";
       var inputCal = "input#"+inputId;
       $jQuery(inputTot).insertBefore(currTb);
