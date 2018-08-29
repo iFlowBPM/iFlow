@@ -90,7 +90,11 @@ public abstract class NumericDataType implements DataTypeInterface {
 
     if (num != null && !java.lang.Double.isNaN(num.doubleValue())) {
 //      if (num instanceof java.lang.Integer || num instanceof java.lang.Long) {
-        s = fmt.format(num);
+    	
+    	//TODO Foi retirado o format para não deixar por o decimal point 4444 -> 4.444
+    	// Outra opção é multiplicar por 1(lenght-1) ou  
+       // s = fmt.format(num);
+    	s = num.toString();
 //      }
 //      else {        
 //        java.lang.Double d = num.doubleValue();

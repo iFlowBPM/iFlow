@@ -13,7 +13,7 @@ import pt.iflow.api.utils.Logger;
 
 public class Version {
 
-  private static final String DEF_VERSION = "5.3.2.20181204";
+  private static final String DEF_VERSION = "5.3.3.20180827";
   private static final String NA = "-";
   private static final String VERSION_FILE = "pt/iflow/version.properties";
   

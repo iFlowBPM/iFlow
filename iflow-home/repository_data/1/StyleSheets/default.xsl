@@ -115,9 +115,12 @@
 				<script type="text/javascript" src="{$url_prefix}/javascript/applet_functions.js"></script>
 				<script type="text/javascript" src="{$url_prefix}/javascript/jquery.stickytableheaders.js"></script>				
 		
-				<script type="text/javascript">
-					window.addEvent('domready', getAppletElem);
-				</script>
+					<script type="text/javascript">
+						window.addEvent('domready', getAppletElem);
+						function alertbutton() {
+							//alert("Por favor utilize os botões disponíveis");
+						}
+					</script>
 			
 
 				<style type="text/css">

@@ -65,61 +65,15 @@ public class BlockSQLInsert extends BlockSQL {
 		String sInto = null;
 		String sNames = null;
 		String sValues = null;
-		String sQuery = "";
-
-		String sQuerySplit = null;
+		String sQuery = null;
 
 		try {
-			sQuerySplit = this.getAttribute(advancedQuery);
+			sQuery = this.getAttribute(advancedQuery);
 			
-			if (StringUtils.isNotEmpty(sQuerySplit)) {
-				sQuerySplit = procData.transform(userInfo, sQuerySplit, true);
+			if (StringUtils.isNotEmpty(sQuery)) {
+				sQuery = procData.transform(userInfo, sQuery, true);
 			}
-			
-			sQuery = sQuerySplit.replace("&#x27;","'");
-
-			char cValidate;
-
-			int count = 0;
-/*
-			for (int i = 0; sQuerySplit.length() > i; i++) {
-				cValidate = sQuerySplit.charAt(i);
-
-				if (Character.isLetterOrDigit(cValidate)) {
-					sQuery = sQuery + cValidate;
-
-				} else if (cValidate == '\'') {
-					count++;
-
-					if (count == 1) {
-						sQuery = sQuery + cValidate;
-					}
-
-					else {
-						cValidate = sQuerySplit.charAt(i + 1);
 						
-						if (Character.isLetterOrDigit(cValidate)) {
-							sQuery = sQuery + "´";
-							
-						} else if (cValidate == ',' || cValidate == ')') {
-
-							cValidate = sQuerySplit.charAt(i);
-							sQuery = sQuery + cValidate;
-							count = 0;
-							
-						} else if (cValidate == '\'' || cValidate == ' ') {
-							sQuery = sQuery + "´";
-							count = 1;
-						}
-					}
-				} else {
-					sQuery = sQuery + cValidate;
-				}
-			}
-
-			*/
-			
-			
 			if (StringUtils.isEmpty(sQuery))
 				sQuery = null;
 		} catch (Exception e) {
