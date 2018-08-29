@@ -219,7 +219,7 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 //			//determine original file
 			Connection iFlowCon = DatabaseInterface.getConnection(userInfo);
 			List<Integer> docSentToBDPIdList = retrieveSimpleField(iFlowCon, userInfo,
-					"select docid from documents where filename = ''{0}'' order by docid desc",
+					"select docid from documents where lower(filename) = lower(''{0}'') order by docid desc",
 					new Object[] { idFichRelac });
 			iFlowCon.close();
 			

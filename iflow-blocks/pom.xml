@@ -17,6 +17,11 @@
 	<dependencies>
 		<!-- APP -->
 		<dependency>
+			<groupId>p17040InfotrustWS</groupId>
+			<artifactId>p17040InfotrustWS</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>pt.iknow.iflow</groupId>
 			<artifactId>iflow-api</artifactId>
 			<version>${iflow.version}</version>

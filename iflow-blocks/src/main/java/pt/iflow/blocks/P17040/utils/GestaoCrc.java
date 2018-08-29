@@ -189,7 +189,7 @@ public class GestaoCrc {
 				"where u_gestao.out_id = crc.id and " +
 				"	crc.id = conteudo.crc_id and " +
 				"    conteudo.id = comEnt.conteudo_id and " +
-				"    comEnt.id = infEnt.id and " +
+				"    comEnt.id = infEnt.comEnt_id and " +
 				"    infEnt.idEnt_id = idEnt.id and " +
 				"    u_gestao.status_id= 4 and " +
 				"	((idEnt.nif_nipc = ? and idEnt.type='i1') or (idEnt.codigo_fonte = ? and idEnt.type='i2')) " +     
@@ -386,7 +386,7 @@ public class GestaoCrc {
 				"    comRiscoEnt.id = riscoEnt.comRiscoEnt_id and "+
 				"    riscoEnt.idEnt_id = idEnt.id and "+
 				"    u_gestao.status_id= 4  and "+
-				"	((idEnt.nif_nipc = ? and idEnt.type='i1') or (idEnt.codigo_fonte = ? and idEnt.type='i2')) " +
+				"	((idEnt.nif_nipc = ? and idEnt.type='i1') or (idEnt.codigo_fonte = ? and idEnt.type='i2')) "+
 				"    order by u_gestao.receivedate desc;";
 			
 			pst = connection.prepareStatement(query);
@@ -441,16 +441,16 @@ public class GestaoCrc {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
-			String query = "select u_gestao.id, comInfInst.dtRef "+
-				"from u_gestao, crc, conteudo, comInfInst, infPerInst "+
-				"where u_gestao.out_id = crc.id and "+
-				"	crc.id = conteudo.crc_id and "+
-				"    conteudo.id = comInfInst.conteudo_id and "+
-				"    comInfInst.id = infPerInst.comInfInst_id and "+
-				"    infPerInst.idCont = ? and "+
-				"    infPerInst.idInst = ? and "+
-				"    u_gestao.status_id= 4  "+
-				"    order by u_gestao.receivedate desc;";
+				String query = "select u_gestao.id, comInfInst.dtRef "+
+					"from u_gestao, crc, conteudo, comInfInst, infPerInst "+
+					"where u_gestao.out_id = crc.id and "+
+					"	crc.id = conteudo.crc_id and "+
+					"    conteudo.id = comInfInst.conteudo_id and "+
+					"    comInfInst.id = infPerInst.comInfInst_id and "+
+					"    infPerInst.idCont = ? and "+
+					"    infPerInst.idInst = ? and "+
+					"    u_gestao.status_id= 4  "+
+					"    order by u_gestao.receivedate desc;";
 			
 			pst = connection.prepareStatement(query);
 			pst.setString(1, idCont);

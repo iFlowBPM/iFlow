@@ -57,9 +57,9 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			// idInst
 			String idInst = (String) infInstValues.get("idInst");
 			if (retrieveSimpleField(connection, userInfo,
-					"select infInst.id from infInst, comCInst, conteudo where infInst.comCInst_id=comCInst.id and comCInst.conteudo_id = conteudo.id and conteudo.crc_id = {0} and infInst.idInst = ''{1}'' ",
-					new Object[] { crcId, idInst }).size() > 1)
-				result.add(new ValidationError("EF012", "infInst", "idInst", infInstId));
+					"select infInst.id from infInst, comCInst, conteudo where infInst.comCInst_id=comCInst.id and comCInst.conteudo_id = conteudo.id and conteudo.crc_id = {0} and infInst.idInst = ''{1}'' and infInst.idCont = ''{2}'' ",
+					new Object[] { crcId, idInst, idCont }).size() > 1)
+				result.add(new ValidationError("EF012", "infInst", "idCont", infInstId));
 
 			// balcao
 			String balcao = (String) infInstValues.get("balcao");
