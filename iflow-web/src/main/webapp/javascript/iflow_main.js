@@ -808,6 +808,7 @@ function toggleall(col, size) {
   }
 }
 
+/*
 function reloadPerfChart(paramflow, paramunit, paramtime, audittype , audituserperf , serverparamflowid, serverparamunit, serverparamtime, showOffline, ts) {
   var selobj = document.getElementById(paramflow); 
   var flowid = selobj.options[selobj.selectedIndex].value;
@@ -826,6 +827,7 @@ function reloadPerfChart(paramflow, paramunit, paramtime, audittype , audituserp
   var imgsrc = auditChartServlet+'?' + audittype + '=' + audituserperf + '&' + serverparamflowid+ '=' + flowid + '&' + serverparamunit + '=' + unitsel + '&' + serverparamtime+ '=' + timesel + '&show_offline='+showOffline+'&ts=' + ts; 
   image.src = imgsrc;
 }
+*/
 
 function toggleSpan(cspan) {
   customize_span = document.getElementById(cspan);
@@ -840,6 +842,7 @@ function toggleSpan(cspan) {
   }
 }
 
+/*
 function reloadSLAChart(paramflow, paramunit, paramtime, audittype , audituserperf , serverparamflowid, serverparamunit, serverparamtime, includeOpen,showOffline, ts) {
   var selobj = document.getElementById(paramflow); 
   var flowid = selobj.options[selobj.selectedIndex].value;
@@ -882,6 +885,8 @@ function reloadStatsChart(paramflowid, audittype, auditstyle, paramtime, paramda
   + '&show_offline='+showOffline + '&ts=' + ts;
   image.src = imgsrc;
 }
+
+*/
 
 function toggleContents(el) {
   document.getElementById('display_time').disabled=true;
@@ -942,6 +947,7 @@ function setIntervalValue(value) {
   }
 }
 
+/*
 function proc_perf_execute(ts) {
   ts=new Date().getTime();
   document.getElementById('chart').src='images/loading.gif';
@@ -959,6 +965,7 @@ function proc_sla_execute(ts) {
   document.getElementById('chart').src='images/loading.gif';
   reloadSLAChart('flowid','display_units','display_time','audit_type','PROC_SLA','flowid','display_units','display_time',document.getElementById('sla_include').checked,document.getElementById('sla_offline').checked,ts);
 }
+*/
 
 function show_help (topic) {
   var spansi = new Array(

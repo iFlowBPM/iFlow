@@ -159,6 +159,7 @@
 				<groupId>commons-lang</groupId>
 				<artifactId>commons-lang</artifactId>
 				<version>2.4</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>commons-discovery</groupId>
@@ -189,11 +190,13 @@
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>1.2.9</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>axis</groupId>
 				<artifactId>axis</artifactId>
 				<version>1.4</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>axis</groupId>
@@ -254,6 +257,7 @@
 				<groupId>commons-collections</groupId>
 				<artifactId>commons-collections</artifactId>
 				<version>3.2.1</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.jdom</groupId>
@@ -264,11 +268,13 @@
 				<groupId>net.sourceforge.collections</groupId>
 				<artifactId>collections-generic</artifactId>
 				<version>4.01</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>net.sf.ehcache</groupId>
 				<artifactId>ehcache</artifactId>
 				<version>1.5.0</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>regexp</groupId>
@@ -299,7 +305,8 @@
 			<dependency>
 				<groupId>com.lowagie</groupId>
 				<artifactId>itext</artifactId>
-				<version>2.1.7</version> <!--  replicated in iflow-applet -->				
+				<version>2.1.7</version> <!--  replicated in iflow-applet -->
+				<scope>provided</scope>				
 			</dependency>
 			<dependency>
 				<groupId>org.beanshell</groupId>
@@ -460,6 +467,48 @@
 				<artifactId>objenesis</artifactId>
 				<version>1.1</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.owasp.esapi</groupId>
+				<artifactId>esapi</artifactId>
+				<version>2.1.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.xmlgraphics</groupId>
+				<artifactId>fop</artifactId>
+				<version>1.1</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>net.java.dev.glazedlists</groupId>
+				<artifactId>glazedlists_java15</artifactId>
+				<version>1.8.0</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.grizzly</groupId>
+				<artifactId>grizzly-http-server</artifactId>
+				<version>2.2.16</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.grizzly</groupId>
+				<artifactId>grizzly-framework</artifactId>
+				<version>2.2.16</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.media</groupId>
+				<artifactId>jai_core</artifactId>
+				<version>1.1.2_01</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.jersey</groupId>
+				<artifactId>jersey-core</artifactId>
+				<version>1.17</version>
+				<scope>provided</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

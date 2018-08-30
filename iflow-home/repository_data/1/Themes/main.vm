@@ -390,87 +390,11 @@
 								<div class="div_bannerright">
 
                                         <ul class="drop_menu">
-                                        #if($sys_admin == "no")
-                                        <li>
-	                                        <form id="search_index" class="form-horizontal" name="search_index" method="post" style="margin-top: 6px;">
-	                                        	<div class="form-group">
-	                                        		<div class="col-sm-12">
-    													<div class="col-sm-10" style="padding-left: 15px;">
-														<input type="search" id="searchToken" class="form-control" name="searchToken" size="20" maxlength="1024" style="height:25px;font-size:1em;padding:0; padding-left:0.7em;" onkeypress="runScript(event)"></div>
-														<div class="col-sm-1" style="padding-left: 0px;">
-														<img src="images/pesquisa.png" id="img_search" onclick="javascript:tabber_right(8, 'user_procs.jsp', get_params(document.search_index));">
-														</div></div>
-													
-	                                        	</div>	                                        	
-	                                        </form>
-                                        </li>
-                                        #end
+                                        
                                          
                                      	#if($sys_admin == "no")
-                                             <li>
-                            
-                                            <!--  Assinatura  -->
                                             
-                                            <div style="width: 35px;height: 32px;">
-                                            <a class="menu_link" style="color: #ffffff !important;text-decoration:none;vertical-align: -webkit-baseline-middle;" target="_blank" href="./AppletWebstart"><img src="images/signature1.png" alt="$link_signature" title="$link_signature" /></a>
-                                            </div>
-                                            </li>
                                             
-                                            <!-- Alertas - onclick="javascript:$('#delegations-form').dialog('open');return false" -->
-                                            
-                                          	<!-- NEW -->
-											<li>
-												<a id="delegButton" onclick="showAlert()">
-				                               		<img width="35px" height="32px" src="images/alertas.png"/>
-												</a>
-												<span class="spanAlerts">
-				                                   	<a id="delegButtonCount">$nAlerts</a>
-				                               	</span>
-												
-												<ul id="alert_list" class="notification-area notvisible">
-													#if($notifications.size()> 0)
-				                                   	<div class="table_inc" id="msg_table" style="color:black;" >
-				                                   	#else
-				                                   	<div class="table_inc" id="msg_table" style="display:none;color:black;" >
-				                                   	#end
-				                                   		<div class="" style="display:inline; width:100%;">
-															<span class="spanAlert" style="color:black; display:inline;	padding: 0; background-color:initial;">$notificationsMsg | </span>
-															
-															<a href="#" onclick="javascript:tabber_right(11, 'inbox.jsp');showAlert(); ">Show All</a>
-															</div>
-															<div id="table_notifications" style="">
-															
-														</div>
-					                           		</div>
-												</ul>
-												<div id="schedule_list" class="schedule_box notification-area notvisible rounded">
-					               					<div class="col-md-12" style="margin-top:5%; height: 4rem; border-bottom: 1px solid black;">
-					               						<div class="col-md-3"><img class="" src="images/arrow_left.png" width="16" height="16" onclick="showSchedule();"/></div>
-					               						<div class="col-md-9"><span class="spanAlert" style="color:black; display:inline;padding: 0; background-color:initial;">Escolher data e hora</span></div>
-					               					</div>
-					               					
-					               					<div class="col-md-12" style="margin-top: 4%;height: 4rem;">
-					               						<div class="col-md-3" style="width:16px;"></div>
-					               							<div class="col-md-9 col-sm-6">
-														  	<div class="form-group">
-															<div class='input-group date' id='calendar'>
-																 <input type='text' class="form-control" id='suspend_date'/>
-																	<span class="input-group-addon">
-																	<span class="glyphicon glyphicon-calendar"></span>
-																	</span>
-																</div>
-															</div>
-														</div>
-													</div>
-													
-													<div class="col-md-12" style="margin-top:2%;">	               						
-													  	<div class="form-group pull-right">
-															<a href="#" style="text-decoration: none; " id="btnSalvar" class="teste"><span class="spanAlert" style="color: #93B6C8 !important;display:inline;padding: 0;background-color:initial;font-size: 1.7rem;">Salvar</span></a> 
-														</div>										
-													</div>                                           				
-											</div>							
-											</li>
-											<!-- NEW -->
 											
                                           #end
                                           
@@ -529,10 +453,11 @@
 							$field_tasks
 						</a>
 					</h3>
+					
 					<div class="Acor_02">
-						<div id='container_task_labels' class="txt_categ"></div>
-						<div style="font-size: 0.9em; color: #666666;">
-							<a id="bt_edit_0" href="" onClick="editLabel('0','1'); return false;" class="lmenu" style="cursor:pointer">$new_label</a>
+						<div id='container_task_labels' class="txt_categ" style="height:0"></div>
+						<div style="font-size: 0.9em; color: #666666;" style="height:0">
+							<!--<a id="bt_edit_0" href="" onClick="editLabel('0','1'); return false;" class="lmenu" style="cursor:pointer">$new_label</a>-->
 							<a id="bt_confirm_0" href="" onClick="javascript:editLabel('0','0'); return false;" title="Confirmar" style="display:none">
 								<img border="0" src="Themes/newflow/images/confirm.png"  class="toolTipImg" href="javascript:editFolder('0','0');"/>
 							</a>
@@ -544,6 +469,7 @@
 							<input id="bt_pickColor_0" class="color form-control" style="display:none; font-size: 0px;cursor:pointer;width:15px;height:25px;border: 1px solid #CCCCCC;" maxlength="0" title="Escolha a cor"></input>
 						</div>
 					</div>
+					
 					#end
 					#if("$Tab3" != "no")
 					<h3 class="Acor_01">
@@ -590,7 +516,7 @@
 					</div>
 					#end
 					
-					#if($org_admin == "yes" || $supervisor == "yes")
+					#if($supervisor == "yes")
 					<h3 class="Acor_01">
 						<a href="" onclick="javascript:tabber_load(10, ''); title="$tooltip_reports">
 						<img src="images/relatorios.png" width="24" height="24" alt="" />$field_reports</a>

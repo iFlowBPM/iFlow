@@ -432,6 +432,24 @@
      						</resources>
      					</configuration>
      				</execution>
+     				<execution>
+						<id>copy-libs-bombadas</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/src/main/webapp/WEB-INF/lib</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/../libs_bombadas</directory>
+									<includes>
+										<include>*</include>
+									</includes>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
      			</executions>
      		</plugin>
 			<plugin>
