@@ -109,19 +109,21 @@
 				<script type="text/javascript"
 					src="{$url_prefix}/javascript/sexy-combo/jquery.sexy-combo.js" />
 				<script type="text/javascript" src="{$url_prefix}/javascript/ckeditor/ckeditor.js" />
-				<script type="text/javascript" src="{$url_prefix}/javascript/ckeditor/adapters/jquery.js" />
+				<script type="text/javascript"
+					src="{$url_prefix}/javascript/ckeditor/adapters/jquery.js" />
 				<!-- Carrega codigo javacript de interaccao com a applet e prepara o 
 					ambiente -->
 				<script type="text/javascript" src="{$url_prefix}/javascript/applet_functions.js"></script>
-				<script type="text/javascript" src="{$url_prefix}/javascript/jquery.stickytableheaders.js"></script>				
-		
-					<script type="text/javascript">
-						window.addEvent('domready', getAppletElem);
-						function alertbutton() {
-							//alert("Por favor utilize os botões disponíveis");
-						}
-					</script>
-			
+				<script type="text/javascript"
+					src="{$url_prefix}/javascript/jquery.stickytableheaders.js"></script>
+
+				<script type="text/javascript">
+					window.addEvent('domready', getAppletElem);
+					function alertbutton() {
+					//alert("Por favor utilize os botões disponíveis");
+					}
+				</script>
+
 
 				<style type="text/css">
 					html {
@@ -358,7 +360,7 @@
 					empty-cells:
 					show;
 					width: 100%;
-					margin-top: 10px;
+					/*margin-top: 10px;*/
 					font-size: 12px;
 					}
 
@@ -788,6 +790,50 @@
 
 				</style>
 
+				<style type="text/css">
+					
+					.scrollableContainer {
+					width: 100%;
+					overflow: auto;
+					margin: 1rem auto;
+					}
+
+					.scrollableContainer {
+					max-height:300px;
+					height:auto;
+					}
+
+					.scrollableContainer {
+					height: expression((this.scrollHeight > 429 || this.scrollHeight == 0) ?
+					'430px' : 'auto');
+					}
+
+					.scrollableTable {
+					width: 99%;
+					}
+
+
+					.scrollableTable>tbody {
+
+					overflow-x:hidden;
+					overflow-y:auto;
+					}
+
+					.scrollableTable thead tr {
+					position:relative;
+					top: expression(offsetParent.scrollTop);
+					}
+
+					.scrollableTable td:last-child {
+					padding-right: 20px;
+					}
+
+					.noshow {
+					visibility: hidden;
+					}
+
+				</style>
+
 				<xsl:text disable-output-escaping="yes"></xsl:text>
 
 
@@ -813,12 +859,12 @@
 				</div>
 				<script type="text/javascript">
 					window.parent.onresize = function(event) {
-					initProcFrame();};					
+					initProcFrame();};
 				</script>
-				<script type="text/javascript">			
-				$jQuery(document).ready(function () {
+				<script type="text/javascript">
+					$jQuery(document).ready(function () {
 					$jQuery("table").stickyTableHeaders();
-				});				
+					});
 				</script>
 			</body>
 		</html>
@@ -1414,14 +1460,15 @@
 							<xsl:attribute name="style">
 								<xsl:choose>
 									<xsl:when test="string-length(height) &gt; 0">
-										<xsl:text>height:</xsl:text><xsl:value-of select="height/text()+165" />;
+										<xsl:text>height:</xsl:text><xsl:value-of
+								select="height/text()+165" />;
 									</xsl:when>
 									<xsl:otherwise>
 										<xsl:text>height:465;</xsl:text>
 									</xsl:otherwise>
 								</xsl:choose>
 							</xsl:attribute>
-							<textarea name="{variable}" >
+							<textarea name="{variable}">
 								<xsl:attribute name="id">
 									<xsl:value-of select="variable/text()" />
 								</xsl:attribute>
@@ -1437,7 +1484,7 @@
 									</xsl:attribute>
 								</xsl:if>
 								<xsl:apply-templates select="value/text()" />
-							</textarea>							
+							</textarea>
 						</div>
 						<xsl:if test="string-length(is_rich_text_area) &gt; 0">
 							<script type="text/javascript">
@@ -1550,11 +1597,12 @@
 				</xsl:if>
 			</xsl:attribute>
 						</label>
+						<div class="tableContainer scrollableContainer">
 						<table class="">
 							<xsl:choose>
 								<xsl:when test="tablesearch='true'">
 									<xsl:attribute name="class">
-					arraytable 
+					arraytable scrollableTable scrollTable
 				</xsl:attribute>
 								</xsl:when>
 
@@ -1563,12 +1611,13 @@
 								<xsl:otherwise>
 
 									<xsl:attribute name="class">
-					arraytable sortable tbl1
+					arraytable sortable tbl1 scrollableTable scrollTable
 				</xsl:attribute>
 								</xsl:otherwise>
 							</xsl:choose>
 							<xsl:variable name="rowCount" select="count(row)" />
 							<xsl:variable name="colCount" select="count(row/col)" />
+							
 							<xsl:for-each select="row">
 								<tr>
 									<xsl:choose>
@@ -1699,7 +1748,7 @@
 								</tr>
 							</xsl:if>
 
-						</table>
+						</table></div>
 						<xsl:if test="string-length(extra) &gt; 0">
 							<script type="text/javascript">
 								<xsl:value-of select="extra/text()" />
@@ -2082,8 +2131,8 @@
 														</xsl:when>
 														<xsl:otherwise>
 															<div id="{variable}_add_container form-group">
-																<div class="button btn btn-default"
-																	style="position:relative;top:2px; ">Arraste ou pressione para carregar ficheiro</div>
+																<div class="button btn btn-default" style="position:relative;top:2px; ">Arraste ou
+																	pressione para carregar ficheiro</div>
 																<input type="file" name="{variable}_add" size="20"
 																	style="width:335px;opacity:0;position:relative;top:-35px;height:35px">
 																	<xsl:if test="accept!=''">
@@ -2094,8 +2143,8 @@
 
 																	</xsl:if>
 																</input>
-															
-																
+
+
 																<script language="JavaScript" type="text/javascript">
 									window.addEvent('domready', function() {
 																		new MultiUpload( $('<xsl:value-of select="/form/name" />').<xsl:value-of select="variable" />_add,
@@ -2379,7 +2428,7 @@
 				</xsl:choose>
 			</xsl:for-each>
 			</xsl:attribute>
-			<xsl:attribute name="onClick">disableForm(false)</xsl:attribute>
+					<xsl:attribute name="onClick">disableForm(false)</xsl:attribute>
 				</xsl:otherwise>
 			</xsl:choose>
 			<xsl:value-of select="text/text()" />

@@ -1922,20 +1922,33 @@ function reloadBootstrapElements(){
     $jQuery('.combobox').sexyCombo();
   } catch (err) {}
 
+  
   // Quickserch
-  try {
+  try {  
+	  var e = 0;
+	  var divtbId="";
+	    $jQuery('.tableContainer').each(function(e){
+	      divtbId= "tableContainer_"+e;
+	      var tbId= "tb_"+e;
+	      $jQuery(this).attr('id', divtbId);
+	      e++;
+	      
+	      var currTb = "#"+tbId;
+	      var currDivTb = "#"+divtbId;
+	      var inputId = "input_"+tbId;
+	      var inputTot = '<input type="text" placeholder="Pesquisar"  name="search" value="" id="'+inputId+'" onkeypress="runScript(event)" />';
+	      var qs = "table"+currTb+" tbody tr";
+	      var inputCal = "input#"+inputId;
+	      $jQuery(inputTot).insertBefore(currDivTb);
+	      $jQuery(inputCal).quicksearch(qs); 
+	    });
+	  
     var j = 0;
     $jQuery('.sortable').each(function(e){
       var tbId= "tb_"+j;
       $jQuery(this).attr('id', tbId);
       j++;
-      var currTb = "#"+tbId;
-      var inputId = "input_"+tbId;
-      var inputTot = '<input type="text" placeholder="Pesquisar"  name="search" value="" id="'+inputId+'" onkeypress="runScript(event)" />';
-      var qs = "table"+currTb+" tbody tr";
-      var inputCal = "input#"+inputId;
-      $jQuery(inputTot).insertBefore(currTb);
-      $jQuery(inputCal).quicksearch(qs);    
+         
     });
   } catch (err) {}
 
