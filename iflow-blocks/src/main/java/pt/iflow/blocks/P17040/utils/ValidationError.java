@@ -65,6 +65,15 @@ public class ValidationError {
 		this.id = id;
 	}
 
+	public ValidationError(String code, String table, String field, String idBdp, Integer id) {
+		super();
+		this.code = code;
+		this.table = table;
+		this.field = field;
+		this.idBdp = idBdp;
+		this.id = id;
+	}
+
 	public ValidationError(String code, String table, String field, Integer id, Object value) {
 		super();
 		this.code = code;
