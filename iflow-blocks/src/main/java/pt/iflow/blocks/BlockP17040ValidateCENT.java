@@ -49,42 +49,44 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 			String idEntValue = null;
 			HashMap<String, Object> idEntValues = fillAtributtes(null, connection, userInfo,
 					"select * from idEnt where id = {0} ", new Object[] { infEntValues.get("idEnt_id") });
-			if (StringUtils.equalsIgnoreCase("" + idEntValues.get("type"), "i2")
-					&& StringUtils.equalsIgnoreCase("PRT", (String) infEntValues.get("paisResd"))){
-				result.add(new ValidationError("EN052", "infEnt", "idEnt", infEntId, idEntValues.get("codigo_fonte")));				
-			}
-			if (retrieveSimpleField(connection, userInfo,
-					"select * from infEnt where comEnt_id = {0} and idEnt_id = {1}",
-					new Object[] { infEntValues.get("comEnt_id"), infEntValues.get("idEnt_id") }).size() > 1){
-				result.add(new ValidationError("EF010", "infEnt", "idEnt", "idEnt", infEntId, idEntValues.get("nif_nipc")));				
-			}
 			if(StringUtils.isBlank((String) idEntValues.get("nif_nipc")))
 				idEntValue = (String) idEntValues.get("codigo_fonte");
 			else
 				idEntValue = (String) idEntValues.get("nif_nipc");
+
+			
+			if (StringUtils.equalsIgnoreCase("" + idEntValues.get("type"), "i2")
+					&& StringUtils.equalsIgnoreCase("PRT", (String) infEntValues.get("paisResd"))){
+				result.add(new ValidationError("EN052", "infEnt", "idEnt", idEntValue, infEntId, idEntValues.get("codigo_fonte")));				
+			}
+			if (retrieveSimpleField(connection, userInfo,
+					"select * from infEnt where comEnt_id = {0} and idEnt_id = {1}",
+					new Object[] { infEntValues.get("comEnt_id"), infEntValues.get("idEnt_id") }).size() > 1){
+				result.add(new ValidationError("EF010", "infEnt", "idEnt", idEntValue, infEntId, idEntValues.get("nif_nipc")));				
+			}
 			
 			// tpEnt
 			String tpEntCheck = (String) infEntValues.get("tpEnt");
 			if (tpEntCheck != null && !isValidDomainValue(userInfo, connection, "T_TEN",tpEntCheck))
-				result.add(new ValidationError("EN013", "infEnt", "tpEnt", infEntId, tpEntCheck));
+				result.add(new ValidationError("EN013", "infEnt", "tpEnt", idEntValue, infEntId,  tpEntCheck));
 			if (tpEntCheck == null)
-				result.add(new ValidationError("EN014", "infEnt", "tpEnt", infEntId, tpEntCheck));
+				result.add(new ValidationError("EN014", "infEnt", "tpEnt", idEntValue, infEntId, tpEntCheck));
 
 			//LEI
 			if(StringUtils.equalsIgnoreCase("002", tpEntCheck) && StringUtils.isNotBlank((String) infEntValues.get("LEI")))
-				result.add(new ValidationError("EN017", "infEnt", "LEI", infEntId, infEntValues.get("LEI")));
+				result.add(new ValidationError("EN017", "infEnt", "LEI", idEntValue, infEntId, infEntValues.get("LEI")));
 
 			// nome
 			String nomeCheck = (String) infEntValues.get("nome");
 			if (StringUtils.isBlank(nomeCheck))
-				result.add(new ValidationError("EN018", "infEnt", "nome", infEntId, nomeCheck));
+				result.add(new ValidationError("EN018", "infEnt", "nome", idEntValue, infEntId, nomeCheck));
 
 			// paisResd
 			String paisResdCheck = (String) infEntValues.get("paisResd");
 			if (StringUtils.isBlank(paisResdCheck))
-				result.add(new ValidationError("EN033", "infEnt", "paisResd", infEntId, paisResdCheck));
+				result.add(new ValidationError("EN033", "infEnt", "paisResd", idEntValue, infEntId, paisResdCheck));
 			if (paisResdCheck != null && !isValidDomainValue(userInfo, connection, "T_TER","" + paisResdCheck))
-				result.add(new ValidationError("EN034", "infEnt", "paisResd", infEntId, paisResdCheck));
+				result.add(new ValidationError("EN034", "infEnt", "paisResd", idEntValue, infEntId, paisResdCheck));
 
 			// altIdEnt
 //			HashMap<String, Object> altIdEntValues = fillAtributtes(null, connection, userInfo,
@@ -112,30 +114,30 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 				String generoCheck = (String) dadosEntt1Values.get("genero");
 				if (generoCheck != null && !isValidDomainValue(userInfo, connection, "T_GEN","" + generoCheck))
 					result.add(
-							new ValidationError("EN036", "dadosEntt1", "genero", (Integer) dadosEntt1Values.get("id"), generoCheck));
+							new ValidationError("EN036", "dadosEntt1", "genero", idEntValue, (Integer) dadosEntt1Values.get("id"), generoCheck));
 				// sitProf
 				String sitProfCheck = (String) dadosEntt1Values.get("sitProf");
 				if (sitProfCheck != null && !isValidDomainValue(userInfo, connection, "T_SPF","" + sitProfCheck))
 					result.add(
-							new ValidationError("EN037", "dadosEntt1", "sitProf", (Integer) dadosEntt1Values.get("id"), sitProfCheck));
+							new ValidationError("EN037", "dadosEntt1", "sitProf", idEntValue, (Integer) dadosEntt1Values.get("id"), sitProfCheck));
 				// agregFam
 				Integer agregFamCheck = (Integer) dadosEntt1Values.get("agregFam");
 				if (agregFamCheck != null && agregFamCheck <= 0)
 					result.add(
-							new ValidationError("EN038", "dadosEntt1", "agregFam", (Integer) dadosEntt1Values.get("id"), agregFamCheck));
+							new ValidationError("EN038", "dadosEntt1", "agregFam", idEntValue, (Integer) dadosEntt1Values.get("id"), agregFamCheck));
 				// habLit
 				String habitLitcheck = (String) dadosEntt1Values.get("habLit");
 				if (habitLitcheck != null && !isValidDomainValue(userInfo, connection, "T_HAL","" + habitLitcheck))
 					result.add(
-							new ValidationError("EN039", "dadosEntt1", "habLit", (Integer) dadosEntt1Values.get("id"), habitLitcheck));
+							new ValidationError("EN039", "dadosEntt1", "habLit", idEntValue, (Integer) dadosEntt1Values.get("id"), habitLitcheck));
 				// nacionalidade
 				String nacionalidadeCheck = (String) dadosEntt1Values.get("nacionalidade");
 				if (StringUtils.isBlank(nacionalidadeCheck))
-					result.add(new ValidationError("EN031", "dadosEntt1", "nacionalidade",
+					result.add(new ValidationError("EN031", "dadosEntt1", "nacionalidade", idEntValue,
 							(Integer) dadosEntt1Values.get("id"),nacionalidadeCheck));
 				if (!StringUtils.isBlank(nacionalidadeCheck)
 						&& !isValidDomainValue(userInfo, connection, "T_TER","" + nacionalidadeCheck))
-					result.add(new ValidationError("EN032", "dadosEntt1", "nacionalidade",
+					result.add(new ValidationError("EN032", "dadosEntt1", "nacionalidade", idEntValue,
 							(Integer) dadosEntt1Values.get("id"), nacionalidadeCheck));
 
 			}
@@ -146,24 +148,24 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 				// formJurid
 				String formJuridcheck = (String) dadosEntt2Values.get("formJurid");
 				if(StringUtils.isBlank(formJuridcheck) && !StringUtils.equalsIgnoreCase("PRT", paisResdCheck))
-					result.add(new ValidationError("EN043", "dadosEntt2", "formJurid",
+					result.add(new ValidationError("EN043", "dadosEntt2", "formJurid", idEntValue,
 							(Integer) dadosEntt2Values.get("id"), formJuridcheck));;
 				if (formJuridcheck != null && !isValidDomainValue(userInfo, connection, "T_JUR","" + formJuridcheck))
-					result.add(new ValidationError("EN044", "dadosEntt2", "formJurid",
+					result.add(new ValidationError("EN044", "dadosEntt2", "formJurid", idEntValue,
 							(Integer) dadosEntt2Values.get("id"), formJuridcheck));
 				// PSE
 				String PSECheck = (String) dadosEntt2Values.get("PSE");
 				if (PSECheck != null && !isValidDomainValue(userInfo, connection, "T_PSE","" + PSECheck))
-					result.add(new ValidationError("EN045", "dadosEntt2", "PSE", (Integer) dadosEntt2Values.get("id"), PSECheck));
+					result.add(new ValidationError("EN045", "dadosEntt2", "PSE", idEntValue, (Integer) dadosEntt2Values.get("id"), PSECheck));
 				if (StringUtils.isNotBlank(PSECheck) && !StringUtils.equalsIgnoreCase(tpEntCheck, "001"))
-					result.add(new ValidationError("EN047", "dadosEntt2", "PSE", (Integer) dadosEntt2Values.get("id"), PSECheck));
+					result.add(new ValidationError("EN047", "dadosEntt2", "PSE", idEntValue, (Integer) dadosEntt2Values.get("id"), PSECheck));
 				
 				// SI
 				String SICheck = (String) dadosEntt2Values.get("SI");
 				if (SICheck != null && !isValidDomainValue(userInfo, connection, "T_STI","" + SICheck))
-					result.add(new ValidationError("EN049", "dadosEntt2", "SI", (Integer) dadosEntt2Values.get("id"), SICheck));
+					result.add(new ValidationError("EN049", "dadosEntt2", "SI", idEntValue, (Integer) dadosEntt2Values.get("id"), SICheck));
 				if(StringUtils.isBlank(SICheck) && !StringUtils.equalsIgnoreCase("PRT", paisResdCheck))
-					result.add(new ValidationError("EN048", "dadosEntt2", "SI", (Integer) dadosEntt2Values.get("id"), SICheck));
+					result.add(new ValidationError("EN048", "dadosEntt2", "SI", idEntValue, (Integer) dadosEntt2Values.get("id"), SICheck));
 				
 				//morada
 				HashMap<String, Object> moradaValues = fillAtributtes(null, connection, userInfo,
@@ -171,11 +173,11 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 				//rua
 				String rua = (String) moradaValues.get("rua");
 				if(StringUtils.isBlank(rua) && !StringUtils.equalsIgnoreCase("PRT", paisResdCheck))
-					result.add(new ValidationError("EN041", "morada", "rua", (Integer) moradaValues.get("id"), rua));
+					result.add(new ValidationError("EN041", "morada", "rua", idEntValue, (Integer) moradaValues.get("id"), rua));
 				//localidade
 				String localidade = (String) moradaValues.get("localidade");
 				if(StringUtils.isBlank(localidade) && !StringUtils.equalsIgnoreCase("PRT", paisResdCheck))
-					result.add(new ValidationError("EN042", "morada", "localidade", (Integer) moradaValues.get("id"), localidade));
+					result.add(new ValidationError("EN042", "morada", "localidade", idEntValue, (Integer) moradaValues.get("id"), localidade));
 			}
 
 			// lstDocId
@@ -187,26 +189,26 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 				// tpDoc
 				String tpDocCheck = (String) docIdValues.get("tpDoc");
 				if (StringUtils.isBlank(tpDocCheck) && !StringUtils.equalsIgnoreCase("PRT", paisResdCheck))
-					result.add(new ValidationError("EN022", "docId", "tpDoc", (Integer) docIdValues.get("id"), tpDocCheck));
+					result.add(new ValidationError("EN022", "docId", "tpDoc", idEntValue, (Integer) docIdValues.get("id"), tpDocCheck));
 				if (tpDocCheck != null && !isValidDomainValue(userInfo, connection, "T_TID","" + tpDocCheck))
-					result.add(new ValidationError("EN023", "docId", "tpDoc", (Integer) docIdValues.get("id"), tpDocCheck));
+					result.add(new ValidationError("EN023", "docId", "tpDoc", idEntValue, (Integer) docIdValues.get("id"), tpDocCheck));
 				// numDoc
 				String numDocCheck = (String) docIdValues.get("numDoc");
 				if (!StringUtils.isBlank(tpDocCheck) && StringUtils.isBlank(numDocCheck))
-					result.add(new ValidationError("EN025", "docId", "numDoc", (Integer) docIdValues.get("id"), numDocCheck));
+					result.add(new ValidationError("EN025", "docId", "numDoc", idEntValue, (Integer) docIdValues.get("id"), numDocCheck));
 				// paisEmissao
 				String paisEmissaoCheck = (String) docIdValues.get("paisEmissao");
 				if (!StringUtils.isBlank(tpDocCheck) && paisEmissaoCheck != null
 						&& !isValidDomainValue(userInfo, connection, "T_TER","" + paisEmissaoCheck))
-					result.add(new ValidationError("EN026", "docId", "paisEmissao", (Integer) docIdValues.get("id"), paisEmissaoCheck));
+					result.add(new ValidationError("EN026", "docId", "paisEmissao", idEntValue, (Integer) docIdValues.get("id"), paisEmissaoCheck));
 				// dtEmissao
 				Date dtEmissaoCheck = (Date) docIdValues.get("dtEmissao");
 				if (dtEmissaoCheck != null && dtEmissaoCheck.after(new Date()))
-					result.add(new ValidationError("EN050", "docId", "dtEmissao", (Integer) docIdValues.get("id"), dtEmissaoCheck));
+					result.add(new ValidationError("EN050", "docId", "dtEmissao", idEntValue, (Integer) docIdValues.get("id"), dtEmissaoCheck));
 				// dtValidade
 				Date dtValidadeCheck = (Date) docIdValues.get("dtValidade");
 				if (dtEmissaoCheck != null && dtEmissaoCheck != null && dtValidadeCheck.before(dtEmissaoCheck))
-					result.add(new ValidationError("EN051", "docId", "dtValidade", (Integer) docIdValues.get("id"), dtValidadeCheck));
+					result.add(new ValidationError("EN051", "docId", "dtValidade", idEntValue, (Integer) docIdValues.get("id"), dtValidadeCheck));
 			}
 			for(ValidationError ve: result)
 				ve.setIdBdpValue(idEntValue);
