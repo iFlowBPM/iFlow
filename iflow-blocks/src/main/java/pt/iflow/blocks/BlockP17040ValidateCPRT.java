@@ -47,14 +47,17 @@ public class BlockP17040ValidateCPRT extends BlockP17040Validate {
 			if(dtRefProt!=null && dtRefProt.after(new Date()))
 				result.add(new ValidationError("PT001", "infProt", "dtRefProt", infProtId, dtRefProt));
 
-			//idProt
+			//idProt 
 			String idProt = (String) infProtValues.get("idProt");
+			Integer comProtId = (Integer) infProtValues.get("comProt_id");
+			
 			if(retrieveSimpleField(connection, userInfo,
-					"select * from infProt where idProt = ''{0}''",	new Object[] { idProt }).size() > 1)
+					"select * from infProt where comProt_id = ''{0}'' and idProt = ''{1}''",	new Object[] { comProtId, idProt }).size() > 1)
 				result.add(new ValidationError("EF011", "infProt", "idProt", infProtId, idProt));
 			
 			//idEnt
-			if(StringUtils.isBlank((String) infProtValues.get("ident_id")) && StringUtils.equalsIgnoreCase((String) infProtValues.get("tpProt"), "0100"))
+			Integer idEnt_id = (Integer)infProtValues.get("idEnt_id");
+			if(idEnt_id == null && StringUtils.equalsIgnoreCase((String) infProtValues.get("tpProt"), "0100"))
 				result.add(new ValidationError("PT006", "infProt", "idEnt", infProtId));
 			
 			//tpProt
@@ -116,7 +119,7 @@ public class BlockP17040ValidateCPRT extends BlockP17040Validate {
 			
 			//valOriProt
 			BigDecimal valOriProt = (BigDecimal) infProtValues.get("valOriProt");
-			if(valOriProt==null && dtValOriProt==null)
+			if(valOriProt==null && dtValOriProt!=null)
 				result.add(new ValidationError("PT029", "infProt", "valOriProt", infProtId));
 			if(valOriProt==null && (StringUtils.startsWith((String) infProtValues.get("tpProt"), "13") ||StringUtils.startsWith((String) infProtValues.get("tpProt"), "14")))
 				result.add(new ValidationError("PT030", "infProt", "valOriProt", infProtId));;
@@ -157,7 +160,7 @@ public class BlockP17040ValidateCPRT extends BlockP17040Validate {
 				result.add(new ValidationError("PT041", "infProt", "estExecProt", infProtId, estExecProt));
 			
 			//dtExecProt
-			if(dtExecProt==null && !StringUtils.equalsIgnoreCase(estExecProt, "000"))
+			if(dtExecProt==null && !StringUtils.equalsIgnoreCase(estExecProt, "000") && !StringUtils.isBlank(estExecProt))
 				result.add(new ValidationError("PT042", "infProt", "dtExecProt", infProtId, dtExecProt));
 			if(dtExecProt!=null && dtRefProt!=null && dtExecProt.after(dtRefProt))
 				result.add(new ValidationError("PT043", "infProt", "dtExecProt", infProtId, dtExecProt));
