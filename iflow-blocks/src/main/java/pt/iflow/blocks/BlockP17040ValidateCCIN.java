@@ -152,8 +152,11 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			Date dtMat = (Date) infInstValues.get("dtMat");
 			if (dtUtilFund != null && dtMat != null && dtUtilFund.after(dtMat))
 				result.add(new ValidationError("INC015", "infInst", "dtUtilFund", infInstId, dtUtilFund));
-			if (dtUtilFund != null && dtIniInst != null && dtIniInst.after(dtUtilFund))
-				result.add(new ValidationError("INC021", "infInst", "dtUtilFund", infInstId, dtUtilFund));
+			
+			
+			// jcosta:20180831 - comentado até validar se a condição da mazars é para manter
+			//if (dtUtilFund != null && dtIniInst != null && dtIniInst.after(dtUtilFund))
+			//	result.add(new ValidationError("INC021", "infInst", "dtUtilFund", infInstId, dtUtilFund));
 
 			// dtIniInst
 			Date dtIniCarJur = (Date) infInstValues.get("dtIniCarJur");
@@ -186,25 +189,25 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 				result.add(new ValidationError("CI094", "infInst", "dtMat", infInstId));
 
 			// dtIniCarJur
-			if (dtIniCarJur == null)
+			if (dtIniCarJur == null && dtFimCarJur != null)
 				result.add(new ValidationError("CI038", "infInst", "dtIniCarJur", infInstId));
 			if (dtIniCarJur != null && dtIniInst != null && dtIniCarJur.before(dtIniInst))
 				result.add(new ValidationError("CI090", "infInst", "dtIniCarJur", infInstId));
 
 			// dtFimCarJur
-			if (dtFimCarJur == null)
+			if (dtFimCarJur == null && dtIniCarJur != null)
 				result.add(new ValidationError("CI039", "infInst", "dtFimCarJur", infInstId));
 			if (dtFimCarJur != null && dtIniCarJur != null && dtFimCarJur.before(dtIniCarJur))
 				result.add(new ValidationError("CI040", "infInst", "dtFimCarJur", infInstId));
 
 			// dtIniCarCap
-			if (dtIniCarCap == null)
+			if (dtIniCarCap == null && dtFimCarCap != null)
 				result.add(new ValidationError("CI041", "infInst", "dtIniCarCap", infInstId));
 			if (dtIniCarCap != null && dtIniInst != null && dtIniCarCap.before(dtIniInst))
 				result.add(new ValidationError("CI090", "infInst", "dtIniCarCap", infInstId, dtIniCarCap));
 
 			// dtFimCarCap
-			if (dtFimCarCap == null)
+			if (dtFimCarCap == null && dtIniCarCap != null)
 				result.add(new ValidationError("CI042", "infInst", "dtFimCarCap", infInstId));
 			if (dtFimCarCap != null && dtIniInst != null && dtFimCarCap.before(dtIniInst))
 				result.add(new ValidationError("CI043", "infInst", "dtFimCarCap", infInstId, dtFimCarCap));
@@ -441,31 +444,35 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 					result.add(new ValidationError("CI026", "ligInst", "montTransac", ligInstId));
 			}
 
-			// lstEntSind
-			List<Integer> lstEntSindIdList = retrieveSimpleField(connection, userInfo,
-					"select id from entSind where infInst_id = {0} ", new Object[] { infInstId });
-			if (lstEntSindIdList.isEmpty())
-				result.add(new ValidationError("CI018", "infInst", "lstEntSind", infInstId));
+			
+			// se sindicado
+			if (idContSind != null) {
+				// lstEntSind
+				List<Integer> lstEntSindIdList = retrieveSimpleField(connection, userInfo,
+						"select id from entSind where infInst_id = {0} ", new Object[] { infInstId });
+				if (lstEntSindIdList.isEmpty())
+					result.add(new ValidationError("CI018", "infInst", "lstEntSind", infInstId));
 
-			// entSind
-			for (Integer entSindId : lstEntSindIdList) {
-				HashMap<String, Object> entSindValues = fillAtributtes(null, connection, userInfo,
-						"select * from entSind where id = {0} ", new Object[] { entSindId });
+				// entSind
+				for (Integer entSindId : lstEntSindIdList) {
+					HashMap<String, Object> entSindValues = fillAtributtes(null, connection, userInfo,
+							"select * from entSind where id = {0} ", new Object[] { entSindId });
 
-				// idEnt
-				Integer idEnt_id = (Integer) entSindValues.get("idEnt_id");
-				if (retrieveSimpleField(connection, userInfo,
-						"select id from entSind where infInst_id = {0} and idEnt_id={1} ",
-						new Object[] { infInstId, idEnt_id }).size() > 1)
-					result.add(new ValidationError("CI113", "entSind", "idEnt", entSindId));
-				
-				// relEntsind
-				String relEntsind = (String) entSindValues.get("relEntsind");
-				if (!isValidDomainValue(userInfo, connection, "T_RPS", relEntsind))
-					result.add(new ValidationError("CI016", "entSind", "relEntsind", entSindId, relEntsind));
-				if (StringUtils.isBlank(relEntsind))
-					result.add(new ValidationError("CI017", "entSind", "relEntsind", entSindId));
-			}			
+					// idEnt
+					Integer idEnt_id = (Integer) entSindValues.get("idEnt_id");
+					if (retrieveSimpleField(connection, userInfo,
+							"select id from entSind where infInst_id = {0} and idEnt_id={1} ",
+							new Object[] { infInstId, idEnt_id }).size() > 1)
+						result.add(new ValidationError("CI113", "entSind", "idEnt", entSindId));
+
+					// relEntsind
+					String relEntsind = (String) entSindValues.get("relEntsind");
+					if (!isValidDomainValue(userInfo, connection, "T_RPS", relEntsind))
+						result.add(new ValidationError("CI016", "entSind", "relEntsind", entSindId, relEntsind));
+					if (StringUtils.isBlank(relEntsind))
+						result.add(new ValidationError("CI017", "entSind", "relEntsind", entSindId));
+				}
+			}
 			for(ValidationError ve: result)
 				ve.setIdBdpValue(idCont + " " + idInst);
 			resultFinal.addAll(result);

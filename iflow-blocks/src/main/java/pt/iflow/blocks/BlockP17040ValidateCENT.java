@@ -104,10 +104,10 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 				Date dtNascCheck = (Date) dadosEntt1Values.get("dtNasc");
 				if (dtNascCheck == null)
 					result.add(
-							new ValidationError("EN030", "dadosEntt1", "dtNasc", (Integer) dadosEntt1Values.get("id"), dtNascCheck));
+							new ValidationError("EN035", "dadosEntt1", "dtNasc", (Integer) dadosEntt1Values.get("id"), dtNascCheck));
 				if (dtNascCheck != null && dtNascCheck.after(new Date()))
 					result.add(
-							new ValidationError("EN035", "dadosEntt1", "dtNasc", (Integer) dadosEntt1Values.get("id"), dtNascCheck));
+							new ValidationError("EN030", "dadosEntt1", "dtNasc", (Integer) dadosEntt1Values.get("id"), dtNascCheck));
 				// genero
 				String generoCheck = (String) dadosEntt1Values.get("genero");
 				if (generoCheck != null && !isValidDomainValue(userInfo, connection, "T_GEN","" + generoCheck))
