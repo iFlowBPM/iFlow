@@ -87,6 +87,7 @@
 				<groupId>com.infosistema</groupId>
 				<artifactId>crypto-api</artifactId>
 				<version>${crypto-api.version}</version> <!--  replicated in iflow-applet -->
+				<scope>provided</scope>
 			</dependency>
 
 			<!-- APP.external -->
