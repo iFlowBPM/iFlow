@@ -1,6 +1,5 @@
 package pt.iflow.blocks;
 
-import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
 
 import java.io.File;
@@ -27,10 +26,18 @@ import pt.iflow.blocks.P17040.utils.ImportAction;
 import pt.iflow.blocks.P17040.utils.ValidationError;
 
 public class BlockP17040ImportCERA extends BlockP17040Import {
+	
+	private static final String DATA_ENRICHMENT_ON = "data_enrichment_on";
+	private boolean dataEnrichmentOn = false;
 
 	public BlockP17040ImportCERA(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
 		// TODO Auto-generated constructor stub
+		
+		// verify if data enrichment is activated
+		String sDataEnrichment = this.getAttribute(DATA_ENRICHMENT_ON);
+		if (sDataEnrichment != null && sDataEnrichment.equals("1"))
+			dataEnrichmentOn = true;
 	}
 
 	static String propertiesFile = "cera_import.properties";
@@ -126,7 +133,8 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				new Object[] { comRiscoEnt_id, idEnt_id });
 
 		// insert clienteRel
-		//insertEntidadeRelacionada(lineValues,  connection,  userInfo, conteudoIdList, riscoEnt_id);							
+		if (dataEnrichmentOn)
+			insertEntidadeRelacionada(lineValues,  connection,  userInfo, conteudoIdList, riscoEnt_id);							
 
 		// insert infRiscoEnt
 		Integer infRiscoEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,

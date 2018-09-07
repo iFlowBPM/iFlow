@@ -362,6 +362,11 @@
 			<description>Id of created Crc</description>
 			<value />
 		</XmlAttribute>
+		<XmlAttribute>
+			<name>data_enrichment_on</name>
+			<description>Activate Data Enrichment (0/1)</description>
+			<value />
+		</XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>ImportCERA</description>
 		<i18n>library.dms.block.p17040.import.cera</i18n>
