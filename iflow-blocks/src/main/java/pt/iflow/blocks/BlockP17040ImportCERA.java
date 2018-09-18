@@ -18,6 +18,7 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.FileImportUtils;
@@ -162,7 +163,10 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 		String response = FileImportUtils.callInfotrustWS(null, null, (String) lineValues.get("idEnt"));
 		List<String> lines = IOUtils.readLines(new StringReader(response));
 		
+		Logger.debug(userInfo.getUserId(),this,"insertEntidadeRelacionada","entidade relacionada para id " + (String) lineValues.get("idEnt"));
+		
 		for(String line: lines){
+			Logger.debug(userInfo.getUserId(),this,"insertEntidadeRelacionada","linha obtida " + line);
 			if(StringUtils.isBlank(line))
 				continue;
 			
@@ -194,6 +198,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 			List<Integer> idEntList = retrieveSimpleField(connection, userInfo,
 					"select idEnt.id from idEnt where " +idEntAux+ "= ''{0}''",
 					new Object[] {idEntRel});
+			Logger.debug(userInfo.getUserId(),this,"insertEntidadeRelacionada","linha");
 			if (!idEntList.isEmpty())
 				idEnt_id = idEntList.get(0);
 			else {			
@@ -202,6 +207,8 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 						new Object[] {idEntAux, idEntRel });
 			}
 						
+			Logger.debug(userInfo.getUserId(),this,"insertEntidadeRelacionada","idEnt: " + idEnt_id);
+
 			idEntIdList.add(idEnt_id);			
 			//if ident already exist no need to create
 			if(!actionOnLine.equals(ImportAction.ImportActionType.CREATE))
