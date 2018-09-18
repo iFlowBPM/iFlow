@@ -523,7 +523,7 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 				result.add(new ValidationError("IP045", "infContbInst", "tpImp", idCont, infPerInst_id, tpImp));
 			
 			// ::IP046: Tipo de imparidade deve ter o valor “não sujeito a imparidade” quando o mon-tante acumulado de imparidades for igual a zero.
-			if (!StringUtils.equals(tpImp, "000") && montAcumImp.compareTo(BigDecimal.ZERO) == 0)
+			if (!StringUtils.equals(tpImp, "000") && montAcumImp != null && montAcumImp.compareTo(BigDecimal.ZERO) == 0)
 				result.add(new ValidationError("IP046", "infContbInst", "tpImp", idCont, infPerInst_id, tpImp));
 			
 			// metValImp
@@ -532,11 +532,11 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 				result.add(new ValidationError("IP042", "infContbInst", "metValImp", idCont, infPerInst_id, metValImp));
 			
 			// ::IP047: Método de valorização de imparida-des deve estar preenchido com o valor dife-rente de “não sujeito a imparidade” quando for comunicado montante acumulado de im-paridades superior a zero.
-			if (StringUtils.equals(metValImp, "000") && montAcumImp.compareTo(BigDecimal.ZERO) == 1)
+			if (StringUtils.equals(metValImp, "000") && montAcumImp != null && montAcumImp.compareTo(BigDecimal.ZERO) == 1)
 				result.add(new ValidationError("IP047", "infContbInst", "tpImp", idCont, infPerInst_id, tpImp));
 			
 			// ::IP048: Método de valorização de impari-dade deve ter o valor “não sujeito a impari-dade” quando o montante acumulado de im-paridades for igual a zero.
-			if (!StringUtils.equals(metValImp, "000") && montAcumImp.compareTo(BigDecimal.ZERO) == 0)
+			if (!StringUtils.equals(metValImp, "000") && montAcumImp != null && montAcumImp.compareTo(BigDecimal.ZERO) == 0)
 				result.add(new ValidationError("IP048", "infContbInst", "tpImp", idCont, infPerInst_id, tpImp));
 
 			// ::IP049: Código do método de valorização de imparidades inválido.
