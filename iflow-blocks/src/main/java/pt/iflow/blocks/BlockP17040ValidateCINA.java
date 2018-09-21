@@ -220,7 +220,7 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 				result.add(new ValidationError("IP034", "infFinInst", "montAbAtv", idCont, infPerInst_id, montAbAtv));
 			
 			//dtInstVenc 
-			Date dtInstVenc = (Date) infFinInstValues.get("dtEstIncInst");
+			Date dtInstVenc = (Date) infFinInstValues.get("dtInstVenc");
 			
 			//::IP009: Data em que o instrumento ficou vencido não deve estar preenchida quando montantes vencido e abatido ao ativo iguais a zero.
 			if (dtInstVenc != null && montVenc != null && montVenc != null && montVenc.compareTo(BigDecimal.ZERO) == 0 && montAbAtv != null && montAbAtv.compareTo(BigDecimal.ZERO) == 0)
@@ -579,7 +579,7 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 			
 			// TODO ::IP056: Campo obrigatório para instrumento elegível para reporte ao AnaCredit.
 			// ::IP057: Montante não pode ser negativo
-			if (provPRExtp != null && provPRExtp.compareTo(BigDecimal.ZERO) != 1)
+			if (provPRExtp != null && provPRExtp.compareTo(BigDecimal.ZERO) == -1)
 				result.add(new ValidationError("IP057", "infContbInst", "provPRExtp", idCont, infPerInst_id, provPRExtp));
 		
 			// montAcumImp IMPL
