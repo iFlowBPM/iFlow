@@ -298,13 +298,15 @@ var MultiUpload = new Class(
     			current_element.row = row_element;
     			
     			// Create new file input element
+    			
+    			// 'style':'width:300px;opacity:0;position:relative;top:-35px;height:35px'
     			var new_input = new Element
     			(
     				'input',
     				{
     					'type':'file',
     					'disabled':( this.elements.length == this.max )?true:false,
-						'style':'width:300px;opacity:0;position:relative;top:-35px;height:35px'
+						'style':'width:300px;opacity:0;position:relative;top:-35px'
     				}
     			);
     			// Apply multi-upload functionality to new element
