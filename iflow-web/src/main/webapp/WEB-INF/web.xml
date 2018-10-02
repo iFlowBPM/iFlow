@@ -48,6 +48,14 @@ Disabled. Use servlet container defaults
    <filter>
       <filter-name>MySQLInjectionFilter</filter-name>
       <filter-class>pt.iflow.servlets.MySQLInjectionFilter</filter-class>
+      <init-param>
+      	<param-name> pt.iflow.filter_sql_exception0</param-name>
+      	<param-value>/iFlow/login.jsp</param-value>
+      </init-param>     
+      <init-param>
+      	<param-name> pt.iflow.filter_sql_exception1</param-name>
+      	<param-value>/iFlow/AuthenticationServlet</param-value>
+      </init-param>      
    </filter>
    <filter>
       <filter-name>XSSFilter</filter-name>
