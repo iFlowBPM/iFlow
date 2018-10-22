@@ -54,7 +54,7 @@ import pt.iflow.connector.document.DMSDocument;
 import pt.iflow.connector.document.Document;
 import pt.iflow.documents.AppendDocuments;
 import pt.iknow.utils.StringUtilities;
-import pt.iflow.crypto.aesgcm.AESGCMEncrypterDecrypter;
+import pt.iflow.crypto.aesgcm.FileEncrypterDecrypter;
 
 /**
  * 
@@ -337,7 +337,7 @@ public class DocumentsBean implements Documents {
 	  //Logger.info(userInfo.getUtilizador(), this, "addDocument", procData.getSignature() + "NOT ENCRYPTED BAIS "+ new String(adoc.getContent()) );
  	 
 	  if(TO_ENCRYPT) {
-		  adoc.setContent(new AESGCMEncrypterDecrypter().encryptByteArray(adoc.getContent()));
+		  adoc.setContent(new FileEncrypterDecrypter().encryptByteArray(adoc.getContent(), db));
 	  }
 	 // Logger.info(userInfo.getUtilizador(), this, "addDocument", procData.getSignature() + " ENCRYPTED BAIS "+ new String(adoc.getContent()) );
 	  
@@ -465,7 +465,7 @@ public class DocumentsBean implements Documents {
     	  Logger.info(userInfo.getUtilizador(), this, "addDocument", procData.getSignature() + "NOT ENCRYPTED BAIS "+ new String(adoc.getContent()) );
      	 
     	  if(TO_ENCRYPT) {
-    		  adoc.setContent(new AESGCMEncrypterDecrypter().encryptByteArray(adoc.getContent()));
+    		  adoc.setContent(new FileEncrypterDecrypter().encryptByteArray(adoc.getContent(), db));
     	  }
     	  Logger.info(userInfo.getUtilizador(), this, "addDocument", procData.getSignature() + " ENCRYPTED BAIS "+ new String(adoc.getContent()) );
     	  
@@ -776,7 +776,7 @@ public class DocumentsBean implements Documents {
     	//  Logger.info(userInfo.getUtilizador(), this, "getDocument", procData.getSignature() + "NOT DECRYPTED BAIS "+ new String(adoc.getContent()) );
      	 
     	  //if(toEncrypt) {
-    		  retObj.setContent(new AESGCMEncrypterDecrypter().decryptByteArray(baos.toByteArray()));
+    		  retObj.setContent(new FileEncrypterDecrypter().decryptByteArray(baos.toByteArray(), db));
     	  //}
     	 // Logger.info(userInfo.getUtilizador(), this, "getDocument", procData.getSignature() + " DECRYPTED BAIS "+ new String(adoc.getContent()) );
     	  

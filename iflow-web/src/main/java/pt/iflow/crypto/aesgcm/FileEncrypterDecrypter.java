@@ -68,11 +68,11 @@ public class FileEncrypterDecrypter {
 	private  KeyStore keyStore;
 	private String aad ;
 	private String algorithm ;
-	private String tindex;
+	private int tindex;
 
 	FileEncrypterDecrypter( String cipher)
 			throws NoSuchPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
-		tindex  =null;
+		tindex  =-1;
 		checkProvider();
 		this.cipher = Cipher.getInstance(cipher,Const.sENCRYPT_DECRYPT_PROVIDER);		
 
@@ -123,22 +123,27 @@ public class FileEncrypterDecrypter {
 	}
 
 
-	private void storeKey(boolean insert ,String iv, SecretKey sKey, Connection db) throws KeyStoreException {
-		int i  = getDBcryptoFileKs(iv,db);
-		if(i<0 && insert) {
+	private void storeKey(String iv, SecretKey sKey, Connection db) throws KeyStoreException {
+		//int i  = getDBcryptoFileKs(iv,db);
+		int i=-1;
+		if(tindex<0) {
+//			insere na Keystore, BDKsSk, FileSk
 			i = insertIntoDBcryptoKsSk(sKey, db);
 			keyStore.setKeyEntry(i+"", sKey, "".toCharArray(),null);
 			insertIntoDBcryptoFileKs(iv,i,db);
 			//insertIntoDBcryptoKsSk(sKey, db);
 			//		not in keystore or db
-		}else {
-			i = updateDBcryptoKsSk(iv, db);
-			//on keystore and db
-		}
-		//
+		}if(tindex>-1) {
+			i = updateDBcryptoKsSk(tindex+"", db);
+			insertIntoDBcryptoFileKs(iv,tindex,db);
+				//update BDKsSk
+				//add FileSk
+			}
+
 
 	}
-	private int updateDBcryptoKsSk(String alias,Connection db) {
+	
+	private int updateDBcryptoKsSk(String idcrypto,Connection db) {
 		PreparedStatement pst = null;
 
 		try {
@@ -146,7 +151,7 @@ public class FileEncrypterDecrypter {
 			query.append("update iflow.crypto_ks_sk set usage_sk = usage_sk+1 ");
 			query.append("where idcrypto_ks_sk  =?");
 			pst = db.prepareStatement(query.toString());
-			pst.setInt(1,Integer.parseInt(alias));
+			pst.setInt(1,Integer.parseInt(idcrypto));
 			pst.executeUpdate();
 
 		}catch (SQLException e) {
@@ -154,7 +159,7 @@ public class FileEncrypterDecrypter {
 		}finally {
 			DatabaseInterface.closeResources(pst);
 		}
-		return getDBcryptoKsSk(db);
+		return Integer.parseInt(idcrypto);
 	}
 	private int insertIntoDBcryptoKsSk(SecretKey sKey,Connection db) {
 		PreparedStatement pst = null;
@@ -184,7 +189,7 @@ public class FileEncrypterDecrypter {
 			query.append("Values(?,?) ");
 			pst = db.prepareStatement(query.toString());
 			pst.setString(1, iv);
-			pst.setInt(2,1 );
+			pst.setInt(2,i );
 			pst.executeUpdate();
 
 		}catch (SQLException e) {
@@ -205,14 +210,14 @@ public class FileEncrypterDecrypter {
 	public SecretKey setSecretKey(Connection db) throws KeyStoreException, Exception {
 		int itemp = getDBcryptoKsSk(db);
 		if(itemp>-1 && hasKey(""+itemp)) { 
-			tindex = ""+itemp;
+			tindex = itemp;
 			return loadKeyFromKS(itemp+"");
 		}
-		tindex = null;
+		tindex = -1;
 		return generateKey();
 	}
 	private int getDBcryptoKsSk(Connection db) {
-
+// doenst function when usage reaches Const.iENCRYPT_DECRYPT_SECRETKEY_FILE_USAGE
 		ResultSet rs = null;
 		PreparedStatement pst = null;
 		int id =-1;
@@ -258,7 +263,7 @@ public class FileEncrypterDecrypter {
 		}else {
 			skey = setSecretKey(db);// TO CHANGE
 			fileIv = getIV(fileIv);
-			storeKey( Base64.encode(fileIv),skey,db);// TO CHANGE
+			storeKey(Base64.encode(fileIv),skey,db);// TO CHANGE
 		}
 		//IvParameterSpec ivparamspec = new IvParameterSpec(fileIv);
 		//GCMParameterSpec s = new GCMParameterSpec(tagLenght, fileIv);
