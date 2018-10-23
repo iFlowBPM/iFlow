@@ -17,6 +17,7 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.FileImportUtils;
@@ -33,7 +34,7 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 
 	@Override
 	public Integer importFile(Connection connection, ArrayList<ValidationError> errorList,
-			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream... inputDocStream) throws IOException, SQLException {
+			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, ProcessData procData, InputStream... inputDocStream) throws IOException, SQLException {
 
 		Properties properties = Setup.readPropertiesFile("p17040" + File.separator + "cent_import.properties");
 		String separator = properties.getProperty("p17040_separator", "|");

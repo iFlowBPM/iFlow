@@ -17,6 +17,7 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.FileImportUtils;
@@ -59,7 +60,7 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 
 	@Override
 	public Integer importFile(Connection connection, ArrayList<ValidationError> errorList,
-			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream... inputDocStream)
+			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, ProcessData procData, InputStream... inputDocStream)
 			throws IOException, SQLException {
 
 		Integer crcIdResult = importSubFile(connection, errorList, actionList, userInfo, inputDocStream[0],
@@ -81,7 +82,10 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 		Integer startLine = Integer.parseInt(properties.getProperty("p17040_startLine", "0"));
 		int lineNumber = 0;
 		try {
-			List<String> lines = IOUtils.readLines(inputStream);
+			List<String> lines = new ArrayList<String>();
+			if(inputStream!=null)
+				lines = IOUtils.readLines(inputStream);
+			
 			for (lineNumber = startLine; lineNumber < lines.size(); lineNumber++) {
 				if (StringUtils.isBlank(lines.get(lineNumber)))
 					continue;
@@ -178,20 +182,26 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 	private void importInfFinInst(Connection connection, UserInfoInterface userInfo, String type,
 			HashMap<String, Object> lineValues, Integer infPerInst_id) throws SQLException {
 		// infFinInst
-		Integer infFinInst_id = FileImportUtils.insertSimpleLine(connection, userInfo,
-				"INSERT INTO `infFinInst` ( `infPerInst_id`, `type`, `montVivo`, `TAA`, `estIncInst`, "
-						+ "`dtEstIncInst`, `montVenc`, `jurVencBal`, `jurVencExtp`, `comDespBal`, `comDespExtp`, "
-						+ "`dtInstVenc`, `dtAtualizTxJur`, `montTransf`, `credConv`, `credAlarg`, `jurCorr`, "
-						+ "`valPrest`, `TAN`, `montPotRev`, `montPotIrrev`, `montAbAtv`, `tpReembAntc`, `montReembAntc`, `instFinal`) "
-						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
-				new Object[] { infPerInst_id, type, lineValues.get("montVivo"), lineValues.get("TAA"),
-						lineValues.get("estIncInst"), lineValues.get("dtEstIncInst"), lineValues.get("montVenc"),
-						lineValues.get("jurVencBal"), lineValues.get("jurVencExtp"), lineValues.get("comDespBal"),
-						lineValues.get("comDespExtp"), lineValues.get("dtInstVenc"), lineValues.get("dtAtualizTxJur"),
-						lineValues.get("montTransf"), lineValues.get("credConv"), lineValues.get("credAlarg"),
-						lineValues.get("jurCorr"), lineValues.get("valPrest"), lineValues.get("TAN"),
-						lineValues.get("montPotRev"), lineValues.get("montPotIrrev"), lineValues.get("montAbAtv"),
-						lineValues.get("tpReembAntc"), lineValues.get("montReembAntc"), lineValues.get("instFinal") });
+		Integer infFinInst_id = null;
+		List<Integer> infFinInstList = retrieveSimpleField(connection, userInfo,
+				"select id from infFinInst where infPerInst_id = {0} ", new Object[] { infPerInst_id });
+		if (infFinInstList.isEmpty())
+			infFinInst_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+					"INSERT INTO `infFinInst` ( `infPerInst_id`, `type`, `montVivo`, `TAA`, `estIncInst`, "
+							+ "`dtEstIncInst`, `montVenc`, `jurVencBal`, `jurVencExtp`, `comDespBal`, `comDespExtp`, "
+							+ "`dtInstVenc`, `dtAtualizTxJur`, `montTransf`, `credConv`, `credAlarg`, `jurCorr`, "
+							+ "`valPrest`, `TAN`, `montPotRev`, `montPotIrrev`, `montAbAtv`, `tpReembAntc`, `montReembAntc`, `instFinal`) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+					new Object[] { infPerInst_id, type, lineValues.get("montVivo"), lineValues.get("TAA"),
+							lineValues.get("estIncInst"), lineValues.get("dtEstIncInst"), lineValues.get("montVenc"),
+							lineValues.get("jurVencBal"), lineValues.get("jurVencExtp"), lineValues.get("comDespBal"),
+							lineValues.get("comDespExtp"), lineValues.get("dtInstVenc"), lineValues.get("dtAtualizTxJur"),
+							lineValues.get("montTransf"), lineValues.get("credConv"), lineValues.get("credAlarg"),
+							lineValues.get("jurCorr"), lineValues.get("valPrest"), lineValues.get("TAN"),
+							lineValues.get("montPotRev"), lineValues.get("montPotIrrev"), lineValues.get("montAbAtv"),
+							lineValues.get("tpReembAntc"), lineValues.get("montReembAntc"), lineValues.get("instFinal") });
+		else
+			infFinInst_id = infFinInstList.get(0);		
 
 		// respEntInst
 		Integer idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("idEnt"), userInfo, connection);
@@ -210,6 +220,11 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 						lineValues.get("valPrestEnt") });
 
 		// protInst
+//		if (lineValues.get("idProt") == null && (lineValues.get("valAlocProt")!= null ||
+//				lineValues.get("credPrior")!= null || lineValues.get("estExecProtInst")!= null ||
+//				lineValues.get("valExecProtInst")!= null ))
+//			throw new SQLException("protInst.idProt é valor obrigatório");
+//		
 		if (lineValues.get("idProt") != null)
 			FileImportUtils.insertSimpleLine(connection, userInfo,
 					"INSERT INTO `protInst` (`infFinInst_id`, `idProt`, `valAlocProt`, `credPrior`, `estExecProtInst`, `valExecProtInst`) "
@@ -235,16 +250,23 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 
 	private void importInfRInst(Connection connection, UserInfoInterface userInfo, String type,
 			HashMap<String, Object> lineValues, Integer infPerInst_id) throws SQLException {
-		Integer infRInst_id = FileImportUtils.insertSimpleLine(connection, userInfo,
-				"INSERT INTO `infRInst` (`infPerInst_id`, `type`, `idExp`, `tpExp`, `classExpCRR`, "
-				+ "`metCalcFinsPrud`, `valAjustColFin`, `montPondExpRisco`, `riscoPond`, `LGDPerEcN`, "
-				+ "`LGDRec`, `valExp`, `preFConv`, `montPerEsp`, `expPMERedRC`, `fConvCred`) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
-				new Object[] { infPerInst_id, type, lineValues.get("idExp"), lineValues.get("tpExp"),
-						lineValues.get("classExpCRR"), lineValues.get("metCalcFinsPrud"),
-						lineValues.get("valAjustColFin"), lineValues.get("montPondExpRisco"), lineValues.get("riscoPond"),
-						lineValues.get("LGDPerEcN"), lineValues.get("LGDRec"), lineValues.get("valExp"), lineValues.get("preFConv"),
-						lineValues.get("montPerEsp"), lineValues.get("expPMERedRC"), lineValues.get("fConvCred")});
+		//infRInst
+		Integer infRInst_id = null;
+		List<Integer> infRInst_List = retrieveSimpleField(connection, userInfo,
+				"select id from infRInst where infPerInst_id = {0} ", new Object[] { infPerInst_id });
+		if (infRInst_List.isEmpty())
+			infRInst_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+					"INSERT INTO `infRInst` (`infPerInst_id`, `type`, `idExp`, `tpExp`, `classExpCRR`, "
+							+ "`metCalcFinsPrud`, `valAjustColFin`, `montPondExpRisco`, `riscoPond`, `LGDPerEcN`, "
+							+ "`LGDRec`, `valExp`, `preFConv`, `montPerEsp`, `expPMERedRC`, `fConvCred`) "
+							+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+							new Object[] { infPerInst_id, type, lineValues.get("idExp"), lineValues.get("tpExp"),
+									lineValues.get("classExpCRR"), lineValues.get("metCalcFinsPrud"),
+									lineValues.get("valAjustColFin"), lineValues.get("montPondExpRisco"), lineValues.get("riscoPond"),
+									lineValues.get("LGDPerEcN"), lineValues.get("LGDRec"), lineValues.get("valExp"), lineValues.get("preFConv"),
+									lineValues.get("montPerEsp"), lineValues.get("expPMERedRC"), lineValues.get("fConvCred")});
+		else
+			infRInst_id = infRInst_List.get(0);		
 		
 		if (lineValues.get("idProt") != null)
 			FileImportUtils.insertSimpleLine(connection, userInfo,

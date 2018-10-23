@@ -45,6 +45,9 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 					"select * from infInst where id = {0} ", new Object[] { infInstId });
 
 
+			//type
+			String type = (String) infInstValues.get("type");
+			
 			// idCont
 			String idCont = (String) infInstValues.get("idCont");
 			
@@ -54,7 +57,6 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 				result.add(new ValidationError("CI001", "infInst", "dtRefInst", idCont, infInstId));
 			if (dtRefInst != null && dtRefInst.after(new Date()))
 				result.add(new ValidationError("CI002", "infInst", "dtRefInst", idCont, infInstId, dtRefInst));
-
 
 			// idInst
 			String idInst = (String) infInstValues.get("idInst");
@@ -104,7 +106,9 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			if (StringUtils.isBlank(canalComer) && fimDe2018.getTime().before(dtIniInst)
 					&& (tpCaractEspAux.contains("005") || tpCaractEspAux.contains("006")))
 				result.add(new ValidationError("CI014", "infInst", "canalComer", idCont, infInstId));
-
+			if(StringUtils.equals("CII", type) && dtRefInst!=null && dtIniInst!=null && !(dtRefInst.compareTo(dtIniInst)==0))
+				result.add(new ValidationError("CI117", "infInst", "dtRefInst", idCont, infInstId));//“Data de referência tem de ser igual à data de celebração do contrato”
+			
 			// clausRenun
 			String clausRenun = (String) infInstValues.get("clausRenun");
 			if (!isValidDomainValue(userInfo, connection, "T_REN", clausRenun))

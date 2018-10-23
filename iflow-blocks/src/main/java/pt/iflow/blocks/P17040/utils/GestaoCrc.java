@@ -220,6 +220,7 @@ public class GestaoCrc {
 				"		( select regMsg.fichAce_id from regMsg, msg "+
 				"			where regMsg.id=msg.regMsg_id "+
 				"			and  msg.codMsg!='EN004' " +
+				"			and  msg.nvCrit=0 " +
 				"			and regMsg.idEnt_id = ? and (operOrig='EI' or operOrig='EU'))" ;
 			
 			pst = connection.prepareStatement(query);
@@ -279,7 +280,8 @@ public class GestaoCrc {
 				"   fichAce.id not in  "+
 				"		( select regMsg.fichAce_id from regMsg, msg "+
 				"			where regMsg.id=msg.regMsg_id "+
-				"			and  msg.codMsg!='PT003' " +				
+				"			and  msg.codMsg!='PT003' " +
+				"			and  msg.nvCrit=0 " +
 				"			and regMsg.idProt = ?); ";
 			
 			pst = connection.prepareStatement(query);
@@ -342,6 +344,7 @@ public class GestaoCrc {
 				"		( select regMsg.fichAce_id from regMsg, msg "+
 				"			where regMsg.id=msg.regMsg_id "+
 				"			and  msg.codMsg!='CI003' " +
+				"			and  msg.nvCrit=0 " +
 				"			and regMsg.idCont = ? and regMsg.idInst = ? " +
 				"			and (operOrig='CII' or operOrig='CIU')); ";
 			
@@ -386,12 +389,14 @@ public class GestaoCrc {
 				"    comRiscoEnt.id = riscoEnt.comRiscoEnt_id and "+
 				"    riscoEnt.idEnt_id = idEnt.id and "+
 				"    u_gestao.status_id= 4  and "+
+				"    comRiscoEnt.dtRef = ?  and "+
 				"	((idEnt.nif_nipc = ? and idEnt.type='i1') or (idEnt.codigo_fonte = ? and idEnt.type='i2')) "+
 				"    order by u_gestao.receivedate desc;";
 			
 			pst = connection.prepareStatement(query);
-			pst.setString(1, idEnt);
+			pst.setDate(1, new java.sql.Date(dtRef.getTime()));
 			pst.setString(2, idEnt);
+			pst.setString(3, idEnt);
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
@@ -414,7 +419,8 @@ public class GestaoCrc {
 				"   fichAce.id not in  "+
 				"		( select regMsg.fichAce_id from regMsg, msg "+
 				"			where regMsg.id=msg.regMsg_id "+
-				"			and  msg.codMsg!='RE002' " +				
+				"			and  msg.codMsg!='RE002' " +
+				"			and  msg.nvCrit=0 " +
 				"			and regMsg.idEnt_id = ? and (operOrig='ERI' or operOrig='ERU')); ";
 			
 			pst = connection.prepareStatement(query);
@@ -447,14 +453,16 @@ public class GestaoCrc {
 					"	crc.id = conteudo.crc_id and "+
 					"    conteudo.id = comInfInst.conteudo_id and "+
 					"    comInfInst.id = infPerInst.comInfInst_id and "+
+					"    comInfInst.dtRef = ? and " +
 					"    infPerInst.idCont = ? and "+
 					"    infPerInst.idInst = ? and "+
 					"    u_gestao.status_id= 4  "+
 					"    order by u_gestao.receivedate desc;";
 			
 			pst = connection.prepareStatement(query);
-			pst.setString(1, idCont);
-			pst.setString(2, idInst);
+			pst.setDate(1, new java.sql.Date(dtRef.getTime()));
+			pst.setString(2, idCont);
+			pst.setString(3, idInst);
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
@@ -476,7 +484,8 @@ public class GestaoCrc {
 				"   fichAce.id not in  "+				
 				"		( select regMsg.fichAce_id from regMsg, msg "+
 				"			where regMsg.id=msg.regMsg_id "+
-				"			and  ((msg.codMsg!='IP002' and operOrig='IFI') or (msg.codMsg!='IP035' and operOrig='ICI') or (msg.codMsg!='IP058' and operOrig='IRI')) " +				
+				"			and  ((msg.codMsg!='IP002' and operOrig='IFI') or (msg.codMsg!='IP035' and operOrig='ICI') or (msg.codMsg!='IP058' and operOrig='IRI')) " +
+				"			and  msg.nvCrit=0 " +
 				"			and regMsg.idCont = ? and regMsg.idInst = ? " + 
 				"           and (operOrig=? or operOrig=?) ); ";
 			
@@ -542,6 +551,7 @@ public class GestaoCrc {
 				"   fichAce.id not in  "+
 				"		( select regMsg.fichAce_id from regMsg "+
 				"			where regMsg.idCont = ? and regMsg.idInst = ? "+
+				"			and  msg.nvCrit=0 " +
 				"           and (operOrig='DII' or operOrig='DIU')); ";
 			
 			pst = connection.prepareStatement(query);

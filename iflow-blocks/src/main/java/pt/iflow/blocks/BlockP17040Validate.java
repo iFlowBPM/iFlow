@@ -120,7 +120,7 @@ public abstract class BlockP17040Validate extends Block {
 		}
 		try {
 			boolean existsCrc = retrieveSimpleField(connection, userInfo, "select count(id) from crc where id = {0} ",
-					new Object[] { crcId }).size() == 1;
+					new Object[] { crcId }).get(0) == 1;
 			if (!existsCrc)
 				throw new Exception("no crc found for id");
 		} catch (Exception e) {

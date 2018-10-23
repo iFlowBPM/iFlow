@@ -18,6 +18,8 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import pt.iflow.api.processdata.EvalException;
+import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
@@ -35,18 +37,24 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 		super(anFlowId, id, subflowblockid, filename);
 		// TODO Auto-generated constructor stub
 		
-		// verify if data enrichment is activated
-		String sDataEnrichment = this.getAttribute(DATA_ENRICHMENT_ON);
-		if (sDataEnrichment != null && sDataEnrichment.equals("1"))
-			dataEnrichmentOn = true;
+		
 	}
 
 	static String propertiesFile = "cera_import.properties";
 
 	@Override
 	public Integer importFile(Connection connection, ArrayList<ValidationError> errorList,
-			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream... inputDocStream)
+			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, ProcessData procData, InputStream... inputDocStream)
 			throws IOException, SQLException {
+		
+		// verify if data enrichment is activated
+		String sDataEnrichment;
+		try {
+			sDataEnrichment = procData.transform(userInfo, getAttribute(DATA_ENRICHMENT_ON));
+			if (StringUtils.equals(sDataEnrichment, "1"))
+				dataEnrichmentOn = true;
+		} catch (EvalException e1) {}
+		
 
 		Properties properties = Setup.readPropertiesFile("p17040" + File.separator + propertiesFile);
 		String separator = properties.getProperty("p17040_separator", "|");
@@ -105,7 +113,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 	public Integer importLine(Connection connection, UserInfoInterface userInfo, Integer crcIdResult,
 			HashMap<String, Object> lineValues, Properties properties, String type,
 			ArrayList<ValidationError> errorList) throws Exception {
-
+		Logger.debug(userInfo.getUtilizador(),this,"importLine","idEnt: " +  lineValues.get("idEnt")+" dataEnrichment: " + dataEnrichmentOn );
 		SimpleDateFormat sdf = new SimpleDateFormat(properties.getProperty("p17040_dateFormat"));
 		String separator = properties.getProperty("p17040_separator");
 
@@ -133,10 +141,18 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				"INSERT INTO `riscoEnt` ( `comRiscoEnt_id`, `idEnt_id`) VALUES (?, ?);",
 				new Object[] { comRiscoEnt_id, idEnt_id });
 
+		Logger.debug(userInfo.getUtilizador(),this,"importLine","idEnt: " +  lineValues.get("idEnt")+" before dataEnrichment test " );
 		// insert clienteRel
-		if (dataEnrichmentOn)
-			insertEntidadeRelacionada(lineValues,  connection,  userInfo, conteudoIdList, riscoEnt_id);							
-
+		if (dataEnrichmentOn){
+			Date start = new Date();
+			insertEntidadeRelacionada(lineValues,  connection,  userInfo, conteudoIdList, riscoEnt_id);		
+			Date end = new Date();
+			FileImportUtils.insertSimpleLine(connection, userInfo,
+				"insert into audit (dataregisto, flowId, pid, user, idestado, descricao) "+
+				" values (?,?,?,?,?,?)",
+				new Object[] {new Date(),-1,-1,userInfo.getUtilizador(),(end.getTime() - start.getTime()),"insertEntidadeRelacionada, idEnt:" + lineValues.get("idEnt")});
+		}
+		Logger.debug(userInfo.getUtilizador(),this,"importLine","idEnt: " +  lineValues.get("idEnt")+" before infRiscoEnt" );
 		// insert infRiscoEnt
 		Integer infRiscoEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `infRiscoEnt` ( `riscoEnt_id`, `type`, `estadoInc`, `dtAltEstadoInc`, "
@@ -146,6 +162,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 						lineValues.get("grExposicao"), lineValues.get("entAcompanhada"), lineValues.get("txEsf"),
 						lineValues.get("dtApurTxEsf"), lineValues.get("tpAtualizTxEsf") });
 
+		Logger.debug(userInfo.getUtilizador(),this,"importLine","idEnt: " +  lineValues.get("idEnt")+" before avalRiscoEnt" );
 		// insert avalRiscoEnt
 		FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `avalRiscoEnt` ( `infRiscoEnt_id`, `PD`, `dtDemoFin`, `tpAvalRisco`, "
@@ -154,99 +171,107 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				new Object[] { infRiscoEnt_id, lineValues.get("PD"), lineValues.get("dtDemoFin"),
 						lineValues.get("tpAvalRisco"), lineValues.get("sistAvalRisco"), lineValues.get("dtAvalRisco"),
 						lineValues.get("modIRB"), lineValues.get("notacaoCred"), lineValues.get("tipoPD") });
-
+		Logger.debug(userInfo.getUtilizador(),this,"importLine","idEnt: " +  lineValues.get("idEnt")+" completed" );
 		return crcIdResult;
 	}
 	
 	private ArrayList<Integer> insertEntidadeRelacionada(HashMap<String, Object> lineValues, Connection connection, UserInfoInterface userInfo, List<Integer> conteudoIdList, Integer riscoEnt_id) throws Exception{
-		ArrayList<Integer> idEntIdList = new ArrayList<>();				
-		String response = FileImportUtils.callInfotrustWS(null, null, (String) lineValues.get("idEnt"));
-		List<String> lines = IOUtils.readLines(new StringReader(response));
+		ArrayList<Integer> idEntIdList = new ArrayList<>();
+		String response = null;
+		try{
+			response = FileImportUtils.callInfotrustWS(null, null, (String) lineValues.get("idEnt"));
 		
-		Logger.debug(userInfo.getUserId(),this,"insertEntidadeRelacionada","entidade relacionada para id " + (String) lineValues.get("idEnt"));
-		
-		for(String line: lines){
-			Logger.debug(userInfo.getUserId(),this,"insertEntidadeRelacionada","linha obtida " + line);
-			if(StringUtils.isBlank(line))
-				continue;
+			List<String> lines = IOUtils.readLines(new StringReader(response));
 			
-			String[] lineValuesAux = StringUtils.splitPreserveAllTokens(line, "|");
-			String idEnt = lineValuesAux[0];
-			String idEntRel = lineValuesAux[1];
-			String motivoRel = lineValuesAux[2];
-			String tpEnt = lineValuesAux[3];
-			String LEI = lineValuesAux[4];
-			String nome = lineValuesAux[5];
-			String paisResd = lineValuesAux[6];
-			String tpDoc = lineValuesAux[7];
-			String numDoc = lineValuesAux[8];
-			String paisEmissao = lineValuesAux[9];
-			String dtEmissao = lineValuesAux[10];
-			String dtValidade = lineValuesAux[11];
-			String formJurid = lineValuesAux[12];
-			String PSE = lineValuesAux[13];
-			String SI = lineValuesAux[14];
-			String rua = lineValuesAux[15];
-			String localidade = lineValuesAux[16];
-			String codPost = lineValuesAux[17];		
-			Date dtRefEnt = new Date();
+			Logger.debug(userInfo.getUtilizador(),this,"insertEntidadeRelacionada","START - entidade relacionada para id " + (String) lineValues.get("idEnt"));		
 			
-			//check if idEnt already exists and create if not
-			String idEntAux = StringUtils.equalsIgnoreCase("PRT", (String) paisEmissao)?"nif_nipc":"codigo_fonte";
-			Integer idEnt_id=null;			
-			ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfEntType(idEntRel, dtRefEnt, userInfo.getUtilizador(), connection);							
-			List<Integer> idEntList = retrieveSimpleField(connection, userInfo,
-					"select idEnt.id from idEnt where " +idEntAux+ "= ''{0}''",
-					new Object[] {idEntRel});
-			Logger.debug(userInfo.getUserId(),this,"insertEntidadeRelacionada","linha");
-			if (!idEntList.isEmpty())
-				idEnt_id = idEntList.get(0);
-			else {			
-				idEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
-						"insert into idEnt(type, " + idEntAux + ") values(?,?)",
-						new Object[] {idEntAux, idEntRel });
-			}
-						
-			Logger.debug(userInfo.getUserId(),this,"insertEntidadeRelacionada","idEnt: " + idEnt_id);
-
-			idEntIdList.add(idEnt_id);			
-			//if ident already exist no need to create
-			if(!actionOnLine.equals(ImportAction.ImportActionType.CREATE))
-				continue;			
-			
-			//add a new entity
-			Integer comEnt_id =  null;
-			List<Integer> comEntIdList = retrieveSimpleField(connection, userInfo,
-					"select id from comEnt where conteudo_id = {0} ", new Object[] {conteudoIdList.get(0)});
-			if(comEntIdList.isEmpty())
-				comEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
-						"insert into comEnt(conteudo_id) values(?)", new Object[] { conteudoIdList.get(0) });
-			else
-				comEnt_id = comEntIdList.get(0);
-			
-			// insert infEnt						
-			Integer infEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
-					"insert into infEnt(comEnt_id,type,dtRefEnt,idEnt_id,tpEnt,LEI,nome,paisResd) values(?,?,?,?,?,?,?,?)",
-					new Object[] { comEnt_id, "EI", dtRefEnt, idEnt_id, tpEnt,LEI,nome,paisResd});
-
-			// insert docId
-			FileImportUtils.insertSimpleLine(connection, userInfo,
-					"insert into docId(tpDoc,numDoc,paisEmissao,dtEmissao,dtValidade,infEnt_id) values(?,?,?,?,?,?)",
-					new Object[] { tpDoc,numDoc,paisEmissao,dtEmissao,dtValidade, infEnt_id });
-			
-			//dadosEntt2
-			Integer morada_id = FileImportUtils.insertSimpleLine(connection, userInfo,
-					"insert into morada(rua, localidade, codPost) values(?,?,?)",
-					new Object[] { rua, localidade, codPost});
-			FileImportUtils.insertSimpleLine(connection, userInfo,
-					"insert into dadosEntt2(type, morada_id, formJurid, PSE, SI, infEnt_id) values(?,?,?,?,?,?)",
-					new Object[] { "t2", morada_id, formJurid, PSE, SI, infEnt_id });
-
-			FileImportUtils.insertSimpleLine(connection, userInfo,
-					"INSERT INTO `clienteRel` ( `riscoEnt_id`, `idEnt_id`, `motivoRel`) VALUES ( ?, ?, ?);",
-					new Object[] { riscoEnt_id, idEnt_id, motivoRel });
-		}		
+			for(String line: lines){
+				Logger.debug(userInfo.getUserId(),this,"insertEntidadeRelacionada","linha obtida " + line);
+				if(StringUtils.isBlank(line))
+					continue;
 				
+				String[] lineValuesAux = StringUtils.splitPreserveAllTokens(line, "|");
+				String idEnt = lineValuesAux[0];
+				String idEntRel = lineValuesAux[1];
+				String motivoRel = "001";//lineValuesAux[2];
+				String tpEnt = "001";//lineValuesAux[3];
+				String LEI = "";//lineValuesAux[4];
+				String nome = "Oscar Lopes";//lineValuesAux[5];
+				String paisResd = "USA";//lineValuesAux[6];
+				String tpDoc = "0001";//lineValuesAux[7];
+				String numDoc = "123456789";//lineValuesAux[8];
+				String paisEmissao = "USA";//lineValuesAux[9];
+				Date dtEmissao = new Date();//lineValuesAux[10];
+				Date dtValidade = new Date();//lineValuesAux[11];
+				String formJurid = "AT102";//lineValuesAux[12];
+				String PSE = "000";//lineValuesAux[13];
+				String SI = "S11";//lineValuesAux[14];
+				String rua = "Rua do Carmo";//lineValuesAux[15];
+				String localidade = "Lisboa";//lineValuesAux[16];
+				String codPost = "1000-001";//lineValuesAux[17];		
+				Date dtRefEnt = new Date();
+				
+				//check if idEnt already exists and create if not
+				String idEntAux = StringUtils.equalsIgnoreCase("PRT", (String) paisEmissao)?"nif_nipc":"codigo_fonte";
+				Integer idEnt_id=null;			
+				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfEntType(idEntRel, dtRefEnt, userInfo.getUtilizador(), connection);							
+				List<Integer> idEntList = retrieveSimpleField(connection, userInfo,
+						"select idEnt.id from idEnt where " +idEntAux+ "= ''{0}''",
+						new Object[] {idEntRel});
+				Logger.debug(userInfo.getUserId(),this,"insertEntidadeRelacionada","linha");
+				if (!idEntList.isEmpty())
+					idEnt_id = idEntList.get(0);
+				else {		
+					String typeAux = StringUtils.equalsIgnoreCase("nif_nipc", idEntAux)?"i1":"i2";
+					idEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+							"insert into idEnt(type, nif_nipc, codigo_fonte) values(?,?,?)",
+							new Object[] {typeAux, idEntRel.length()>9?"":idEntRel, idEntRel });
+				}
+							
+				Logger.debug(userInfo.getUtilizador(),this,"insertEntidadeRelacionada","idEnt: " + idEnt_id);
+	
+				idEntIdList.add(idEnt_id);			
+				//if ident already exist no need to create
+				if(!actionOnLine.equals(ImportAction.ImportActionType.CREATE))
+					continue;			
+				
+				//add a new entity
+				Integer comEnt_id =  null;
+				List<Integer> comEntIdList = retrieveSimpleField(connection, userInfo,
+						"select id from comEnt where conteudo_id = {0} ", new Object[] {conteudoIdList.get(0)});
+				if(comEntIdList.isEmpty())
+					comEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+							"insert into comEnt(conteudo_id) values(?)", new Object[] { conteudoIdList.get(0) });
+				else
+					comEnt_id = comEntIdList.get(0);
+				
+				// insert infEnt						
+				Integer infEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+						"insert into infEnt(comEnt_id,type,dtRefEnt,idEnt_id,tpEnt,LEI,nome,paisResd) values(?,?,?,?,?,?,?,?)",
+						new Object[] { comEnt_id, "EI", dtRefEnt, idEnt_id, tpEnt,LEI,nome,paisResd});
+	
+				// insert docId
+				FileImportUtils.insertSimpleLine(connection, userInfo,
+						"insert into docId(tpDoc,numDoc,paisEmissao,dtEmissao,dtValidade,infEnt_id) values(?,?,?,?,?,?)",
+						new Object[] { tpDoc,numDoc,paisEmissao,dtEmissao,dtValidade, infEnt_id });
+				
+				//dadosEntt2
+				Integer morada_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+						"insert into morada(rua, localidade, codPost) values(?,?,?)",
+						new Object[] { rua, localidade, codPost});
+				FileImportUtils.insertSimpleLine(connection, userInfo,
+						"insert into dadosEntt2(type, morada_id, formJurid, PSE, SI, infEnt_id) values(?,?,?,?,?,?)",
+						new Object[] { "t2", morada_id, formJurid, PSE, SI, infEnt_id });
+	
+				FileImportUtils.insertSimpleLine(connection, userInfo,
+						"INSERT INTO `clienteRel` ( `riscoEnt_id`, `idEnt_id`, `motivoRel`) VALUES ( ?, ?, ?);",
+						new Object[] { riscoEnt_id, idEnt_id, motivoRel });
+			}		
+			Logger.debug(userInfo.getUtilizador(),this,"insertEntidadeRelacionada","END   - entidade relacionada para id " + (String) lineValues.get("idEnt"));
+		} catch (Exception e){
+			Logger.error(userInfo.getUtilizador(),this,"insertEntidadeRelacionada"," id: " + (String) lineValues.get("idEnt"),e);	
+			throw e;
+		}
 		return idEntIdList;
 	}
 

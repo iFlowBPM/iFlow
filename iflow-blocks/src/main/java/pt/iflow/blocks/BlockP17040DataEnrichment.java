@@ -9,22 +9,20 @@ import javax.sql.DataSource;
 
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
-import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.db.DatabaseInterface;
-import pt.iflow.api.documents.Documents;
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
 import pt.iflow.blocks.P17040.utils.FileImportUtils;
 
-public abstract class BlockP17040DataEnrichment extends Block {
+public class BlockP17040DataEnrichment extends Block {
 	public Port portIn, portSuccess, portEmpty, portError;
 
 	private static final String DATASOURCE = "Datasource";
 	private static final String CERA_CRC_ID = "cera_crc_id";
 	private static final String CENT_CRC_ID = "cent_crc_id";
-
+	
 	public BlockP17040DataEnrichment(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
 		hasInteraction = false;
@@ -67,7 +65,7 @@ public abstract class BlockP17040DataEnrichment extends Block {
 		Port outPort = portSuccess;
 		String login = userInfo.getUtilizador();
 		StringBuffer logMsg = new StringBuffer();
-		Documents docBean = BeanFactory.getDocumentsBean();
+		
 
 		Integer ceraCrcId =  null;
 		Integer centCrcId = null;
@@ -89,18 +87,18 @@ public abstract class BlockP17040DataEnrichment extends Block {
 		try {
 			connection = datasource.getConnection();
 			
-			List<Integer> conteudoIdList = retrieveSimpleField(connection, userInfo,
-					"select conteudo.id from conteudo,crc where crc.id=conteudo.crc_id and crc.id=?", new Object[] {centCrcId});
+			List<Integer> finalComEntIdList = retrieveSimpleField(connection, userInfo,
+					"select comEnt.id from comEnt,conteudo,crc where crc.id=conteudo.crc_id and conteudo.id=comEnt.conteudo_id and crc.id={0}", new Object[] {centCrcId});
 			
-			List<Integer> comEntIdList = retrieveSimpleField(connection, userInfo,
-					"select comEnt.id from comEnt,conteudo,crc where crc.id=conteudo.crc_id and conteudo.id=comEnt.conteudo_id and crc.id=?", new Object[] {ceraCrcId});
+			List<Integer> ceraComEntIdList = retrieveSimpleField(connection, userInfo,
+					"select comEnt.id from comEnt,conteudo,crc where crc.id=conteudo.crc_id and conteudo.id=comEnt.conteudo_id and crc.id={0}", new Object[] {ceraCrcId  });
 
-			if(conteudoIdList.isEmpty() || comEntIdList.isEmpty())
+			if(finalComEntIdList.isEmpty() || ceraComEntIdList.isEmpty())
 				outPort = portEmpty;
 			else
 				FileImportUtils.insertSimpleLine(connection, userInfo,
-					"update comEnt set conteudo_id=? where crc.id=? ",
-					new Object[] { conteudoIdList.get(0), comEntIdList.get(0) });
+					"update infEnt set infEnt.comEnt_id = ? where infEnt.comEnt_id = ?",
+					new Object[] { finalComEntIdList.get(0), ceraComEntIdList.get(0) });
 
 		} catch (Exception e) {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);

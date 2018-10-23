@@ -50,51 +50,64 @@ public class BlockP17040GenerateCINA extends BlockP17040Generate {
 					HashMap<String,Object> infFinInstValues = fillAtributtes(null, connection, userInfo, "select * from infFinInst where infPerInst_id = {0} ",
 						new Object[] { infPerInstId });
 					if(!infFinInstValues.isEmpty()){
-					writer.writeStartElement("infFinInst");
-						fillAtributtes(writer, connection, userInfo, "select * from infFinInst where infPerInst_id = {0} ",
-								new Object[] { infPerInstId });
 						
-						//lstRespEntInst
-						List<Integer> respEntInstIdList = retrieveSimpleField(connection, userInfo,
-								"select respEntInst.id from respEntInst where infFinInst_id = {0} ",
-								new Object[] { infFinInstValues.get("id") });
-						if(!respEntInstIdList.isEmpty()){
-							writer.writeStartElement("lstRespEntInst");
-								for(Integer respEntInstId : respEntInstIdList){
-									//respEntInst
-									writer.writeStartElement("respEntInst");
-									HashMap<String,Object> respEntInstValues = fillAtributtes(writer, connection, userInfo, "select * from respEntInst where id = {0} ",
-											new Object[] { respEntInstId });
-										//idEnt
-										writer.writeStartElement("idEnt");
-											FileGeneratorUtils.fillAtributtesIdEnt(writer, connection, userInfo, respEntInstValues.get("idEnt_id") );
+					List<Integer> infFinInstIdList = retrieveSimpleField(connection, userInfo,
+							"select infFinInst.id from infFinInst where infPerInst_id = {0} ",
+							new Object[] { infPerInstId });
+					for(Integer infFinInstId : infFinInstIdList){
+						writer.writeStartElement("infFinInst");
+							fillAtributtes(writer, connection, userInfo, "select * from infFinInst where id = {0} ",
+									new Object[] { infFinInstId });
+							
+							//lstRespEntInst
+							List<Integer> respEntInstIdList = retrieveSimpleField(connection, userInfo,
+									"select respEntInst.id from respEntInst where infFinInst_id = {0} ",
+									new Object[] { infFinInstId });
+							if(!respEntInstIdList.isEmpty()){
+								writer.writeStartElement("lstRespEntInst");
+									for(Integer respEntInstId : respEntInstIdList){
+										//respEntInst
+										writer.writeStartElement("respEntInst");
+										HashMap<String,Object> respEntInstValues = fillAtributtes(writer, connection, userInfo, "select * from respEntInst where id = {0} ",
+												new Object[] { respEntInstId });
+											//idEnt
+											writer.writeStartElement("idEnt");
+												FileGeneratorUtils.fillAtributtesIdEnt(writer, connection, userInfo, respEntInstValues.get("idEnt_id") );
+											writer.writeEndElement();
 										writer.writeEndElement();
+									}
+								writer.writeEndElement();
+							}
+							//lstProtInst						
+							List<Integer> protInstIdList = retrieveSimpleField(connection, userInfo,
+									"select protInst.id from protInst where infFinInst_id = {0} ",
+									new Object[] {infFinInstId });
+							if(!protInstIdList.isEmpty()){
+							writer.writeStartElement("lstProtInst");
+								for(Integer protInstId : protInstIdList){
+									//protInst
+									writer.writeStartElement("protInst");
+									fillAtributtes(writer, connection, userInfo, "select * from protInst where id = {0} ",
+											new Object[] { protInstId });
 									writer.writeEndElement();
 								}
 							writer.writeEndElement();
-						}
-						//lstProtInst						
-						List<Integer> protInstIdList = retrieveSimpleField(connection, userInfo,
-								"select protInst.id from protInst where infFinInst_id = {0} ",
-								new Object[] { infFinInstValues.get("id") });
-						if(!protInstIdList.isEmpty()){
-						writer.writeStartElement("lstProtInst");
-							for(Integer protInstId : protInstIdList){
-								//protInst
-								writer.writeStartElement("protInst");
-								fillAtributtes(writer, connection, userInfo, "select * from protInst where id = {0} ",
-										new Object[] { protInstId });
-								writer.writeEndElement();
 							}
 						writer.writeEndElement();
-						}
-					writer.writeEndElement();
 					}
+						
+					
+					}
+					
 					//infContbInst
-					writer.writeStartElement("infContbInst");
-					fillAtributtes(writer, connection, userInfo, "select * from infContbInst where infPerInst_id = {0} ",
+					HashMap<String,Object> infContbInstValues = fillAtributtes(null, connection, userInfo, "select * from infContbInst where infPerInst_id = {0} ",
 							new Object[] { infPerInstId });
-					writer.writeEndElement();
+					if(!infContbInstValues.isEmpty()){
+						writer.writeStartElement("infContbInst");
+							fillAtributtes(writer, connection, userInfo, "select * from infContbInst where infPerInst_id = {0} ",
+									new Object[] { infPerInstId });
+						writer.writeEndElement();
+					}
 					
 					//lstIntRInst
 					List<Integer> infRInstIdList = retrieveSimpleField(connection, userInfo,

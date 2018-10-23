@@ -122,20 +122,24 @@ public abstract class BlockP17040Import extends Block {
 			InputStream inputDocStream2=null,inputDocStream3=null;
 			if(StringUtils.isNotBlank(sInputDocumentVar2)){
 				ProcessListVariable docsVar2 = procData.getList(sInputDocumentVar2);
-				Document inputDoc2 = docBean.getDocument(userInfo, procData,new Integer(docsVar2.getItem(0).getValue().toString()));
-				 inputDocStream2 = new ByteArrayInputStream(inputDoc2.getContent());
+				if(docsVar2.size()>0){
+					Document inputDoc2 = docBean.getDocument(userInfo, procData,new Integer(docsVar2.getItem(0).getValue().toString()));
+					inputDocStream2 = new ByteArrayInputStream(inputDoc2.getContent());
+				} 					
 			}
 			if(StringUtils.isNotBlank(sInputDocumentVar3)){
 				ProcessListVariable docsVar3 = procData.getList(sInputDocumentVar3);
-				Document inputDoc3 = docBean.getDocument(userInfo, procData,new Integer(docsVar3.getItem(0).getValue().toString()));
-				 inputDocStream3 = new ByteArrayInputStream(inputDoc3.getContent());
+				if(docsVar3.size()>0){
+					Document inputDoc3 = docBean.getDocument(userInfo, procData,new Integer(docsVar3.getItem(0).getValue().toString()));
+					inputDocStream3 = new ByteArrayInputStream(inputDoc3.getContent());
+				}
 			}
 			
 			String originalNameInputDoc = inputDoc.getFileName();
 			
 			ArrayList<ValidationError> errorList = new ArrayList<>();
 			ArrayList<ImportAction> actionList = new ArrayList<>();			
-			Integer crcId = importFile(connection, errorList, actionList, userInfo, inputDocStream, inputDocStream2, inputDocStream3);
+			Integer crcId = importFile(connection, errorList, actionList, userInfo, procData, inputDocStream, inputDocStream2, inputDocStream3);
 			
 			//set errors file
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
@@ -223,7 +227,7 @@ public abstract class BlockP17040Import extends Block {
 	}
 
 	public abstract Integer importFile(Connection connection, ArrayList<ValidationError> errorList,
-			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream... inputDocStream) throws IOException, SQLException;
+			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, ProcessData procData, InputStream... inputDocStream) throws IOException, SQLException;
 		
 	@Override
 	public String getDescription(UserInfoInterface userInfo, ProcessData procData) {
