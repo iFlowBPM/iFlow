@@ -34,9 +34,9 @@
 	</modules>
 
 	<properties>
-		<iflow.baseversion>5.3.3</iflow.baseversion>
+		<iflow.baseversion>5.3.4</iflow.baseversion>
 
-		<iflow.buildnumber>20180827</iflow.buildnumber>
+		<iflow.buildnumber>20181029</iflow.buildnumber>
 
 		<iflow.version>${iflow.baseversion}-R${iflow.buildnumber}</iflow.version>
 		<dms-connector.version>0.0.7-R20100908</dms-connector.version>
@@ -317,17 +317,27 @@
 			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi</artifactId>
-				<version>3.11</version>
+				<version>3.17</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi-ooxml</artifactId>
-				<version>3.11</version>
+				<version>3.17</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-scratchpad</artifactId>
+				<version>3.17</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi-ooxml-schemas</artifactId>
-				<version>3.11</version>
+				<version>3.17</version>
+			</dependency>
+			<dependency>
+			    <groupId>org.apache.poi</groupId>
+			    <artifactId>ooxml-schemas</artifactId>
+			    <version>1.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.xmlbeans</groupId>
