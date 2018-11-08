@@ -116,7 +116,6 @@ public class BlockFormulario extends Block implements FormOperations {
 	protected static final int nTYPE_FORM = 0;
 	protected static final int nTYPE_DETALHE = 1;
 
-
 	public final static int nTXT_ATTR_IDX = 0;
 	public final static int nLIST_ATTR_IDX = 1;
 
@@ -154,8 +153,7 @@ public class BlockFormulario extends Block implements FormOperations {
 	 * 
 	 * Block's initialization code.
 	 * 
-	 * @param dataSet
-	 *            data
+	 * @param dataSet data
 	 * @return next page (block's page)
 	 */
 	public String before(UserInfoInterface userInfo, ProcessData procData) {
@@ -769,10 +767,10 @@ public class BlockFormulario extends Block implements FormOperations {
 
 					// HTML PARSING
 					fieldContent = StringEscapeUtils.escapeXml(fieldContent); // TODO
-																				// FIX
-																				// validar
-																				// correcção
-																				// FormUtils.escapeAmp(fieldContent);
+					// FIX
+					// validar
+					// correcção
+					// FormUtils.escapeAmp(fieldContent);
 
 					props.setProperty("value", fieldContent == null ? "" : fieldContent);
 				}
@@ -782,12 +780,12 @@ public class BlockFormulario extends Block implements FormOperations {
 				Set<String> hsIgnoreColumns = computeIgnoreColumns(userInfo, abBlock, procData, fi.isArrayTable(),
 						props);
 				HashMap redBlueControlArrays = new HashMap(); // Gosto muito do
-																// red-blue
-																// porque é um
-																// nome bonito e
-																// totalmente
-																// inutil como
-																// stmp2
+				// red-blue
+				// porque é um
+				// nome bonito e
+				// totalmente
+				// inutil como
+				// stmp2
 
 				Map<String, List<ProcessVariableValue>> valueMap = preProcessMultipleVars(userInfo, abBlock, procData,
 						fieldNumber, fi.isArrayTable(), props, hsIgnoreColumns, redBlueControlArrays, hmListValues,
@@ -898,8 +896,7 @@ public class BlockFormulario extends Block implements FormOperations {
 						try {
 							btmp = procData.query(userInfo, stmp);
 						} catch (Exception ei) {
-							ProcessData ns = abBlock.nTYPE == nTYPE_DETALHE
-									 && procData2 != null ? procData2 : null;
+							ProcessData ns = abBlock.nTYPE == nTYPE_DETALHE && procData2 != null ? procData2 : null;
 							;
 
 							if (ns != null) {
@@ -944,7 +941,7 @@ public class BlockFormulario extends Block implements FormOperations {
 										+ "] " + "link variable already exists as hidden field.");
 							} else {
 								hsLinkVars.add(stmp); // add var to link var
-														// list
+								// list
 
 								if (hmHiddenFields == null)
 									hmHiddenFields = new HashMap<String, String>();
@@ -974,14 +971,14 @@ public class BlockFormulario extends Block implements FormOperations {
 							stmp3 = null;
 						} else {
 							stmp3 = procData.transform(userInfo, stmp3);
-//							if (stmp3.indexOf("\"") > -1) {
-//								// try to string parse
-//								stmp4 = procData.transform(userInfo, stmp3);
-//								if (StringUtils.isNotEmpty(stmp4)) {
-//									stmp3 = stmp4;
-//								}
-//								stmp4 = null;
-//							}
+							// if (stmp3.indexOf("\"") > -1) {
+							// // try to string parse
+							// stmp4 = procData.transform(userInfo, stmp3);
+							// if (StringUtils.isNotEmpty(stmp4)) {
+							// stmp3 = stmp4;
+							// }
+							// stmp4 = null;
+							// }
 						}
 					}
 					if (stmp3 != null) {
@@ -1033,9 +1030,9 @@ public class BlockFormulario extends Block implements FormOperations {
 				// set odd property (to enable alternate bgcolors)
 				if (nFieldCounter % 2 == 0)
 					props.setProperty("even_field", "true"); // FIXME isto devia
-																// ficar la em
-																// cima antes do
-																// init
+				// ficar la em
+				// cima antes do
+				// init
 				else
 					props.setProperty("even_field", "false");
 
@@ -1152,8 +1149,8 @@ public class BlockFormulario extends Block implements FormOperations {
 								+ sButtonFix + "} else { return false; }";
 						break;
 					case RETURN_PARENT:
-						ProcessData pdLocal = abBlock.nTYPE == nTYPE_DETALHE
-								 && procData2 != null ? procData2 : procData;
+						ProcessData pdLocal = abBlock.nTYPE == nTYPE_DETALHE && procData2 != null ? procData2
+								: procData;
 						String switchRet = pdLocal.getTempData(Const.sSWITCH_PROC_RETURN_PARENT);
 						useIt = StringUtils.equals(switchRet, "true");
 						if (useIt) {
@@ -1283,10 +1280,10 @@ public class BlockFormulario extends Block implements FormOperations {
 
 				String xml = sbXml.toString();
 				retObj = transformForm(userInfo, procData, sXsl, xml, noPrint, Const.bUSE_SCANNER, response); // load
-																												// upload
-																												// applet
-																												// if
-																												// required
+				// upload
+				// applet
+				// if
+				// required
 
 				retObj = StringEscapeUtils.unescapeHtml(retObj);
 
@@ -1605,7 +1602,7 @@ public class BlockFormulario extends Block implements FormOperations {
 					values.add(new TextProcessVariableValue(""));
 				}
 				retObj.remove(varProp); // remove from varProp to insert as
-										// varname
+				// varname
 				retObj.put(varname, values);
 			} else {
 				// values from process
@@ -1855,10 +1852,8 @@ public class BlockFormulario extends Block implements FormOperations {
 	/**
 	 * Dump generated form to xml and HTML files
 	 * 
-	 * @param xml
-	 *            xml bytes used to build the html form
-	 * @param html
-	 *            the generated HTML form
+	 * @param xml  xml bytes used to build the html form
+	 * @param html the generated HTML form
 	 */
 	protected static void dumpGeneratedForm(final byte[] xml, final byte[] html) {
 		if (StringUtils.isEmpty(Const.DEBUG_FORM)
@@ -2096,10 +2091,10 @@ public class BlockFormulario extends Block implements FormOperations {
 					if (FormUtils.checkOutputField(props, i)) {
 						// output/disabled field.. do not process
 						hsDisabledFields.add(String.valueOf(field) + "_" + i); // Is
-																				// this
-																				// a
-																				// "table"
-																				// field??
+						// this
+						// a
+						// "table"
+						// field??
 						Logger.debug(sLogin, this, "processForm", "Link multiple field " + String.valueOf(field) + "_"
 								+ i + " ignored since is output only");
 						continue;
@@ -2450,6 +2445,7 @@ public class BlockFormulario extends Block implements FormOperations {
 							}
 						}
 
+						boolean addError = true;// [FORM FIELD FILE VALIDATION] should be on diferent  class/object/... [FORM FIELD FILE VALIDATION] END
 						// Map<String,FormFile> fileParams =
 						// afdFormData.getFileParameters();
 						for (int i = 0; true; i++) {
@@ -2457,30 +2453,43 @@ public class BlockFormulario extends Block implements FormOperations {
 
 							// NEW FILE TO UPLOAD
 							FormFile ffFile = afdFormData.getFileParameter(varName + "_add_[" + i + "]"); // new
-																											// files
+							// files
 							String fileID = "";
 
 							if (null != ffFile && ffFile.isValid()) {
 								// quick and dirty hack: fix file name for IE
 								String fileName = ffFile.getFileName().replace('\\', '/').replaceAll("[^/]*/", "");
-								//check if filename is too long
-								if (fileName.length()>128){
+								// check if filename is too long
+								// [FORM FIELD FILE VALIDATION] should be on diferent  class/object/...
+								if (fileName.length() > 128 ) {
 									alErrors.add(FormUtils.formatParsingError(props, varName,
-											userInfo.getMessages().getString("Datatype.filename_too_long")));	
+											userInfo.getMessages().getString("Datatype.filename_too_long","<b>"+128+"</b>")));
+									addError = false;
 								}
+								// [FORM FIELD FILE VALIDATION] END
+
 								else if (extensionAccepted(userInfo, pdProcData, props, fileName)) {
 									fileName = getFileName(userInfo, pdProcData, props, fileName);
 
 									Document doc = new DocumentData(fileName, ffFile.getData());
-									doc = docBean.addDocument(userInfo, pdProcData, doc);
-									Logger.info(sLogin, this, "processForm", retObj.getSignature() + "file ("
-											+ doc.getFileName() + ") for var " + varName + " added.");
+									// [FORM FIELD FILE VALIDATION] should be on diferent  class/object/...
+									if (doc.getContent() == null || doc.getContent().length == 0) {
+										alErrors.add(FormUtils.formatParsingError(props, varName,
+												userInfo.getMessages().getString("Datatype.filecontent_empty")));
+										addError = false;
+									}// [FORM FIELD FILE VALIDATION] END 
+									else {
+										doc = docBean.addDocument(userInfo, pdProcData, doc);
 
-									// now update process
-									docsVar.parseAndAddNewItem(String.valueOf(doc.getDocId()));
+										Logger.info(sLogin, this, "processForm", retObj.getSignature() + "file ("
+												+ doc.getFileName() + ") for var " + varName + " added.");
+
+										// now update process
+										docsVar.parseAndAddNewItem(String.valueOf(doc.getDocId()));
+									}
 								}
 							} else if (null == ffFile) { // NEW FILE ALREADY
-															// UPLOADED
+								// UPLOADED
 								fileID = afdFormData.getParameter(varName + "_new_[" + i + "]");
 
 								if (null == fileID) {
@@ -2524,10 +2533,11 @@ public class BlockFormulario extends Block implements FormOperations {
 
 						// validation
 						if (!ignoreValidation && FormUtils.checkRequiredField(userInfo, retObj, props)
-								&& (docsVar == null || docsVar.size() == 0)) {
+								&& (docsVar == null || docsVar.size() == 0) && addError) {
 							alErrors.add(FormUtils.formatParsingError(props, varName,
 									userInfo.getMessages().getString("Datatype.required_field")));
 						}
+						addError = true;
 					} else {
 
 						// DATATYPE
@@ -2962,9 +2972,9 @@ public class BlockFormulario extends Block implements FormOperations {
 			// String exportFieldToExcel (service)
 			retObj = this.exportFieldToSpreadSheet((UserInfoInterface) aoa[0], (ProcessData) aoa[1], (String) aoa[2],
 					(OutputStream) aoa[3], new ServletUtils()); // "ignorable"
-																// servlet utils
-																// (no servlet
-																// references)
+			// servlet utils
+			// (no servlet
+			// references)
 			break;
 		case OP_PRINT:
 			// String print (service)

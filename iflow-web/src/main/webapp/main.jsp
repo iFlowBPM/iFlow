@@ -16,6 +16,8 @@
 	String sPage = "main";
 	String title = "P&aacute;gina Principal";
 
+
+	
 	String sDate = DateUtility.getToday(userInfo);
 
 	boolean bSysAdmin = userInfo.isSysAdmin();
@@ -38,7 +40,22 @@
 
 	{ // save cookie
 			// guardar lang actual
+
 		Cookie cookie = ServletUtils.newCookie(Const.LANG_COOKIE, lang);
+	
+		//[OPEN PROCESS WITH URL] :  Para testes = session.getAttribute("toRedirect"):- versão final usar GoTo ou similar  
+		if(session.getAttribute("toRedirect")!=null){
+			String s = session.getAttribute("toRedirect").toString();
+			if(s.indexOf("process_load.jsp")>0){
+				session.removeAttribute("toRedirect");
+				//System.out.println(" ____   DE _____ "+s);
+				Cookie cookiew = new Cookie("toRedirect", s);
+				cookiew.setMaxAge(60);
+				response.addCookie(cookiew);
+			}
+		}
+		//[OPEN PROCESS WITH URL] END
+
 		response.addCookie(cookie);
 	}
 
@@ -255,6 +272,7 @@
 	hsSubst.put("linkNext", messages.getString("button.next"));
 
 	PageLocation pl = new PageLocation(request.getQueryString());
+
 	String sTab = pl.getTab();
 	String sNav = pl.getNav();
 	String sContent = pl.getContent();
@@ -369,6 +387,7 @@
 
 	hsSubst.put("nAlerts", nAlerts);
 	hsSubst.put("nMsgs", nMsgs);
+	
 %>
 <%-- <if:generateHelpBox context="proc_hide"/>--%>
 <%=PresentationManager.buildMainPage(response, userInfo, hsSubst)%>

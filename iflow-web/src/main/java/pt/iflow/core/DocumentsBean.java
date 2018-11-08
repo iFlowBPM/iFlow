@@ -78,7 +78,7 @@ public class DocumentsBean implements Documents {
 	
 	
 	//#DM
-	private static final boolean TO_ENCRYPT = true;
+	private static final boolean TO_ENCRYPT = false;
 	//#DM
 	
 	
@@ -135,6 +135,7 @@ public class DocumentsBean implements Documents {
     Connection db = null;
     ResultSet rs = null;
     PreparedStatement pst = null;
+    
     try {
       db = DatabaseInterface.getConnection(userInfo);
       db.setAutoCommit(false);

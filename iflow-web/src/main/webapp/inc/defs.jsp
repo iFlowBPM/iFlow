@@ -95,7 +95,23 @@ if(ServletFileUpload.isMultipartContent(request))
   		catch (Exception e) {
         }
     }
-    
+  	/*[OPEN PROCESS WITH URL] :  
+	 * Para testes = session.setAttribute("toRedirect", "/iFlow/process_load.jsp?process_url=/iFlow/Forward/forward.jsp?flowid="+s+"&pid="+fdFormData.getParameter("pid")+"&subpid="+fdFormData.getParameter("subpid"));
+ 	 *:- versão final usar GoTo ou similar 
+  	*/
+   if (request.getRequestURI().indexOf("process_load.jsp")>0 && userInfo.isLogged() && null == request.getAttribute("inFrame")) {
+     	
+     	String s = fdFormData.getParameter("process_url");
+    	  	if(s!=null && !s.isEmpty() && !s.contains("pid") && !s.contains("inicio_flow.jsp")){
+     		s = s.substring(s.lastIndexOf(";")+1);
+    		
+    		session.setAttribute("toRedirect", "/iFlow/process_load.jsp?process_url=/iFlow/Forward/forward.jsp?flowid="+s+"&pid="+fdFormData.getParameter("pid")+"&subpid="+fdFormData.getParameter("subpid"));
+   		ServletUtils.sendEncodeRedirect(response, sURL_PREFIX + "main.jsp");
+     		return;
+     	}
+     }
+ //[OPEN PROCESS WITH URL] :END
+ 
     if (request.getRequestURI().indexOf("logout.jsp") == -1) {
         // CHECK MAINTENANCE MODE
   		if (Const.isInMaintenance() && !(Const.sMAINTENANCE_USER.equals(login) || userInfo.isSysAdmin())) {

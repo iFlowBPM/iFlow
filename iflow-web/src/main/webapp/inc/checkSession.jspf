@@ -2,23 +2,30 @@
 %><%@ taglib uri="http://www.iknow.pt/jsp/jstl/iflow" prefix="if" %><% 
 
 if(null == session.getAttribute(Const.USER_INFO)) {
+	
   if(null == request.getAttribute("inFrame")) {
-	  String _sUrl = request.getRequestURI();
+	String _sUrl = request.getRequestURI();
+	 
 	  if (request.getQueryString() != null) {
 	    _sUrl += "?" + request.getQueryString();
 	  }
 	  _sUrl = response.encodeURL(_sUrl);
+	 
 	  if (_sUrl.indexOf("logout.jsp") == -1) {
 	    session.setAttribute("URL", _sUrl);
 	  }
 
 	  String uri = request.getRequestURI();
-	  if (uri.indexOf("/main.jsp") > 0 || uri.indexOf("/inicio_flow.jsp") > 0) {
+	  
+	  //[OPEN PROCESS WITH URL] :  Para testes = uri.indexOf("/process_load.jsp") > 0 :- versão final usar GoTo ou similar
+	  if (uri.indexOf("/main.jsp") > 0 || uri.indexOf("/inicio_flow.jsp") > 0 || uri.indexOf("/process_load.jsp") > 0) {
 		//may come from alternate login pages  
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		String referer = httpRequest.getHeader("referer");
+		
 		if(referer==null || "".equals(referer))
 			referer="login.jsp";
+		
 		
         ServletUtils.sendEncodeRedirect(response, referer);
 	    return;
@@ -122,6 +129,7 @@ if(null == session.getAttribute(Const.USER_INFO)) {
   return;
 } else if (null != request.getAttribute("inFrame")) {
   String __key = fdFormData.getParameter("_form_session_key");
+  
   if(StringUtils.isNotEmpty(__key)) {
     FormData fd = FormCache.get(__key);
     if(null != fd) fdFormData = fd;

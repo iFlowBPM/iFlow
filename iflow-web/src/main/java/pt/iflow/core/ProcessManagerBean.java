@@ -4048,8 +4048,10 @@ public class ProcessManagerBean implements ProcessManager {
     String sFlowName = fd.getName();
 
     String sBaseUrl = Const.APP_PROTOCOL + "://" + Const.APP_HOST + ":" + Const.APP_PORT + Const.APP_URL_PREFIX;
-    String sRelUrl = "GoTo?goto=actividade_user.jsp&flowid=" + activity.flowid + "&pid=" + activity.pid;
-
+//    String sRelUrl = "GoTo?goto=actividade_user.jsp&flowid=" + activity.flowid + "&pid=" + activity.pid;
+//  process_load.jsp?process_url=/iFlow/Forward/forward.jsp?flowid=193&pid=1935&subpid=1
+    //[OPEN PROCESS WITH URL] Para testes = alteracao ao link de email :- versão final usar GoTo ou similar
+    String sRelUrl = "process_load.jsp?process_url=/iFlow/Forward/forward.jsp?flowid=" + activity.flowid + "&pid=" + activity.pid+"&subpid="+activity.subpid;
     String sFullUrl = sBaseUrl + sRelUrl;
 
     String to = activity.userid;
@@ -4079,6 +4081,9 @@ public class ProcessManagerBean implements ProcessManager {
         htProps.put("description", activity.description);
         htProps.put("app_host", Const.APP_HOST);
         htProps.put("app_port", String.valueOf(Const.APP_PORT));
+        htProps.put("flowid", Integer.toString(activity.flowid));
+        htProps.put("pid", Integer.toString(activity.pid));
+        htProps.put("subpid", Integer.toString(activity.subpid));
 
         String sTemplateDir = null;
         FlowSetting[] fsa = BeanFactory.getFlowSettingsBean().getFlowSettings(userInfo, fd.getId());

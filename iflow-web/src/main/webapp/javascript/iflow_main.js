@@ -1164,6 +1164,7 @@ function updateCSS(css) {
 
 function setCookie( name, value ) 
 {
+	
   Cookie.set(name, value, { duration: 15, path: '/' });
 }
 
