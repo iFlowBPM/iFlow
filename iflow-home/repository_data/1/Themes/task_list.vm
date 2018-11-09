@@ -475,13 +475,13 @@
 		#if($hasActivities)
 
 	<div  class="process_t3">
-		<div class="pr01" style="text-align: left;width:40px;font-weight:bold"></div>
-		<div class="pr01" style="text-align: left;width:15%;font-weight:bold">Nº processo</div>
-		<div class="pr02" style="text-align: left;width:10%;font-weight:bold">Vindo de</div>
-		<div class="pr04" style="text-align: left;width:40%; font-weight:bold">Descrição</div>
-		<div class="pr05" style="text-align: left;width:6%; font-weight:bold"></div>
-		<div class="pr06" style="text-align: left;width:10%; font-weight:bold">Pendente há</div>
-		<div class="pr07" style="text-align: left;width:10%;font-weight:bold">Data de envio</div>
+		<div class="pr01_header" style="text-align: left;width:35px;font-weight:bold"></div>
+		<div class="pr01_header" style="text-align: left;width:15%;font-weight:bold">Nº processo</div>
+		<div class="pr02_header" style="text-align: left;width:10%;font-weight:bold">Vindo de</div>
+		<div class="pr04_header" style="text-align: left;width:40%; font-weight:bold">Descrição</div>
+		<div class="pr05_header" style="text-align: left;width:6%; font-weight:bold"></div>
+		<div class="pr06_header" style="text-align: left;width:10%; font-weight:bold">Pendente há</div>
+		<div class="pr07_header" style="text-align: left;width:10%;font-weight:bold">Data de envio</div>
 	</div>
 
 	#set($maxLen = 70)
@@ -500,9 +500,6 @@
 
 	<div id="pte_$act.get("pid")" class="process_t3" onclick="javascript:changeColor(this); openProcess($act.get("flowid"), '$response.encodeURL($url_prefix, $act.get("uri"))', 'flowid=$act.get("flowid")&pid=$act.get("pid")&subpid=$act.get("subpid")', false, 3);"
 		style="$style_read;">
-		<div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
-			$act.get("pinitials") 
-		</div>
 		<div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
 			$act.get("pinitials") 
 		</div>
@@ -530,7 +527,7 @@
 <!--div style="height:2px;width:$act.get("diffDays")px;background-color:$act.get("durationColor")"></div-->
 		</div>
 		<div class="pr07" style="width:10%;">
-			<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterDate=$act.get("createdDate")&filterLastMoveDate=$act.get("createdDate")')">$act.get("createdDate")</a>
+			<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterDate=$act.get("createdDate")&filterLastMoveDate=$act.get("createdDate")')" style="padding-left: 5%;">$act.get("createdDate")</a>
 			<br>
 			<div class="dropdown">
 				<div class="dropdown-toggle" style="text-align:right;margin-right:40px" id="dropdownmenu_$act.get('pnumber')" data-toggle="dropdown" onClick="cancelMenu=true;"><img src="Themes/newflow/images/V.png"/></div>
