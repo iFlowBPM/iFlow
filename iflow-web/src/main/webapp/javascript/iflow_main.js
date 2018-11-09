@@ -2479,7 +2479,7 @@ try{
 
 function delegButtonHide(){
 	try{
-	if( parseInt($("#delegButtonCount").text())>0){
+	if( parseInt($("#delegButtonCount").text())<=0){
 		$("#delegButtonCount").parent().addClass("notvisible");
 	}else{
 		$("#delegButtonCount").parent().removeClass("notvisible");
