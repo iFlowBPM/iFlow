@@ -2472,7 +2472,7 @@ function fsmailer(isOn){
 		}
 		}
 
-//[NOTIFICATIONS] correct
+//[NOTIFICATIONS] 
 try{
 	if($("#delegButtonCount"))setInterval(delegButtonHide, 100);
 } catch (err) {}
