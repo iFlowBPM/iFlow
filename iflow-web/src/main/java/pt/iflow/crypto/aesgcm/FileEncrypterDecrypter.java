@@ -57,7 +57,7 @@ public class FileEncrypterDecrypter {
 	//private static final String AESGCMalgorithm  = "AES/GCM/NoPadding";
 
 	//private static final int SECRET_KEY_LENGTH= 128;
-
+public static final long version = 1L;
 	//private static final String keystring = "aesEncryptionKey";
 	//	private static final int ivlenght = 16;
 	//	private static final int ivlenght_MAX = 16;
