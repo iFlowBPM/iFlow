@@ -159,6 +159,7 @@ function init(css) {
     $('section3_content_div').style.height="100%";
   }
   updateMessageCount();
+  
   GLOBAL_session_config.sel['admin'] = 13;
   GLOBAL_session_config.sel['delegations'] = 1;
   GLOBAL_session_config.sel['reports'] = 1;
@@ -2471,6 +2472,22 @@ function fsmailer(isOn){
 		}
 		}
 
+//[NOTIFICATIONS]
+try{
+	if($("#delegButtonCount"))setInterval(delegButtonHide, 100);
+} catch (err) {}
 
+function delegButtonHide(){
+	try{
+	if( parseInt($("#delegButtonCount").text())>0){
+		$("#delegButtonCount").parent().addClass("notvisible");
+	}else{
+		$("#delegButtonCount").parent().removeClass("notvisible");
+	}
+	} catch (err) {}
+}
+
+
+//[NOTIFICATIONS] END
 
 
