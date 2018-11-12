@@ -63,6 +63,11 @@ else if(url.indexOf("process_load.jsp")>0){
 	
 	url = "main.jsp";
 	//System.out.println(" _ __ process_load.jsp__ _ _");
+<<<<<<< HEAD
+=======
+}else if(url.indexOf("process_load.jsp")<=0 && session.getAttribute("toRedirect")!=null){
+	session.removeAttribute("toRedirect");
+>>>>>>> 837c76ed1ab3f59bda3babab17a3328646355d53
 }
 else{
 	url = response.encodeRedirectURL(url);
