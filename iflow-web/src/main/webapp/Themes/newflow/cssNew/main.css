@@ -331,7 +331,7 @@ ul, ul ul {
 
 .menu>li>ul li:hover a, .menu>li>ul li:hover a span, .menu>li>ul li:hover,
 	.menu>li>ul li>a.active {
-	/* Alteração no menu */
+	/* Alteraï¿½ï¿½o no menu */
 	font-weight: bold;
 	color: white !important;
 	/* background: #afcad8; */
@@ -610,43 +610,89 @@ ui-accordion-header>a>img {
 	padding: 5px;
 	width: 50px;
 	text-align: left;
-	font-size: 14px;
+	font-size: 12px;
 }
 
 .process_t3 .pr02 {
 	float: left;
 	padding: 5px;
 	width: 100px;
-	font-size: 14px;
+	font-size: 12px;
 }
 
 .process_t3 .pr03 {
 	float: left;
 	padding: 10px;
 	width: 50px;
-	font-size: 14px;
+	font-size: 12px;
 }
 
 .process_t3 .pr04 {
 	float: left;
 	padding: 5px;
 	width: auto;
-	font-size: 14px;
+	font-size: 12px;
 }
 
 .process_t3 .pr05 {
 	float: right;
 	width: 200px;
-	font-size: 14px;
+	font-size: 12px;
 }
 
 .process_t3 .pr06 {
 	float: left;
 	width: 80px;
-	font-size: 14px;
+	font-size: 12px;
 }
 
 .process_t3 .pr07 {
+	float: right;
+	text-align: left;
+	font-size: 12px;
+}
+.process_t3 .pr01_header {
+	float: left;
+	padding: 5px;
+	width: 50px;
+	text-align: left;
+	font-size: 14px;
+}
+
+.process_t3 .pr02_header {
+	float: left;
+	padding: 5px;
+	width: 100px;
+	font-size: 14px;
+}
+
+.process_t3 .pr03_header {
+	float: left;
+	padding: 10px;
+	width: 50px;
+	font-size: 14px;
+}
+
+.process_t3 .pr04_header {
+	float: left;
+	padding: 5px;
+	width: auto;
+	font-size: 14px;
+}
+
+.process_t3 .pr05_header {
+	float: right;
+	width: 200px;
+	font-size: 14px;
+}
+
+.process_t3 .pr06_header {
+	float: left;
+	width: 80px;
+	font-size: 14px;
+}
+
+.process_t3 .pr07_header {
 	float: right;
 	text-align: left;
 	font-size: 14px;
@@ -895,7 +941,7 @@ table.itemlist td {
 	border: 1px solid #ededed;
 }
 
-/*Mostrar botão ?*/
+/*Mostrar botï¿½o ?*/
 .help_box_open {
 	/*display: none;*/
 	/*margin-top:3px;*/
@@ -950,7 +996,7 @@ a>img:hover {
 }
 
 .menu_selected_item {
-	/* Alteração menu */
+	/* Alteraï¿½ï¿½o menu */
 	/*background-color:#afcad8;
 	
         color:#263238 !important;
@@ -1043,7 +1089,7 @@ td.gauge_empty {
 	border-radius: 0px !important;
 }
 
-/* Centrar botões */
+/* Centrar botï¿½es */
 .centrarBotoes {
 	text-align: center;
 	margin: 3rem 0rem;

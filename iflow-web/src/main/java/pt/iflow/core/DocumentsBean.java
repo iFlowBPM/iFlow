@@ -54,6 +54,7 @@ import pt.iflow.connector.document.DMSDocument;
 import pt.iflow.connector.document.Document;
 import pt.iflow.documents.AppendDocuments;
 import pt.iknow.utils.StringUtilities;
+import pt.iflow.crypto.aesgcm.FileEncrypterDecrypter;
 
 /**
  * 
@@ -74,8 +75,14 @@ import pt.iknow.utils.StringUtilities;
  * 
  */
 public class DocumentsBean implements Documents {
-
-  static final int STREAM_SIZE = 8096;
+	
+	
+	//#DM
+	private static final boolean TO_ENCRYPT = false;
+	//#DM
+	
+	
+	static final int STREAM_SIZE = 8096;
   static DocumentsBean instance = null;
 
   static String docsBaseUrl = null;
@@ -128,6 +135,7 @@ public class DocumentsBean implements Documents {
     Connection db = null;
     ResultSet rs = null;
     PreparedStatement pst = null;
+    
     try {
       db = DatabaseInterface.getConnection(userInfo);
       db.setAutoCommit(false);
@@ -320,11 +328,26 @@ public class DocumentsBean implements Documents {
       // http://java-x.blogspot.com/2006/09/oracle-jdbc-automatic-key-generation.html
       pst = db.prepareStatement(query, generatedKeyNames);
 
-      pst.setString(1, adoc.getFileName());
+      pst.setString(1, adoc.getFileName());// add to db #DM
       String filePath = null;
+      
+      
+      
+      
+      //#ENCRYPT
+	  //Logger.info(userInfo.getUtilizador(), this, "addDocument", procData.getSignature() + "NOT ENCRYPTED BAIS "+ new String(adoc.getContent()) );
+ 	 
+	  if(TO_ENCRYPT) {
+		  adoc.setContent(new FileEncrypterDecrypter().encryptByteArray(adoc.getContent(), db));
+	  }
+	 // Logger.info(userInfo.getUtilizador(), this, "addDocument", procData.getSignature() + " ENCRYPTED BAIS "+ new String(adoc.getContent()) );
+	  
+	  //#ENCRYPT END
       if (docDataInDB) {
-        ByteArrayInputStream isBody = new ByteArrayInputStream(adoc.getContent());
-        pst.setBinaryStream(2, isBody, adoc.getContent().length);
+       // add to db #DM
+    	  ByteArrayInputStream isBody = new ByteArrayInputStream(adoc.getContent());// add to db #DM
+    	  // add to db #DM
+        pst.setBinaryStream(2, isBody, adoc.getContent().length);// add to db #DM
       } else {
         pst.setBinaryStream(2, null, 0);
       }
@@ -332,13 +355,14 @@ public class DocumentsBean implements Documents {
       pst.setInt(4, procData.getPid());
       pst.setInt(5, procData.getSubPid());
 
-      pst.executeUpdate();
+      pst.executeUpdate();// add to db #DM
       rs = pst.getGeneratedKeys(); // obtem as chaves geradas automaticamente para o campo docid
       if (rs.next()) {
         ret = rs.getInt(1);
       }
 
       adoc.setDocId(ret);
+      // add to crypto file ks
 
       if (!docDataInDB && ((filePath = getDocumentFilePath(adoc.getDocId(), adoc.getFileName())) != null)) {
         try
@@ -349,8 +373,12 @@ public class DocumentsBean implements Documents {
           pst.setString(1, filePath);
           pst.setInt(2, adoc.getDocId());
           pst.executeUpdate();
-          FileOutputStream fos = new FileOutputStream(filePath);
-          fos.write(adoc.getContent());
+          
+       // add to filesystem #DM
+          FileOutputStream fos = new FileOutputStream(filePath);// add to filesystem #DM
+          fos.write(adoc.getContent());// add to filesystem #DM
+          
+       // add to filesystem #DM
           fos.close();
         } catch(FileNotFoundException ex) {
           Logger.error(userInfo.getUtilizador(), this, "addDocument", procData.getSignature() + " File not Found.", ex);
@@ -413,7 +441,9 @@ public class DocumentsBean implements Documents {
     ResultSet rs = null;
     try {
       db.setAutoCommit(false);
-      Document dbDoc = getDocumentFromDB(db, adoc.getDocId());
+      
+   // update to db #DM
+      Document dbDoc = getDocumentFromDB(db, adoc.getDocId());// update to db #DM
       if (!canUpdate(userInfo, procData, dbDoc)) {
         Logger.error(userInfo.getUtilizador(), this, "updateDocument", procData.getSignature()
             + "User not authorized to update file.");
@@ -430,21 +460,40 @@ public class DocumentsBean implements Documents {
       pst.setString(++pos, adoc.getFileName());
       if(updateContents) {
         String filePath = null;
+        
+        
+    	 //#ENCRYPT
+    	  Logger.info(userInfo.getUtilizador(), this, "addDocument", procData.getSignature() + "NOT ENCRYPTED BAIS "+ new String(adoc.getContent()) );
+     	 
+    	  if(TO_ENCRYPT) {
+    		  adoc.setContent(new FileEncrypterDecrypter().encryptByteArray(adoc.getContent(), db));
+    	  }
+    	  Logger.info(userInfo.getUtilizador(), this, "addDocument", procData.getSignature() + " ENCRYPTED BAIS "+ new String(adoc.getContent()) );
+    	  
+    	  //#ENCRYPT END
+        
+        
         if (docDataInDB || ((filePath = getDocumentFilePath(adoc.getDocId(), adoc.getFileName())) == null)) {
-          ByteArrayInputStream isBody = new ByteArrayInputStream(adoc.getContent());
-          pst.setBinaryStream(++pos, isBody, adoc.getContent().length);
+        	
+       
+        	
+        	
+          ByteArrayInputStream isBody = new ByteArrayInputStream(adoc.getContent());// update to db #DM
+          pst.setBinaryStream(++pos, isBody, adoc.getContent().length);// update to db #DM
+          
           pst.setString(++pos, null);
         } else {
-          String folderPath = getDocumentFilePath(adoc.getDocId(), "");
-          File f = new File(folderPath);
-          File[] fs = f.listFiles();
+        	// update to filesystem #DM
+          String folderPath = getDocumentFilePath(adoc.getDocId(), "");// update to filesystem #DM
+          File f = new File(folderPath);// update to filesystem #DM
+          File[] fs = f.listFiles();// update to filesystem #DM
           for (int i=0; fs!=null && i<fs.length; i++) fs[i].delete();
           pst.setBinaryStream(++pos, null, 0);
-          pst.setString(++pos, filePath);
+          pst.setString(++pos, filePath);// update to filesystem #DM
           try
           {
-            FileOutputStream fos = new FileOutputStream(filePath);
-            fos.write(adoc.getContent());
+            FileOutputStream fos = new FileOutputStream(filePath);// update to filesystem #DM
+            fos.write(adoc.getContent());// update to filesystem #DM
             fos.close();
           } catch(FileNotFoundException ex) {
             Logger.error(userInfo.getUtilizador(), this, "addDocument", procData.getSignature() + " File not Found.", ex);
@@ -612,7 +661,7 @@ public class DocumentsBean implements Documents {
           retObj = new AlfrescoDocument(scheme, address, uuid, path);
           ((DMSDocument) retObj).setDocId(doc.getDocId());
           ((DMSDocument) retObj).setFileName(doc.getFileName());
-          ((DMSDocument) retObj).setContent(doc.getContent());
+          ((DMSDocument) retObj).setContent(doc.getContent());// get from filesystem #DM
         }
         DatabaseInterface.closeResources(st, rs);
         if (retObj != null && retObj instanceof DMSDocument) {
@@ -723,7 +772,18 @@ public class DocumentsBean implements Documents {
           }
           baos.flush();
           baos.close();
-          retObj.setContent(baos.toByteArray());
+          
+        //#DECRYPT
+    	//  Logger.info(userInfo.getUtilizador(), this, "getDocument", procData.getSignature() + "NOT DECRYPTED BAIS "+ new String(adoc.getContent()) );
+     	 
+    	  //if(toEncrypt) {
+    		  retObj.setContent(new FileEncrypterDecrypter().decryptByteArray(baos.toByteArray(), db));
+    	  //}
+    	 // Logger.info(userInfo.getUtilizador(), this, "getDocument", procData.getSignature() + " DECRYPTED BAIS "+ new String(adoc.getContent()) );
+    	  
+    	  //#DECRYPT END
+          
+          //retObj.setContent(baos.toByteArray());// get DOC CONTENT #DM
         }
       } else {
         retObj = null;

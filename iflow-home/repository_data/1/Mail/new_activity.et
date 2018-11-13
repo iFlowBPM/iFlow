@@ -42,7 +42,7 @@ em {
 	<img src="http://$app_host:$app_port/iFlow/images/logo_iflow.png" alt="iFlow"/>
 	<p class="title">iFlow - New task in $flowname</p>
 	<p>You have a new task in <em>$flowname</em>, with description: <em>$description</em>.</p>
-	<p>To open it, click <a href="$url">here</a> or, as an alternative, in tab <em>Tasks</em> at <a href="http://$app_host:$app_port/iFlow/main.jsp">iFlow</a>.</p>
+	<p>To open it, click <a href="http://$app_host:$app_port/iFlow/process_load.jsp?process_url=/iFlow/Forward/forward.jsp?flowid=$flowid&pid=$pid&subpid=$subpid">here</a> or, as an alternative, in tab <em>Tasks</em> at <a href="http://$app_host:$app_port/iFlow/main.jsp">iFlow</a>.</p>
 </body>
 </html>
   ]]></emailbody>
