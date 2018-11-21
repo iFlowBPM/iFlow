@@ -15,7 +15,24 @@
 	<packaging>war</packaging>
 	<version>${iflow.version}</version>
 
-	<dependencies>
+	
+  <dependencies>
+  	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-core</artifactId>
+	    <version>5.0.3.RELEASE</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.springframework</groupId>
+	    <artifactId>spring-web</artifactId>
+	    <version>5.0.3.RELEASE</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.fasterxml.jackson.core</groupId>
+	    <artifactId>jackson-databind</artifactId>
+	    <version>2.9.4</version>
+	</dependency>
+	
 		<!-- APP -->
 		<dependency>
 			<groupId>pt.iknow.iflow</groupId>
@@ -110,8 +127,15 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
+			<artifactId>poi</artifactId>			
 		</dependency>
+		<!-- 
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi-scratchpad</artifactId>
+		    <version>3.15</version>
+		</dependency>
+		 -->
 		<dependency>
 			<groupId>javax.j2ee</groupId>
 			<artifactId>j2ee</artifactId>
