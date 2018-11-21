@@ -76,7 +76,7 @@ public class LDAPInterface {
     return getDirectory().search(startFrom, filter, false);
   }
   
-  public static boolean checkBindPassword(String bindDn, String password) {
+  public static boolean checkBindPassword(String bindDn, String password){
     return getDirectory().checkBindPassword(bindDn, password);
   }
   

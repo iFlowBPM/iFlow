@@ -122,7 +122,8 @@ public class DocumentServlet extends HttpServlet {
       return;
     }
     byte [] ba = doc.getContent();
-    response.setHeader("Content-Disposition","attachment;filename=\"" + doc.getFileName().replace(' ', '_')+"\";");
+    //response.setHeader("Content-Disposition","attachment;filename=\"" + doc.getFileName().replace(' ', '_')+"\";");
+    response.setHeader("Content-Disposition","attachment;filename=\"" + doc.getFileName()+"\";");
     response.setContentLength(ba.length);
     OutputStream out = response.getOutputStream();
     out.write(ba);

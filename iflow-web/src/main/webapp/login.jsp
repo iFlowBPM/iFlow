@@ -57,10 +57,17 @@ else {
 if (url == null) {
   url = "main.jsp";
 }
-else {
-  url = response.encodeRedirectURL(url);
-}
+//[OPEN PROCESS WITH URL] :  Para testes = session.setAttribute("toRedirect", url); :- versão final usar GoTo ou similar 
+else if(url.indexOf("process_load.jsp")>0){
+	session.setAttribute("toRedirect", url);
+	
+	url = "main.jsp";
+	//System.out.println(" _ __ process_load.jsp__ _ _");
 
+}
+else{
+	url = response.encodeRedirectURL(url);
+}
 
 String ufid = request.getParameter(Const.sUSER_FLOWID);
 if(ufid == null ){

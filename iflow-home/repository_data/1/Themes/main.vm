@@ -368,8 +368,43 @@
 		
 		</head>
 
-	<body onresize="javascript:mainResize()"  /*onload="updateNotifications()"*/>
+	<body onresize="javascript:mainResize()"  onload="javascript:setProcFlow()" /*onload="updateNotifications()"*/>
+	<script language="JavaScript">
+	function setProcFlow(){
+		/*[OPEN PROCESS WITH URL] :  Para testes = getCookie("toRedirect") ... openProcess(OP_flowid, OP_params[0], OP_params[1], false, 3);
+		*:- versão final usar GoTo ou similar , E necessario estar aqui? chamar a pagina com open process pre defenido ?  
+		*/
+	        var mail_toRedirect = getCookie("toRedirect");
+	        document.cookie="toRedirect=;0"
+	        //alert(" toRedirect "+ mail_toRedirect);
+	        if(mail_toRedirect.length>0){
+	        	//alert("mail_toRedirect "+mail_toRedirect.length);
+	        	if(mail_toRedirect.indexOf("process_load.jsp")>0){
+	        		//alert("  mail_toRedirect.indexOf "+mail_toRedirect.indexOf("process_load.jsp"));
+	        		var OP_params = mail_toRedirect.slice(mail_toRedirect.indexOf("=")+1).split("?");
+        			var OP_flowid =  OP_params[1].slice(OP_params[1].indexOf("=")+1,OP_params[1].indexOf("&"));
+					//alert("OPENING PROCESS :: "+OP_flowid+" || path :: "+OP_params[0]+ " || params ::"+ OP_params[1]);
+					openProcess(OP_flowid, OP_params[0], OP_params[1], false, 3);
+	        	}
+	        }
+	};
+	function getCookie(cname) {
+	    var name = cname + "=";
+	    var decodedCookie = decodeURIComponent(document.cookie);
+	    var ca = decodedCookie.split(';');
+	    for(var i = 0; i <ca.length; i++) {
+	        var c = ca[i];
+	        while (c.charAt(0) == ' ') {
+	            c = c.substring(1);
+	        }
+	        if (c.indexOf(name) == 0) {
+	            return c.substring(name.length, c.length);
+	        }
+	    }
+	    return "";
+	}
 	
+	</script>
 	<style type="text/css">
 		h1 {
 			font-size: 1.2em;
@@ -501,7 +536,7 @@
 							</td>
                                             </li>
                                             
-				                                           
+				               <!--INSERIR DATA/HORA-->                            
 							<li>
 								<form action="$response.encodeURL($url_prefix,'logout.jsp')?ts=$ts">
 									<input type="submit" class="btn btn-default btn-sm" style="margin: 0px;" name="Logout" id="Logout" value="$link_logout"/>

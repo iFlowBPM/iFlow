@@ -355,8 +355,7 @@ public class ADAuthentication implements Authentication {
             Logger.debug(null,this,"checkUser","Using config bind dn, bindDn :" + bindDn +", userBinDN: " +_userBindDN);
           }
         }
-        Logger.debug(null,this,"checkUser","user bind dn = " + bindDn);      
-        retVal = LDAPInterface.checkBindPassword(bindDn, password);// || LDAPInterface.checkBindPassword(username, password) || LDAPInterface.checkBindPassword("DN=" + username, password) || LDAPInterface.checkBindPassword("PN=" + username, password);
+        retVal = LDAPInterface.checkBindPassword(bindDn, password) || LDAPInterface.checkBindPassword(username, password);// || LDAPInterface.checkBindPassword("DN=" + username, password) || LDAPInterface.checkBindPassword("PN=" + username, password);
       }
     }
     catch (Exception e) {

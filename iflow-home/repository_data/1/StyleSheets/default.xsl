@@ -2407,7 +2407,7 @@
 
 
 
-					<xsl:attribute name="href">
+			<xsl:attribute name="href">
 			<xsl:value-of select="href/text()" />
 			<xsl:for-each select="arg">
 				<xsl:choose>
@@ -2428,8 +2428,13 @@
 				</xsl:choose>
 			</xsl:for-each>
 			</xsl:attribute>
-					<!-- <xsl:attribute name="onClick">disableForm(false)</xsl:attribute> - Analisar #3564 -->
-				</xsl:otherwise>
+			<xsl:choose>
+				<xsl:when test="href='form.jsp'">
+					<xsl:attribute name="onClick">disableForm(false)</xsl:attribute>
+				</xsl:when> 
+				<xsl:otherwise/>
+			</xsl:choose>
+			</xsl:otherwise>
 			</xsl:choose>
 			<xsl:value-of select="text/text()" />
 		</a>
