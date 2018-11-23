@@ -142,8 +142,7 @@ public class BlockCriarDocumento extends Block {
 						
 						     
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						Logger.error(userInfo.getUtilizador(), this, "after", "error parsing Word " + template.getName(), e);
 					}
 	        	}
 	        	else
@@ -231,7 +230,7 @@ public class BlockCriarDocumento extends Block {
 		                RepositoryFile rf = BeanFactory.getRepBean().getWebFile(userInfo, retrieveImageName(text, procData));
 		                if(rf!=null && rf.getResouceData().length>0)
 		                	r.addPicture(rf.getResourceAsStream(), XWPFDocument.PICTURE_TYPE_JPEG, retrieveImageName(text, procData), Units.toEMU(retrieveImageX(text)), Units.toEMU(retrieveImageY(text)));
-		            } else if (text != null && text.contains(findText)) {
+		            } else if (text != null && text.contains(findText) && findText!=null && replaceText!=null) {
 		                text = text.replace(findText, replaceText);
 		                r.setText(text,0);
 		            }
@@ -252,7 +251,7 @@ public class BlockCriarDocumento extends Block {
 			                RepositoryFile rf = BeanFactory.getRepBean().getWebFile(userInfo, retrieveImageName(text, procData));
 			                if(rf!=null && rf.getResouceData().length>0)
 			                	r.addPicture(rf.getResourceAsStream(), XWPFDocument.PICTURE_TYPE_JPEG, retrieveImageName(text, procData), Units.toEMU(retrieveImageX(text)), Units.toEMU(retrieveImageY(text)));
-			            } else if (text != null && text.contains(findText)) {
+			            } else if (text != null && text.contains(findText) && findText!=null && replaceText!=null) {
 			                text = text.replace(findText, replaceText);
 			                r.setText(text,0);
 			            }
