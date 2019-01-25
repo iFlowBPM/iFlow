@@ -1,20 +1,33 @@
 package pt.iflow.blocks.P17040.utils;
 
+import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+
+import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.db.DatabaseInterface;
+import pt.iflow.api.documents.Documents;
+import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.ImportAction.ImportActionType;
+import pt.iflow.connector.document.Document;
 
 public class GestaoCrc {
 
@@ -31,19 +44,31 @@ public class GestaoCrc {
 		}
 	}
 
-	public static Integer markAsImported(Integer crcId, Integer originalInputDocumentId, String username,
+	public static Integer markAsImported(Integer crcId, Integer originalInputDocumentId, Integer originalDocId2, Integer originalDocId3, String username,
 			Connection connection) throws SQLException {
 		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
-			String query = "insert into u_gestao(out_id, status_id, importdate, importuser, original_docid) values(?,?,?,?,?)";
+			String query = "insert into u_gestao(out_id, status_id, importdate, importuser, original_docid, original_docid2, original_docid3) values(?,?,?,?,?,?,?)";
 			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			pst.setInt(1, crcId);
 			pst.setInt(2, Status.IMPORTED.getValue());
 			pst.setTimestamp(3, new Timestamp((new Date()).getTime()));
 			pst.setString(4, username);
-			pst.setInt(5, originalInputDocumentId);
+			//pst.setInt(5, originalInputDocumentId);
+			if(originalInputDocumentId!=null)
+				pst.setInt(5, originalInputDocumentId);
+			else
+				pst.setNull(5, java.sql.Types.INTEGER);
+			if(originalDocId2!=null)
+				pst.setInt(6, originalDocId2);
+			else
+				pst.setNull(6, java.sql.Types.INTEGER);
+			if(originalDocId3!=null)
+				pst.setInt(7, originalDocId3);
+			else
+				pst.setNull(7, java.sql.Types.INTEGER);
 			pst.executeUpdate();
 			rs = pst.getGeneratedKeys();
 			if(rs.next())
@@ -178,7 +203,7 @@ public class GestaoCrc {
 		return false;
 		}
 
-	public static ImportActionType checkInfEntType(String idEntValue, Date dtRefEnt, String username,
+	public static ImportAction checkInfEntType(String idEntValue, Date dtRefEnt, String username,
 			Connection connection) throws SQLException {
 		Connection db = null;
 		PreparedStatement pst = null;
@@ -201,7 +226,7 @@ public class GestaoCrc {
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
-				return ImportActionType.CREATE;
+				return new ImportAction(ImportActionType.CREATE);
 			
 			Integer u_gestao_id = rs.getInt(1);
 			Date dtRefEntAux = rs.getDate(2);
@@ -209,7 +234,7 @@ public class GestaoCrc {
 			pst.close();
 			rs.close();
 			
-			query = "select fichAce.id "+
+			query = "select fichAce.id, u_gestao.id "+
 				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
 				"where  u_gestao.in_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
@@ -229,9 +254,9 @@ public class GestaoCrc {
 			rs = pst.executeQuery();
 			
 			if(rs.next() && dtRefEntAux.getTime()<=dtRefEnt.getTime())
-				return ImportActionType.UPDATE;			
+				return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));						
 			else 
-				return ImportActionType.CREATE;
+				return new ImportAction(ImportActionType.CREATE);
 						
 		} catch (Exception e) {
 			Logger.error(username, "GestaoCrc", "checkInfEntType", e.getMessage(), e);
@@ -241,7 +266,7 @@ public class GestaoCrc {
 		return null;
 		}
 
-	public static ImportActionType checkInfProtType(String idProt, Date dtRefProt, String utilizador,
+	public static ImportAction checkInfProtType(String idProt, Date dtRefProt, String utilizador,
 			Connection connection) throws SQLException {
 		Connection db = null;
 		PreparedStatement pst = null;
@@ -262,7 +287,7 @@ public class GestaoCrc {
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
-				return ImportActionType.CREATE;
+				return new ImportAction(ImportActionType.CREATE);
 			
 			Integer u_gestao_id = rs.getInt(1);
 			Date dtRefProtAux = rs.getDate(2);
@@ -270,7 +295,7 @@ public class GestaoCrc {
 			pst.close();
 			rs.close();
 			
-			query = "select fichAce.id "+
+			query = "select fichAce.id, u_gestao.id "+
 				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
 				"where  u_gestao.in_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
@@ -290,9 +315,9 @@ public class GestaoCrc {
 			rs = pst.executeQuery();
 			
 			if(rs.next() && dtRefProtAux.getTime()<=dtRefProt.getTime())
-				return ImportActionType.UPDATE;			
+				return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));		
 			else 
-				return ImportActionType.CREATE;
+				return new ImportAction(ImportActionType.CREATE);
 			
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "checkInfProtType", e.getMessage(), e);
@@ -302,7 +327,7 @@ public class GestaoCrc {
 		return null;
 		}
 
-	public static ImportActionType checkInfInstType(String idCont, String idInst, Date dtRefInst, String utilizador,
+	public static ImportAction checkInfInstType(String idCont, String idInst, Date dtRefInst, String utilizador,
 			Connection connection) throws SQLException {
 		Connection db = null;
 		PreparedStatement pst = null;
@@ -325,7 +350,7 @@ public class GestaoCrc {
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
-				return ImportActionType.CREATE;
+				return new ImportAction(ImportActionType.CREATE);
 			
 			Integer u_gestao_id = rs.getInt(1);
 			Date dtRefInstAux = rs.getDate(2);
@@ -333,7 +358,7 @@ public class GestaoCrc {
 			pst.close();
 			rs.close();
 			
-			query = "select fichAce.id "+
+			query = "select fichAce.id, u_gestao.id "+
 				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
 				"where  u_gestao.in_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
@@ -355,9 +380,9 @@ public class GestaoCrc {
 			rs = pst.executeQuery();
 			
 			if(rs.next() && dtRefInstAux.getTime()<=dtRefInst.getTime())
-				return ImportActionType.UPDATE;			
+				return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));		
 			else 
-				return ImportActionType.CREATE;
+				return new ImportAction(ImportActionType.CREATE);
 			
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "checkinfInstType", e.getMessage(), e);
@@ -375,7 +400,7 @@ public class GestaoCrc {
 		return idEnt_id;
 	}
 
-	public static ImportActionType checkRiscoEntType(String idEnt, Date dtRef, String utilizador,
+	public static ImportAction checkRiscoEntType(String idEnt, Date dtRef, String utilizador,
 			Connection connection) throws SQLException {
 		Connection db = null;
 		PreparedStatement pst = null;
@@ -400,7 +425,7 @@ public class GestaoCrc {
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
-				return ImportActionType.CREATE;
+				return new ImportAction(ImportActionType.CREATE);
 			
 			Integer u_gestao_id = rs.getInt(1);
 			Date dtRefAux = rs.getDate(2);
@@ -409,7 +434,7 @@ public class GestaoCrc {
 			pst.close();
 			rs.close();
 			
-			query = "select fichAce.id "+
+			query = "select fichAce.id, u_gestao.id "+
 				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
 				"where  u_gestao.in_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
@@ -429,9 +454,9 @@ public class GestaoCrc {
 			rs = pst.executeQuery();
 			
 			if(rs.next() && dtRefAux.getTime()<=dtRef.getTime())
-				return ImportActionType.UPDATE;			
+				return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));			
 			else 
-				return ImportActionType.CREATE;
+				return new ImportAction(ImportActionType.CREATE);
 			
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "checkRiscoEntType", e.getMessage(), e);
@@ -441,7 +466,7 @@ public class GestaoCrc {
 		return null;
 		}
 
-	public static ImportActionType checkInfPerInstType(String idCont, String idInst, Date dtRef, String[] types,
+	public static ImportAction checkInfPerInstType(String idCont, String idInst, Date dtRef, String[] types,
 			String utilizador, Connection connection) throws SQLException {
 		Connection db = null;
 		PreparedStatement pst = null;
@@ -466,7 +491,7 @@ public class GestaoCrc {
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
-				return ImportActionType.CREATE;
+				return new ImportAction(ImportActionType.CREATE);
 			
 			Integer u_gestao_id = rs.getInt(1);
 			Date dtRefAux = rs.getDate(2);
@@ -474,7 +499,7 @@ public class GestaoCrc {
 			pst.close();
 			rs.close();
 			
-			query = "select fichAce.id "+
+			query = "select fichAce.id, u_gestao.id "+
 				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
 				"where  u_gestao.in_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
@@ -498,9 +523,9 @@ public class GestaoCrc {
 			rs = pst.executeQuery();
 			
 			if(rs.next() && dtRefAux.getTime()<=dtRef.getTime())
-				return ImportActionType.UPDATE;			
+				return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));			
 			else 
-				return ImportActionType.CREATE;
+				return new ImportAction(ImportActionType.CREATE);
 			
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "checkInfPerInstType", e.getMessage(), e);
@@ -510,7 +535,7 @@ public class GestaoCrc {
 		return null;
 		}
 
-	public static ImportActionType checkInfDiaInstFin(Date dtRefInfDia, String idCont, String idInst, String utilizador,
+	public static ImportAction checkInfDiaInstFin(Date dtRefInfDia, String idCont, String idInst, String utilizador,
 			Connection connection) throws SQLException {
 		Connection db = null;
 		PreparedStatement pst = null;
@@ -533,7 +558,7 @@ public class GestaoCrc {
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
-				return ImportActionType.CREATE;
+				return new ImportAction(ImportActionType.CREATE);
 			
 			Integer u_gestao_id = rs.getInt(1);
 			Date dtRefInfDiaAux = rs.getDate(2);
@@ -561,9 +586,9 @@ public class GestaoCrc {
 			rs = pst.executeQuery();
 			
 			if(rs.next() && dtRefInfDiaAux.getTime()<=dtRefInfDia.getTime())
-				return ImportActionType.UPDATE;			
+				return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));			
 			else 
-				return ImportActionType.CREATE;
+				return new ImportAction(ImportActionType.CREATE);
 			
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "checkInfDiaInstFin", e.getMessage(), e);
@@ -615,4 +640,125 @@ public class GestaoCrc {
 			DatabaseInterface.closeResources(db, pst, rs);
 		}
 	}
+	
+	public static Boolean checkForChangedValues(Connection connection, UserInfoInterface userInfo, Integer u_gestao_id, 
+			ProcessData procData, Properties properties, HashMap<String, Object> lineValues,
+			 HashMap<String, Object> keysToIdentify, List<String> keysToRemove) throws SQLException, IOException{
+		return checkForChangedValues( connection,  userInfo,  u_gestao_id, 
+				 procData,  properties,  lineValues,
+				keysToIdentify, keysToRemove, null);
+	}
+	
+	public static Boolean checkForChangedValues(Connection connection, UserInfoInterface userInfo, Integer u_gestao_id, 
+			ProcessData procData, Properties properties, HashMap<String, Object> lineValues,
+			 HashMap<String, Object> keysToIdentify, List<String> keysToRemove, Integer originalDocIdIndex) throws SQLException, IOException{
+		Documents docBean = BeanFactory.getDocumentsBean();
+		
+		HashMap<String, Object> u_gestaoValues = fillAtributtes(null, connection, userInfo,
+				"select * from u_gestao where id = {0} ", new Object[] {u_gestao_id});
+		
+		String auxOriginalDocIdIndex = "original_docid";
+		if(originalDocIdIndex==null || originalDocIdIndex<2 || originalDocIdIndex>3)
+			auxOriginalDocIdIndex = "original_docid";
+		else if(originalDocIdIndex == 2 )
+			auxOriginalDocIdIndex = "original_docid2";
+		else if(originalDocIdIndex == 3 )
+			auxOriginalDocIdIndex = "original_docid3";
+		
+		Document txtImportedOriginally = docBean.getDocument(userInfo, procData, (Integer) u_gestaoValues.get(auxOriginalDocIdIndex));
+		String separator = properties.getProperty("p17040_separator", "|");
+		HashMap<String, Object> oldLineValues = new HashMap<String, Object>();
+		List<String> oldLines = IOUtils.readLines(new ByteArrayInputStream(txtImportedOriginally.getContent()));					
+		for (int i=0; i < oldLines.size(); i++) {
+			if(StringUtils.isBlank(oldLines.get(i)))
+				continue;			
+			try {
+				oldLineValues = FileImportUtils.parseLine(i, oldLines.get(i), properties, separator,
+						new ArrayList<ValidationError>(),"");
+			} catch (Exception e) {
+				continue;
+			}		
+			
+			Boolean allKeysMatch=true;
+			for(String key: keysToIdentify.keySet()){
+				if(!keysToIdentify.get(key).equals(oldLineValues.get(key)))
+					allKeysMatch=false;
+			}
+			if(allKeysMatch)
+				break;
+			
+		}
+		
+		HashMap<String, Object> newLineValues = (HashMap<String, Object>) lineValues.clone();
+		for(String value: keysToRemove){
+			newLineValues.remove(value);		
+			oldLineValues.remove(value);
+		}
+		if(oldLineValues.equals(newLineValues))
+			return false;
+		
+		return true;
+	}
+
+	public static ImportAction checkComInfComp(Date dtRef, String idCont, String idInst, String utilizador,
+			Connection connection) {
+		Connection db = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			String query = "select u_gestao.id, comInfComp.dtRef "+
+				"from u_gestao, crc, conteudo, comInfComp "+
+				"where u_gestao.out_id = crc.id and "+
+				"	crc.id = conteudo.crc_id and "+
+				"    conteudo.id = comInfComp.conteudo_id and "+				
+				"    comInfComp.idCont = ? and "+
+				"    comInfComp.idInst = ? and "+
+				"    u_gestao.status_id= 4  "+
+				"    order by u_gestao.receivedate desc;";
+			
+			pst = connection.prepareStatement(query);
+			pst.setString(1, idCont);
+			pst.setString(2, idInst);
+			rs = pst.executeQuery();
+			
+			if(!rs.next())
+				return new ImportAction(ImportActionType.CREATE);
+			
+			Integer u_gestao_id = rs.getInt(1);
+			Date dtRefInfDiaAux = rs.getDate(2);
+			
+			pst.close();
+			rs.close();
+			
+			query = "select fichAce.id "+
+				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
+				"where  u_gestao.in_id = crc.id and "+
+				"	crc.id = conteudo.crc_id and "+
+				"	conteudo.id = avisRec.conteudo_id and "+
+				"	avisRec.id = fichAce.avisRec_id and "+
+				"   u_gestao.id = ? and "+
+				"   fichAce.id not in  "+
+				"		( select regMsg.fichAce_id from regMsg "+
+				"			where regMsg.idCont = ? and regMsg.idInst = ? "+
+				"			and  msg.nvCrit=0 " +
+				"           and (operOrig='CCI' or operOrig='CCU')); ";
+			
+			pst = connection.prepareStatement(query);
+			pst.setInt(1, u_gestao_id);
+			pst.setString(2, idCont);
+			pst.setString(3, idInst);
+			rs = pst.executeQuery();
+			
+			if(rs.next() && dtRefInfDiaAux.getTime()<=dtRef.getTime())
+				return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));			
+			else 
+				return new ImportAction(ImportActionType.CREATE);
+			
+		} catch (Exception e) {
+			Logger.error(utilizador, "GestaoCrc", "checkComInfComp", e.getMessage(), e);
+		} finally {
+			DatabaseInterface.closeResources(db, pst, rs);
+		}
+		return null;
+		}
 }

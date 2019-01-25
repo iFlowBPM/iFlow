@@ -6,14 +6,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+
+import javax.xml.rpc.ServiceException;
+import javax.xml.soap.SOAPException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,8 +35,8 @@ import pt.iflow.blocks.P17040.utils.ValidationError;
 
 public class BlockP17040ImportCERA extends BlockP17040Import {
 	
-	private static final String DATA_ENRICHMENT_ON = "data_enrichment_on";
-	private boolean dataEnrichmentOn = false;
+	static final String DATA_ENRICHMENT_ON = "data_enrichment_on";
+	boolean dataEnrichmentOn = false;
 
 	public BlockP17040ImportCERA(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
@@ -75,6 +80,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 					errorList.add(new ValidationError("Linha com número de campos errado", "", "", lineNumber));
 					continue;
 				}
+				crcIdResult = createBlank(connection, userInfo, null, properties, lineValues);
 				// validar Identificação
 				String idEnt = lineValues.get("idEnt").toString();
 				if (StringUtils.isBlank(idEnt)) {
@@ -88,13 +94,24 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 					continue;
 				}
 				// determinar se é insert ou update
-				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkRiscoEntType(idEnt, dtRef,
+				ImportAction actionOnLine = GestaoCrc.checkRiscoEntType(idEnt, dtRef,
 						userInfo.getUtilizador(), connection);
 				if (actionOnLine == null)
 					continue;
+				
+				//check if UPDATE has actual changed values				
+//				if(actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
+//					HashMap<String,Object> keysToIdentify = new HashMap<>();
+//					ArrayList<String> keysToRemove = new ArrayList<>();
+//					keysToIdentify.put("idEnt", idEnt);					
+//					keysToRemove.add("dtRef");
+//					if(!GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove))
+//						continue;
+//				}
+				
 				// adicionar acçao
-				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? "ERI" : "ERU";
-				actionList.add(new ImportAction(actionOnLine, idEnt));
+				String type = actionOnLine.getAction().equals(ImportAction.ImportActionType.CREATE) ? "ERI" : "ERU";
+				actionList.add(new ImportAction(actionOnLine.getAction(), idEnt));
 				try {
 					// inserir na bd
 					crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type,
@@ -110,6 +127,29 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 		return crcIdResult;
 	}
 
+	public Integer createBlank(Connection connection, UserInfoInterface userInfo, Integer crcIdResult, Properties properties, HashMap<String, Object> lineValues) throws SQLException{
+		if (crcIdResult == null)
+			crcIdResult = createNewCrc(connection, properties, userInfo);
+
+		if (crcIdResult == null)
+			crcIdResult = createNewCrc(connection, properties, userInfo);
+
+		List<Integer> conteudoIdList = retrieveSimpleField(connection, userInfo,
+				"select id from conteudo where crc_id = {0} ", new Object[] { crcIdResult });
+
+		Integer comRiscoEnt_id = null;
+		List<Integer> comRiscoEntIdList = retrieveSimpleField(connection, userInfo,
+				"select id from comRiscoEnt where conteudo_id = {0} ", new Object[] { conteudoIdList.get(0) });
+		if (comRiscoEntIdList.isEmpty())
+			comRiscoEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+					"insert into comRiscoEnt(conteudo_id, dtRef) values(?,?)",
+					new Object[] { conteudoIdList.get(0), lineValues.get("dtRef") });
+		else
+			comRiscoEnt_id = comRiscoEntIdList.get(0);
+		
+		return crcIdResult;
+	}
+	
 	public Integer importLine(Connection connection, UserInfoInterface userInfo, Integer crcIdResult,
 			HashMap<String, Object> lineValues, Properties properties, String type,
 			ArrayList<ValidationError> errorList) throws Exception {
@@ -175,6 +215,26 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 		return crcIdResult;
 	}
 	
+	Boolean hasEntRel(Connection connection, UserInfoInterface userInfo, String idEnt){
+		String response;
+		try {
+			response = FileImportUtils.callInfotrustWS(null, null, idEnt);
+			List<String> lines = IOUtils.readLines(new StringReader(response));
+			int numberOfLines=0;
+			for(String line: lines)
+				if(StringUtils.isNotBlank(line))
+					numberOfLines++;
+			
+			if(numberOfLines>0)
+				return true;
+		} catch (Exception e) {
+			Logger.error(userInfo.getUserId(),this,"hasEntRel","idEnt :" + idEnt,e);
+			return false;
+		} 
+		
+		return false;
+	}
+	
 	private ArrayList<Integer> insertEntidadeRelacionada(HashMap<String, Object> lineValues, Connection connection, UserInfoInterface userInfo, List<Integer> conteudoIdList, Integer riscoEnt_id) throws Exception{
 		ArrayList<Integer> idEntIdList = new ArrayList<>();
 		String response = null;
@@ -214,7 +274,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				//check if idEnt already exists and create if not
 				String idEntAux = StringUtils.equalsIgnoreCase("PRT", (String) paisEmissao)?"nif_nipc":"codigo_fonte";
 				Integer idEnt_id=null;			
-				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfEntType(idEntRel, dtRefEnt, userInfo.getUtilizador(), connection);							
+				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfEntType(idEntRel, dtRefEnt, userInfo.getUtilizador(), connection).getAction();							
 				List<Integer> idEntList = retrieveSimpleField(connection, userInfo,
 						"select idEnt.id from idEnt where " +idEntAux+ "= ''{0}''",
 						new Object[] {idEntRel});

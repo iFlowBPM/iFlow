@@ -1,7 +1,9 @@
 package pt.iflow.blocks;
 
+import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +19,8 @@ import java.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
+import pt.iflow.api.core.BeanFactory;
+import pt.iflow.api.documents.Documents;
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
@@ -24,6 +28,7 @@ import pt.iflow.blocks.P17040.utils.FileImportUtils;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
 import pt.iflow.blocks.P17040.utils.ImportAction;
 import pt.iflow.blocks.P17040.utils.ValidationError;
+import pt.iflow.connector.document.Document;
 
 public class BlockP17040ImportCENT extends BlockP17040Import {
 
@@ -34,12 +39,12 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 
 	@Override
 	public Integer importFile(Connection connection, ArrayList<ValidationError> errorList,
-			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, ProcessData procData, InputStream... inputDocStream) throws IOException, SQLException {
+			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, ProcessData procData, InputStream... inputDocStream) throws SQLException {
 
 		Properties properties = Setup.readPropertiesFile("p17040" + File.separator + "cent_import.properties");
 		String separator = properties.getProperty("p17040_separator", "|");
 		Integer startLine = Integer.parseInt(properties.getProperty("p17040_startLine", "0"));
-		Integer crcIdResult = null;
+		Integer crcIdResult = createBlank(connection, userInfo, null, properties);
 		int lineNumber =0;
 		try {
 			List<String> lines = IOUtils.readLines(inputDocStream[0],"UTF-8");
@@ -68,12 +73,23 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 					continue;
 				}				
 				// determinar se é insert ou update
-				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfEntType(idEnt, dtRefEnt, userInfo.getUtilizador(), connection);
+				ImportAction actionOnLine = GestaoCrc.checkInfEntType(idEnt, dtRefEnt, userInfo.getUtilizador(), connection);
 				if(actionOnLine==null)
 					continue;
+				
+				//check if UPDATE has actual changed values				
+				if(actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
+					HashMap<String,Object> keysToIdentify = new HashMap<>();
+					ArrayList<String> keysToRemove = new ArrayList<>();
+					keysToIdentify.put("idEnt", idEnt);
+					keysToRemove.add("dtRefEnt");
+					if(!GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove))
+						continue;
+				}
+				
 				// adicionar acçao
-				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? "EI" : "EU";
-				actionList.add(new ImportAction(actionOnLine, idEnt));
+				String type = actionOnLine.getAction().equals(ImportAction.ImportActionType.CREATE) ? "EI" : "EU";
+				actionList.add(new ImportAction(actionOnLine.getAction(), idEnt));
 				try {
 					// inserir na bd
 					crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type,
@@ -86,6 +102,26 @@ public class BlockP17040ImportCENT extends BlockP17040Import {
 			errorList.add(new ValidationError("Erro nos dados", "", e.getMessage(), lineNumber));
 		} 
 
+		return crcIdResult;
+	}
+	
+	public Integer createBlank(Connection connection, UserInfoInterface userInfo, Integer crcIdResult, Properties properties) throws SQLException{
+		if (crcIdResult == null)
+			crcIdResult = createNewCrc(connection, properties, userInfo);
+
+		List<Integer> conteudoIdList = retrieveSimpleField(connection, userInfo,
+				"select id from conteudo where crc_id = {0} ",
+				new Object[] { crcIdResult });
+		
+		Integer comEnt_id =  null;
+		List<Integer> comEntIdList = retrieveSimpleField(connection, userInfo,
+				"select id from comEnt where conteudo_id = {0} ", new Object[] {conteudoIdList.get(0)});
+		if(comEntIdList.isEmpty())
+			comEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+					"insert into comEnt(conteudo_id) values(?)", new Object[] { conteudoIdList.get(0) });
+		else
+			comEnt_id = comEntIdList.get(0);
+		
 		return crcIdResult;
 	}
 

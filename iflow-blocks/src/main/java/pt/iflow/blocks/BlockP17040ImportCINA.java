@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
@@ -64,18 +65,18 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 			throws IOException, SQLException {
 
 		Integer crcIdResult = importSubFile(connection, errorList, actionList, userInfo, inputDocStream[0],
-				ReportType.IF.properties, ReportType.IF, null);
+				ReportType.IF.properties, ReportType.IF, null, procData);
 		crcIdResult = importSubFile(connection, errorList, actionList, userInfo, inputDocStream[1],
-				ReportType.IC.properties, ReportType.IC, crcIdResult);
+				ReportType.IC.properties, ReportType.IC, crcIdResult, procData);
 		crcIdResult = importSubFile(connection, errorList, actionList, userInfo, inputDocStream[2],
-				ReportType.IR.properties, ReportType.IR, crcIdResult);
+				ReportType.IR.properties, ReportType.IR, crcIdResult, procData);
 
 		return crcIdResult;
 	}
 
 	private Integer importSubFile(Connection connection, ArrayList<ValidationError> errorList,
 			ArrayList<ImportAction> actionList, UserInfoInterface userInfo, InputStream inputStream,
-			String propertiesFile, ReportType reportType, Integer crcIdResult) {
+			String propertiesFile, ReportType reportType, Integer crcIdResult, ProcessData procData) {
 
 		Properties properties = Setup.readPropertiesFile("p17040" + File.separator + propertiesFile);
 		String separator = properties.getProperty("p17040_separator", "|");
@@ -98,6 +99,7 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 					errorList.add(new ValidationError("Linha com número de campos errado", reportType.toString(), "", lineNumber));
 					return null;
 				}
+				crcIdResult = createBlank(connection, userInfo, crcIdResult, properties, lineValues);
 				// validar Identificação
 				String idCont = lineValues.get("idCont").toString();
 				String idInst = lineValues.get("idInst").toString();
@@ -113,13 +115,32 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 					return null;
 				}
 				// determinar se é insert ou update
-				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfPerInstType(idCont, idInst, dtRef, new String[]{reportType.getCreate(), reportType.getUpdate()},
+				ImportAction actionOnLine = GestaoCrc.checkInfPerInstType(idCont, idInst, dtRef, new String[]{reportType.getCreate(), reportType.getUpdate()},
 						userInfo.getUtilizador(), connection);
 				if (actionOnLine == null)
 					continue;
+				
+				//check if UPDATE has actual changed values				
+//				if(actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
+//					HashMap<String,Object> keysToIdentify = new HashMap<>();
+//					ArrayList<String> keysToRemove = new ArrayList<>();
+//					keysToIdentify.put("idCont", idCont);
+//					keysToIdentify.put("idInst", idInst);
+//					keysToRemove.add("dtRef");
+//					if(reportType == ReportType.IF && !GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove, 1))
+//						continue;
+//					else if(reportType == ReportType.IC && !GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove, 2))
+//						continue;
+//					else if(reportType == ReportType.IR){ 
+//						keysToIdentify.put("idExp", (String) lineValues.get("idExp"));
+//						if (!GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove, 3))
+//							continue;
+//					}
+//				}
+				
 				// adicionar acçao
-				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? reportType.getCreate() : reportType.getUpdate();
-				actionList.add(new ImportAction(actionOnLine,reportType.toString()+":"+ idCont + "-" + idInst + "-" + dtRef));
+				String type = actionOnLine.getAction().equals(ImportAction.ImportActionType.CREATE) ? reportType.getCreate() : reportType.getUpdate();
+				actionList.add(new ImportAction(actionOnLine.getAction(),reportType.toString()+":"+ idCont + "-" + idInst + "-" + dtRef));
 				try {
 					// inserir na bd
 					crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type,
@@ -132,6 +153,26 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 			errorList.add(new ValidationError("Erro nos dados", reportType.toString(), e.getMessage(), lineNumber));
 		}
 
+		return crcIdResult;
+	}
+	
+	public Integer createBlank(Connection connection, UserInfoInterface userInfo, Integer crcIdResult, Properties properties, HashMap<String, Object> lineValues) throws SQLException{
+		if (crcIdResult == null)
+			crcIdResult = createNewCrc(connection, properties, userInfo);
+
+		List<Integer> conteudoIdList = retrieveSimpleField(connection, userInfo,
+				"select id from conteudo where crc_id = {0} ", new Object[] { crcIdResult });
+
+		Integer comInfInst_id = null;
+		List<Integer> comInfInstList = retrieveSimpleField(connection, userInfo,
+				"select id from comInfInst where conteudo_id = {0} ", new Object[] { conteudoIdList.get(0) });
+		if (comInfInstList.isEmpty())
+			comInfInst_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+					"insert into comInfInst(conteudo_id, dtRef) values(?,?)",
+					new Object[] { conteudoIdList.get(0), lineValues.get("dtRef") });
+		else
+			comInfInst_id = comInfInstList.get(0);
+		
 		return crcIdResult;
 	}
 

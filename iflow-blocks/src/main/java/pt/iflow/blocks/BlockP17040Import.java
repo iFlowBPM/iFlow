@@ -107,7 +107,8 @@ public abstract class BlockP17040Import extends Block {
 		} catch (Exception e1) {
 			Logger.error(login, this, "after", procData.getSignature() + "error transforming attributes", e1);
 		}
-		if (StringUtilities.isEmpty(sInputDocumentVar) || datasource == null
+		if ((StringUtilities.isEmpty(sInputDocumentVar) &&  !(this instanceof BlockP17040ImportCINA)) 
+				|| datasource == null
 				|| StringUtilities.isEmpty(sOutputErrorDocumentVar)
 				|| StringUtilities.isEmpty(sOutputActionDocumentVar)) {
 			Logger.error(login, this, "after", procData.getSignature() + "empty value for attributes");
@@ -117,14 +118,33 @@ public abstract class BlockP17040Import extends Block {
 		try {
 			connection = datasource.getConnection();
 			ProcessListVariable docsVar = procData.getList(sInputDocumentVar);
-			Document inputDoc = docBean.getDocument(userInfo, procData,new Integer(docsVar.getItem(0).getValue().toString()));
-			InputStream inputDocStream = new ByteArrayInputStream(inputDoc.getContent());
+			Document inputDoc = null;
+			InputStream inputDocStream = null;
 			InputStream inputDocStream2=null,inputDocStream3=null;
+			String originalNameInputDoc = "";
+			Integer originalDocId=null,originalDocIdIC=null,originalDocIdIR=null;
+			if(this instanceof BlockP17040ImportCINA && StringUtils.isNotBlank(sInputDocumentVar)){
+				if(docsVar.size()>0){
+					inputDoc = docBean.getDocument(userInfo, procData,new Integer(docsVar.getItem(0).getValue().toString()));
+					inputDocStream = new ByteArrayInputStream(inputDoc.getContent());
+					originalNameInputDoc = inputDoc.getFileName();
+					originalDocId = inputDoc.getDocId();
+				}
+			} else{
+				docsVar = procData.getList(sInputDocumentVar);
+				inputDoc = docBean.getDocument(userInfo, procData,new Integer(docsVar.getItem(0).getValue().toString()));
+				inputDocStream = new ByteArrayInputStream(inputDoc.getContent());
+				originalNameInputDoc = inputDoc.getFileName();
+				originalDocId = inputDoc.getDocId();
+			}
 			if(StringUtils.isNotBlank(sInputDocumentVar2)){
 				ProcessListVariable docsVar2 = procData.getList(sInputDocumentVar2);
 				if(docsVar2.size()>0){
 					Document inputDoc2 = docBean.getDocument(userInfo, procData,new Integer(docsVar2.getItem(0).getValue().toString()));
 					inputDocStream2 = new ByteArrayInputStream(inputDoc2.getContent());
+					originalNameInputDoc += inputDoc2.getFileName();
+					if(originalDocIdIC ==null)
+						originalDocIdIC = inputDoc2.getDocId();
 				} 					
 			}
 			if(StringUtils.isNotBlank(sInputDocumentVar3)){
@@ -132,10 +152,13 @@ public abstract class BlockP17040Import extends Block {
 				if(docsVar3.size()>0){
 					Document inputDoc3 = docBean.getDocument(userInfo, procData,new Integer(docsVar3.getItem(0).getValue().toString()));
 					inputDocStream3 = new ByteArrayInputStream(inputDoc3.getContent());
+					originalNameInputDoc += inputDoc3.getFileName();
+					if(originalDocIdIR ==null)
+						originalDocIdIR = inputDoc3.getDocId();
 				}
 			}
 			
-			String originalNameInputDoc = inputDoc.getFileName();
+			
 			
 			ArrayList<ValidationError> errorList = new ArrayList<>();
 			ArrayList<ImportAction> actionList = new ArrayList<>();			
@@ -152,7 +175,7 @@ public abstract class BlockP17040Import extends Block {
 				procData.getList(sOutputActionDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));
 								
 			if(crcId!=null && errorList.isEmpty()){
-				GestaoCrc.markAsImported(crcId, inputDoc.getDocId(), userInfo.getUtilizador(), connection);
+				GestaoCrc.markAsImported(crcId, originalDocId, originalDocIdIC, originalDocIdIR, userInfo.getUtilizador(), connection);
 				procData.set(this.getAttribute(CRC_ID), crcId);
 			}
 //			else

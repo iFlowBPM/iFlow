@@ -41,7 +41,7 @@ public class BlockP17040ImportCIND extends BlockP17040Import {
 		Properties properties = Setup.readPropertiesFile("p17040" + File.separator + propertiesFile);
 		String separator = properties.getProperty("p17040_separator", "|");
 		Integer startLine = Integer.parseInt(properties.getProperty("p17040_startLine", "0"));
-		Integer crcIdResult = null;
+		Integer crcIdResult = createBlank(connection, userInfo, null, properties);
 		int lineNumber = 0;
 		try {
 			List<String> lines = IOUtils.readLines(inputDocStream[0]);
@@ -89,13 +89,25 @@ public class BlockP17040ImportCIND extends BlockP17040Import {
 //					return null;
 //				}
 				// determinar se é insert ou update
-				ImportAction.ImportActionType actionOnLine = GestaoCrc.checkInfDiaInstFin(dtRefInfDia, idCont, idInst,
+				ImportAction actionOnLine = GestaoCrc.checkInfDiaInstFin(dtRefInfDia, idCont, idInst,
 						userInfo.getUtilizador(), connection);
 				if (actionOnLine == null)
 					continue;
+				
+				//check if UPDATE has actual changed values				
+//				if(actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
+//					HashMap<String,Object> keysToIdentify = new HashMap<>();
+//					ArrayList<String> keysToRemove = new ArrayList<>();
+//					keysToIdentify.put("idCont", idCont);	
+//					keysToIdentify.put("idInst", idInst);	
+//					keysToRemove.add("dtRefInfDia");
+//					if(!GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove))
+//						continue;
+//				}
+				
 				// adicionar acçao
-				String type = actionOnLine.equals(ImportAction.ImportActionType.CREATE) ? "DII" : "DIU";
-				actionList.add(new ImportAction(actionOnLine, idCont + "-" + idInst + "-" + dtRefInfDia));
+				String type = actionOnLine.getAction().equals(ImportAction.ImportActionType.CREATE) ? "DII" : "DIU";
+				actionList.add(new ImportAction(actionOnLine.getAction(), idCont + "-" + idInst + "-" + dtRefInfDia));
 				try {
 					// inserir na bd
 					crcIdResult = importLine(connection, userInfo, crcIdResult, lineValues, properties, type,
@@ -108,6 +120,26 @@ public class BlockP17040ImportCIND extends BlockP17040Import {
 			errorList.add(new ValidationError("Erro nos dados", "", e.getMessage(), lineNumber));
 		}
 
+		return crcIdResult;
+	}
+	
+	public Integer createBlank(Connection connection, UserInfoInterface userInfo, Integer crcIdResult, Properties properties) throws SQLException{
+		if (crcIdResult == null)
+			crcIdResult = createNewCrc(connection, properties, userInfo);
+
+		List<Integer> conteudoIdList = retrieveSimpleField(connection, userInfo,
+				"select id from conteudo where crc_id = {0} ", new Object[] { crcIdResult });
+
+		Integer comInfDia_id = null;
+		List<Integer> comInfDiaIdList = retrieveSimpleField(connection, userInfo,
+				"select id from comInfDia where conteudo_id = {0} ", new Object[] { conteudoIdList.get(0) });
+		if (comInfDiaIdList.isEmpty())
+			comInfDia_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+					"insert into comInfDia(conteudo_id) values(?)",
+					new Object[] { conteudoIdList.get(0)});
+		else
+			comInfDia_id = comInfDiaIdList.get(0);
+		
 		return crcIdResult;
 	}
 

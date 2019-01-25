@@ -937,7 +937,7 @@ public class UserManagerBean
       Logger.debug(userInfo.getUtilizador(), this, "modifyProfile", "Updating profile: " + profile.getName());
     }
     boolean profileExists = profileExists(userInfo, profile);
-    if ((!userInfo.isOrgAdmin()) || (!StringUtils.equals(userInfo.getCompanyID(), profile.getOrganizationId())) || (!StringUtils.equals(profile.getDescription(), profile.getOrganizationId())) || (profileExists))
+    if ((!userInfo.isOrgAdmin()) || (!StringUtils.equals(userInfo.getCompanyID(), profile.getOrganizationId()) ) || (profileExists))
     {
     	
       if (Logger.isDebugEnabled()) {

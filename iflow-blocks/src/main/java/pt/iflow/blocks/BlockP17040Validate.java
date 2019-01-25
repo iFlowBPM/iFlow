@@ -155,7 +155,15 @@ public abstract class BlockP17040Validate extends Block {
 			//determine original file
 			HashMap<String, Object> u_gestaoValues = fillAtributtes(null, connection, userInfo,
 					"select * from u_gestao where out_id = {0} ", new Object[] {crcId});
-			Document originalDoc = BeanFactory.getDocumentsBean().getDocument(userInfo, procData, (Integer)u_gestaoValues.get("original_docid"));
+			
+			//fix for CINA
+			Integer originalDocId = (Integer)u_gestaoValues.get("original_docid");
+			if(originalDocId==null)
+				originalDocId = (Integer)u_gestaoValues.get("original_docid2");
+			if(originalDocId==null)
+				originalDocId = (Integer)u_gestaoValues.get("original_docid3");
+			
+			Document originalDoc = BeanFactory.getDocumentsBean().getDocument(userInfo, procData, originalDocId);
 			Document doc = saveFileAsDocument("E" +originalDoc.getFileName()+ ".txt", result,  userInfo,  procData, connection);
 			if(doc!=null)
 				procData.getList(sOutputErrorDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));	

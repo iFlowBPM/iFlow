@@ -16,6 +16,8 @@ import org.apache.commons.lang.StringUtils;
 
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.UserInfoInterface;
+import pt.iflow.blocks.P17040.utils.GestaoCrc;
+import pt.iflow.blocks.P17040.utils.ImportAction;
 import pt.iflow.blocks.P17040.utils.ValidationError;
 
 public class BlockP17040ValidateCINA extends BlockP17040Validate {
@@ -38,7 +40,7 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 		
 		Date dtRef = (Date) comInfInstValues.get("dtRef");
 		
-		Integer comInfInst_id = (Integer) comInfInstValues.get("id");
+		Integer comInfInst_id = (Integer) comInfInstValues.get("id");		
 		
 		//infPerInst
 		List<Integer> infPerInstIdList = retrieveSimpleField(connection, userInfo,
@@ -60,6 +62,30 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 			
 			if(dtRef!=null && dtRef.after(new Date()))
 				result.add(new ValidationError("EF008", "comInfInst", "dtRef", idCont, infPerInst_id, dtRef));
+			
+			//IP001
+			if(GestaoCrc.checkInfInstType(idCont, idInst, dtRef, userInfo.getUtilizador(), connection).getAction() == ImportAction.ImportActionType.CREATE)
+				result.add(new ValidationError("IP001", "infPerInst", "idInst", idInst, infPerInst_id, idInst));
+			
+			//infRInst
+			List<Integer> infRInstIdList = retrieveSimpleField(connection, userInfo,
+					"select infRInst.id from infRInst where infPerInst_id = {0} ",
+					new Object[] { infPerInst_id });
+			
+			for(Integer infRInst_id : infRInstIdList){
+				//protExp
+				List<Integer> protExpIdList = retrieveSimpleField(connection, userInfo,
+						"select protExp.id from protExp where infRInst_id = {0} ",
+						new Object[] { infRInst_id });
+				
+				for(Integer protExp_id : protExpIdList){
+					HashMap<String, Object> protExpValues = fillAtributtes(null, connection, userInfo,
+							"select * from protExp where id = {0} ", new Object[] { protExp_id });
+					//::IP068
+					if(protExpValues.get("idProt")!=null && GestaoCrc.checkInfProtType((String) protExpValues.get("idProt"), dtRef, userInfo.getUtilizador(), connection).getAction() == ImportAction.ImportActionType.CREATE)
+						result.add(new ValidationError("IP068", "protExp", "idProt", (String) protExpValues.get("idProt"), (Integer) protExpValues.get("id")));
+				}
+			}			
 			
 			// ------ infFinInst...
 			HashMap<String, Object> infFinInstValues = fillAtributtes(null, connection, userInfo,
@@ -422,10 +448,14 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 					
 					// idProt
 					String idProt = (String) protInstValues.get("idProt");
+					
+					//IP031
+					if(GestaoCrc.checkInfProtType(idProt, dtRef, userInfo.getUtilizador(), connection).getAction() == ImportAction.ImportActionType.CREATE)
+						result.add(new ValidationError("IP031", "protInst", "idProt", idCont, infPerInst_id));
 	
 					// ::IP031: Proteção não integrada previamente no sistema.
 					if (idProt == null)
-						result.add(new ValidationError("IP031", "protInst", "idProt", idCont, protInstId));
+						result.add(new ValidationError("IP031", "protInst", "idProt", idCont, infPerInst_id));
 					
 					//TODO ::IP074: Identificador com carateres inváli-dos.
 					//TODO ::IP079: Identificação de proteção duplicada no instrumento.

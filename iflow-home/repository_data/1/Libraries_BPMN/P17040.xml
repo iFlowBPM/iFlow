@@ -11,6 +11,74 @@
 	<i18nDescription>library.p17040.description</i18nDescription>
 
 	<XmlBlock>
+		<class>BlockP17040ImportCICC</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>inputDocument</name>
+			<description>Document holder for input file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>errors file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputActionDocument</name>
+			<description>actions file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>Datasource</name>
+			<description>Datasource</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>crc_id</name>
+			<description>Id of created Crc</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>ImportCICC</description>
+		<i18n>library.dms.block.p17040.import.cicc</i18n>
+	</XmlBlock>
+	
+	<XmlBlock>
 		<class>BlockP17040ImportCIND</class>
 		<XmlPort>
 			<name>portIn</name>
@@ -372,6 +440,152 @@
 		<i18n>library.dms.block.p17040.import.cera</i18n>
 	</XmlBlock>
 	<XmlBlock>
+		<class>BlockP17040ImportCERAEntRelOn</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>inputDocument</name>
+			<description>Document holder for input file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>errors file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputActionDocument</name>
+			<description>actions file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>Datasource</name>
+			<description>Datasource</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>crc_id</name>
+			<description>Id of created Crc</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>data_enrichment_on</name>
+			<description>Activate Data Enrichment (0/1)</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>ImportCERAEntRelOn</description>
+		<i18n>library.dms.block.p17040.import.cera.entrel.on</i18n>
+	</XmlBlock>
+	
+	<XmlBlock>
+		<class>BlockP17040ImportCERAEntRelOff</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>inputDocument</name>
+			<description>Document holder for input file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>errors file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputActionDocument</name>
+			<description>actions file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>Datasource</name>
+			<description>Datasource</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>crc_id</name>
+			<description>Id of created Crc</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>data_enrichment_on</name>
+			<description>Activate Data Enrichment (0/1)</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>ImportCERAEntRelOff</description>
+		<i18n>library.dms.block.p17040.import.cera.entrel.off</i18n>
+	</XmlBlock>
+	
+	<XmlBlock>
 		<class>BlockP17040ImportCCIN</class>
 		<XmlPort>
 			<name>portIn</name>
@@ -571,6 +785,101 @@
 		<image>bpmn_task.png</image>
 		<description>ImportCPRT</description>
 		<i18n>library.dms.block.p17040.import.cprt</i18n>
+	</XmlBlock>
+	
+	<XmlBlock>
+		<class>BlockP17040ValidateCICC</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>outputErrorCode</name>
+			<description>Error code</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorTable</name>
+			<description>Error at table</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorField</name>
+			<description>Error at field</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorIdBdp</name>
+			<description>Error in BDP object</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorId</name>
+			<description>Error in Id</description>
+			<value />
+		</XmlAttribute>
+
+		<XmlAttribute>
+			<name>outputErrorValue</name>
+			<description>Error Value</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDescription</name>
+			<description>Error description</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>Error document</description>
+			<value />
+		</XmlAttribute>
+
+		<XmlAttribute>
+			<name>Datasource</name>
+			<description>Datasource</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>crc_id</name>
+			<description>Id of Crc</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>ValidateCICC</description>
+		<i18n>library.dms.block.p17040.validate.cicc</i18n>
 	</XmlBlock>
 
 	<XmlBlock>
@@ -1234,6 +1543,74 @@
 		<image>bpmn_task.png</image>
 		<description>ValidateCENT</description>
 		<i18n>library.dms.block.p17040.validate.cent</i18n>
+	</XmlBlock>
+
+	<XmlBlock>
+		<class>BlockP17040GenerateCICC</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>Document</name>
+			<description>Document holder</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>Datasource</name>
+			<description>Datasource</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>crc_id</name>
+			<description>Id of CRC line to export</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>reporting_entity</name>
+			<description>Entity that reports files to BDP</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>observing_entity</name>
+			<description>Entity observed in reported files</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>GenerateCICC</description>
+		<i18n>library.dms.block.p17040.generate.cicc</i18n>
 	</XmlBlock>
 
 	<XmlBlock>

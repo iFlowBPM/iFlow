@@ -721,7 +721,7 @@ Disabled. Use servlet container defaults
       <url-pattern>/saml2/SSOService</url-pattern>
    </servlet-mapping>
    
-   <!-- REST Servlet -->
+   <!-- REST Servlet 
    <servlet>
     <servlet-name>iFlow REST Service</servlet-name>
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
@@ -731,7 +731,7 @@ Disabled. Use servlet container defaults
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
-  
+  -->
      <servlet-mapping>
       <servlet-name>AuthenticationBICServlet</servlet-name>
       <url-pattern>/AuthenticationBICServlet</url-pattern>
