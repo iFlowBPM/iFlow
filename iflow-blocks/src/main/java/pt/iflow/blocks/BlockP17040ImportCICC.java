@@ -141,12 +141,14 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 				new Object[] { comInfComp_id, idEnt_id, lineValues.get("rendLiq"), lineValues.get("rendLiqChoq")});
 		
 		//protComp
-		FileImportUtils.insertSimpleLine(connection, userInfo,
-				"INSERT INTO `protComp` (`comInfComp_id`, `imoInst`, `dtAq`) "
-				+ "VALUES ( ?, ?, ?);",
-				new Object[] { comInfComp_id, lineValues.get("imoInst"), lineValues.get("dtAq")});
+		if(StringUtils.isNotBlank((String)lineValues.get("idProt")))
+			FileImportUtils.insertSimpleLine(connection, userInfo,
+					"INSERT INTO `protComp` (`comInfComp_id`, `idProt`, `imoInst`, `dtAq`) "
+					+ "VALUES ( ?, ?, ?, ?);",
+					new Object[] { comInfComp_id, lineValues.get("idProt"), lineValues.get("imoInst"), lineValues.get("dtAq")});
 		
 		//justComp
+		if(StringUtils.isNotBlank(lineValues.get("tpJustif").toString()) || StringUtils.isNotBlank(lineValues.get("justif").toString()))
 		FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `justComp` (`comInfComp_id`, `tpJustif`, `justif`) "
 				+ "VALUES ( ?, ?, ?);",
