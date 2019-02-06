@@ -37,64 +37,71 @@ public class BlockP17040GenerateCICC extends BlockP17040Generate {
 		List<Integer> comInfCompList = retrieveSimpleField(connection, userInfo,
 				"select comInfComp.id from comInfComp, conteudo where comInfComp.conteudo_id = conteudo.id and conteudo.crc_id = {0} ",
 				new Object[] { crcId });
-		for (Integer comInfCompId : comInfCompList) {
-			writer.writeStartElement("comInfComp");
-			fillAtributtes(writer, connection, userInfo,
-					"select * from comInfComp where id = {0} ", new Object[] { comInfCompId });									
-			
-			//lstEntComp
-			List<Integer> lstEntCompIdList = retrieveSimpleField(connection, userInfo,
-					"select id from entComp where comInfComp_id = {0} ",
-					new Object[] { comInfCompId });
-			if(!lstEntCompIdList.isEmpty()){
-				writer.writeStartElement("lstEntComp");				
-					//entComp
-					for(Integer entCompId: lstEntCompIdList){
-						writer.writeStartElement("entComp");
-						HashMap<String,Object> entCompValues = fillAtributtes(writer, connection, userInfo,
-								"select * from entComp where id = {0} ", new Object[] { entCompId });
-							//idEnt
-							writer.writeStartElement("idEnt");
-							FileGeneratorUtils.fillAtributtesIdEnt(writer, connection, userInfo, entCompValues.get("idEnt_id") );						
-							writer.writeEndElement();
-						writer.writeEndElement();
-					}
-				writer.writeEndElement();
-			}
-			//lstProtComp
-			List<Integer> lstProtCompIdList = retrieveSimpleField(connection, userInfo,
-					"select id from protComp where comInfComp_id = {0} ",
-					new Object[] { comInfCompId });
-			if(!lstProtCompIdList.isEmpty()){
-				writer.writeStartElement("lstProtComp");
-					//protComp
-					for(Integer protCompId : lstProtCompIdList){
-						writer.writeStartElement("protComp");
-						fillAtributtes(writer, connection, userInfo,
-								"select * from protComp where id = {0} ", new Object[] { protCompId });
-						writer.writeEndElement();
-					}
-				writer.writeEndElement();
-			}			
-			
-			//lstJustComp
-			List<Integer> lstJustCompIdList = retrieveSimpleField(connection, userInfo,
-					"select id from justComp where comInfComp_id = {0} ",
-					new Object[] { comInfCompId });
-			if(!lstJustCompIdList.isEmpty()){
-				writer.writeStartElement("lstJustComp");
-					//protComp
-					for(Integer justCompId : lstJustCompIdList){
-						writer.writeStartElement("justComp");
-						fillAtributtes(writer, connection, userInfo,
-								"select * from justComp where id = {0} ", new Object[] { justCompId });
-						writer.writeEndElement();
-					}
-				writer.writeEndElement();
-			}			
+		writer.writeStartElement("comInfComp");
 
-			writer.writeEndElement();
-		}
+		for (Integer comInfCompId : comInfCompList) {
+			
+			List<Integer> infCompCidList = retrieveSimpleField(connection, userInfo,
+					"select infCompC.id from infCompC, comInfComp, conteudo where infCompC.comInfComp_id = comInfComp.id and comInfComp.conteudo_id = conteudo.id and conteudo.crc_id = {0} ",	
+					new Object[] { crcId });
+				for (Integer infCompCId : infCompCidList) {
+					writer.writeStartElement("infCompC");
+						fillAtributtes(writer, connection, userInfo,
+								"select * from infCompC where id = {0} ", new Object[] { infCompCId });					
+					//lstEntComp
+					List<Integer> lstEntCompIdList = retrieveSimpleField(connection, userInfo,
+							"select id from entComp where infCompC_id = {0} ",
+							new Object[] { infCompCId });
+					if(!lstEntCompIdList.isEmpty()){
+						writer.writeStartElement("lstEntComp");				
+							//entComp
+							for(Integer entCompId: lstEntCompIdList){
+								writer.writeStartElement("entComp");
+								HashMap<String,Object> entCompValues = fillAtributtes(writer, connection, userInfo,
+										"select * from entComp where id = {0} ", new Object[] { entCompId });
+									//idEnt
+									writer.writeStartElement("idEnt");
+									FileGeneratorUtils.fillAtributtesIdEnt(writer, connection, userInfo, entCompValues.get("idEnt_id") );						
+									writer.writeEndElement();
+								writer.writeEndElement();
+							}
+						writer.writeEndElement();
+						}
+						//lstProtComp
+						List<Integer> lstProtCompIdList = retrieveSimpleField(connection, userInfo,
+								"select id from protComp where infCompC_id = {0} ",
+								new Object[] { infCompCId });
+						if(!lstProtCompIdList.isEmpty()){
+							writer.writeStartElement("lstProtComp");
+								//protComp
+								//for(Integer protCompId : lstProtCompIdList){ PARA EVENTUALMENTE ESCREVER AS VARIAS LINHAS
+									writer.writeStartElement("protComp");
+									fillAtributtes(writer, connection, userInfo,
+											"select * from protComp where protComp.infCompC_id= {0} ", new Object[] { infCompCId });
+									writer.writeEndElement();
+								//}
+							writer.writeEndElement();
+						}			
+						
+						//lstJustComp
+						List<Integer> lstJustCompIdList = retrieveSimpleField(connection, userInfo,
+								"select id from justComp where infCompC_id = {0} ",
+								new Object[] { infCompCId });
+						if(!lstJustCompIdList.isEmpty()){
+							writer.writeStartElement("lstJustComp");
+								//protComp
+								//for(Integer justCompId : lstJustCompIdList){ PARA EVENTUALMENTE ESCREVER AS VARIAS LINHAS
+									writer.writeStartElement("justComp");
+									fillAtributtes(writer, connection, userInfo,
+											"select * from justComp where justComp.infCompC_id = {0} ", new Object[] { infCompCId });
+									writer.writeEndElement();
+								}
+							writer.writeEndElement();
+						//}			
+			
+						writer.writeEndElement();
+					}
+			}
 		
 		writer.writeEndElement();
 		writer.writeEndElement();
