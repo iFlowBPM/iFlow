@@ -739,7 +739,7 @@ public class GestaoCrc {
 				"	avisRec.id = fichAce.avisRec_id and "+
 				"   u_gestao.id = ? and "+
 				"   fichAce.id not in  "+
-				"		( select regMsg.fichAce_id from regMsg "+
+				"		( select regMsg.fichAce_id from regMsg, msg "+
 				"			where regMsg.idCont = ? and regMsg.idInst = ? "+
 				"			and  msg.nvCrit=0 " +
 				"           and (operOrig='CCI' or operOrig='CCU')); ";
@@ -756,7 +756,7 @@ public class GestaoCrc {
 				return new ImportAction(ImportActionType.CREATE);
 			
 		} catch (Exception e) {
-			Logger.error(utilizador, "GestaoCrc", "checkComInfComp", e.getMessage(), e);
+			Logger.error(utilizador, "GestaoCrc", "infCompC", e.getMessage(), e);
 		} finally {
 			DatabaseInterface.closeResources(db, pst, rs);
 		}
