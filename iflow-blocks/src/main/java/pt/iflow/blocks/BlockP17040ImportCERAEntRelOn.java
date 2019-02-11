@@ -95,7 +95,7 @@ public class BlockP17040ImportCERAEntRelOn extends BlockP17040ImportCERA {
 				}
 				
 				//determinar se tem entidades relacionadas
-				if(!hasEntRel(connection, userInfo, idEnt))
+				if(dataEnrichmentOn && !hasEntRel(connection, userInfo, idEnt))
 					continue;
 				
 				// adicionar acçao
