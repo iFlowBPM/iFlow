@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
+import pt.iflow.blocks.BlockP17040ImportCINA.ReportType;
 import pt.iflow.blocks.P17040.utils.FileImportUtils;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
 import pt.iflow.blocks.P17040.utils.ImportAction;
@@ -82,7 +83,7 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 				}
 
 				// determinar se é insert ou update
-				ImportAction actionOnLine = GestaoCrc.checkComInfComp(dtRef, idCont, idInst,
+				ImportAction actionOnLine = GestaoCrc.checkinfCompC(dtRef, idCont, idInst,
 						userInfo.getUtilizador(), connection);
 				if (actionOnLine == null)
 					continue;				
@@ -121,14 +122,35 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 
 		List<Integer> conteudoIdList = retrieveSimpleField(connection, userInfo,
 				"select id from conteudo where crc_id = {0} ", new Object[] { crcIdResult });
-
+		
+		Integer comInfComp_id = null;
+		List<Integer> comInfCompList = retrieveSimpleField(connection, userInfo,
+				"select id from comInfComp where conteudo_id = {0} ", new Object[] { conteudoIdList.get(0) });
 		//comInfComp
-		Integer comInfComp_id = FileImportUtils.insertSimpleLine(connection, userInfo,
-				"INSERT INTO `p17040`.`comInfComp`(`conteudo_id`,`type`,`dtRef`,`idCont`,"
-				+ "`idInst`,`LTV`,`prestOp`,`prestOpChoq`,`DSTIChoq`) VALUES " 
-				+ "(?,?,?,?,?,?,?,?,?);",
-				new Object[] { conteudoIdList.get(0), type, lineValues.get("dtRef"), lineValues.get("idCont")
-						, lineValues.get("idInst"), lineValues.get("LTV"), lineValues.get("prestOp"), lineValues.get("prestOpChoq"), lineValues.get("DSTIChoq")});
+		if (comInfCompList.isEmpty())
+			comInfComp_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+					"insert into comInfComp(conteudo_id) values(?)",
+					new Object[] { conteudoIdList.get(0)});
+		else
+			comInfComp_id = comInfCompList.get(0);
+		
+		//infCompC
+		
+		Integer infCompC_id = null;
+		List<Integer> infCompCList = retrieveSimpleField(connection, userInfo,
+				"select id from infCompC where comInfComp_id = {0} and idCont = ''{1}'' and idInst=''{2}''",
+				new Object[] { comInfComp_id, lineValues.get("idCont"), lineValues.get("idInst") });
+		if (infCompCList.isEmpty())
+			infCompC_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+					"INSERT INTO `p17040`.`infCompC`(`comInfComp_id`,`type`,`dtRef`,`idCont`,"
+							+ "`idInst`,`LTV`,`prestOp`,`prestOpChoq`,`DSTIChoq`) VALUES " 
+							+ "(?,?,?,?,?,?,?,?,?);",
+							new Object[] { comInfComp_id, type, lineValues.get("dtRef"), lineValues.get("idCont")
+									, lineValues.get("idInst"), lineValues.get("LTV"), lineValues.get("prestOp"), lineValues.get("prestOpChoq"), lineValues.get("DSTIChoq")});
+		else
+			infCompC_id = infCompCList.get(0);
+		
+
 		
 		//entComp
 		Integer idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("idEnt"), userInfo, connection);
@@ -136,23 +158,23 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 			throw new SQLException("idEnt ainda não está registado no sistema");
 		
 		FileImportUtils.insertSimpleLine(connection, userInfo,
-				"INSERT INTO `entComp` (`comInfComp_id`, `idEnt_id`, `rendLiq`, `rendLiqChoq`) "
+				"INSERT INTO `entComp` (`infCompC_id`, `idEnt_id`, `rendLiq`, `rendLiqChoq`) "
 				+ "VALUES ( ?, ?, ?, ?);",
-				new Object[] { comInfComp_id, idEnt_id, lineValues.get("rendLiq"), lineValues.get("rendLiqChoq")});
+				new Object[] { infCompC_id, idEnt_id, lineValues.get("rendLiq"), lineValues.get("rendLiqChoq")});
 		
 		//protComp
 		if(StringUtils.isNotBlank((String)lineValues.get("idProt")))
 			FileImportUtils.insertSimpleLine(connection, userInfo,
-					"INSERT INTO `protComp` (`comInfComp_id`, `idProt`, `imoInst`, `dtAq`) "
+					"INSERT INTO `protComp` (`infCompC_id`, `idProt`, `imoInst`, `dtAq`) "
 					+ "VALUES ( ?, ?, ?, ?);",
-					new Object[] { comInfComp_id, lineValues.get("idProt"), lineValues.get("imoInst"), lineValues.get("dtAq")});
+					new Object[] { infCompC_id, lineValues.get("idProt"), lineValues.get("imoInst"), lineValues.get("dtAq")});
 		
 		//justComp
 		if(StringUtils.isNotBlank(lineValues.get("tpJustif").toString()) || StringUtils.isNotBlank(lineValues.get("justif").toString()))
 		FileImportUtils.insertSimpleLine(connection, userInfo,
-				"INSERT INTO `justComp` (`comInfComp_id`, `tpJustif`, `justif`) "
+				"INSERT INTO `justComp` (`infCompC_id`, `tpJustif`, `justif`) "
 				+ "VALUES ( ?, ?, ?);",
-				new Object[] { comInfComp_id, lineValues.get("tpJustif"), lineValues.get("justif")});
+				new Object[] { infCompC_id, lineValues.get("tpJustif"), lineValues.get("justif")});
 		
 		return crcIdResult;
 	}

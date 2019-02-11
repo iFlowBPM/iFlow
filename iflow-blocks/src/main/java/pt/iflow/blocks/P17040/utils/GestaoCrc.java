@@ -700,19 +700,20 @@ public class GestaoCrc {
 		return true;
 	}
 
-	public static ImportAction checkComInfComp(Date dtRef, String idCont, String idInst, String utilizador,
+	public static ImportAction checkinfCompC(Date dtRef, String idCont, String idInst, String utilizador,
 			Connection connection) {
 		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
-			String query = "select u_gestao.id, comInfComp.dtRef "+
-				"from u_gestao, crc, conteudo, comInfComp "+
+			String query = "select u_gestao.id, infCompC.dtRef "+
+				"from u_gestao, crc, conteudo, comInfComp, infCompC "+
 				"where u_gestao.out_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
-				"    conteudo.id = comInfComp.conteudo_id and "+				
-				"    comInfComp.idCont = ? and "+
-				"    comInfComp.idInst = ? and "+
+				"    conteudo.id = comInfComp.conteudo_id and "+
+				"	comInfComp.id = infCompC.comInfComp_id and"+
+				"    infCompC.idCont = ? and "+
+				"    infCompC.idInst = ? and "+
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
@@ -738,7 +739,7 @@ public class GestaoCrc {
 				"	avisRec.id = fichAce.avisRec_id and "+
 				"   u_gestao.id = ? and "+
 				"   fichAce.id not in  "+
-				"		( select regMsg.fichAce_id from regMsg "+
+				"		( select regMsg.fichAce_id from regMsg, msg "+
 				"			where regMsg.idCont = ? and regMsg.idInst = ? "+
 				"			and  msg.nvCrit=0 " +
 				"           and (operOrig='CCI' or operOrig='CCU')); ";
@@ -755,7 +756,7 @@ public class GestaoCrc {
 				return new ImportAction(ImportActionType.CREATE);
 			
 		} catch (Exception e) {
-			Logger.error(utilizador, "GestaoCrc", "checkComInfComp", e.getMessage(), e);
+			Logger.error(utilizador, "GestaoCrc", "checkinfCompC", e.getMessage(), e);
 		} finally {
 			DatabaseInterface.closeResources(db, pst, rs);
 		}
