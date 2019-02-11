@@ -66,7 +66,7 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 				result.add(new ValidationError("EF012", "infInst", "idCont", idCont, infInstId));
 
 			HashMap<String, Object> infInstPreviousInsertValues = fillAtributtes(null, connection, userInfo,
-					"select * from infInst 	where idCont=''{0}'' and idInst=''{1}'' and dtRefInst=''{2}'' and type='CII' order by id desc limit 1 ", 
+					"select * from infInst 	where idCont=''{0}'' and idInst=''{1}'' and dtRefInst=''{2}'' and type=''CII'' order by id desc limit 1 ", 
 					new Object[] { idCont, idInst, dtRefInst });
 			
 			// balcao
