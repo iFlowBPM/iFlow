@@ -208,7 +208,7 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 				BigDecimal TAN = (BigDecimal) infFinInstValues.get("TAN");
 				
 				// ::IP014: TAN é obrigatória para os instrumen-tos enquadráveis na legislação de crédito ao consumo.
-				if (TAN != null && TAN.compareTo(BigDecimal.ZERO) == -1)
+				if (TAN == null)
 					result.add(new ValidationError("IP014", "infFinInst", "TAN", idCont, infPerInst_id, TAN));
 				
 				// N.A. ::IP015: TAN é obrigatória para os instrumen-tos do tipo crédito à habitação.

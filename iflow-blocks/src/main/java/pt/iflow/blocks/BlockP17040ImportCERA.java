@@ -44,8 +44,16 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 		
 		
 	}
+	
 
 	static String propertiesFile = "cera_import.properties";
+	
+	public Integer createBlank(Connection connection, UserInfoInterface userInfo, Integer crcIdResult, Properties properties) throws SQLException{
+		if (crcIdResult == null)
+			crcIdResult = createNewCrc(connection, properties, userInfo);
+
+		return crcIdResult;
+	}
 
 	@Override
 	public Integer importFile(Connection connection, ArrayList<ValidationError> errorList,
@@ -60,12 +68,13 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				dataEnrichmentOn = true;
 		} catch (EvalException e1) {}
 		
+		
 
 		Properties properties = Setup.readPropertiesFile("p17040" + File.separator + propertiesFile);
 		String separator = properties.getProperty("p17040_separator", "|");
 		Integer startLine = Integer.parseInt(properties.getProperty("p17040_startLine", "0"));
-		Integer crcIdResult = null;
 		int lineNumber = 0;
+		Integer crcIdResult = createBlank(connection, userInfo, null, properties);
 		try {
 			List<String> lines = IOUtils.readLines(inputDocStream[0]);
 			for (lineNumber = startLine; lineNumber < lines.size(); lineNumber++) {
@@ -80,7 +89,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 					errorList.add(new ValidationError("Linha com número de campos errado", "", "", lineNumber));
 					continue;
 				}
-				crcIdResult = createBlank(connection, userInfo, null, properties, lineValues);
+
 				// validar Identificação
 				String idEnt = lineValues.get("idEnt").toString();
 				if (StringUtils.isBlank(idEnt)) {
@@ -128,8 +137,6 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 	}
 
 	public Integer createBlank(Connection connection, UserInfoInterface userInfo, Integer crcIdResult, Properties properties, HashMap<String, Object> lineValues) throws SQLException{
-		if (crcIdResult == null)
-			crcIdResult = createNewCrc(connection, properties, userInfo);
 
 		if (crcIdResult == null)
 			crcIdResult = createNewCrc(connection, properties, userInfo);
