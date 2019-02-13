@@ -2,40 +2,28 @@ package pt.iflow.blocks;
 
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-
-import pt.iflow.api.processdata.ProcessData;
-import pt.iflow.api.utils.UserInfoInterface;
-import pt.iflow.blocks.P17040.utils.ImportAction;
-import pt.iflow.blocks.P17040.utils.ValidationError;
-
-import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
-import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
 import static pt.iflow.blocks.P17040.utils.FileValidationUtils.isValidDomainValue;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
 import pt.iflow.api.processdata.ProcessData;
+import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
 import pt.iflow.blocks.P17040.utils.ImportAction;
 import pt.iflow.blocks.P17040.utils.ValidationError;
-import pt.iflow.blocks.P17040.utils.ImportAction.ImportActionType;
 public class BlockP17040ValidateCICC extends BlockP17040Validate {
 
 	public BlockP17040ValidateCICC(int anFlowId, int id, int subflowblockid, String filename) {
@@ -96,7 +84,7 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 				if (actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE) && actionOnLine.getId() == idInst)
 						result.add(new ValidationError("CC003", "infCompC", "idInst", idInst, infCompC_id, idInst));
 				
-				//CC004 DUVIDA
+				//TODO CC004 DUVIDA
 				/*(if (retrieveSimpleField(connection, userInfo,
 						"select infInst.idCont, infInst.idInst from infInst where idInst = ''{0}'' and idCont = ''{1}'' ",
 						new Object[] { idInst, idCont }).size() == 0)
@@ -130,10 +118,14 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 				if (prestOpChoq != null && prestOpChoq.compareTo(prestOp) == -1)
 					result.add(new ValidationError("CC013", "infCompC", "prestOpChoq", idCont, infCompC_id, prestOpChoq));
 				
-				
-				HashMap<String, Object> infInstValues = fillAtributtes(null, connection, userInfo, "select * from infInst where idInst = ''{0}'' and idCont = ''{1}'' ",
-						new Object[] { idInst, idCont });
-				
+				PreparedStatement pst = connection.prepareStatement("select * from u_gestao, iflow.documents or_in where  u_gestao.in_id is not null and or_in.filename like '%CCIN%' order by out_id desc limit 1");
+				ResultSet rs = pst.executeQuery();
+				Integer out_id = null;
+				if(rs.next()){
+					out_id = rs.getInt("out_id");
+						}
+				HashMap<String, Object> infInstValues = fillAtributtes(null, connection, userInfo, "select * from infInst, comCinst, conteudo where infInst.comCinst_id = comCinst.id and comCinst.conteudo_id = conteudo.id and conteudo.crc_id = ''{0}''",
+						new Object[] { out_id });
 				
 				if(!infInstValues.isEmpty()) {
 					//AMBICIOSO CC014 
@@ -201,17 +193,19 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 					
 					// CC026
 					BigDecimal rendLiqChoq = (BigDecimal) entCompValues.get("rendLiqChoq");
-					if (rendLiqChoq == null)
+					if (rendLiqChoq == null) {
 						result.add(new ValidationError("CC026", "entComp", "rendLiqChoq", idCont, infCompC_id, idCont));
+						if (DSTIChoq != null)
+						// CC019
+						result.add(new ValidationError("CC019", "infCompC", "DSTIChoq", idCont, infCompC_id, idCont));
+					}
 					// CC025
 					else if ( rendLiqChoq != null && rendLiqChoq.compareTo(BigDecimal.ZERO) == -1 )
 						result.add(new ValidationError("CC025", "entComp", "rendLiqChoq", idCont, infCompC_id, idCont));
 					// CC018
 					else if (rendLiqChoq.compareTo(BigDecimal.ZERO) == 1 && DSTIChoq == null)
 						result.add(new ValidationError("CC018", "infCompC", "DSTIChoq", idCont, infCompC_id, idCont));
-					else if (rendLiqChoq.compareTo(BigDecimal.ZERO) == 0 && DSTIChoq != null)
-					// CC019
-						result.add(new ValidationError("CC019", "infCompC", "DSTIChoq", idCont, infCompC_id, idCont));
+				
 					// CC027
 					if (rendLiqChoq != null && rendLiqChoq.compareTo(rendLiq) == 1)
 						result.add(new ValidationError("CC027", "entComp", "rendLiqChoq", idCont, infCompC_id, idCont));
@@ -236,7 +230,7 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 						//TODO CC008
 						String idProt = (String) protCompValues.get("idProt");
 						if (retrieveSimpleField(connection, userInfo,
-								"select * from infprot where idProt = ''{0}'' and like '13%' and tpProt like '14%' and tpProt like '15%'",
+								"select * from infprot where idProt = ''{0}'' and tpProt like ''13%'' and tpProt like ''14%'' and tpProt like ''15%''",
 								new Object[] { idProt}).size() > 0 && LTV == null)
 							result.add(new ValidationError("CC008", "infCompC", "idProt", idCont, infCompC_id, idProt));
 						
