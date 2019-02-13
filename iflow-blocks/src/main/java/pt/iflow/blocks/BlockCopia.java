@@ -156,9 +156,12 @@ public class BlockCopia extends Block {
         		this.addToLog("Set list " + list + " item " + arrayDestPos + " with " + value);
         	}
         	else {
-        		procData.set(sVarDest, value);
-        		Logger.debug(login, this, "after", "set " + sVarDest + " with " + value);
-        		this.addToLog("Set " + sVarDest + " with " + value);
+        		if(sVarDest != null && value != null) {
+        			procData.set(sVarDest, value);
+        		}
+    			Logger.debug(login, this, "after", "set " + sVarDest + " with " + value);
+    			this.addToLog("Set " + sVarDest + " with " + value);
+        		
         	}
         		
         }

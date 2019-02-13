@@ -1,4 +1,5 @@
 package pt.iflow.blocks;
+import java.util.Iterator;
 
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -19,6 +21,7 @@ import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
 import pt.iflow.blocks.P17040.utils.ImportAction;
 import pt.iflow.blocks.P17040.utils.ValidationError;
+import pt.iflow.blocks.P17040.utils.ImportAction.ImportActionType;
 
 public class BlockP17040ValidateCINA extends BlockP17040Validate {
 
@@ -72,6 +75,12 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 					"select infRInst.id from infRInst where infPerInst_id = {0} ",
 					new Object[] { infPerInst_id });
 			
+			//::IP074: Identificador com carateres inváli-dos.
+			if(!(StringUtils.isAlphanumeric(idCont)))
+				result.add(new ValidationError("IP074", "infPerInst", "idCont", idCont, infPerInst_id));
+			if(!(StringUtils.isAlphanumeric(idInst)))
+				result.add(new ValidationError("IP074", "infPerInst", "idInst", idCont, infPerInst_id));
+			
 			for(Integer infRInst_id : infRInstIdList){
 				//protExp
 				List<Integer> protExpIdList = retrieveSimpleField(connection, userInfo,
@@ -84,12 +93,17 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 					//::IP068
 					if(protExpValues.get("idProt")!=null && GestaoCrc.checkInfProtType((String) protExpValues.get("idProt"), dtRef, userInfo.getUtilizador(), connection).getAction() == ImportAction.ImportActionType.CREATE)
 						result.add(new ValidationError("IP068", "protExp", "idProt", (String) protExpValues.get("idProt"), (Integer) protExpValues.get("id")));
+					
+					if(protExpValues.get("idProt")!=null && !(StringUtils.isAlphanumeric((String) protExpValues.get("idProt"))))
+						result.add(new ValidationError("IP074", "protExp", "idProt", (String) protExpValues.get("idProt"), (Integer) protExpValues.get("id")));
 				}
 			}			
 			
 			// ------ infFinInst...
 			HashMap<String, Object> infFinInstValues = fillAtributtes(null, connection, userInfo,
 					"select * from infFinInst where infPerInst_id = {0} ", new Object[] { infPerInst_id });
+			
+			
 			
 			if(!infFinInstValues.isEmpty()){
 				// montVivo
@@ -98,7 +112,8 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 					result.add(new ValidationError("IP033", "infFinInst", "montVivo", idCont, infPerInst_id, montVivo));
 				if (montVivo == null)
 					result.add(new ValidationError("IP034", "infFinInst", "montVivo", idCont, infPerInst_id, montVivo));
-				
+			
+	
 				// TAA
 				BigDecimal TAA = (BigDecimal) infFinInstValues.get("TAA");
 				if (TAA == null)
@@ -118,9 +133,10 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 					result.add(new ValidationError("IP004", "infFinInst", "estIncInst", idCont, infPerInst_id, estIncInst));
 				if (!isValidDomainValue(userInfo, connection, "T_DST", estIncInst))
 					result.add(new ValidationError("IP005", "infFinInst", "estIncInst", idCont, infPerInst_id, estIncInst));
-				//if (StringUtils.isBlank(estIncInst))
-				//	result.add(new ValidationError("IP006", "infFinInst", "estIncInst", idCont, infPerInst_id, estIncInst));
-	
+				// DUVIDA TODO ::IP006: Campo obrigatório para instrumento elegível para reporte ao AnaCredit.
+				/*if (StringUtils.isBlank(estIncInst))
+					result.add(new ValidationError("IP006", "infFinInst", "estIncInst", idCont, infPerInst_id, estIncInst));*/
+				
 				// montVenc
 				BigDecimal montVenc = (BigDecimal) infFinInstValues.get("montVenc");
 				if (montVenc != null && montVenc.compareTo(BigDecimal.ZERO) == -1)
@@ -152,8 +168,7 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 				
 				// dtAtualizTxJur
 				Date dtAtualizTxJur = (Date) infFinInstValues.get("dtAtualizTxJur");
-				
-				//TODO ::IP006: Campo obrigatório para instrumento elegível para reporte ao AnaCredit.
+								
 				
 				//::IP011: Data da próxima atualização de taxa de juro deve ser superior à data de referên-cia.
 				if (dtAtualizTxJur != null && dtAtualizTxJur.before(dtRef))
@@ -162,7 +177,7 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 				// montTransf
 				BigDecimal montTransf = (BigDecimal) infFinInstValues.get("montTransf");
 				
-				//TODO ::IP006: Campo obrigatório para instrumento elegível para reporte ao AnaCredit.
+				
 				// ::IP033: Montante não pode ser negativo
 				if (montTransf != null && montTransf.compareTo(BigDecimal.ZERO) == -1)
 					result.add(new ValidationError("IP033", "infFinInst", "montTransf", idCont, infPerInst_id, montTransf));
@@ -173,22 +188,33 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 				// ::IP033: Montante não pode ser negativo.
 				if (credConv != null && credConv.compareTo(BigDecimal.ZERO) == -1)
 					result.add(new ValidationError("IP033", "infFinInst", "credConv", idCont, infPerInst_id, credConv));
-	
-				//TODO ::IP088: Campo não aplicável para instru-mentos diferentes de cartão de crédito.
-				//TODO ::IP091: Campo obrigatório para contra-tos/instrumentos do tipo Cartão de Crédito cuja entidade observada pertença ao setor das IFM.
+				
 				
 				// credAlarg
 				BigDecimal credAlarg = (BigDecimal) infFinInstValues.get("credAlarg");
-				//TODO ::IP033: Montante não pode ser negativo.
+				//::IP033: Montante não pode ser negativo.
 				if (credAlarg != null && credAlarg.compareTo(BigDecimal.ZERO) == -1)
 					result.add(new ValidationError("IP033", "infFinInst", "credAlarg", idCont, infPerInst_id, credAlarg));
 				
-				//TODO ::IP088: Campo não aplicável para instru-mentos diferentes de cartão de crédito.
+				//TODO ::IP088: Campo não aplicável para instru-mentos diferentes de cartão de crédito. 
+				/*(String) codigo = ("select tpInst from infinst where idCont = infFinInstValues.idCont")
+				
+				String codigo = (String) infInstValu.get("tpInst");
+				if (StringUtils.startsWith(codigo, "004")  ) {
+					result.add(new ValidationError("IP088", "infPerInst", "tpInst", (String) infPerInstValues.get("tpInst"), (Integer) infPerInstValues.get("id")));
+				}*/
+				
+				//Is this right?
+				credConv = (BigDecimal) infFinInstValues.get("credConv");
+				credAlarg = (BigDecimal) infFinInstValues.get("credAlarg");
+				
+				if (credConv != null && credAlarg != null)
+					result.add(new ValidationError("IP088", "infFinInst", "credConv", idCont, infPerInst_id, credConv));
 				//TODO ::IP091: Campo obrigatório para contra-tos/instrumentos do tipo Cartão de Crédito cuja entidade observada pertença ao setor das IFM.
 				
 				// jurCorr
 				BigDecimal jurCorr = (BigDecimal) infFinInstValues.get("jurCorr");
-				//TODO ::IP006: Campo obrigatório para instrumento elegível para reporte ao AnaCredit.
+				
 				// ::IP033: Montante não pode ser negativo.
 				if (jurCorr != null && jurCorr.compareTo(BigDecimal.ZERO) == -1)
 					result.add(new ValidationError("IP033", "infFinInst", "jurCorr", idCont, infPerInst_id, jurCorr));
@@ -231,7 +257,7 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 				if (montPotIrrev != null && montPotIrrev.compareTo(BigDecimal.ZERO) == -1)
 					result.add(new ValidationError("IP033", "infFinInst", "montPotIrrev", idCont, infPerInst_id, montPotIrrev));
 	
-				//  ::IP034: Montante obrigatório.
+				// ::IP034: Montante obrigatório.
 				if (montPotIrrev == null)
 					result.add(new ValidationError("IP034", "infFinInst", "montPotIrrev", idCont, infPerInst_id, montPotIrrev));
 	
@@ -260,7 +286,8 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 				//::IP019: Data não pode ser posterior à data de referência.
 				if (dtInstVenc != null && dtInstVenc.after(dtRef))
 					result.add(new ValidationError("IP019", "infFinInst", "dtInstVenc", idCont, infPerInst_id, dtInstVenc));
-	
+				
+				
 				
 				// tpReembAntc
 				// montReembAntc
@@ -319,11 +346,14 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 					else
 						idEntValue = (String) idEntValues.get("nif_nipc");
 	
-					// ::IP021: Entidade da responsabilidade não in-tegrada previamente no sistema.				
+					// ::IP021: Entidade da responsabilidade não integrada previamente no sistema.				
 					if (idEntValue == null)
 						result.add(new ValidationError("IP021", "respEntInst", "idEnt", idEntValue, respEntInstId));
 	
-					//TODO ::IP074: Identificador com carateres inváli-dos.
+					//::IP074: Identificador com carateres inváli-dos.
+		
+					if(!(StringUtils.isAlphanumeric((String) respEntInstValues.get("idEnt_id").toString())))
+						result.add(new ValidationError("IP074", "respEntInst", "idEnt_id", (Integer) respEntInstValues.get("idEnt_id"), infPerInst_id));
 					
 					// tpRespEnt
 					String tpRespEnt = (String) respEntInstValues.get("tpRespEnt");	
@@ -334,13 +364,27 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 							new Object[] {respEntInstValues.get("tpRespEnt"), respEntInstValues.get("idEnt_id"), respEntInstValues.get("infFinInst_id")});
 					if(respEntInst_idList.size()>1)
 						result.add(new ValidationError("IP022", "respEntInst", "tpRespEnt", idEntValue, infPerInst_id, tpRespEnt));
-							
+					
 					// ::IP072: Código de tipo de responsabilidade inválido.
 					if (!isValidDomainValue(userInfo, connection, "T_TRS", tpRespEnt))
 						result.add(new ValidationError("IP071", "respEntInst", "tpRespEnt", idEntValue, infPerInst_id, tpRespEnt));
 	
-					//TODO ::IP089: Entidade simultaneamente comuni-cada como "Devedor" e com outro tipo de responsabilidade.
+					//ACEDER respEnt já comunicado:TODO ::IP089: Entidade simultaneamente comunicada como "Devedor" e com outro tipo de responsabilidade.
+					/*
+					ImportAction actionOnLine = GestaoCrc.checkInfEntType(idEntValue, dtRef, userInfo.getUtilizador(), connection);
 					
+					if (actionOnLine.equals(ImportAction.ImportActionType.UPDATE)) {
+						HashMap<String, Object> infEntValues = fillAtributtes(null, connection, userInfo, "select * from infent, coment, conteudo where idEnt_id = "
+								+ "coment.id and coment.conteudo_id = conteudo.id and conteudo.crc_id = ''{0}''", new Object[] {actionOnLine.getId()});
+						
+						List<Integer> idEntList = retrieveSimpleField(connection, userInfo, "select infent.idEnt_id, infent.nome  from infent, coment, conteudo where idEnt_id = coment.id and coment.conteudo_id"
+								+ " = conteudo.id and conteudo.crc_id = ''{0}'';", 
+								new Object[] {actionOnLine.getId()});
+					
+					for(Integer infEntId : idEntList)
+							if(!StringUtils.equals((String)respEntInstValues.get("tpRespEnt"), "002"))
+								result.add(new ValidationError("IP089", "respEntInst", "tpRespEnt", idEntValue, infPerInst_id, tpRespEnt));
+					}*/
 					// montTotEnt
 					BigDecimal montTotEnt = (BigDecimal) respEntInstValues.get("montTotEnt");
 					
@@ -419,19 +463,19 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 					// valPrestEnt
 					BigDecimal valPrestEnt = (BigDecimal) respEntInstValues.get("valPrestEnt");
 					
-					//TODO ::IP028: Valor da próxima prestação não pode ser maior do que a prestação total do instrumento.
+					// ::IP028: Valor da próxima prestação não pode ser maior do que a prestação total do instrumento.
 					if (valPrestEnt != null && valPrestEnt.compareTo(valPrest) == 1)
 						result.add(new ValidationError("IP028", "respEntInst", "valPrestEnt", idEntValue, infPerInst_id, valPrestEnt));
 					
-					//TODO ::IP029: Valor da próxima prestação é obriga-tório para o tipo de produto do instrumento.
+					// ::IP029: Valor da próxima prestação é obriga-tório para o tipo de produto do instrumento.
 					if (valPrestEnt == null)
 						result.add(new ValidationError("IP029", "respEntInst", "valPrestEnt", idEntValue, infPerInst_id, valPrestEnt));
 					
-					//TODO ::IP033: Montante não pode ser negativo.
+					//::IP033: Montante não pode ser negativo.
 					if (valPrestEnt != null && valPrestEnt.compareTo(BigDecimal.ZERO) == -1)
 						result.add(new ValidationError("IP033", "respEntInst", "valPrestEnt", idEntValue, infPerInst_id, valPrestEnt));
 									
-					//TODO ::IP076: Montante deve ser zero se tipo de responsabilidade diferente de “Devedor” ou “Avalista / Fiador”.
+					// ::IP076: Montante deve ser zero se tipo de responsabilidade diferente de “Devedor” ou “Avalista / Fiador”.
 					if (valPrestEnt != null && valPrestEnt.compareTo(BigDecimal.ZERO) != 0 && !StringUtils.equals(tpRespEnt, "002") && !StringUtils.equals(tpRespEnt, "003"))
 						result.add(new ValidationError("IP076", "respEntInst", "valPrestEnt", idEntValue, infPerInst_id, valPrestEnt));
 				}
@@ -452,15 +496,19 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 					//IP031
 					if(GestaoCrc.checkInfProtType(idProt, dtRef, userInfo.getUtilizador(), connection).getAction() == ImportAction.ImportActionType.CREATE)
 						result.add(new ValidationError("IP031", "protInst", "idProt", idCont, infPerInst_id));
-	
+					
 					// ::IP031: Proteção não integrada previamente no sistema.
 					if (idProt == null)
 						result.add(new ValidationError("IP031", "protInst", "idProt", idCont, infPerInst_id));
 					
-					//TODO ::IP074: Identificador com carateres inváli-dos.
-					//TODO ::IP079: Identificação de proteção duplicada no instrumento.
+					// ::IP074: Identificador com carateres inváli-dos.
+					if(!(StringUtils.isAlphanumeric(idProt)))
+						result.add(new ValidationError("IP074", "protInst", "idProt", idCont, infPerInst_id));
 					
-					
+					// ::IP079: Identificação de proteção duplicada no instrumento.
+					if(retrieveSimpleField(connection, userInfo,
+							"select * from protInst where infFinInst_id = ''{0}'' and idProt = ''{1}''",	new Object[] { infFinInstId, idProt }).size() > 1)
+						result.add(new ValidationError("IP079", "protInst", "idProt", idCont, infPerInst_id));
 					
 					// valAlocProt
 					BigDecimal valAlocProt = (BigDecimal) protInstValues.get("valAlocProt");
@@ -485,7 +533,7 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 	
 					// ::IP073: Código de estado de execução da proteção inválido.
 					if (!isValidDomainValue(userInfo, connection, "T_EEG", estExecProtInst))
-						result.add(new ValidationError("IP033", "protInst", "estExecProtInst", idProt, protInstId, estExecProtInst));
+						result.add(new ValidationError("IP073", "protInst", "estExecProtInst", idProt, protInstId, estExecProtInst));
 					
 					// valExecProtInst
 					BigDecimal valExecProtInst = (BigDecimal) protInstValues.get("valExecProtInst");
