@@ -756,11 +756,7 @@ public class GestaoCrc {
 				return new ImportAction(ImportActionType.CREATE);
 			
 		} catch (Exception e) {
-
 			Logger.error(utilizador, "GestaoCrc", "checkinfCompC", e.getMessage(), e);
-
-			Logger.error(utilizador, "GestaoCrc", "infCompC", e.getMessage(), e);
-
 		} finally {
 			DatabaseInterface.closeResources(db, pst, rs);
 		}

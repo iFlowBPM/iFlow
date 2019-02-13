@@ -11,7 +11,6 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.FileGeneratorUtils;
 
@@ -20,7 +19,6 @@ public class BlockP17040GenerateCICC extends BlockP17040Generate {
 	public BlockP17040GenerateCICC(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
 		// TODO Auto-generated constructor stub
-		
 	}
 
 	public String createFileContent(XMLStreamWriter writer, Connection connection, UserInfoInterface userInfo, Integer crcId) throws XMLStreamException, SQLException{
@@ -46,11 +44,7 @@ public class BlockP17040GenerateCICC extends BlockP17040Generate {
 			List<Integer> infCompCidList = retrieveSimpleField(connection, userInfo,
 					"select infCompC.id from infCompC, comInfComp, conteudo where infCompC.comInfComp_id = comInfComp.id and comInfComp.conteudo_id = conteudo.id and conteudo.crc_id = {0} ",	
 					new Object[] { crcId });
-				int i = 0;
 				for (Integer infCompCId : infCompCidList) {
-					i++;
-					if (i%LOGCYCLE == 0)
-						Logger.debug(userInfo.getUserId(), "BlockP17040GenerateCICC", "createFileContent", null, null);
 					writer.writeStartElement("infCompC");
 						fillAtributtes(writer, connection, userInfo,
 								"select * from infCompC where id = {0} ", new Object[] { infCompCId });					
