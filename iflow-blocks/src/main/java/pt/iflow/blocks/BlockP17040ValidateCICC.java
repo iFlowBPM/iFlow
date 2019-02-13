@@ -212,7 +212,6 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 					else if (rendLiqChoq.compareTo(BigDecimal.ZERO) == 0 && DSTIChoq != null)
 					// CC019
 						result.add(new ValidationError("CC019", "infCompC", "DSTIChoq", idCont, infCompC_id, idCont));
-					
 					// CC027
 					if (rendLiqChoq != null && rendLiqChoq.compareTo(rendLiq) == 1)
 						result.add(new ValidationError("CC027", "entComp", "rendLiqChoq", idCont, infCompC_id, idCont));
@@ -235,7 +234,7 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 						
 					if (!protCompValues.isEmpty()) {
 						//TODO CC008
-						Integer idProt = (Integer) protCompValues.get("idProt");
+						String idProt = (String) protCompValues.get("idProt");
 						if (retrieveSimpleField(connection, userInfo,
 								"select * from infprot where idProt = ''{0}'' and like '13%' and tpProt like '14%' and tpProt like '15%'",
 								new Object[] { idProt}).size() > 0 && LTV == null)
