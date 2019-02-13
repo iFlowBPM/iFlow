@@ -40,12 +40,13 @@ public abstract class BlockP17040Generate extends Block {
 	private static final String CRCID = "crc_id";
 	private static final String REPORTINGENTITY = "reporting_entity";
 	private static final String OBSERVEDENTITY = "observing_entity";
-
+	protected static final int LOGCYCLE = 100;
+	
 	public BlockP17040Generate(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
 		hasInteraction = false;
 	}
-
+	
 	public Port getEventPort() {
 		return null;
 	}
