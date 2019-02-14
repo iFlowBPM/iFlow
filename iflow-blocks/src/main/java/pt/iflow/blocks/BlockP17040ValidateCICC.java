@@ -134,12 +134,11 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 						if(StringUtils.equals(tpTxJuro, "002"))
 							if(!prestOpChoq.equals(prestOp))
 								result.add(new ValidationError("CC014", "infCompC", "prestOpChoq", idCont, infCompC_id));
-							
-			
 						//AMBICIOSO CC015
-						if(!StringUtils.equals(tpTxJuro, "002"))
+						else {
 							if(prestOpChoq == prestOp)
 								result.add(new ValidationError("CC015", "infCompC", "prestOpChoq", idCont, infCompC_id));
+						}
 					} else
 						//AMBICIOSO CC016
 						result.add(new ValidationError("CC016", "infCompC", "prestOpChoq", idCont, infCompC_id));
@@ -227,7 +226,7 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 					
 						
 					if (!protCompValues.isEmpty()) {
-						//TODO CC008
+						// CC008
 						String idProt = (String) protCompValues.get("idProt");
 						if (retrieveSimpleField(connection, userInfo,
 								"select * from infprot where idProt = ''{0}'' and tpProt like ''13%'' and tpProt like ''14%'' and tpProt like ''15%''",
