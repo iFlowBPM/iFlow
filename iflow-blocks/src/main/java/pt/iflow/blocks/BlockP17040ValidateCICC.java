@@ -124,26 +124,26 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 				if(rs.next()){
 					out_id = rs.getInt("out_id");
 						}
-				HashMap<String, Object> infInstValues = fillAtributtes(null, connection, userInfo, "select * from infInst, comCinst, conteudo where infInst.comCinst_id = comCinst.id and comCinst.conteudo_id = conteudo.id and conteudo.crc_id = ''{0}''",
-						new Object[] { out_id });
+				HashMap<String, Object> infInstValues = fillAtributtes(null, connection, userInfo, "select * from infInst, comCinst, conteudo where infInst.comCinst_id = comCinst.id and comCinst.conteudo_id = conteudo.id and conteudo.crc_id = ''{0}'' and idCont = ''{1}''",
+						new Object[] { out_id, idCont });
 				
 				if(!infInstValues.isEmpty()) {
 					//AMBICIOSO CC014 
 					String tpTxJuro = (String) infInstValues.get("tpTxJuro");
-					if(tpTxJuro != null)
+					if(tpTxJuro != null) {
 						if(StringUtils.equals(tpTxJuro, "002"))
 							if(!prestOpChoq.equals(prestOp))
-								result.add(new ValidationError("CC014", "infCompC", "prestOpChoq", idCont, infCompC_id,prestOpChoq));
+								result.add(new ValidationError("CC014", "infCompC", "prestOpChoq", idCont, infCompC_id));
 							
 			
 						//AMBICIOSO CC015
 						if(!StringUtils.equals(tpTxJuro, "002"))
 							if(prestOpChoq == prestOp)
-								result.add(new ValidationError("CC015", "infCompC", "prestOpChoq", idCont, infCompC_id, prestOpChoq));
-				} else
-					//AMBICIOSO CC016
-					result.add(new ValidationError("CC016", "infCompC", "prestOpChoq", idCont, infCompC_id, prestOpChoq));
-				
+								result.add(new ValidationError("CC015", "infCompC", "prestOpChoq", idCont, infCompC_id));
+					} else
+						//AMBICIOSO CC016
+						result.add(new ValidationError("CC016", "infCompC", "prestOpChoq", idCont, infCompC_id));
+				}
 				//CC017
 				BigDecimal DSTIChoq = (BigDecimal) infCompCValues.get("DSTIChoq");
 				if (DSTIChoq != null && DSTIChoq.compareTo(BigDecimal.ZERO) == -1)
