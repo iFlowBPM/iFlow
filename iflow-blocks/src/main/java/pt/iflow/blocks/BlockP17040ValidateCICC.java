@@ -84,11 +84,11 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 				if (actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE) && actionOnLine.getId() == idInst)
 						result.add(new ValidationError("CC003", "infCompC", "idInst", idInst, infCompC_id, idInst));
 				
-				//TODO CC004 DUVIDA
-				/*(if (retrieveSimpleField(connection, userInfo,
+				//CC004 DUVIDA
+				if (retrieveSimpleField(connection, userInfo,
 						"select infInst.idCont, infInst.idInst from infInst where idInst = ''{0}'' and idCont = ''{1}'' ",
 						new Object[] { idInst, idCont }).size() == 0)
-					result.add(new ValidationError("CC004", "infCompC", "idCont", idCont, infCompC_id, idCont));*/
+					result.add(new ValidationError("CC004", "infCompC", "idCont", idCont, infCompC_id, idCont));
 			
 				//CC007
 				BigDecimal LTV = (BigDecimal) infCompCValues.get("LTV");
@@ -155,6 +155,10 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 					"select entComp.id from entComp where infCompC_id = {0} ",
 					new Object[] { infCompC_id });
 			
+			List<Integer> entIdList = retrieveSimpleField(connection, userInfo,
+					"select idEnt_id from entComp where infCompC_id = {0} ",
+					new Object[] { infCompC_id });
+			
 			for(Integer entComp_id: entCompIdList){
 				
 				
@@ -165,7 +169,7 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 					
 		
 					
-					
+					Integer idEnt = (Integer) entCompValues.get("idEnt_id");
 					String idEntValue = null;
 					HashMap<String, Object> idEntValues = fillAtributtes(null, connection, userInfo,
 							"select * from idEnt where id = {0} ", new Object[] { entCompValues.get("idEnt_id") });
@@ -178,38 +182,48 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 					actionOnLine = GestaoCrc.checkInfEntType(idEntValue, dtRef, userInfo.getUtilizador(), connection);
 					if (actionOnLine.equals(ImportAction.ImportActionType.CREATE)) 
 						result.add(new ValidationError("CC020", "entComp", "idEnt", idCont, infCompC_id));	
-					// CC021	DUVIDA	
-					if (actionOnLine.equals(ImportAction.ImportActionType.UPDATE) && actionOnLine.getId() == idCont)
-						result.add(new ValidationError("CC021", "entComp", "idCont", idCont, infCompC_id));
+					// CC021	
+					if (retrieveSimpleField(connection, userInfo,
+							"select entcomp.ident_id from entcomp where entcomp.infCompC_id = {0} and entcomp.ident_id = ''{1}'' ",
+							new Object[] { infCompC_id, idEnt }).size() > 1)
+						result.add(new ValidationError("CC021", "entComp", "idEnt", idCont, infCompC_id, idEntValue));
 					
 					// CC023
 					BigDecimal rendLiq = (BigDecimal) entCompValues.get("rendLiq");
 					if (rendLiq == null)
-						result.add(new ValidationError("CC023", "entComp", "rendLiq", idCont, infCompC_id, idCont));
+						result.add(new ValidationError("CC023", "entComp", "rendLiq", idCont, infCompC_id, rendLiq));
 					// CC022
 					else if ( rendLiq != null && rendLiq.compareTo(BigDecimal.ZERO) == -1 )
-						result.add(new ValidationError("CC022", "entComp", "rendLiq", idCont, infCompC_id, idCont));
+						result.add(new ValidationError("CC022", "entComp", "rendLiq", idCont, infCompC_id, rendLiq));
 					
 					// CC026
 					BigDecimal rendLiqChoq = (BigDecimal) entCompValues.get("rendLiqChoq");
 					if (rendLiqChoq == null) {
-						result.add(new ValidationError("CC026", "entComp", "rendLiqChoq", idCont, infCompC_id, idCont));
+						result.add(new ValidationError("CC026", "entComp", "rendLiqChoq", idCont, infCompC_id, rendLiqChoq));
 						if (DSTIChoq != null)
 						// CC019
-						result.add(new ValidationError("CC019", "infCompC", "DSTIChoq", idCont, infCompC_id, idCont));
+						result.add(new ValidationError("CC019", "infCompC", "DSTIChoq", idCont, infCompC_id, DSTIChoq));
 					}
 					// CC025
 					else if ( rendLiqChoq != null && rendLiqChoq.compareTo(BigDecimal.ZERO) == -1 )
-						result.add(new ValidationError("CC025", "entComp", "rendLiqChoq", idCont, infCompC_id, idCont));
+						result.add(new ValidationError("CC025", "entComp", "rendLiqChoq", idCont, infCompC_id, rendLiqChoq));
 					// CC018
 					else if (rendLiqChoq.compareTo(BigDecimal.ZERO) == 1 && DSTIChoq == null)
-						result.add(new ValidationError("CC018", "infCompC", "DSTIChoq", idCont, infCompC_id, idCont));
+						result.add(new ValidationError("CC018", "infCompC", "DSTIChoq", idCont, infCompC_id, DSTIChoq));
 				
 					// CC027
 					if (rendLiqChoq != null && rendLiqChoq.compareTo(rendLiq) == 1)
-						result.add(new ValidationError("CC027", "entComp", "rendLiqChoq", idCont, infCompC_id, idCont));
+						result.add(new ValidationError("CC027", "entComp", "rendLiqChoq", idCont, infCompC_id, rendLiqChoq));
 					
-					//TODO CC029
+					// CC029
+					HashMap<String, Object> dadosentt1Values = fillAtributtes(null, connection, userInfo,
+							"select * from dadosentt1, infent, coment, conteudo where dadosentt1.infent_id = infent.id and infent.comEnt_id = coment.id "
+							+ "and coment.conteudo_id = conteudo.id and conteudo.crc_id = ''{0}'' and idEnt_id = ''{1}''", new Object[] { crcId, idEnt });
+					if (dadosentt1Values.get("sitProf") == "002" && rendLiqChoq != rendLiq)
+						result.add(new ValidationError("CC029", "entComp", "rendLiqChoq", idCont, infCompC_id, rendLiqChoq));
+					
+					
+					
 				}
 			}
 			
@@ -217,13 +231,14 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 			List<Integer> protCompIdList = retrieveSimpleField(connection, userInfo,
 					"select protComp.id from protComp where infCompC_id = {0} ",
 					new Object[] { infCompC_id });
-	
 			
 			for(Integer protComp_id: protCompIdList){
 				
 					HashMap<String, Object> protCompValues = fillAtributtes(null, connection, userInfo,
 							"select * from protComp where id = {0} ", new Object[] { protComp_id });
-					
+					pst = connection.prepareStatement("select * from u_gestao, iflow.documents or_in where  u_gestao.in_id is not null and or_in.filename like '%CCIN%' order by out_id desc limit 1");
+					 rs = pst.executeQuery();
+					 out_id = null;
 						
 					if (!protCompValues.isEmpty()) {
 						// CC008
@@ -231,22 +246,45 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 						if (retrieveSimpleField(connection, userInfo,
 								"select * from infprot where idProt = ''{0}'' and tpProt like ''13%'' and tpProt like ''14%'' and tpProt like ''15%''",
 								new Object[] { idProt}).size() > 0 && LTV == null)
-							result.add(new ValidationError("CC008", "infCompC", "idProt", idCont, infCompC_id, idProt));
+							result.add(new ValidationError("CC008", "protComp", "idProt", idCont, protComp_id, idProt));
 						
-						//TODO CC030 e CC031
+						// CC030
+
+						if(rs.next()){
+							out_id = rs.getInt("out_id");
+						}
+						HashMap<String, Object> infProtValues = fillAtributtes(null, connection, userInfo, "select * from infProt, comProt, conteudo where infProt.comProt_id = comProt.id and comProt.conteudo_id = conteudo.id and conteudo.crc_id = ''{0}''",
+								new Object[] { out_id, idCont });
+						
+						if(!infProtValues.isEmpty()) { 
+							String infProtid = (String) infProtValues.get("idProt");
+							if(infProtid != idProt) {
+								result.add(new ValidationError("CC030", "protComp", "idProt", idCont, protComp_id, idProt));
+								}
+							}
+						
+						
+							
+						//CC031
+							if (retrieveSimpleField(connection, userInfo,
+									"select protComp.idProt from protComp where infCompC_id = {0} and protComp.idProt = ''{1}'' ",
+									new Object[] { infCompC_id, idProt }).size() > 1)
+								result.add(new ValidationError("CC031", "protComp", "idProt", idCont, protComp_id, idProt));
+						
 						//CC032
 						Integer imoInst = (Integer) protCompValues.get("imoInst");
 						if (imoInst != null && !(imoInst.equals(1) || imoInst.equals(0))) 
 							result.add(new ValidationError("CC032", "protComp", "imoInst", idCont, protComp_id, idCont));
 	
-						//TODO CC033
-						// CC034 DUVIDA DATA DE REFERENCIA
+						//TODO CC033 e CC035 Não têm imóveis (FCA).
+						
+						// CC034 
 						Date dtAq = (Date) protCompValues.get("dtAq");
 						if (dtAq != null && dtAq.after(dtRef))
 							result.add(new ValidationError("CC035", "protComp", "dtAq", idCont, protComp_id, idCont));
 						
-						//TODO CC035. MESMO QUE O 33
-						//TODO CC036 DUVIDA, ONDE VOU BUSCAR A DATA
+						
+						//TODO CC036 Não têm imóveis (FCA).
 						
 						
 					
@@ -285,18 +323,23 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 					}
 	
 					//CC041
+					String tpInst = (String) infInstValues.get("tpInst");
 					if(justif != null) {
 						if (!isValidDomainValue(userInfo, connection, "T_JUS", justif))
 							result.add(new ValidationError("CC041", "justif", "justif", idCont, justComp_id, justif));
-						} 
+						//CC043
+						if(tpInst == "5007")
+							result.add(new ValidationError("CC043", "justif", "justif", idCont, justComp_id, justif));
+						//CC044
+						if(tpInst == "2002")
+							result.add(new ValidationError("CC043", "justif", "justif", idCont, justComp_id, justif));
+						}
 					//CC042
 					if (DSTIChoq == null && justif == null)
 						result.add(new ValidationError("CC042", "justif", "justif", idCont, justComp_id, justif));
 						
 					
-					//TODO CC043
-					
-					//TODO CC044
+	
 					
 				}
 			}
