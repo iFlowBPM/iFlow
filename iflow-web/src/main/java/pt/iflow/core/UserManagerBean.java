@@ -264,15 +264,15 @@ public class UserManagerBean
   private boolean assUserCalend(UserInfoInterface userInfo, String cal, int userId)
   {
     Connection db = null;
-    PreparedStatement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     boolean c = false;
     try
     {
       db = Utils.getDataSource().getConnection();
-      st = db.prepareStatement("Insert into user_calendar (userid,calendar_id)values (?," + cal + ")");
-      st.setInt(1, userId);
-      st.execute();
+      pst = db.prepareStatement("Insert into user_calendar (userid,calendar_id)values (?," + cal + ")");
+      pst.setInt(1, userId);
+      pst.execute();
       c = true;
     }
     catch (Exception e)
@@ -283,7 +283,7 @@ public class UserManagerBean
     }
     finally
     {
-      DatabaseInterface.closeResources(new Object[] { rs, db, st });
+      DatabaseInterface.closeResources(new Object[] { rs, db, pst });
     }
     return c;
   }
@@ -932,7 +932,7 @@ public class UserManagerBean
     DataSource ds = null;
     Connection db = null;
     ResultSet rs = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     if (Logger.isDebugEnabled()) {
       Logger.debug(userInfo.getUtilizador(), this, "modifyProfile", "Updating profile: " + profile.getName());
     }
@@ -970,8 +970,8 @@ public class UserManagerBean
         if (Logger.isDebugEnabled()) {
           Logger.debug(userInfo.getUtilizador(), this, "modifyProfile", "QUERY=" + sql.toString());
         }
-        st = db.createStatement();
-        st.executeUpdate(sql.toString());
+        pst = db.prepareStatement(sql.toString());
+        pst.executeUpdate();
         db.commit();
         
         result = true;
@@ -983,7 +983,7 @@ public class UserManagerBean
       }
       finally
       {
-        DatabaseInterface.closeResources(new Object[] { db, st, rs });
+        DatabaseInterface.closeResources(new Object[] { db, pst, rs });
       }
     }
     return result;
@@ -1879,7 +1879,7 @@ public class UserManagerBean
     DataSource ds = null;
     Connection db = null;
     ResultSet rs = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     if ((!userInfo.isSysAdmin()) && (!userInfo.isOrgAdmin()))
     {
       Logger.error(userInfo.getUtilizador(), this, "getAllProfiles", "not sysadmin nor orgadmin, exiting");
@@ -1903,8 +1903,8 @@ public class UserManagerBean
       if (Logger.isDebugEnabled()) {
         Logger.debug(userInfo.getUtilizador(), this, "getProfiles", "QUERY=" + query);
       }
-      st = db.createStatement();
-      rs = st.executeQuery(query);
+      pst = db.prepareStatement(query);
+      rs = pst.executeQuery();
       List<ProfilesTO> profiles = new ArrayList();
       while (rs.next())
       {
@@ -1922,7 +1922,7 @@ public class UserManagerBean
     }
     finally
     {
-      DatabaseInterface.closeResources(new Object[] { db, st, rs });
+      DatabaseInterface.closeResources(new Object[] { db, pst, rs });
     }
     return result;
   }

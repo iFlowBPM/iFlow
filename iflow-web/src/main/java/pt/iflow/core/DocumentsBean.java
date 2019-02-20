@@ -1105,7 +1105,7 @@ public class DocumentsBean implements Documents {
   
   public boolean markDocsToSign(UserInfoInterface userInfo, ProcessListVariable docs, ProcessListVariable values) {   
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     String queryUpdate0 = "";
     String queryUpdate1 = "";
     boolean flag0 = false;
@@ -1133,19 +1133,19 @@ public class DocumentsBean implements Documents {
     try {
       db = DatabaseInterface.getConnection(userInfo);
       if(flag0){
-        st = db.createStatement();
-        st.executeUpdate("UPDATE documents set tosign=0 where docid in "+queryUpdate0);
-        st.close();
+        pst = db.prepareStatement("UPDATE documents set tosign=0 where docid in "+queryUpdate0);
+        pst.executeUpdate();
+        pst.close();
       }
       if(flag1){
-        st = db.createStatement();
-        st.executeUpdate("UPDATE documents set tosign=1 where docid in "+queryUpdate1);
+        pst = db.prepareStatement("UPDATE documents set tosign=1 where docid in "+queryUpdate1);
+        pst.executeUpdate();
       }
      } catch (SQLException sqle) {
           Logger.error(userInfo.getUtilizador(), this, "markDocsToSign","caught sql exception: " + sqle.getMessage(), sqle);
           return false;
      } finally {
-          DatabaseInterface.closeResources(db, st);
+          DatabaseInterface.closeResources(db, pst);
      }
      Logger.debug(userInfo.getUtilizador(), this, "markDocsToSign", "Update to not sign "+queryUpdate0+" and to sign "+queryUpdate1);
      return true;
@@ -1156,7 +1156,7 @@ public class DocumentsBean implements Documents {
     Logger.trace(this, "markDocGenerationSuccess", userInfo.getUtilizador() + " call.");
     Boolean result = Boolean.TRUE;
     Connection db = null;
-    PreparedStatement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     LinkedList<Activity> l = new LinkedList();
     StringBuilder sQuery = new StringBuilder(DBQueryManager.processQuery("Documents.markDocGenerationSuccess", new Object[] { Integer.valueOf(adoc.getDocId()), success, success }));
@@ -1165,9 +1165,9 @@ public class DocumentsBean implements Documents {
       db = DatabaseInterface.getConnection(userInfo);
       db.setAutoCommit(true);
       
-      st = db.prepareStatement(sQuery.toString());
-      st.execute();
-      DatabaseInterface.closeResources(new Object[] { st, rs });
+      pst = db.prepareStatement(sQuery.toString());
+      pst.execute();
+      DatabaseInterface.closeResources(new Object[] { pst, rs });
     }
     catch (SQLException sqle)
     {
@@ -1181,7 +1181,7 @@ public class DocumentsBean implements Documents {
     }
     finally
     {
-      DatabaseInterface.closeResources(new Object[] { db, st, rs });
+      DatabaseInterface.closeResources(new Object[] { db, pst, rs });
     }
     return result;
   }

@@ -63,15 +63,15 @@ public class PersistSession {
   public void getSession(UserInfoInterface userInfo, HttpSession session){
     String userid = userInfo.getUtilizador();    
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     Object[][] valores = new Object[0][2]; 
     byte[] buf = null;
     
     try {
       db = DatabaseInterface.getConnection(userInfo);
-      st = db.createStatement();
-      rs = st.executeQuery("select session from user_session where userid = '"+userid+"'");
+      pst = db.prepareStatement("select session from user_session where userid = '"+userid+"'");
+      rs = pst.executeQuery();
       
       if (rs.next()) {
         buf = rs.getBytes("session");
@@ -85,7 +85,7 @@ public class PersistSession {
     } catch (Exception e) {
         Logger.error(userid, "PersistSession", "getSession", "caught exception: " + e.getMessage(), e);
     } finally {
-        DatabaseInterface.closeResources(db, st, rs);
+        DatabaseInterface.closeResources(db, pst, rs);
     }
 
     for(int i=0; i < valores.length; i++){
@@ -123,6 +123,8 @@ public class PersistSession {
       pst = db.prepareStatement("Update user_session set session=? where userid='"+userInfo.getUtilizador()+"'");
       pst.setBytes(1, baos.toByteArray());
       rows = pst.executeUpdate();
+      pst.close();
+      db.close();
 
       if(rows <= 0){      
         db = DatabaseInterface.getConnection(userInfo); 

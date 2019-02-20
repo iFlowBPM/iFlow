@@ -247,7 +247,7 @@ public class QueueManager {
 
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     boolean bSearchProc = false;
     boolean bSearchData = false;
@@ -289,11 +289,12 @@ public class QueueManager {
 
       ds = Utils.getDataSource();
       db = ds.getConnection();
-      st = db.createStatement();
+      
 
       if (bSearchData) {
         final String queueDataQuery = DBQueryManager.processQuery(QueueManager.GET_QUEUE_DATA_IDS, new Object[]{sbQueueDataWhere});
-        rs = st.executeQuery(queueDataQuery);
+        pst = db.prepareStatement(queueDataQuery);
+        rs = pst.executeQuery();
 
         bSearchData = false;
         while (rs.next()) {
@@ -321,7 +322,8 @@ public class QueueManager {
 
       alProcs = new ArrayList<String>();
       final String queueProcQuery = DBQueryManager.processQuery(QueueManager.GET_QUEUE_PROC_IDS, new Object[]{sbQueueProcWhere});
-      rs = st.executeQuery(queueProcQuery);
+      pst = db.prepareStatement(queueProcQuery);
+      rs = pst.executeQuery();
       while (rs.next()) {
         String sId = rs.getString(QueueManager.sCOL_ID);
         alProcs.add(sId);
@@ -331,7 +333,7 @@ public class QueueManager {
       Logger.error(sUser,_qm,"getQueueProcs1",e.getMessage(),e);
     }
     finally {
-      DatabaseInterface.closeResources(db,st,rs);
+      DatabaseInterface.closeResources(db,pst,rs);
     }
 
     retObj = QueueManager.getQueueProcs(userInfo, alProcs);
@@ -369,7 +371,7 @@ public class QueueManager {
 
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     String stmp = null;
     String stmp2 = null;
@@ -393,11 +395,11 @@ public class QueueManager {
 
         ds = Utils.getDataSource();
         db = ds.getConnection();
-        st = db.createStatement();
+       
 
         stmp = DBQueryManager.processQuery(QueueManager.GET_QUEUE_PROC_IN, new Object[]{sbtmp});
-
-        rs = st.executeQuery(stmp);
+        pst = db.prepareStatement(stmp);
+        rs = pst.executeQuery();
 
         alProcs = new ArrayList<String>();
         hmProcs = new HashMap<String, QueueProc>();
@@ -440,8 +442,8 @@ public class QueueManager {
         rs = null;
 
         stmp = DBQueryManager.processQuery(QueueManager.GET_QUEUE_DATA_IN, new Object[]{sbtmp});
-
-        rs = st.executeQuery(stmp);
+        pst = db.prepareStatement(stmp);
+        rs = pst.executeQuery();
 
         while (rs.next()) {
           stmp = rs.getString(QueueManager.sCOL_QUEUE_PROC_ID);
@@ -461,7 +463,7 @@ public class QueueManager {
       Logger.error(sUser,_qm,"getQueueProcs2",e.getMessage(), e);
     }
     finally {
-      DatabaseInterface.closeResources(db,st,rs);
+      DatabaseInterface.closeResources(db,pst,rs);
     }
 
 

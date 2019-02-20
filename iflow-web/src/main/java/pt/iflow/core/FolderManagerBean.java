@@ -1,6 +1,7 @@
 package pt.iflow.core;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -30,14 +31,14 @@ public class FolderManagerBean implements FolderManager {
 		    List<Folder> retObj = new ArrayList<Folder>();		    
 		    
 		    Connection db = null;
-		    Statement st = null;
+		    PreparedStatement pst = null;
 		    ResultSet rs = null;
 		    int last = 0;
 
 		    try {
 		      db = DatabaseInterface.getConnection(userInfo);
-		      st = db.createStatement();
-		      rs = st.executeQuery("select id, name, color from folder where userid = '"+userid+"'");
+		      pst = db.prepareStatement("select id, name, color from folder where userid = '"+userid+"'");
+		      rs = pst.executeQuery();
 		      
 		      while (rs.next()) {
 		    	  last = rs.getInt("id");
@@ -51,7 +52,7 @@ public class FolderManagerBean implements FolderManager {
 		    } catch (Exception e) {
 		    	Logger.error(userid, this, "getUserFolders","caught exception: " + e.getMessage(), e);
 		    } finally {
-		    	DatabaseInterface.closeResources(db, st, rs);
+		    	DatabaseInterface.closeResources(db, pst, rs);
 		    }
 	  return retObj;
 	  }
@@ -105,32 +106,33 @@ public class FolderManagerBean implements FolderManager {
 	  
 	  public void editFolder(UserInfoInterface userInfo, String folderid, String foldername, String color){
 		  Connection db = null;
-		  Statement st = null;
+		  PreparedStatement pst = null;
 	 
 	   	  try {
 		      db = DatabaseInterface.getConnection(userInfo);
-		      st = db.createStatement();
-              st.executeUpdate("Update folder set name='"+foldername+"', color='"+color+"' where id="+folderid);
+		      pst = db.prepareStatement("Update folder set name='"+foldername+"', color='"+color+"' where id="+folderid);
+              pst.executeUpdate();
 		   } catch (SQLException sqle) {
 		    	Logger.error(userInfo.getUtilizador(), this, "editFolder","caught sql exception: " + sqle.getMessage(), sqle);
 		   } finally {
-		    	DatabaseInterface.closeResources(db, st);
+		    	DatabaseInterface.closeResources(db, pst);
 		   }
 	  }
 	  
 	  public void createFolder(UserInfoInterface userInfo, String foldername, String color){
 		  Connection db = null;
-		  Statement st = null;
+		  PreparedStatement pst = null;
 		  String query = "";
 		  try {
 			  db = DatabaseInterface.getConnection(userInfo);
-			  st = db.createStatement();
 			  query = "insert into folder (name, color, userid) values ('"+foldername+"','"+color+"','"+userInfo.getUtilizador()+"')";
-			  st.execute(query);
+			  pst = db.prepareStatement(query);
+			  pst.executeQuery();
+			  
 		  } catch (SQLException sqle) {
 			  Logger.error(userInfo.getUtilizador(), this, "createFolder","caught sql exception: " + sqle.getMessage(), sqle);
 		  } finally {
-			  DatabaseInterface.closeResources(db, st);
+			  DatabaseInterface.closeResources(db, pst);
 		  }
 	  }
 
@@ -154,15 +156,15 @@ public class FolderManagerBean implements FolderManager {
 	  
 	   public void setActivityToFolderByName(UserInfoInterface userInfo, String foldername, int flowid, int pid, int subpid){
          Connection db = null;
-         Statement st = null;
-         Statement st2 = null;
+         PreparedStatement pst = null;
+         PreparedStatement pst2 = null;
          ResultSet rs = null;
          String nextUser = "";
          try {
            String query = "select userid from activity where flowid ="+flowid+" and pid="+pid+" and subpid="+subpid;
            db = DatabaseInterface.getConnection(userInfo);
-           st = db.createStatement();
-           rs = st.executeQuery(query);
+           pst = db.prepareStatement(query);
+           rs = pst.executeQuery();
            
              while(rs.next()){
                nextUser = rs.getString("userid");
@@ -170,14 +172,14 @@ public class FolderManagerBean implements FolderManager {
                if(!StringUtils.isEmpty(nextUser)){
                  query ="update activity set folderid = (select id from folder where name like '"+foldername+"' and userid = '"+nextUser+"')"+
                         "where flowid ="+flowid+" and pid="+pid+" and subpid="+subpid+" and userid='"+nextUser+"'";
-                 st2 = db.createStatement();
-                 st2.executeUpdate(query);
+                 pst2 = db.prepareStatement(query);
+                 pst2.executeUpdate();
                }
              }
           } catch (SQLException sqle) {
                Logger.error(userInfo.getUtilizador(), this, "setActivityToFolderByName","caught sql exception: " + sqle.getMessage(), sqle);
           } finally {
-               DatabaseInterface.closeResources(db, st, st2);
+               DatabaseInterface.closeResources(db, pst, pst2);
           }
      }
 }

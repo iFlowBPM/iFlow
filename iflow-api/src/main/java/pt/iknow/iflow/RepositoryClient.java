@@ -2,7 +2,7 @@ package pt.iknow.iflow;
 
 import java.util.Collection;
 
-import org.apache.commons.httpclient.Cookie;
+import org.apache.http.cookie.Cookie;
 
 import pt.iflow.api.utils.FlowInfo;
 

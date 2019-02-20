@@ -1,5 +1,6 @@
 package pt.iflow.core;
 
+import java.sql.PreparedStatement;
 import java.util.Iterator;
 
 import pt.iflow.api.core.Activity;
@@ -90,14 +91,14 @@ public class AdministrationProcessManagerBean implements AdministrationProcessMa
     boolean updateSuccessful = false;
     javax.sql.DataSource dso = Utils.getDataSource();
     java.sql.Connection db = null;
-    java.sql.Statement st = null;
+    java.sql.PreparedStatement pst = null;
     int ntmp = 0;
 
     try {
       String oldUser = activity.getUserid();
       db = dso.getConnection();
       db.setAutoCommit(false);
-      st = db.createStatement();
+      
 
       StringBuffer query = new StringBuffer();
       String sProfileName = "";
@@ -114,7 +115,8 @@ public class AdministrationProcessManagerBean implements AdministrationProcessMa
       query.append(" and subpid='").append(activity.getSubpid()).append("' ");
 
       if (query != null) {
-        ntmp = st.executeUpdate(query.toString());
+    	PreparedStatement psQuery = db.prepareStatement(query.toString());
+        ntmp = pst.executeUpdate(psQuery.toString());
         if (ntmp == 1) {
           updateSuccessful = true;
           Logger.info(userInfo.getUtilizador(), this, "updateActivityUser", "Successful update to user [" + newUser
@@ -138,7 +140,7 @@ public class AdministrationProcessManagerBean implements AdministrationProcessMa
         }
       }
     } finally {
-      DatabaseInterface.closeResources(dso, db, st);
+      DatabaseInterface.closeResources(dso, db, pst);
     }
     return updateSuccessful;
   }

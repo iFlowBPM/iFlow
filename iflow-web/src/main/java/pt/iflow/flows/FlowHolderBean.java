@@ -227,7 +227,7 @@ public class FlowHolderBean implements FlowHolder {
         }
         
         Connection db = null;
-        Statement st = null;
+        PreparedStatement pst = null;
         ResultSet rs = null;
         String result = null;
         
@@ -236,22 +236,23 @@ public class FlowHolderBean implements FlowHolder {
             db = Utils.getDataSource().getConnection();
             
             // check if flow exists in db and is disabled
-            st = db.createStatement();
+            
             String stmp = "select flowfile from flow where flowid=" + flowId
                     + " and organizationid='" + userInfo.getOrganization()
                     + "'";
-            rs = st.executeQuery(stmp);
+            pst = db.prepareStatement(stmp);
+            rs = pst.executeQuery(stmp);
             
             if (rs.next()) {
                 result = rs.getString("flowfile");
             }
             rs.close();
-            st.close();
+            pst.close();
             
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            DatabaseInterface.closeResources(db, st, rs);
+            DatabaseInterface.closeResources(db, pst, rs);
         }
         
         return result;
@@ -354,7 +355,7 @@ public class FlowHolderBean implements FlowHolder {
 
         DataSource ds = null;
         Connection db = null;
-        Statement st = null;
+        PreparedStatement pst = null;
         ResultSet rs = null;
         
         FlowData fd = null;
@@ -363,7 +364,7 @@ public class FlowHolderBean implements FlowHolder {
             
             ds = Utils.getDataSource();
             db = ds.getConnection();
-            st = db.createStatement();
+            
             rs = null;
 
             StringBuffer sQuery = new StringBuffer();
@@ -399,8 +400,9 @@ public class FlowHolderBean implements FlowHolder {
               sQuery.append(" )");
             }
             sQuery.append(" order by F.flowid");
-
-            rs = st.executeQuery(sQuery.toString());
+            
+            pst = db.prepareStatement(sQuery.toString());
+            rs = pst.executeQuery();
 
             ArrayList<FlowData> altmp = new ArrayList<FlowData>();
             while (rs.next()) {
@@ -442,7 +444,7 @@ public class FlowHolderBean implements FlowHolder {
                     "exception (" + e.getClass().getName() + ") caught: "
                             + e.getMessage(), e);
         } finally {
-            DatabaseInterface.closeResources(db, st, rs);
+            DatabaseInterface.closeResources(db, pst, rs);
         }
         
         return retObj;
@@ -487,14 +489,14 @@ public class FlowHolderBean implements FlowHolder {
         
         DataSource ds = null;
         Connection db = null;
-        Statement st = null;
+        PreparedStatement pst = null;
         ResultSet rs = null;
         
         try {
             
             ds = Utils.getDataSource();
             db = ds.getConnection();
-            st = db.createStatement();
+            
             rs = null;
             
             // return every flowfile in orgnaizationid. Union will remove
@@ -522,8 +524,8 @@ public class FlowHolderBean implements FlowHolder {
                 query = onlineOrgFlows;
             else
                 query = allOrgFlows;
-            
-            rs = st.executeQuery(query);
+            pst = db.prepareStatement(query);
+            rs = pst.executeQuery();
             
             ArrayList<String> altmp = new ArrayList<String>();
             while (rs.next()) {
@@ -536,7 +538,7 @@ public class FlowHolderBean implements FlowHolder {
                     "exception (" + e.getClass().getName() + ") caught: "
                             + e.getMessage(), e);
         } finally {
-            DatabaseInterface.closeResources(db, st, rs);
+            DatabaseInterface.closeResources(db, pst, rs);
         }
         
         return retObj;
@@ -2140,7 +2142,7 @@ public class FlowHolderBean implements FlowHolder {
             String name, boolean isFlow, int version) {
         String query = null;
         Connection db = null;
-        PreparedStatement st = null;
+        PreparedStatement pst = null;
         ResultSet rs = null;
         byte[] data = null;
         String sub = isFlow ? "" : "sub_";
@@ -2163,13 +2165,13 @@ public class FlowHolderBean implements FlowHolder {
                     "Query params: name=" + name + "; organizationid="
                             + userInfo.getOrganization() + "; version="
                             + version);
-            st = db.prepareStatement(query);
-            st.setString(1, name);
-            st.setString(2, userInfo.getOrganization());
+            pst = db.prepareStatement(query);
+            pst.setString(1, name);
+            pst.setString(2, userInfo.getOrganization());
             if (version >= 0)
-                st.setInt(3, version);
+                pst.setInt(3, version);
             
-            rs = st.executeQuery();
+            rs = pst.executeQuery();
             
             boolean flowFound = false;
             if (rs.next()) {
@@ -2181,7 +2183,7 @@ public class FlowHolderBean implements FlowHolder {
             }
             
             rs.close();
-            st.close();
+            pst.close();
             
             if (!flowFound && version < 0) {
                 Logger.debug(userInfo.getUtilizador(), this, "readData",
@@ -2193,9 +2195,9 @@ public class FlowHolderBean implements FlowHolder {
                         "Executing query: " + query);
                 Logger.debug(userInfo.getUtilizador(), this, "readData",
                         "Query params: name=" + name);
-                st = db.prepareStatement(query);
-                st.setString(1, name);
-                rs = st.executeQuery();
+                pst = db.prepareStatement(query);
+                pst.setString(1, name);
+                rs = pst.executeQuery();
                 if (rs.next()) {
                     InputStream is = rs.getBinaryStream(1);
                     data = getBytes(is);
@@ -2208,7 +2210,7 @@ public class FlowHolderBean implements FlowHolder {
             Logger.error(userInfo.getUtilizador(), this, "readData",
                     "Exception occured reading flow data.", e);
         } finally {
-            DatabaseInterface.closeResources(db, st, rs);
+            DatabaseInterface.closeResources(db, pst, rs);
         }
         
         return data;
@@ -2341,7 +2343,7 @@ public class FlowHolderBean implements FlowHolder {
         
         DataSource ds = null;
         Connection db = null;
-        Statement st = null;
+        PreparedStatement pst = null;
         ResultSet rs = null;
         Object[] queryInfo = new Object[3]; // 0: flowid; 1: index position; 2:
         // var name
@@ -2354,7 +2356,7 @@ public class FlowHolderBean implements FlowHolder {
             ds = Utils.getDataSource();
             db = ds.getConnection();
             db.setAutoCommit(false);
-            st = db.createStatement();
+            
             String query = null;
             int nProcs = 0;
             
@@ -2369,7 +2371,8 @@ public class FlowHolderBean implements FlowHolder {
                         + flowid;
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
-                rs = st.executeQuery(query);
+                pst = db.prepareStatement(query);
+                rs = pst.executeQuery();
                 if (rs.next())
                     oldIdx = rs.getString(1);
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
@@ -2395,7 +2398,7 @@ public class FlowHolderBean implements FlowHolder {
                         + "' where flowid=" + flowid;
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
-                nProcs = st.executeUpdate(query);
+                nProcs = pst.executeUpdate(query);
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Set new index var: " + nProcs);
                 
@@ -2404,7 +2407,7 @@ public class FlowHolderBean implements FlowHolder {
                         + flowid;
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
-                nProcs = st.executeUpdate(query);
+                nProcs = pst.executeUpdate(query);
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Reset " + nProcs + " process index");
                 
@@ -2413,7 +2416,7 @@ public class FlowHolderBean implements FlowHolder {
                 
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
-                nProcs = st.executeUpdate(query);
+                nProcs = pst.executeUpdate(query);
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Finished reindexing " + nProcs + " processes");
                 
@@ -2422,7 +2425,7 @@ public class FlowHolderBean implements FlowHolder {
                         + "=null where flowid=" + flowid + " and closed=1";
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
-                nProcs = st.executeUpdate(query);
+                nProcs = pst.executeUpdate(query);
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Reset " + nProcs + " closed process index");
                 
@@ -2430,7 +2433,7 @@ public class FlowHolderBean implements FlowHolder {
                         "FlowHolder.REINDEX_HISTORY", queryInfo);
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
-                nProcs = st.executeUpdate(query);
+                nProcs = pst.executeUpdate(query);
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Finished reindexing " + nProcs + " processes");
                 
@@ -2473,6 +2476,7 @@ public class FlowHolderBean implements FlowHolder {
                         "updateFlowsSeries", "going to update flow " + flowId
                                 + " with seriesId " + seriesId);
                 int rows = pst.executeUpdate();
+                db.close();
                 if (rows != 1) {
                     throw new Exception("flow " + flowId
                             + " seriesId update returned " + rows

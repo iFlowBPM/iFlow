@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -23,6 +23,8 @@ import javax.sql.DataSource;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.twolattes.json.Marshaller;
 
 import pt.iflow.api.blocks.Attribute;
 import pt.iflow.api.blocks.Block;
@@ -61,8 +63,6 @@ import pt.iflow.api.xml.codegen.flow.XmlFormTemplate;
 import pt.iflow.api.xml.codegen.flow.XmlPort;
 import pt.iknow.utils.StringUtilities;
 import pt.iknow.utils.security.SecurityException;
-
-import com.twolattes.json.Marshaller;
 
 /**
  * Flow representation. This class contains all information related to an
@@ -944,26 +944,31 @@ public class FlowData implements IFlowData,Serializable {
      String login = userInfo.getUtilizador();
      DataSource ds = Utils.getDataSource();
      Connection db = null;
-     Statement st = null;
+     PreparedStatement pst = null;
 
      try {
        db = ds.getConnection();
        db.setAutoCommit(false);
-       st = db.createStatement();
-
+       pst = db.prepareStatement("delete from forkjoin_state_dep where flowid="
+               + this._nId);
        // clean former deploys
-       st.executeUpdate("delete from forkjoin_state_dep where flowid="
-           + this._nId);
-       st.executeUpdate("delete from forkjoin_hierarchy where flowid="
-           + this._nId);
-       st.executeUpdate("delete from forkjoin_blocks    where flowid="
-           + this._nId);
-
+       pst.executeUpdate();
+       pst.close();
+       
+       pst = db.prepareStatement("delete from forkjoin_hierarchy where flowid="
+               + this._nId);
+       pst.executeUpdate();
+       pst.close();
+       
+       pst = db.prepareStatement("delete from forkjoin_blocks    where flowid="
+               + this._nId);
+       pst.executeUpdate();
+       pst.close();
        // fill the block table
        Enumeration<ForkJoinDep> enumer = _htForkJoinDepPath.elements();
        while (enumer.hasMoreElements()) {
          ForkJoinDep fjp = enumer.nextElement();
-         st
+         pst
          .executeUpdate("insert into forkjoin_blocks (flowid, blockid, type) "
              + "values ("
              + this._nId

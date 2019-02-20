@@ -74,9 +74,10 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>axis</groupId>
-			<artifactId>axis</artifactId>
-			<type>jar</type>
+		    <groupId>org.apache.axis2</groupId>
+		    <artifactId>axis2</artifactId>
+		    <version>1.7.9</version>
+		    <type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>axis</groupId>
@@ -102,9 +103,8 @@
 			<artifactId>xml-apis</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<type>jar</type>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
