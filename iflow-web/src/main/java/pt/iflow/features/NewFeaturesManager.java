@@ -10,6 +10,7 @@
 package pt.iflow.features;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -34,7 +35,7 @@ public class NewFeaturesManager {
     String userid = userInfo.getUtilizador();
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
 
     boolean retObj = false;
 
@@ -42,7 +43,7 @@ public class NewFeaturesManager {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       db.setAutoCommit(true);
-      st = db.createStatement();
+      
       StringBuffer sbInsertQuery = new StringBuffer();
 
       sbInsertQuery.append("insert into new_features (newfeaturesid, version, feature, ");
@@ -57,8 +58,8 @@ public class NewFeaturesManager {
       sbInsertQuery.append(")");
 
       Logger.debug(userid, NewFeaturesManager.class, "insertNewFeature", "NewFeaturesManager: insert: " + sbInsertQuery.toString());
-      
-      int i = st.executeUpdate(sbInsertQuery.toString());
+      pst = db.prepareStatement(sbInsertQuery.toString());
+      int i = pst.executeUpdate();
       if (i > 0) {
         retObj = true;
       }
@@ -69,7 +70,7 @@ public class NewFeaturesManager {
       Logger.error(userid, NewFeaturesManager.class, "insertNewFeature", "caught exception: "
           + e.getMessage(), e);
     } finally {
-      DatabaseInterface.closeResources(db, st);
+      DatabaseInterface.closeResources(db, pst);
     }
 
     return retObj;
@@ -79,7 +80,7 @@ public class NewFeaturesManager {
     String userid = userInfo.getUtilizador();
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
 
     boolean retObj = false;
 
@@ -87,7 +88,7 @@ public class NewFeaturesManager {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       db.setAutoCommit(true);
-      st = db.createStatement();
+      
       StringBuffer sbtmp = new StringBuffer();
 
       sbtmp.append("update new_features set version='").append(nfa.getVersion());
@@ -96,8 +97,8 @@ public class NewFeaturesManager {
       sbtmp.append("', created=sysdate where newfeaturesid=").append(nfa.getId());
 
       Logger.debug(userid, NewFeaturesManager.class, "insertNewFeature", "NewFeaturesManager: update: " + sbtmp.toString());
-      
-      int i = st.executeUpdate(sbtmp.toString());
+      pst = db.prepareStatement(sbtmp.toString());
+      int i = pst.executeUpdate();
       if (i > 0) {
         retObj = true;
       }
@@ -109,7 +110,7 @@ public class NewFeaturesManager {
       Logger.error(userid, NewFeaturesManager.class, "insertNewFeature", "caught exception: "
           + e.getMessage(), e);
     } finally {
-      DatabaseInterface.closeResources(db, st);
+      DatabaseInterface.closeResources(db, pst);
     }
 
     return retObj;

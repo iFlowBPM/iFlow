@@ -1238,7 +1238,7 @@ public class FlowBean implements Flow {
     String login = userInfo.getUtilizador();
 
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
 
     String sResult = "";
@@ -1263,10 +1263,10 @@ public class FlowBean implements Flow {
       try {
         db = DatabaseInterface.getConnection(userInfo);
         db.setAutoCommit(false);
-        st = db.createStatement();
+        pst = db.prepareStatement("select state,result,exit_flag from flow_state" + " where flowid=" + flowid + " and pid=" + pid
+                + " and subpid=" + subpid + " and closed=0");
 
-        rs = st.executeQuery("select state,result,exit_flag from flow_state" + " where flowid=" + flowid + " and pid=" + pid
-            + " and subpid=" + subpid + " and closed=0");
+        rs = pst.executeQuery();
         if (rs.next()) {
           int currState = rs.getInt("state");
           String currResult = rs.getString("result");
@@ -1275,7 +1275,7 @@ public class FlowBean implements Flow {
           String query = DBQueryManager
               .processQuery("Flow.update", new Object[] { String.valueOf(block.getId()), sResult, String.valueOf(nExitFlag),
                   String.valueOf(flowid), String.valueOf(pid), String.valueOf(subpid), String.valueOf(mid) });
-          st.executeUpdate(query);
+          pst.executeUpdate(query);
 
           if (block.getId() != currState || !StringUtils.equals(sResult, currResult) || nExitFlag != currExitFlag) {
 
@@ -1284,7 +1284,7 @@ public class FlowBean implements Flow {
               query = DBQueryManager.processQuery("Flow.insert_state_history", new Object[] { String.valueOf(flowid),
                   String.valueOf(pid), String.valueOf(subpid), String.valueOf(block.getId()), sResult, String.valueOf(nExitFlag),
                   String.valueOf(mid), outPort == null ? null : "'" + outPort.getName() + "'" });
-              st.executeUpdate(query);
+              pst.executeUpdate(query);
             }
           }
 
@@ -1294,13 +1294,13 @@ public class FlowBean implements Flow {
           String query = DBQueryManager.processQuery("Flow.insert_state", new Object[] { String.valueOf(flowid),
               String.valueOf(pid), String.valueOf(subpid), String.valueOf(block.getId()), sResult, String.valueOf(nExitFlag),
               String.valueOf(mid) });
-          st.executeUpdate(query);
+          pst.executeUpdate(query);
 
           if (block.isSaveFlowState() && Const.sSAVE_FLOW_STATE_ALLWAYS.equals("true")) {
             query = DBQueryManager.processQuery("Flow.insert_state_history", new Object[] { String.valueOf(flowid),
                 String.valueOf(pid), String.valueOf(subpid), String.valueOf(block.getId()), sResult, String.valueOf(nExitFlag),
                 String.valueOf(mid), outPort == null ? null : "'" + outPort.getName() + "'" });
-            st.executeUpdate(query);
+            pst.executeUpdate(query);
           }
 
           DatabaseInterface.commitConnection(db);
@@ -1317,7 +1317,7 @@ public class FlowBean implements Flow {
         }
         return false;
       } finally {
-        DatabaseInterface.closeResources(db, st, rs);
+        DatabaseInterface.closeResources(db, pst, rs);
       }
 
       procData.setTempData(DataSetVariables.FLOW_STATE, null);
@@ -1411,7 +1411,7 @@ public class FlowBean implements Flow {
     String login = userInfo.getUtilizador();
 
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
 
     try {
       db = DatabaseInterface.getConnection(userInfo);
@@ -1422,24 +1422,24 @@ public class FlowBean implements Flow {
       pm.endProc(userInfo, procData, isCancel);
 
       Logger.info(login, this, "endFlow", procData.getSignature() + "Deleting flow_state associated entry");
-
-      st = db.createStatement();
-
       String sQuery = "update flow_state set closed=1";
+      pst = db.prepareStatement(sQuery);
+
+      
       if (isCancel) {
         sQuery += ",canceled=1";
       }
       sQuery += " where flowid=" + flowId;
       sQuery += " and pid=" + pid;
       sQuery += " and subpid=" + subpid;
-      st.executeUpdate(sQuery);
+      pst.executeUpdate();
 
       Logger.info(login, this, "saveFlowState", procData.getSignature() + "process reached flow end");
     } catch (Exception sqle) {
       Logger.error(login, this, "endFlow", procData.getSignature() + "Caught exception: " + sqle.getMessage(), sqle);
       throw sqle;
     } finally {
-      DatabaseInterface.closeResources(db, st);
+      DatabaseInterface.closeResources(db, pst);
     }
   }
 
@@ -1627,14 +1627,14 @@ public class FlowBean implements Flow {
   private void setFlowRoles(UserInfoInterface userInfo, FlowRolesTO[] afraRoles, int anMode) {
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
 
     try {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       db.setAutoCommit(false);
-      st = db.createStatement();
+      
       rs = null;
       for (int fr = 0; fr < afraRoles.length; fr++) {
         StringBuffer sql = new StringBuffer();
@@ -1662,8 +1662,8 @@ public class FlowBean implements Flow {
         if (Logger.isDebugEnabled()) {
           Logger.debug(userInfo.getUtilizador(), this, "setFlowRoles", "query[" + fr + "]=" + sql);
         }
-
-        st.executeUpdate(sql.toString());
+        pst = db.prepareStatement(sql.toString());
+        pst.executeUpdate();
       }
       db.commit();
 
@@ -1677,7 +1677,7 @@ public class FlowBean implements Flow {
       }
       Logger.error(userInfo.getUtilizador(), this, "setFlowRoles", "exception caught: " + e.getMessage(), e);
     } finally {
-      DatabaseInterface.closeResources(db, st, rs);
+      DatabaseInterface.closeResources(db, pst, rs);
     }
   }
 
@@ -1686,7 +1686,7 @@ public class FlowBean implements Flow {
 
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
 
     List<FlowRolesTO> altmp = null;
@@ -1695,7 +1695,7 @@ public class FlowBean implements Flow {
     try {
       ds = Utils.getDataSource();
       db = ds.getConnection();
-      st = db.createStatement();
+      
 
       StringBuffer sbtmp = new StringBuffer();
       sbtmp.append("select distinct flowid, userid, permissions from ");
@@ -1705,8 +1705,9 @@ public class FlowBean implements Flow {
       if (anFlowId > 0) {
         sbtmp.append(" and flowid=").append(anFlowId);
       }
-
-      rs = st.executeQuery(sbtmp.toString());
+      
+      pst = db.prepareStatement(sbtmp.toString());
+      rs = pst.executeQuery();
 
       altmp = new ArrayList<FlowRolesTO>();
 
@@ -1720,7 +1721,7 @@ public class FlowBean implements Flow {
     } catch (Exception e) {
       Logger.error(userInfo.getUtilizador(), this, "getUserFlowRolesDelegated", "exception caught: " + e.getMessage(), e);
     } finally {
-      DatabaseInterface.closeResources(db, st, rs);
+      DatabaseInterface.closeResources(db, pst, rs);
     }
 
     if (altmp != null) {
@@ -1736,7 +1737,7 @@ public class FlowBean implements Flow {
 
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
 
     List<FlowRolesTO> altmp = null;
@@ -1748,7 +1749,7 @@ public class FlowBean implements Flow {
       try {
         ds = Utils.getDataSource();
         db = ds.getConnection();
-        st = db.createStatement();
+        
         rs = null;
         StringBuffer sql = new StringBuffer();
         sql.append("SELECT r." + FlowRolesTO.FLOW_ID);
@@ -1773,8 +1774,8 @@ public class FlowBean implements Flow {
         sql.append(" AND f.flowid=r." + FlowRolesTO.FLOW_ID);
         sql.append(" AND f.organizationid LIKE '" + userInfo.getCompanyID() + "'");
         sql.append(" ORDER BY " + FlowRolesTO.FLOW_ID);
-
-        rs = st.executeQuery(sql.toString());
+        pst = db.prepareStatement(sql.toString());
+        rs = pst.executeQuery();
         altmp = new ArrayList<FlowRolesTO>();
         while (rs.next()) {
           int flowid = rs.getInt(FlowRolesTO.FLOW_ID);
@@ -1789,7 +1790,7 @@ public class FlowBean implements Flow {
       } catch (Exception e) {
         Logger.error(userInfo.getUtilizador(), this, "getUserFlowRoles", "exception caught: " + e.getMessage(), e);
       } finally {
-        DatabaseInterface.closeResources(db, st, rs);
+        DatabaseInterface.closeResources(db, pst, rs);
       }
     }
 
@@ -2715,18 +2716,19 @@ public class FlowBean implements Flow {
 		      return;
 		    }
 		    Connection db = null;
-		    Statement st = null;
+		    PreparedStatement pst = null;
 		    String stmp = null;
 		    try
 		    {
 		      db = DatabaseInterface.getConnection(userInfo);
 		      db.setAutoCommit(false);
-		      st = db.createStatement();
+		      
 		      
 
 		      stmp = "update process set hidden = " + hidden + " where flowid=" + flowid + " and pid=" + pid + " and subpid=" + subpid;
 		      Logger.debug(userid, this, "hide process", "Query=" + stmp);
-		      st.executeUpdate(stmp);
+		      pst = db.prepareStatement(stmp);
+		      pst.executeUpdate();
 		      
 		      DatabaseInterface.commitConnection(db);
 		    }
@@ -2752,7 +2754,7 @@ public class FlowBean implements Flow {
 		    }
 		    finally
 		    {
-		      DatabaseInterface.closeResources(new Object[] {db, st });
+		      DatabaseInterface.closeResources(new Object[] {db, pst });
 		    }
 		  }
 		}

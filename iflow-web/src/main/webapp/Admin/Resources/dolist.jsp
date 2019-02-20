@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://jakarta.apache.org/taglibs/core" prefix="c" %>
 <%@ taglib uri="http://www.iknow.pt/jsp/jstl/iflow" prefix="if" %>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 <%@ include file="../../inc/defs.jsp"%>
 
 <if:checkUserAdmin type="both">
@@ -90,6 +91,6 @@
 <% } %>
 
 <div class="button_box centrarBotoes">
-   	<input class="regular_button_02 btn btn-default" type="button" name="add" value="<if:message string="button.add"></if:message>" onClick="javascript:tabber_right(4, '<c:url value="Admin/Resources/uploadform.jsp"></c:url>','type=${param.type}');"></input>
+   	<input class="regular_button_02 btn btn-default" type="button" name="add" value="<if:message string="button.add"></if:message>" onClick="javascript:tabber_right(4, '<c:url value="Admin/Resources/uploadform.jsp"></c:url>','type=${fn:escapeXml(param.type)}');"></input>
 	
 </div>

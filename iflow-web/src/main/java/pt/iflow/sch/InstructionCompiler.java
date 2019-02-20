@@ -3,9 +3,9 @@ package pt.iflow.sch;
 
 import java.io.StringReader;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import pt.iflow.api.sch.InstructionCompilerConstants;
 import pt.iflow.api.utils.Logger;
@@ -553,13 +553,15 @@ public class InstructionCompiler implements InstructionCompilerConstants {
       if (javascript && javascriptNS) {
         try{
           int objectid = 0;
-          Statement st = dbNS.createStatement();
-          ResultSet rs =  st.executeQuery("select * from campos where variable='" + nome_campoNS + "' AND interfaceid = " + interfaceidNS + " ");
+          PreparedStatement pst = dbNS.prepareStatement("select * from campos where variable='" + nome_campoNS + "' AND interfaceid = " + interfaceidNS + " ");
+          ResultSet rs =  pst.executeQuery();
           if (rs.next()) {
             objectid = rs.getInt("objectid");
           }
-          rs =  st.executeQuery("select * from valores where objectid="+ objectid + " AND value = " + token.image +" AND interfaceid = " + interfaceidNS + " ");
+          pst = dbNS.prepareStatement("select * from valores where objectid="+ objectid + " AND value = " + token.image +" AND interfaceid = " + interfaceidNS + " ");
+          rs =  pst.executeQuery();
           if (rs.next()) {
+        	  
            argStack.push("" + (rs.getInt("value_pos")-1));
           }
         }

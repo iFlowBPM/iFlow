@@ -108,8 +108,10 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>axis</groupId>
-			<artifactId>axis</artifactId>
+			<groupId>org.apache.axis2</groupId>
+   			<artifactId>axis2</artifactId>
+		    <version>1.7.9</version>
+		    <type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>axis</groupId>
