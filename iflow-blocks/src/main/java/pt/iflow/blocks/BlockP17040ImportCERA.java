@@ -199,25 +199,27 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				" values (?,?,?,?,?,?)",
 				new Object[] {new Date(),-1,-1,userInfo.getUtilizador(),(end.getTime() - start.getTime()),"insertEntidadeRelacionada, idEnt:" + lineValues.get("idEnt")});
 		}
-		Logger.debug(userInfo.getUtilizador(),this,"importLine","idEnt: " +  lineValues.get("idEnt")+" before infRiscoEnt" );
+		
 		// insert infRiscoEnt
-		Integer infRiscoEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
-				"INSERT INTO `infRiscoEnt` ( `riscoEnt_id`, `type`, `estadoInc`, `dtAltEstadoInc`, "
-						+ "`grExposicao`, `entAcompanhada`, `txEsf`, `dtApurTxEsf`, "
-						+ "`tpAtualizTxEsf`) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);",
-				new Object[] { riscoEnt_id, type, lineValues.get("estadoInc"), lineValues.get("dtAltEstadoInc"),
-						lineValues.get("grExposicao"), lineValues.get("entAcompanhada"), lineValues.get("txEsf"),
-						lineValues.get("dtApurTxEsf"), lineValues.get("tpAtualizTxEsf") });
-
-		Logger.debug(userInfo.getUtilizador(),this,"importLine","idEnt: " +  lineValues.get("idEnt")+" before avalRiscoEnt" );
-		// insert avalRiscoEnt
-		FileImportUtils.insertSimpleLine(connection, userInfo,
-				"INSERT INTO `avalRiscoEnt` ( `infRiscoEnt_id`, `PD`, `dtDemoFin`, `tpAvalRisco`, "
-						+ "`sistAvalRisco`, `dtAvalRisco`, `modIRB`, `notacaoCred`, `tipoPD`) "
-						+ "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);",
-				new Object[] { infRiscoEnt_id, lineValues.get("PD"), lineValues.get("dtDemoFin"),
-						lineValues.get("tpAvalRisco"), lineValues.get("sistAvalRisco"), lineValues.get("dtAvalRisco"),
-						lineValues.get("modIRB"), lineValues.get("notacaoCred"), lineValues.get("tipoPD") });
+		if(!(this instanceof BlockP17040ImportCERAEntRelOn)){
+			Integer infRiscoEnt_id = FileImportUtils.insertSimpleLine(connection, userInfo,
+					"INSERT INTO `infRiscoEnt` ( `riscoEnt_id`, `type`, `estadoInc`, `dtAltEstadoInc`, "
+							+ "`grExposicao`, `entAcompanhada`, `txEsf`, `dtApurTxEsf`, "
+							+ "`tpAtualizTxEsf`) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+					new Object[] { riscoEnt_id, type, lineValues.get("estadoInc"), lineValues.get("dtAltEstadoInc"),
+							lineValues.get("grExposicao"), lineValues.get("entAcompanhada"), lineValues.get("txEsf"),
+							lineValues.get("dtApurTxEsf"), lineValues.get("tpAtualizTxEsf") });
+		
+		
+			// insert avalRiscoEnt
+			FileImportUtils.insertSimpleLine(connection, userInfo,
+					"INSERT INTO `avalRiscoEnt` ( `infRiscoEnt_id`, `PD`, `dtDemoFin`, `tpAvalRisco`, "
+							+ "`sistAvalRisco`, `dtAvalRisco`, `modIRB`, `notacaoCred`, `tipoPD`) "
+							+ "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+					new Object[] { infRiscoEnt_id, lineValues.get("PD"), lineValues.get("dtDemoFin"),
+							lineValues.get("tpAvalRisco"), lineValues.get("sistAvalRisco"), lineValues.get("dtAvalRisco"),
+							lineValues.get("modIRB"), lineValues.get("notacaoCred"), lineValues.get("tipoPD") });
+		}
 		Logger.debug(userInfo.getUtilizador(),this,"importLine","idEnt: " +  lineValues.get("idEnt")+" completed" );
 		return crcIdResult;
 	}
@@ -225,13 +227,14 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 	Boolean hasEntRel(Connection connection, UserInfoInterface userInfo, String idEnt){
 		String response;
 		try {
+			Logger.debug(userInfo.getUtilizador(),this,"hasEntRel","idEnt: " + idEnt);
 			response = FileImportUtils.callInfotrustWS(null, null, idEnt);
 			List<String> lines = IOUtils.readLines(new StringReader(response));
 			int numberOfLines=0;
 			for(String line: lines)
 				if(StringUtils.isNotBlank(line))
 					numberOfLines++;
-			
+			Logger.debug(userInfo.getUtilizador(),this,"hasEntRel","idEnt: " + idEnt + ", response returned: " + response);
 			if(numberOfLines>0)
 				return true;
 		} catch (Exception e) {
@@ -260,22 +263,41 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				String[] lineValuesAux = StringUtils.splitPreserveAllTokens(line, "|");
 				String idEnt = lineValuesAux[0];
 				String idEntRel = lineValuesAux[1];
-				String motivoRel = "001";//lineValuesAux[2];
-				String tpEnt = "001";//lineValuesAux[3];
-				String LEI = "";//lineValuesAux[4];
-				String nome = "Oscar Lopes";//lineValuesAux[5];
-				String paisResd = "USA";//lineValuesAux[6];
-				String tpDoc = "0001";//lineValuesAux[7];
-				String numDoc = "123456789";//lineValuesAux[8];
-				String paisEmissao = "USA";//lineValuesAux[9];
+				
+//				String motivoRel = "001";//lineValuesAux[2];
+//				String tpEnt = "001";//lineValuesAux[3];
+//				String LEI = "";//lineValuesAux[4];
+//				String nome = "Oscar Lopes";//lineValuesAux[5];
+//				String paisResd = "USA";//lineValuesAux[6];
+//				String tpDoc = "0001";//lineValuesAux[7];
+//				String numDoc = "123456789";//lineValuesAux[8];
+//				String paisEmissao = "USA";//lineValuesAux[9];
+//				Date dtEmissao = new Date();//lineValuesAux[10];
+//				Date dtValidade = new Date();//lineValuesAux[11];
+//				String formJurid = "AT102";//lineValuesAux[12];
+//				String PSE = "000";//lineValuesAux[13];
+//				String SI = "S11";//lineValuesAux[14];
+//				String rua = "Rua do Carmo";//lineValuesAux[15];
+//				String localidade = "Lisboa";//lineValuesAux[16];
+//				String codPost = "1000-001";//lineValuesAux[17];
+				
+				String motivoRel = lineValuesAux[2];
+				String tpEnt = lineValuesAux[3];
+				String LEI = lineValuesAux[4];
+				String nome = lineValuesAux[5];
+				String paisResd =lineValuesAux[6];
+				String tpDoc = lineValuesAux[7];
+				String numDoc = lineValuesAux[8];
+				String paisEmissao = lineValuesAux[9];
 				Date dtEmissao = new Date();//lineValuesAux[10];
 				Date dtValidade = new Date();//lineValuesAux[11];
-				String formJurid = "AT102";//lineValuesAux[12];
-				String PSE = "000";//lineValuesAux[13];
-				String SI = "S11";//lineValuesAux[14];
-				String rua = "Rua do Carmo";//lineValuesAux[15];
-				String localidade = "Lisboa";//lineValuesAux[16];
-				String codPost = "1000-001";//lineValuesAux[17];		
+				String formJurid = lineValuesAux[12];
+				String PSE = lineValuesAux[13];
+				String SI = lineValuesAux[14];
+				String rua = lineValuesAux[15];
+				String localidade = lineValuesAux[16];
+				String codPost = lineValuesAux[17];
+				
 				Date dtRefEnt = new Date();
 				
 				//check if idEnt already exists and create if not

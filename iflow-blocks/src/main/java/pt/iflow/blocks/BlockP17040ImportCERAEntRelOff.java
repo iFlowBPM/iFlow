@@ -91,14 +91,14 @@ public class BlockP17040ImportCERAEntRelOff extends BlockP17040ImportCERA {
 					continue;
 				
 				//check if UPDATE has actual changed values				
-				if(actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
-					HashMap<String,Object> keysToIdentify = new HashMap<>();
-					ArrayList<String> keysToRemove = new ArrayList<>();
-					keysToIdentify.put("idEnt", idEnt);					
-					keysToRemove.add("dtRef");
-					if(!GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove))
-						continue;
-				}
+//				if(actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
+//					HashMap<String,Object> keysToIdentify = new HashMap<>();
+//					ArrayList<String> keysToRemove = new ArrayList<>();
+//					keysToIdentify.put("idEnt", idEnt);					
+//					keysToRemove.add("dtRef");
+//					if(!GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove))
+//						continue;
+//				}
 				
 				//determinar se tem entidades relacionadas
 				if(dataEnrichmentOn && hasEntRel(connection, userInfo, idEnt))

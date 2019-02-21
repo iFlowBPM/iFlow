@@ -52,23 +52,27 @@ public class BlockP17040GenerateCERA extends BlockP17040Generate {
 					writer.writeEndElement();
 				
 					//infRiscoEnt
-					writer.writeStartElement("infRiscoEnt");
-					HashMap<String,Object> infRiscoEntValues = fillAtributtes(writer, connection, userInfo,
-							"select * from infRiscoEnt where riscoEnt_id = {0} ", new Object[] {riscoEntId});
-						//avalRiscoEnt
-						List<Integer> avalRiscoEntIdList = retrieveSimpleField(connection, userInfo,
-								"select id from avalRiscoEnt where infRiscoEnt_id = {0} ", new Object[] {infRiscoEntValues.get("id")});
-						if(!avalRiscoEntIdList.isEmpty()){
-							writer.writeStartElement("lstAvalRiscoEnt");
-								for(Integer avalRiscoEnt : avalRiscoEntIdList){
-								writer.writeStartElement("avalRiscoEnt");
-									fillAtributtes(writer, connection, userInfo,
-											"select * from avalRiscoEnt where infRiscoEnt_id = {0} ", new Object[] {avalRiscoEnt});
-									writer.writeEndElement();
-								}
-							writer.writeEndElement();
-						}
-					writer.writeEndElement();
+					List<Integer> infRiscoEntIdList = retrieveSimpleField(connection, userInfo,
+							"select id from infRiscoEnt where riscoEnt_id = {0} ", new Object[] {riscoEntId});
+					if(!infRiscoEntIdList.isEmpty()){
+						writer.writeStartElement("infRiscoEnt");
+						HashMap<String,Object> infRiscoEntValues = fillAtributtes(writer, connection, userInfo,
+								"select * from infRiscoEnt where riscoEnt_id = {0} ", new Object[] {riscoEntId});
+							//avalRiscoEnt
+							List<Integer> avalRiscoEntIdList = retrieveSimpleField(connection, userInfo,
+									"select id from avalRiscoEnt where infRiscoEnt_id = {0} ", new Object[] {infRiscoEntValues.get("id")});
+							if(!avalRiscoEntIdList.isEmpty()){
+								writer.writeStartElement("lstAvalRiscoEnt");
+									for(Integer avalRiscoEnt : avalRiscoEntIdList){
+									writer.writeStartElement("avalRiscoEnt");
+										fillAtributtes(writer, connection, userInfo,
+												"select * from avalRiscoEnt where infRiscoEnt_id = {0} ", new Object[] {avalRiscoEnt});
+										writer.writeEndElement();
+									}
+								writer.writeEndElement();
+							}
+						writer.writeEndElement();
+					}
 					
 					//lstClienteRel
 					List<Integer> clienteRelIdList = retrieveSimpleField(connection, userInfo,

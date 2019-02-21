@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 
 import pt.iflow.api.processdata.EvalException;
 import pt.iflow.api.processdata.ProcessData;
+import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.FileImportUtils;
@@ -91,18 +92,20 @@ public class BlockP17040ImportCERAEntRelOn extends BlockP17040ImportCERA {
 					continue;
 				
 				//check if UPDATE has actual changed values				
-				if(actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
-					HashMap<String,Object> keysToIdentify = new HashMap<>();
-					ArrayList<String> keysToRemove = new ArrayList<>();
-					keysToIdentify.put("idEnt", idEnt);					
-					keysToRemove.add("dtRef");
-					if(!GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove))
-						continue;
-				}
+//				if(actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
+//					HashMap<String,Object> keysToIdentify = new HashMap<>();
+//					ArrayList<String> keysToRemove = new ArrayList<>();
+//					keysToIdentify.put("idEnt", idEnt);					
+//					keysToRemove.add("dtRef");
+//					if(!GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove))
+//						continue;
+//				}
 				
+				Logger.debug(userInfo.getUtilizador(),this,"importFile","Checking EntRel, idEnt: " + idEnt);
 				//determinar se tem entidades relacionadas
 				if(dataEnrichmentOn && !hasEntRel(connection, userInfo, idEnt))
 					continue;
+				Logger.debug(userInfo.getUtilizador(),this,"importFile","Checking EntRel SUCCESS, idEnt: " + idEnt);
 				
 				// adicionar acçao
 				String type = actionOnLine.getAction().equals(ImportAction.ImportActionType.CREATE) ? "ERI" : "ERU";
