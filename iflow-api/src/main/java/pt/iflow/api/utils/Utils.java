@@ -71,7 +71,7 @@ public class Utils {
   private static DataSource getGenericDataSource(String asDBPool) {
     DataSource retObj = null;
 
-    if(asDBPool == null) {
+    if(asDBPool == null || (!StringUtils.startsWithIgnoreCase(asDBPool, "java" ) && !StringUtils.startsWithIgnoreCase(asDBPool, "jdbc" ))) {
       asDBPool = Const.NAME_DB_POOL;
     }
 
