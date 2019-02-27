@@ -6,7 +6,9 @@
 
 package pt.iflow.userdata.db;
 
+import java.sql.PreparedStatement;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -19,6 +21,7 @@ import pt.iflow.api.userdata.OrganizationDataAccess;
 import pt.iflow.api.userdata.OrganizationalUnitData;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.Setup;
+import pt.iflow.api.utils.Utils;
 import pt.iflow.userdata.common.MappedOrganizationData;
 import pt.iflow.userdata.common.MappedOrganizationalUnitData;
 
@@ -43,7 +46,7 @@ public class DBOrganizationDataAccess implements OrganizationDataAccess {
   private static final String SQL_GET_ORG_UNIT = 
     "select a.unitid,a.ORGANIZATIONID,a.NAME,a.DESCRIPTION,b.NAME as ORG_NAME,c.USERNAME as MANAGER_USERNAME from " + 
     "organizational_units a, organizations b, users c, unitmanagers d where " +
-    "a.ORGANIZATIONID=b.ORGANIZATIONID and c.userid=d.userid and d.unitid=a.unitid and a.unitid={0}";
+    "a.ORGANIZATIONID=b.ORGANIZATIONID and c.userid=d.userid and d.unitid=a.unitid and a.unitid=?";
  
   private static final String SQL_GET_ORG_UNIT_PARENT = 
     "select a.unitid,a.ORGANIZATIONID,a.NAME,a.DESCRIPTION,b.NAME as ORG_NAME,c.USERNAME as MANAGER_USERNAME from " +
@@ -57,9 +60,15 @@ public class DBOrganizationDataAccess implements OrganizationDataAccess {
    */
   public OrganizationalUnitData getOrganizationalUnit(String unitId) {
     MappedOrganizationalUnitData retObj = null;
-    
-    Collection units = 
-      DatabaseInterface.executeQuery(MessageFormat.format(SQL_GET_ORG_UNIT,new Object[]{unitId}));
+    Collection<Map<String,String>> units = null;
+    try {
+		PreparedStatement statement = Utils.getDataSource().getConnection().prepareStatement(SQL_GET_ORG_UNIT);
+		statement.setInt(1, Integer.parseInt(unitId));
+		units = DatabaseInterface.executeQuery(statement);
+	} catch (Exception e) {
+		Logger.error(null,this,"getOrganizationalUnit","", e);
+		units = new ArrayList();
+	}
     
     if(units.isEmpty()) {
       Logger.error(null,this,"getOrganizationalUnit","No unit with id " + unitId);

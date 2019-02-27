@@ -6,6 +6,7 @@
 
 package pt.iflow.userdata.db;
 
+import java.sql.PreparedStatement;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,6 +23,7 @@ import pt.iflow.api.userdata.UserDataAccess;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
+import pt.iflow.api.utils.Utils;
 import pt.iflow.userdata.common.MappedData;
 import pt.iflow.userdata.common.MappedUserData;
 
@@ -57,11 +59,16 @@ public class DBUserDataAccess implements UserDataAccess {
    */
   public UserData getUserData(String userId) {
     MappedUserData retObj = null;
-
-    String sqlGetUserData = DBQueryManager.processQuery("DBUserDataAccess.SQL_GET_USER_DATA", new Object[]{userId});
-
-    Collection<Map<String,String>> users =
-      DatabaseInterface.executeQuery(sqlGetUserData);
+    Collection<Map<String,String>> users = null;
+    
+    try {
+		PreparedStatement statement = Utils.getDataSource().getConnection().prepareStatement(DBQueryManager.getQuery("DBUserDataAccess.SQL_GET_USER_DATA"));
+		statement.setString(1, userId);
+		users = DatabaseInterface.executeQuery(statement);
+	} catch (Exception e) {
+		Logger.error(null,this,"getUserData",null, e);
+		users = new ArrayList();
+	}
 
     if(users.isEmpty()) {
       Logger.error(null,this,"getUserData","No user with id " + userId);
