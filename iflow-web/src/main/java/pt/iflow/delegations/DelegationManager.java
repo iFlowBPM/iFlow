@@ -692,9 +692,11 @@ public class DelegationManager extends Thread {
       pst.close();
       pst = null;
       if(stmp.length() > 0) {
-        String query = "delete from activity_hierarchy where hierarchyid in (" + stmp + ")";        
+        String query = "delete from activity_hierarchy where hierarchyid in (?)";        
 
-        db.createStatement().executeUpdate(query);
+        pst = db.prepareStatement(query);
+        pst.setString(1, stmp);
+        pst.executeUpdate();
       }
       db.commit();
 

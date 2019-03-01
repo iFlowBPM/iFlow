@@ -75,8 +75,6 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import jsyntaxpane.DefaultSyntaxKit;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.browser.ProgressEvent;
@@ -94,6 +92,7 @@ import org.mozilla.interfaces.nsIDOMNode;
 import org.mozilla.interfaces.nsIDOMWindow;
 import org.xml.sax.InputSource;
 
+import jsyntaxpane.DefaultSyntaxKit;
 import pt.iflow.api.msg.IMessages;
 import pt.iflow.api.transition.FlowStateHistoryTO;
 import pt.iflow.api.transition.FlowStateLogTO;

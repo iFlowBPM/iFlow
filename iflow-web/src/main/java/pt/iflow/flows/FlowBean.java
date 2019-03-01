@@ -1263,9 +1263,12 @@ public class FlowBean implements Flow {
       try {
         db = DatabaseInterface.getConnection(userInfo);
         db.setAutoCommit(false);
-        pst = db.prepareStatement("select state,result,exit_flag from flow_state" + " where flowid=" + flowid + " and pid=" + pid
-                + " and subpid=" + subpid + " and closed=0");
-
+        pst = db.prepareStatement("select state,result,exit_flag from flow_state" 
+        + " where flowid=? and pid=? " 
+        + " and subpid=? and closed=0");
+        pst.setInt(1, flowid);
+        pst.setInt(2, pid);
+        pst.setInt(3, subpid);
         rs = pst.executeQuery();
         if (rs.next()) {
           int currState = rs.getInt("state");
@@ -1429,9 +1432,12 @@ public class FlowBean implements Flow {
       if (isCancel) {
         sQuery += ",canceled=1";
       }
-      sQuery += " where flowid=" + flowId;
-      sQuery += " and pid=" + pid;
-      sQuery += " and subpid=" + subpid;
+      sQuery += " where flowid=?";
+      sQuery += " and pid=?";
+      sQuery += " and subpid= ?";
+      pst.setInt(1, flowId);
+      pst.setInt(2, pid);
+      pst.setInt(3, subpid);
       pst.executeUpdate();
 
       Logger.info(login, this, "saveFlowState", procData.getSignature() + "process reached flow end");
@@ -2725,9 +2731,13 @@ public class FlowBean implements Flow {
 		      
 		      
 
-		      stmp = "update process set hidden = " + hidden + " where flowid=" + flowid + " and pid=" + pid + " and subpid=" + subpid;
+		      stmp = "update process set hidden = ? where flowid=? and pid=? and subpid=?";
 		      Logger.debug(userid, this, "hide process", "Query=" + stmp);
 		      pst = db.prepareStatement(stmp);
+		      pst.setInt(1, hidden);
+		      pst.setInt(1, flowid);
+		      pst.setInt(1, pid);
+		      pst.setInt(1, subpid);
 		      pst.executeUpdate();
 		      
 		      DatabaseInterface.commitConnection(db);

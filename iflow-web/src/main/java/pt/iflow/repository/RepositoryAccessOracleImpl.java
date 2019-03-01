@@ -202,7 +202,7 @@ public class RepositoryAccessOracleImpl implements RepositoryAccess {
     byte[] retObj = null;
 
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     java.io.InputStream is = null;
     ByteArrayOutputStream baos = null;
@@ -214,12 +214,13 @@ public class RepositoryAccessOracleImpl implements RepositoryAccess {
       if (id != 0) {
 
         db = this.getConnection();
-        st = db.createStatement();
-        st.execute("SELECT data FROM repository_data WHERE id=" + id);
+        pst = db.prepareStatement("SELECT data FROM repository_data WHERE id=?");
+        pst.setInt(1, id);
+        pst.execute();
 
         byte[] r = new byte[CHUNK_SIZE];
 
-        rs = st.getResultSet();
+        rs = pst.getResultSet();
 
         if (rs.next()) {
           baos = new ByteArrayOutputStream();
@@ -251,7 +252,7 @@ public class RepositoryAccessOracleImpl implements RepositoryAccess {
       catch (Exception e) {
       }
       try {
-        if (st != null) st.close();
+        if (pst != null) pst.close();
       }
       catch (Exception e) {
       }
@@ -528,8 +529,8 @@ public class RepositoryAccessOracleImpl implements RepositoryAccess {
         // open connection
         db = this.getConnection();
         db.setAutoCommit(false);
-        pst1 = db.prepareStatement("SELECT parentid FROM repository_data WHERE id=" + id);
-
+        pst1 = db.prepareStatement("SELECT parentid FROM repository_data WHERE id=?");
+        pst1.setInt(1, id);
         // get blob handler
 
         rs = pst1.executeQuery();
@@ -537,13 +538,18 @@ public class RepositoryAccessOracleImpl implements RepositoryAccess {
           parentid = rs.getInt("parentid");
         }
         rs.close();
-
+        pst1.close();
+        
         String sIsDir = "null";
         if (bIsDir) sIsDir = "'Dir'";
-        pst1 = db.prepareStatement("DELETE FROM repository_data WHERE id=" + id);
+        pst1 = db.prepareStatement("DELETE FROM repository_data WHERE id=?");
+        pst1.setInt(1, id);
         pst1.executeUpdate();  // TODO improve this
-        pst1 = db.prepareStatement("INSERT INTO repository_data (id,parentid,name,value,data,modification) VALUES (" + id + "," + parentid
-                + ",'" + shortname + "'," + sIsDir + ",EMPTY_BLOB(),SYSDATE)");
+        pst1 = db.prepareStatement("INSERT INTO repository_data (id,parentid,name,value,data,modification) VALUES (?,?,?,?,EMPTY_BLOB(),SYSDATE)");
+        pst1.setInt(1, id);
+        pst1.setInt(2, parentid);
+        pst1.setString(3, shortname);
+        pst1.setString(4, sIsDir);
         pst1.executeUpdate();
 
         pst1.close();

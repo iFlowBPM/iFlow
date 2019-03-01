@@ -37,7 +37,8 @@ public class FolderManagerBean implements FolderManager {
 
 		    try {
 		      db = DatabaseInterface.getConnection(userInfo);
-		      pst = db.prepareStatement("select id, name, color from folder where userid = '"+userid+"'");
+		      pst = db.prepareStatement("select id, name, color from folder where userid = ?");
+		      pst.setString(1, userid);
 		      rs = pst.executeQuery();
 		      
 		      while (rs.next()) {
@@ -110,8 +111,11 @@ public class FolderManagerBean implements FolderManager {
 	 
 	   	  try {
 		      db = DatabaseInterface.getConnection(userInfo);
-		      pst = db.prepareStatement("Update folder set name='"+foldername+"', color='"+color+"' where id="+folderid);
-              pst.executeUpdate();
+		      pst = db.prepareStatement("Update folder set name='?', color='?' where id=?");
+		      pst.setString(1, foldername);
+			  pst.setString(2, color);
+			  pst.setString(3, folderid);
+		      pst.executeUpdate();
 		   } catch (SQLException sqle) {
 		    	Logger.error(userInfo.getUtilizador(), this, "editFolder","caught sql exception: " + sqle.getMessage(), sqle);
 		   } finally {
@@ -125,7 +129,10 @@ public class FolderManagerBean implements FolderManager {
 		  String query = "";
 		  try {
 			  db = DatabaseInterface.getConnection(userInfo);
-			  query = "insert into folder (name, color, userid) values ('"+foldername+"','"+color+"','"+userInfo.getUtilizador()+"')";
+			  query = "insert into folder (name, color, userid) values (?,?,?)";
+			  pst.setString(1, foldername);
+			  pst.setString(2, color);
+			  pst.setString(3, userInfo.getUtilizador());
 			  pst = db.prepareStatement(query);
 			  pst.executeQuery();
 			  
@@ -138,19 +145,21 @@ public class FolderManagerBean implements FolderManager {
 
 	  public void deleteFolder(UserInfoInterface userInfo, String folderid){
 		  Connection db = null;
-		  Statement st = null;
+		  PreparedStatement pst = null;
 	 
 	   	  try {
 		      db = DatabaseInterface.getConnection(userInfo);
-		      st = db.createStatement();
-		      st.executeUpdate("Update activity set folderid=NULL where folderid="+folderid);
-		      st.close();
-		      st = db.createStatement();
-		      st.executeUpdate("delete from folder where id="+folderid);		      
+		      pst = db.prepareStatement("Update activity set folderid=NULL where folderid=?");
+		      pst.setString(1, folderid);
+		      pst.executeUpdate();
+		      pst.close();
+		      pst = db.prepareStatement("delete from folder where id=?");
+		      pst.setString(1, folderid);
+		      pst.executeUpdate();		      
 		   } catch (SQLException sqle) {
 		    	Logger.error(userInfo.getUtilizador(), this, "deleteFolder","caught sql exception: " + sqle.getMessage(), sqle);
 		   } finally {
-		    	DatabaseInterface.closeResources(db, st);
+		    	DatabaseInterface.closeResources(db, pst);
 		   }
 	  }
 	  

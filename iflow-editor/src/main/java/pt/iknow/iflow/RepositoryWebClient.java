@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
@@ -12,22 +11,29 @@ import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.StringTokenizer;
 
-import org.apache.commons.httpclient.Cookie;
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NTCredentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.cookie.CookieSpecBase;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.PartSource;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.NTCredentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.config.RequestConfig.Builder;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.ProxyAuthenticationStrategy;
+import org.apache.http.util.EntityUtils;
 import org.exolab.castor.xml.Unmarshaller;
 import org.xml.sax.InputSource;
 
@@ -57,6 +63,8 @@ public class RepositoryWebClient implements RepositoryClient {
   private File classCacheFolder = null;
   private FlowRepUrl iFlowURL = null;
   private final boolean offline;
+  private CookieStore cookieStore = null;
+
 
   public RepositoryWebClient(String url, String login, String password, ClassLoader parent, FlowEditorConfig cfg, boolean offline) {
     this.offline = offline;
@@ -70,16 +78,27 @@ public class RepositoryWebClient implements RepositoryClient {
     iFlowURL = new FlowRepUrl(url, login);
     
     _url = MessageFormat.format(URL_TEMPLATE, new Object[] { _url });
-    client = new HttpClient();
-    client.getParams().setAuthenticationPreemptive(true);
-    Credentials defaultcreds = new UsernamePasswordCredentials(login, password);
-    client.getState().setCredentials(AuthScope.ANY, defaultcreds);
-
+    HttpClientBuilder clientBuilder =  HttpClientBuilder.create();
+    Builder bldr = RequestConfig.custom();
+  //client.getParams().setAuthenticationPreemptive(true);
+    bldr.setAuthenticationEnabled(true);
+    
+    //Credentials defaultcreds = new UsernamePasswordCredentials(login, password);
+    //client.getState().setCredentials(AuthScope.ANY, defaultcreds);
+   
+    CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+    credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(login, password));
+    clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+    
     if(cfg.isUseProxy()) {
       String host = cfg.getProxyHost();
       int port = Integer.parseInt(cfg.getProxyPort());
       FlowEditor.log("Setting proxy host="+host+" port="+port); //$NON-NLS-1$ //$NON-NLS-2$
-      client.getHostConfiguration().setProxy(host, port);
+      
+      //client.getHostConfiguration().setProxy(host, port);
+      HttpHost proxy = new HttpHost(host, port);
+      clientBuilder.setProxy(proxy);
+      
 
       if(cfg.isUseProxyAuth()) {
         Credentials credentials = null;
@@ -99,9 +118,13 @@ public class RepositoryWebClient implements RepositoryClient {
         } else {
           credentials = new UsernamePasswordCredentials(user, pass);
         }
-        client.getState().setProxyCredentials(new AuthScope(host, port), credentials);
+        //client.getState().setProxyCredentials(new AuthScope(host, port), credentials);
+        clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
+        
       }
     }
+    
+    client = clientBuilder.build();
 
     if (login != null && !login.equals("") && password != null && !password.equals("")) { //$NON-NLS-1$ //$NON-NLS-2$
       this.login(login, password, false);
@@ -171,21 +194,28 @@ public class RepositoryWebClient implements RepositoryClient {
   }
 
   protected boolean doCheck(int op, String login, String password) {
-    String response = "false"; //$NON-NLS-1$
-
+    //String response = "false"; //$NON-NLS-1$
+	HttpResponse response = null;
+    HttpPost method = new HttpPost(_url); 
+    MultipartEntityBuilder partBuilder = MultipartEntityBuilder.create();
+    
     try {
-      PostMethod method = new PostMethod(_url);
-      Part[] parts = {
-          new StringPart("login", login, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
-          new StringPart("password", password, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
-          new StringPart("op", String.valueOf(op), RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
-      };
-      method.setRequestEntity(
-          new MultipartRequestEntity(parts, method.getParams())
-      );
+      //PostMethod method = new PostMethod(_url);
+      partBuilder.addTextBody("login", login);
+      partBuilder.addTextBody("password", password);
+      partBuilder.addTextBody("op", String.valueOf(op));
+      
+    	  //new StringPart("login", login, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
+          //new StringPart("password", password, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
+          //new StringPart("op", String.valueOf(op), RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
+      HttpEntity multipart = partBuilder.build();
+      method.setEntity(multipart);
+      //method.setRequestEntity(
+         // new MultipartRequestEntity(parts, method.getParams())
+      //);
 
-      client.executeMethod(method);
-      response = new String(method.getResponseBody());
+      
+      response = client.execute(method);
       method.releaseConnection();
     } catch (FileNotFoundException fnfe) {
       FlowEditor.log("error", fnfe);
@@ -193,7 +223,7 @@ public class RepositoryWebClient implements RepositoryClient {
       FlowEditor.log("error", e);
     }
 
-    return (Boolean.valueOf(response)).booleanValue();
+    return (Boolean.valueOf(response.toString())).booleanValue();
   }
 
   public RepositoryClassLoader getClassLoader() {
@@ -226,20 +256,37 @@ public class RepositoryWebClient implements RepositoryClient {
   protected byte[] getBytes(int op, String name) {
     if(offline) return null;
     byte[] buffer = null;
-
+    HttpResponse response = null;
+    HttpPost method = new HttpPost(_url); 
+    MultipartEntityBuilder partBuilder = MultipartEntityBuilder.create();
+    final File file = new File(name);
+    FileBody fb = new FileBody(file);
+    
     try {
-      name = null==name?"NONE":name; //$NON-NLS-1$
-      PostMethod method = new PostMethod(_url);
-      Part[] parts = {
-          new StringPart("login", _login, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
+      //name = null==name?"NONE":name; //$NON-NLS-1$
+      //PostMethod method = new PostMethod(_url);
+    	partBuilder.addTextBody("login", _login);
+        partBuilder.addTextBody("password", _password);
+        partBuilder.addTextBody("op", String.valueOf(op));
+        partBuilder.addTextBody("name", String.valueOf(op));
+        partBuilder.addPart("file", fb);
+        
+        
+          /*new StringPart("login", _login, ), //$NON-NLS-1$
           new StringPart("password", _password, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
           new StringPart("op", String.valueOf(op), RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
           new StringPart("name", name, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
-          new FilePart("file", name, (File) null) //$NON-NLS-1$
-      };
-      method.setRequestEntity(new MultipartRequestEntity(parts, method.getParams()));
-      client.executeMethod(method);
-      buffer = method.getResponseBody();
+          new FilePart("file", name, (File) null) //$NON-NLS-1$*/
+      
+        
+	    HttpEntity multipart = partBuilder.build();
+	    method.setEntity(multipart);
+      //method.setRequestEntity(new MultipartRequestEntity(parts, method.getParams()));
+      //client.executeMethod(method);
+	    response = client.execute(method);
+	    
+      //method..getResponseBody();
+      buffer = EntityUtils.toByteArray(multipart); //CONFIRMAR ISTO
       method.releaseConnection();
     } catch (FileNotFoundException fnfe) {
       FlowEditor.log("error", fnfe);
@@ -272,26 +319,48 @@ public class RepositoryWebClient implements RepositoryClient {
 
 
   protected byte [] sendBytes(int op, String name, String desc, byte [] data, String comment) {
-    if(offline) return null;
-    byte [] buffer = null;
+	  if(offline) return null;
+	  byte[] buffer = null;
+	  HttpResponse response = null;
+	  HttpPost method = new HttpPost(_url); 
+	  MultipartEntityBuilder partBuilder = MultipartEntityBuilder.create();
+	  final File file = new File(name);
+	  FileBody fb = new FileBody(file);
+	  
     try {
-      PostMethod method = new PostMethod(_url);
+      //PostMethod method = new PostMethod(_url);
       name = null==name?"NONE":name; //$NON-NLS-1$
       desc = null==desc?name:desc;
       comment = null==comment?"":comment;
-      Part[] parts = {
-          new StringPart("login", _login, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
+      //Part[] parts = {
+      
+	    partBuilder.addTextBody("login", _login);
+        partBuilder.addTextBody("password", _password);
+        partBuilder.addTextBody("op", String.valueOf(op));
+        partBuilder.addTextBody("name", String.valueOf(op));
+        partBuilder.addTextBody("desc", desc);
+        partBuilder.addTextBody("comment", comment);
+        partBuilder.addPart("file", fb);	  
+    	
+          /*new StringPart("login", _login, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
           new StringPart("password", _password, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
           new StringPart("op", String.valueOf(op), RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
           new StringPart("name", name, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
           new StringPart("desc", desc, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
           new StringPart("comment", comment, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$
-          new RepositoryFilePart("file", name, data) //$NON-NLS-1$ //$NON-NLS-2$
-      };
-      method.setRequestEntity(new MultipartRequestEntity(parts, method.getParams()));
-      client.executeMethod(method);
-      buffer = method.getResponseBody();
+          new RepositoryFilePart("file", name, data) //$NON-NLS-1$ //$NON-NLS-2$*/
+      //};
+      HttpEntity multipart = partBuilder.build();
+	  method.setEntity(multipart);
+	  
+      //method.setRequestEntity(new MultipartRequestEntity(parts, method.getParams()));
+      //client.executeMethod(method);
+      //buffer = method.getResponseBody();
+	  response = client.execute(method);
+	  buffer = EntityUtils.toByteArray(multipart); //CONFIRMAR ISTO
       method.releaseConnection();
+      
+      response = client.execute(method);
     } catch (FileNotFoundException fnfe) {
       FlowEditor.log("error", fnfe);
     } catch (IOException e) {
@@ -857,11 +926,11 @@ public class RepositoryWebClient implements RepositoryClient {
       statusListener.finish();
     }
   }
-
-  private class RepositoryFilePart extends FilePart {
+  // NOT USED I THINK
+  /*private class RepositoryFilePart extends FilePart {
     public RepositoryFilePart(final String param, final String name, final byte [] data) {
       super(param, new ByteArrayPartSource(null==name?"NONE":name, data));
-    }
+    }*/ 
 
     /**
      * Write the data in "source" to the specified stream.
@@ -869,7 +938,8 @@ public class RepositoryWebClient implements RepositoryClient {
      * @throws IOException if an IO problem occurs.
      * @see org.apache.commons.httpclient.methods.multipart.Part#sendData(OutputStream)
      */
-    protected void sendData(OutputStream out) throws IOException {
+  
+    /*protected void sendData(OutputStream out) throws IOException {
       PartSource source = getSource();
       long size = lengthOfData();
       notifyStart(0, size);
@@ -891,7 +961,7 @@ public class RepositoryWebClient implements RepositoryClient {
     }
 
 
-  }
+  *(«/
 
   /*
    * public void deleteProperty(String name) { }
@@ -916,14 +986,14 @@ public class RepositoryWebClient implements RepositoryClient {
    * @see pt.iknow.iflow.RepositoryClient#getCookie()
    */
   public String getCookie() {
-    return new CookieSpecBase().formatCookieHeader(getCookies()).getValue();
+    return getCookies().toString();
   }
 
   /* (non-Javadoc)
    * @see pt.iknow.iflow.RepositoryClient#getCookies()
    */
-  public Cookie[] getCookies() {
-    return client.getState().getCookies();
+  public List<Cookie> getCookies() {  
+	  return cookieStore.getCookies();
   }
   
   public FlowRepUrl getIFlowURL() {

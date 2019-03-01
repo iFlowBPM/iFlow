@@ -30,6 +30,7 @@ public class Setup {
     private static final String CERT_PROP_FILE = "certificates.properties";
     private static final String SIGN_PROP_FILE = "signatures.properties";
     private static final String SSO_PROP_FILE = "sso.properties";
+    private static final String CRYPTO_PROP_FILE = "crypto.properties";
     
     
     // Hashtable with properties keys,values
@@ -225,6 +226,30 @@ public class Setup {
                 }
             }
             propertiesFile = null;
+        }
+        
+        try {
+            sFile = FilenameUtils.concat(_configHome, CRYPTO_PROP_FILE);
+            // Open properties file and get contents
+            
+            propertiesFile = new FileInputStream(sFile);
+            newExtraProperties.load(propertiesFile);
+            //TODO
+            if(getProperty("MASTER_KEY") == "" || getProperty("MASTER_KEY") == null) {
+            	throw new NoSuchFieldException("No master key found");
+            }
+        } catch (Exception e) {
+          Logger.error("", "Setup", "loadProperties", "Setup: unable to load properties file (" + sFile + ").", e);
+          System.exit(1);
+        } finally {
+            if (null != propertiesFile) {
+                try {
+                    propertiesFile.close();
+                } catch (IOException e) {
+                }
+            }
+            propertiesFile = null;
+            
         }
         
         _pMainProperties = newMainProperties;

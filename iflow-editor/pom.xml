@@ -76,7 +76,6 @@
 		<dependency>
 		    <groupId>org.apache.axis2</groupId>
 		    <artifactId>axis2</artifactId>
-		    <version>1.7.9</version>
 		    <type>pom</type>
 		</dependency>
 		<dependency>
@@ -150,8 +149,11 @@
 			<groupId>com.twolattes</groupId>
 			<artifactId>json</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>

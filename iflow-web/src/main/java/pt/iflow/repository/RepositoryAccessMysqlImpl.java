@@ -286,12 +286,15 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
           String dir = stok.nextToken();
           boolean found = false;
           if (parentid == 0) {
-        	pst1 = db.prepareStatement("SELECT id,parentid FROM repository_data WHERE parentid is null and name='" + dir + "'");
-            rs = pst1.executeQuery();
+        	pst1 = db.prepareStatement("SELECT id,parentid FROM repository_data WHERE parentid is null and name=?");
+            pst1.setString(1, dir);
+        	rs = pst1.executeQuery();
           }
           else {
-        	pst1 = db.prepareStatement("SELECT id,parentid FROM repository_data WHERE parentid=" + parentid + " and name='" + dir + "'");
-            rs = pst1.executeQuery();
+        	pst1 = db.prepareStatement("SELECT id,parentid FROM repository_data WHERE parentid=? and name=?");
+        	pst.setInt(1, parentid);
+        	pst.setString(2, dir);
+        	rs = pst1.executeQuery();
           }
           
           if(rs.next()) {
@@ -528,20 +531,26 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
         
 
         // get blob handler
-        pst1 = db.prepareStatement("SELECT parentid FROM repository_data WHERE id=" + id);
+        pst1 = db.prepareStatement("SELECT parentid FROM repository_data WHERE id=?");
+        pst1.setInt(1, id);
         rs = pst1.executeQuery();
+       
         if (rs.next()) {
           parentid = rs.getInt("parentid");
         }
         rs.close();
-
+        pst1.close();
         String sIsDir = "null";
         if (bIsDir) sIsDir = "'Dir'";
         
-        pst1 = db.prepareStatement("DELETE FROM repository_data WHERE id=" + id);
+        pst1 = db.prepareStatement("DELETE FROM repository_data WHERE id=?");
+        pst1.setInt(1, id);
         pst1.executeUpdate();  // TODO improve this
-        pst1 = db.prepareStatement("INSERT INTO repository_data (id,parentid,name,value,data,modification) VALUES (" + id + "," + parentid
-                + ",'" + shortname + "'," + sIsDir + ",NULL,NOW())");
+        pst1 = db.prepareStatement("INSERT INTO repository_data (id,parentid,name,value,data,modification) VALUES (?,?,?,?,NULL,NOW())");
+        pst1.setInt(1, id);
+        pst1.setInt(2, parentid);
+        pst1.setString(3, shortname);
+        pst1.setString(4, sIsDir);
         pst1.executeUpdate();
 
         pst1.close();

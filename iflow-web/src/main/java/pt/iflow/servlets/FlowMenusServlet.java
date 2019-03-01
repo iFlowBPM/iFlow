@@ -91,8 +91,8 @@ public class FlowMenusServlet  extends HttpServlet implements Servlet {
     try {
       ds = Utils.getDataSource();
       db = ds.getConnection();
-      pst = db.prepareStatement("select linkid,name,flowid from links_flows where parentid = 0 and organizationid='"+userInfo.getCompanyID()+"'");
-      
+      pst = db.prepareStatement("select linkid,name,flowid from links_flows where parentid = 0 and organizationid=?");
+      pst.setString(1, userInfo.getCompanyID());
 
       ArrayList<FlowMenuItem> menuItems = new ArrayList<FlowMenuItem>();
       
@@ -107,7 +107,9 @@ public class FlowMenusServlet  extends HttpServlet implements Servlet {
         
         FlowMenuItem item = new FlowMenuItem(linkid, name);
         menuItems.add(item);
-        pst2 = db.prepareStatement("select linkid,name,flowid from links_flows where parentid = " + linkid+" and organizationid='"+userInfo.getCompanyID()+"'");
+        pst2 = db.prepareStatement("select linkid,name,flowid from links_flows where parentid = ? and organizationid=?");
+        pst2.setInt(1, linkid);
+        pst2.setString(2, userInfo.getCompanyID());
         rs2 = pst2.executeQuery();
         while (null != rs2 && rs2.next()) {
           String childName = rs2.getString("name");

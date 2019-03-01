@@ -314,6 +314,7 @@ public class ReportManagerBean implements ReportManager {
       }
 
       pst = db.prepareStatement(sql.toString());
+      //pst.setObject(1, ReportTO.STOP_REPORTING);
       pst.setInt(1, flowid);
       pst.setString(2, codReporting);
       pst.setTimestamp(3,  new Timestamp(startDate.getTime()));
