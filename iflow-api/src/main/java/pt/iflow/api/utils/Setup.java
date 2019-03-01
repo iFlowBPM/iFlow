@@ -40,7 +40,7 @@ public class Setup {
     private static String _configHome = "";
     
     static {
-        loadProperties();
+			loadProperties();
     }
     
     public static Properties readPropertiesFile(String fileName) {
@@ -88,8 +88,9 @@ public class Setup {
     
     /**
      * This method loads the necessary setup parameters.
+     * @throws NoSuchFieldException 
      */
-    public static synchronized void loadProperties() {
+    public static synchronized void loadProperties(){
         
         String sFile = null;
         
@@ -234,10 +235,7 @@ public class Setup {
             
             propertiesFile = new FileInputStream(sFile);
             newExtraProperties.load(propertiesFile);
-            //TODO
-            if(getProperty("MASTER_KEY") == "" || getProperty("MASTER_KEY") == null) {
-            	throw new NoSuchFieldException("No master key found");
-            }
+
         } catch (Exception e) {
           Logger.error("", "Setup", "loadProperties", "Setup: unable to load properties file (" + sFile + ").", e);
           System.exit(1);
@@ -254,6 +252,9 @@ public class Setup {
         
         _pMainProperties = newMainProperties;
         _pExtraProperties = newExtraProperties;
+        
+        //if(getProperty("MASTER_KEY") == null || getProperty("MASTER_KEY") == "")
+        	//throw new NoSuchFieldException("No such field");
     }
     
     public static String getProperty(String key) {
