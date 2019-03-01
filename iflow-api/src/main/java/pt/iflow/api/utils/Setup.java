@@ -253,8 +253,9 @@ public class Setup {
         _pMainProperties = newMainProperties;
         _pExtraProperties = newExtraProperties;
         
-        //if(getProperty("MASTER_KEY") == null || getProperty("MASTER_KEY") == "")
-        	//throw new NoSuchFieldException("No such field");
+        if(getProperty("MASTER_KEY") == null || getProperty("MASTER_KEY").isEmpty())
+        	System.out.print("asf");
+        	System.exit(1);
     }
     
     public static String getProperty(String key) {
