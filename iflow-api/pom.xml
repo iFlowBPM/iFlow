@@ -70,8 +70,8 @@
 			<artifactId>google-collect</artifactId>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache-extras.beanshell</groupId>
-		    <artifactId>bsh</artifactId>
+			    <groupId>org.beanshell</groupId>
+			    <artifactId>bsh</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>castor</groupId>

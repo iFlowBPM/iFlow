@@ -159,7 +159,7 @@ public class UserManagerBean
         }
       }
       sQuery = sQuery.replace("#EP#", auxEP).replace("#EV#", auxEV);
-      
+     
       pst = db.prepareStatement(sQuery, new String[] { "userid" });
       pst.setString(1, gender);
       pst.setString(2, unit);
@@ -270,8 +270,9 @@ public class UserManagerBean
     try
     {
       db = Utils.getDataSource().getConnection();
-      pst = db.prepareStatement("Insert into user_calendar (userid,calendar_id)values (?," + cal + ")");
+      pst = db.prepareStatement("Insert into user_calendar (userid,calendar_id)values (?,?)");
       pst.setInt(1, userId);
+      pst.setString(2, cal);
       pst.execute();
       c = true;
     }
@@ -359,12 +360,15 @@ public class UserManagerBean
       if (calid.equals(" ")) {
         calid = "0";
       }
-      pst = db.prepareStatement("insert into organizational_units (ORGANIZATIONID,PARENT_ID,NAME,DESCRIPTION,calendid) values (?,?,?,?," + calid + ")", new String[] { "unitid" });
+      pst = db.prepareStatement("insert into organizational_units (ORGANIZATIONID,PARENT_ID,NAME,DESCRIPTION,calendid) values (?,?,?,?,?)", new String[] { "unitid" });
       
       pst.setString(1, organizationid);
       pst.setString(2, parentid);
       pst.setString(3, name);
       pst.setString(4, description);
+      pst.setString(5, calid);
+      
+      
       pst.executeUpdate();
       rs = pst.getGeneratedKeys();
       int unitid = -1;
@@ -3155,41 +3159,42 @@ public class UserManagerBean
     try
     {
       db = Utils.getDataSource().getConnection();
-      st = db.prepareStatement("Insert into calendar (version,name, monday, tuesday, wednesday, thursday, friday, saturday, sunday, valid, day_hours, week_hours, month_hours, create_date)values (1,'" + calendnome + "',?,?,?,?,?,?,?,1,8,40,160,now())");
+      st = db.prepareStatement("Insert into calendar (version,name, monday, tuesday, wednesday, thursday, friday, saturday, sunday, valid, day_hours, week_hours, month_hours, create_date)values (1,?,?,?,?,?,?,?,?,1,8,40,160,now())");
+      st.setString(1, calendnome);
       if (((String)days.get(0)).equals("monday")) {
-        st.setInt(1, 1);
-      } else {
-        st.setInt(1, 0);
-      }
-      if (days.contains("tuesday")) {
         st.setInt(2, 1);
       } else {
         st.setInt(2, 0);
       }
-      if (days.contains("wednsday")) {
+      if (days.contains("tuesday")) {
         st.setInt(3, 1);
       } else {
         st.setInt(3, 0);
       }
-      if (days.contains("thursday")) {
+      if (days.contains("wednsday")) {
         st.setInt(4, 1);
       } else {
         st.setInt(4, 0);
       }
-      if (days.contains("friday")) {
+      if (days.contains("thursday")) {
         st.setInt(5, 1);
       } else {
         st.setInt(5, 0);
       }
-      if (days.contains("saturday")) {
+      if (days.contains("friday")) {
         st.setInt(6, 1);
       } else {
         st.setInt(6, 0);
       }
-      if (days.contains("sunday")) {
+      if (days.contains("saturday")) {
         st.setInt(7, 1);
       } else {
         st.setInt(7, 0);
+      }
+      if (days.contains("sunday")) {
+        st.setInt(8, 1);
+      } else {
+        st.setInt(8, 0);
       }
       st.execute();
       c = true;
@@ -3284,8 +3289,10 @@ public class UserManagerBean
     try
     {
       db = Utils.getDataSource().getConnection();
-      st = db.prepareStatement("insert into `iflow`.`calendar_periods` values (?,'" + init + "','" + end + "')");
+      st = db.prepareStatement("insert into `iflow`.`calendar_periods` values (?,?,?)");
       st.setString(1, id);
+      st.setString(2, init);
+      st.setString(3, end);
       st.execute();
       b = true;
     }

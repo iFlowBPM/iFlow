@@ -190,7 +190,8 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 
 		Logger.debug(userInfo.getUtilizador(),this,"importLine","idEnt: " +  lineValues.get("idEnt")+" before dataEnrichment test " );
 		// insert clienteRel
-		if (dataEnrichmentOn){
+		/*if (dataEnrichmentOn){
+			
 			Date start = new Date();
 			insertEntidadeRelacionada(lineValues,  connection,  userInfo, conteudoIdList, riscoEnt_id, (Date)lineValues.get("dtRef"));		
 			Date end = new Date();
@@ -198,7 +199,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				"insert into audit (dataregisto, flowId, pid, user, idestado, descricao) "+
 				" values (?,?,?,?,?,?)",
 				new Object[] {new Date(),-1,-1,userInfo.getUtilizador(),(end.getTime() - start.getTime()),"insertEntidadeRelacionada, idEnt:" + lineValues.get("idEnt")});
-		}
+		}*/
 		
 		// insert infRiscoEnt
 		if(!(this instanceof BlockP17040ImportCERAEntRelOn)){

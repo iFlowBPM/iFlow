@@ -70,7 +70,9 @@ public class PersistSession {
     
     try {
       db = DatabaseInterface.getConnection(userInfo);
-      pst = db.prepareStatement("select session from user_session where userid = '"+userid+"'");
+      pst = db.prepareStatement("select session from user_session where userid = '?");
+      pst.setString(1, userid);
+      
       rs = pst.executeQuery();
       
       if (rs.next()) {
@@ -120,16 +122,20 @@ public class PersistSession {
     PreparedStatement pst = null;
     try {
       db = DatabaseInterface.getConnection(userInfo);
-      pst = db.prepareStatement("Update user_session set session=? where userid='"+userInfo.getUtilizador()+"'");
+      
+      //HERE
+      pst = db.prepareStatement("Update user_session set session=? where userid=?");
       pst.setBytes(1, baos.toByteArray());
+      pst.setObject(2, userInfo.getUtilizador());
       rows = pst.executeUpdate();
       pst.close();
       db.close();
 
       if(rows <= 0){      
         db = DatabaseInterface.getConnection(userInfo); 
-        pst = db.prepareStatement("insert into user_session (userid, session) values ('"+userInfo.getUtilizador()+"',?)");
-        pst.setBytes(1, baos.toByteArray());
+        pst = db.prepareStatement("insert into user_session (userid, session) values (?,?)");
+        pst.setObject(1, userInfo.getUtilizador());
+        pst.setBytes(2, baos.toByteArray());
         pst.execute();
       }
     } catch (SQLException sqle) {

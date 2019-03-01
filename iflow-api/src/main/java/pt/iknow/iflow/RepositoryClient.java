@@ -1,6 +1,7 @@
 package pt.iknow.iflow;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.http.cookie.Cookie;
 
@@ -157,7 +158,7 @@ public interface RepositoryClient {
 
   public abstract String getCookie();
   
-  public Cookie[] getCookies();
+  public List<Cookie> getCookies(); 
 
   public byte [] getMessages(String file);
 

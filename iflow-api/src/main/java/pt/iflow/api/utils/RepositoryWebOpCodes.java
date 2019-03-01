@@ -13,7 +13,7 @@ public final class RepositoryWebOpCodes {
   /**
    * Key to encrypt passwords
    */
-  public static final CryptUtils _crypt = new CryptUtils("achave");
+  public static final CryptUtils _crypt = new CryptUtils(Setup.getProperty("MASTER_KEY"));
 
   /**
    * Default encoding for data sharing

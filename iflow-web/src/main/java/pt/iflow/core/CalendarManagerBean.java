@@ -86,7 +86,11 @@ public class CalendarManagerBean
     try
     {
       db = DatabaseInterface.getConnection(userInfo);
-      pst = db.prepareStatement("select * from calendar_holidays where calendar_id = '" + calendar_id + "' and holiday >= '" + tsStart + "' and holiday <= '" + tsStop + "'");;
+      pst = db.prepareStatement("select * from calendar_holidays where calendar_id = '?' and holiday >= '?' and holiday <= '?'");;
+      pst.setInt(1, calendar_id);
+      pst.setTimestamp(2, tsStart);
+      pst.setTimestamp(3, tsStop);
+      
       rs = pst.executeQuery();
            
       while (rs.next()) {

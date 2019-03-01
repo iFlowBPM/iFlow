@@ -553,12 +553,17 @@ public class InstructionCompiler implements InstructionCompilerConstants {
       if (javascript && javascriptNS) {
         try{
           int objectid = 0;
-          PreparedStatement pst = dbNS.prepareStatement("select * from campos where variable='" + nome_campoNS + "' AND interfaceid = " + interfaceidNS + " ");
+          PreparedStatement pst = dbNS.prepareStatement("select * from campos where variable=? AND interfaceid =?");
+          pst.setString(1, nome_campoNS);
+          pst.setInt(2, interfaceidNS);
           ResultSet rs =  pst.executeQuery();
           if (rs.next()) {
             objectid = rs.getInt("objectid");
           }
-          pst = dbNS.prepareStatement("select * from valores where objectid="+ objectid + " AND value = " + token.image +" AND interfaceid = " + interfaceidNS + " ");
+          pst = dbNS.prepareStatement("select * from valores where objectid=? AND value = ? AND interfaceid = ?");
+          pst.setInt(1, objectid);
+          pst.setString(2, token.image);
+          pst.setInt(3, interfaceidNS);
           rs =  pst.executeQuery();
           if (rs.next()) {
         	  

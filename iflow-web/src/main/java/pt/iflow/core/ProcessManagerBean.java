@@ -1844,10 +1844,15 @@ public class ProcessManagerBean implements ProcessManager {
 
       String escapedUserId = escapeSQL(userid);
 
-      final String activityDelegationsQuery = "select * from activity_delegated where userid='" + escapedUserId + "'"
-          + " and flowid=" + flowid + " and pid=" + pid + " and subpid=" + subpid;
+      final String activityDelegationsQuery = "select * from activity_delegated where userid=? and flowid=? and pid=? and subpid=?" ;
+     
       
       pst = db.prepareStatement(activityDelegationsQuery);
+      pst.setString(1,escapedUserId);
+      pst.setInt(2, flowid);
+      pst.setInt(3, pid);
+      pst.setInt(4, subpid);
+      
       rs = pst.executeQuery();
       pst.close();
       
@@ -2116,14 +2121,14 @@ public class ProcessManagerBean implements ProcessManager {
   public String[] getActivityOwners(UserInfoInterface userInfo, Activity activity) {
 
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
 
     List<String> lUsers = new ArrayList<String>();
     String[] retObj = null;
     try {
       db = DatabaseInterface.getConnection(userInfo);
-      st = db.createStatement();
+      
 
       if (activity.pid > 0) {
         // when the pid is specified, get all activity owners
@@ -2136,7 +2141,8 @@ public class ProcessManagerBean implements ProcessManager {
           sbQuery.append(" and subpid=").append(activity.subpid);
         }
         
-        rs = st.executeQuery(sbQuery.toString());
+        pst = db.prepareStatement(sbQuery.toString());
+        rs = pst.executeQuery();
 
         while (rs.next()) {
           lUsers.add(rs.getString("userid"));
@@ -2149,7 +2155,8 @@ public class ProcessManagerBean implements ProcessManager {
         // check if this is a delegated activity
         final StringBuilder sbQueryHierarchy = new StringBuilder("select ownerid from activity_hierarchy where flowid=");
         sbQueryHierarchy.append(activity.flowid).append(" and userid='").append(escapeSQL(activity.userid)).append("'");
-        rs = st.executeQuery(sbQueryHierarchy.toString());
+        db.prepareStatement(sbQueryHierarchy.toString());
+        rs = pst.executeQuery();
 
         while (rs.next()) {
           lUsers.add(rs.getString("ownerid"));
@@ -2161,7 +2168,8 @@ public class ProcessManagerBean implements ProcessManager {
         StringBuilder sbQueryActivity = new StringBuilder();
         sbQueryActivity.append("select count(1) from activity where flowid="); // just check if exists
         sbQueryActivity.append(activity.flowid).append(" and userid='").append(escapeSQL(activity.userid)).append("'");
-        rs = st.executeQuery(sbQueryActivity.toString());
+        db.prepareStatement(sbQueryActivity.toString());
+        rs = pst.executeQuery();
 
         if (rs.next()) {
           lUsers.add(activity.userid);
@@ -2173,7 +2181,7 @@ public class ProcessManagerBean implements ProcessManager {
     } catch (Exception e) {
       Logger.error(userInfo.getUtilizador(), this, "getActivityOwners", "exception: " + e.getMessage(), e);
     } finally {
-      DatabaseInterface.closeResources(db, st, rs);
+      DatabaseInterface.closeResources(db, pst, rs);
     }
 
     if (lUsers != null && lUsers.size() > 0) {
@@ -2878,22 +2886,22 @@ public class ProcessManagerBean implements ProcessManager {
 
     
     Connection db = null;
-    Statement st = null;
+    PreparedStatement st = null;
     ResultSet rs = null;
 
     boolean bHasActivities = false;
 
     try {
       db = DatabaseInterface.getConnection(userInfo);
-      st = db.createStatement();
+      
 
       final StringBuilder activityQuery = new StringBuilder("select userid,url from activity where flowid=");
       activityQuery.append(flowid).append(" and pid=").append(pid).append(" and subpid=").append(subpid);
 
       Logger.debug(login, this, "getUserProcessUrl", "Query1=" + activityQuery);
-
-      rs = st.executeQuery(activityQuery.toString());
-
+      st = db.prepareStatement(activityQuery.toString());
+      rs = st.executeQuery();
+      st.close();
       while (rs.next()) {
         bHasActivities = true;
         String user = rs.getString("userid");
@@ -2913,8 +2921,8 @@ public class ProcessManagerBean implements ProcessManager {
         activityDelegatedQuery.append(flowid).append(" and pid=").append(pid).append(" and subpid=").append(subpid);
 
         Logger.debug(login, this, "getUserProcessUrl", "Query2=" + activityDelegatedQuery);
-
-        rs = st.executeQuery(activityDelegatedQuery.toString());
+        st = db.prepareStatement(activityDelegatedQuery.toString());
+        rs = st.executeQuery();
 
         while (rs.next()) {
           bHasActivities = true;
@@ -3226,9 +3234,12 @@ public class ProcessManagerBean implements ProcessManager {
 
       historifyActivities(userInfo, db, procHeader, userid);
 
-      stmp = "delete from activity where flowid=" + flowid + " and pid=" + pid + " and subpid=" + subpid;
+      stmp = "delete from activity where flowid=? and pid=? and subpid=?" ;
       Logger.debug(userid, this, "deleteAllActivities", "Query3=" + stmp);
       pst = db.prepareStatement(stmp);
+      pst.setInt(1,flowid);
+      pst.setInt(2,pid);
+      pst.setInt(3,subpid);
       pst.executeUpdate();
       pst.close();
 
@@ -3627,9 +3638,20 @@ public class ProcessManagerBean implements ProcessManager {
         // first og all, historify activities and delete previous ones
         historifyActivities(userInfo, db, procData.getProcessHeader(), userid);
 
+        PreparedStatement sbDeleteActivities = db.prepareStatement("delete from activity where flowid=? and pid=? and subpid=?");
+        sbDeleteActivities.setInt(1, flowid);
+        sbDeleteActivities.setInt(2, pid);
+        sbDeleteActivities.setInt(3, subpid);
+        
+        /*
         StringBuilder sbDeleteActivities = new StringBuilder("delete from activity where flowid=");
         sbDeleteActivities.append(flowid).append(" and pid=").append(pid);
-        sbDeleteActivities.append(" and subpid=").append(subpid);
+        sbDeleteActivities.append(" and subpid=").append(subpid);*/
+        
+        
+        
+        
+        
         Logger.debug(userid, this, "forwardTo (profile=" + asProfile + ",newuser=" + asNewUser + ")", "Query3="
             + sbDeleteActivities.toString());
         pst1 = db.prepareStatement(sbDeleteActivities.toString());
@@ -3888,10 +3910,13 @@ public class ProcessManagerBean implements ProcessManager {
 
     try {
       db = DatabaseInterface.getConnection(userInfo);
-      pst = db.prepareStatement("select muser from modification where flowid=" + flowid 
-              + " and pid=" + pid + " and subpid=" + subpid
-              + " and mid=" + targetMid);
-
+      pst = db.prepareStatement("select muser from modification where flowid=?"
+              + " and pid=? and subpid=?" 
+              + " and mid=?");
+      pst.setInt(1, flowid);
+      pst.setInt(2, pid);
+      pst.setInt(3, subpid);
+      pst.setInt(4, targetMid);
       rs = pst.executeQuery();
       pst.close();
       if (!rs.next()) {
@@ -5459,7 +5484,6 @@ public class ProcessManagerBean implements ProcessManager {
   
   public void endProc(UserInfoInterface userInfo, ProcessData procData, boolean isCancel) throws Exception {
     String login = userInfo.getUtilizador();
-
     PreparedStatement pst = null;
     ResultSet rs = null;
     Connection db = null;
@@ -5469,11 +5493,14 @@ public class ProcessManagerBean implements ProcessManager {
       this.deleteAllActivities(userInfo, procData);
 
       pst = (PreparedStatement) db.createStatement();
-      pst = db.prepareStatement("select * from process"
-              + " where flowid=" + procData.getFlowId()
-              + " and pid=" + procData.getPid()
-              + " and subpid=" + procData.getSubPid()
+      pst = db.prepareStatement("select * from process where flowid= ?"
+              + " and pid= ?"
+              + " and subpid= ?"
               + " and closed=0");
+      
+      pst.setInt(1, procData.getFlowId());
+      pst.setInt(2, procData.getPid());
+      pst.setInt(3, procData.getSubPid());
       rs = pst.executeQuery();
       pst.close();
 
@@ -5487,9 +5514,11 @@ public class ProcessManagerBean implements ProcessManager {
         
         // checks if is the last subprocess belonging to a specific process
         pst = db.prepareStatement("select count(1) from process"
-                + " where flowid=" + procData.getFlowId()
-                + " and pid=" + procData.getPid()
+                + " where flowid=?" 
+                + " and pid=?" 
                 + " and closed=0");
+        pst.setInt(1, procData.getFlowId());
+        pst.setInt(2, procData.getPid());
         rs = pst.executeQuery();
         pst.close();
         
@@ -5814,8 +5843,13 @@ public class ProcessManagerBean implements ProcessManager {
 		    try {
 		        db = DatabaseInterface.getConnection(userInfo);
 		       
-		        String query = "update documents set pid = "+pid+" , subpid= "+mid+" where flowid = "+flowid+" and docid in "+docids;
+		        String query = "update documents set pid = ? , subpid= ? where flowid = ? and docid in ?";
 		        pst = db.prepareStatement(query);
+		        pst.setInt(1, pid);
+		        pst.setInt(2, mid);
+		        pst.setInt(3, flowid);
+		        pst.setString(4, docids);
+		        
 		        pst.executeUpdate();      	      
 		    } catch (SQLException sqle) {Logger.error(userInfo.getUtilizador(), this, "updatePidDocs", "sql exception: " + sqle.getMessage(), sqle);
 		    } catch (Exception e) { Logger.error(userInfo.getUtilizador(), this, "updatePidDocs", "exception: " + e.getMessage(), e);
@@ -5848,10 +5882,11 @@ public class ProcessManagerBean implements ProcessManager {
               
          
 
-          String queryUnion = sQuery.toString()+" UNION "+sQueryDelegated.toString()+" order by created";
+          String queryUnion = "? UNION ? order by created";
                   
 	      st = db.prepareStatement(queryUnion);
-
+	      st.setString(1, sQuery.toString());
+	      st.setString(2, sQueryDelegated.toString());
 	      rs = st.executeQuery();
 
 	      while (rs.next()) {
@@ -6026,17 +6061,17 @@ public class ProcessManagerBean implements ProcessManager {
 	         // sQueryDelegated.append(" order by iconid asc, created desc");
 	    	  //sQueryDelegated.append(" order by created desc");
 	      }else{
-	    	  
 	    	  sQueryDelegated.append(" order by created desc");
 	         // sQueryDelegated.append(" order by iconid asc, created asc");
 	    	  //sQueryDelegated.append(" order by created desc");
 	      }
 	      
 	      
-	      union = sQuery.toString()+" UNION "+sQueryDelegated.toString();
+	      union = "? UNION ?";
 
 	      st = db.prepareStatement(union);
-
+	      st.setString(1, sQuery.toString());
+	      st.setString(2, sQueryDelegated.toString());
 
 	      if (anFlowId > -1) {
 	        st.setInt(nField, anFlowId);
@@ -6140,7 +6175,7 @@ public class ProcessManagerBean implements ProcessManager {
 	    Logger.trace(this, "getUserActivities", userid + " call.");
 
 	    Connection db = null;
-	    PreparedStatement st = null;
+	    PreparedStatement pst = null;
 	    ResultSet rs = null;
 	    LinkedList<Activity> l = new LinkedList<Activity>();
 	    ListIterator<Activity> result = null;
@@ -6161,12 +6196,12 @@ public class ProcessManagerBean implements ProcessManager {
 	          "select a.*,p.pnumber from activity a,process p where p.flowid=a.flowid and p.pid=a.pid and p.subpid=a.subpid and status=0 and userid in ")
 	          .append(usersInUnitTxt);
 	      final StringBuilder sQueryDelegated = new StringBuilder(
-	          "select a.*,p.pnumber from activity_delegated a,process p where p.flowid=a.flowid and p.pid=a.pid and p.subpid=a.subpid and status=0 and  userid in ")
-	          .append(usersInUnitTxt);
+	          "select a.*,p.pnumber from activity_delegated a,process p where p.flowid=a.flowid and p.pid=a.pid and p.subpid=a.subpid and status=0 and  userid in ?");
 
-	      st = db.prepareStatement(sQuery.toString());
-
-	      rs = st.executeQuery();
+	      pst = db.prepareStatement(sQuery.toString());
+	      pst.setString(1, usersInUnitTxt);
+	      
+	      rs = pst.executeQuery();
 	      int counter = -1;
 	      while (rs.next()) {
 	        int flowid = rs.getInt("flowid");
@@ -6184,8 +6219,8 @@ public class ProcessManagerBean implements ProcessManager {
 	        wle.mid = rs.getInt("mid");
 	        l.add(wle);
 	      }
-	      DatabaseInterface.closeResources(st, rs);
-	      st = null;
+	      DatabaseInterface.closeResources(pst, rs);
+	      pst = null;
 	      rs = null;
 
 	      result = l.listIterator();
@@ -6196,7 +6231,7 @@ public class ProcessManagerBean implements ProcessManager {
 	      Logger.error(userid, this, "getUserActivities", "exception: " + e.getMessage(), e);
 	      result = null;
 	    } finally {
-	      DatabaseInterface.closeResources(db, st, rs);
+	      DatabaseInterface.closeResources(db, pst, rs);
 	    }
 	    return result;
 	  }

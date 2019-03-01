@@ -248,9 +248,10 @@ public class CodeTemplateManagerBean implements CodeTemplateManager {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       
-      String sql = "UPDATE serial_code_templates set flag = '" + mark + "' WHERE name ='" + templateName + "' AND organization = "
-          + userInfo.getOrganization();
-      
+      String sql = "UPDATE serial_code_templates set flag = '?' WHERE name ='?' AND organization = ?";
+      pst.setBoolean(1, mark);
+      pst.setString(2, templateName);
+      pst.setString(3, userInfo.getOrganization());
       pst = db.prepareStatement(sql);
       if (Logger.isDebugEnabled()) {
         Logger.debug(userInfo.getUtilizador(), this, "markAsTag", "QUERY=" + sql);
@@ -285,8 +286,12 @@ public class CodeTemplateManagerBean implements CodeTemplateManager {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       
-      String sql = "UPDATE serial_code_templates set flag = '" + mark + "' WHERE name IN " + keyValueNames + " AND organization = "
-          + userInfo.getOrganization();
+      String sql = "UPDATE serial_code_templates set flag = '?' WHERE name IN ? AND organization = ?";
+      pst.setBoolean(1, mark);
+      pst.setString(2, keyValueNames);
+      pst.setString(3, userInfo.getOrganization());
+      
+      
       pst = db.prepareStatement(sql);
       
       if (Logger.isDebugEnabled()) {

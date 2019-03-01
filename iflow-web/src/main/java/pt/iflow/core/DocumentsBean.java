@@ -1133,12 +1133,14 @@ public class DocumentsBean implements Documents {
     try {
       db = DatabaseInterface.getConnection(userInfo);
       if(flag0){
-        pst = db.prepareStatement("UPDATE documents set tosign=0 where docid in "+queryUpdate0);
+        pst = db.prepareStatement("UPDATE documents set tosign=0 where docid in ?");
+        pst.setString(1, queryUpdate0);
         pst.executeUpdate();
         pst.close();
       }
       if(flag1){
-        pst = db.prepareStatement("UPDATE documents set tosign=1 where docid in "+queryUpdate1);
+        pst = db.prepareStatement("UPDATE documents set tosign=1 where docid in ?");
+        pst.setString(1, queryUpdate1);
         pst.executeUpdate();
       }
      } catch (SQLException sqle) {

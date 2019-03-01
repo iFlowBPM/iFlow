@@ -152,7 +152,6 @@
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
    			<artifactId>axis2</artifactId>
-		    <version>1.7.9</version>
 		    <type>pom</type>
 		</dependency>
 		<dependency>
@@ -225,8 +224,8 @@
 			<version>2.0-alpha-1</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache-extras.beanshell</groupId>
-		    <artifactId>bsh</artifactId>
+			    <groupId>org.beanshell</groupId>
+			    <artifactId>bsh</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.twolattes</groupId>
@@ -362,12 +361,12 @@
 	    <dependency>
 	    	<groupId>org.apache.tika</groupId>
 	    	<artifactId>tika-core</artifactId>
-	    	<version>1.16</version>
+	    	<version>1.20</version>
 	  	</dependency>	
 	  <dependency>
 	    <groupId>org.apache.tika</groupId>
 	    <artifactId>tika-parsers</artifactId>
-	    <version>1.16</version>
+	    <version>1.20</version>
 	  </dependency>
 	  
 		<!-- TESTS -->

@@ -262,7 +262,8 @@ public class PassImageBean implements PassImage {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       db.setAutoCommit(false);
-      pst = db.prepareStatement("SELECT passimage FROM user_passimage where userid='"+userid+"'");
+      pst = db.prepareStatement("SELECT passimage FROM user_passimage where userid=?");
+      pst.setString(1, userid);
       rs = pst.executeQuery();   
 
       rs.next(); 

@@ -237,11 +237,11 @@ public class FlowHolderBean implements FlowHolder {
             
             // check if flow exists in db and is disabled
             
-            String stmp = "select flowfile from flow where flowid=" + flowId
-                    + " and organizationid='" + userInfo.getOrganization()
-                    + "'";
+            String stmp = "select flowfile from flow where flowid=? and organizationid='?'";
             pst = db.prepareStatement(stmp);
-            rs = pst.executeQuery(stmp);
+            pst.setInt(1, flowId);
+            pst.setString(2, userInfo.getOrganization());
+            rs = pst.executeQuery();
             
             if (rs.next()) {
                 result = rs.getString("flowfile");
@@ -501,32 +501,37 @@ public class FlowHolderBean implements FlowHolder {
             
             // return every flowfile in orgnaizationid. Union will remove
             // duplicates (according to SQL specs)
-            final String allOrgFlows = "select flowfile from flow where organizationid='"
-                    + userInfo.getOrganization()
-                    + "' UNION select name as flowfile from flow_template";
+            final String allOrgFlows = "select flowfile from flow where organizationid=? UNION select name as flowfile from flow_template";
             
             // return all online names. templates are never online
-            final String onlineOrgFlows = "select flowfile from flow where organizationid='"
-                    + userInfo.getOrganization() + "' and enabled=1";
+            final String onlineOrgFlows = "select flowfile from flow where organizationid=? and enabled=1";
             
             // return every disabled flowfile in orgnaizationid. The unioned
             // query will exclude all org flows so it will not list an online
             // flow as offline
-            final String offlineOrgFlows = "select flowfile from flow where organizationid='"
-                    + userInfo.getOrganization()
-                    + "' and enabled=0 UNION select name as flowfile from flow_template where name not in (select flowfile from flow where organizationid='"
-                    + userInfo.getOrganization() + "')";
+            final String offlineOrgFlows = "select flowfile from flow where organizationid=?" +  
+            "and enabled=0 UNION select name as flowfile from flow_template where name not in (select flowfile from flow where organizationid=?";
             
             String query;
-            if (anSelection == nLIST_OFFLINE)
+            if (anSelection == nLIST_OFFLINE) {
                 query = offlineOrgFlows;
-            else if (anSelection == nLIST_ONLINE)
-                query = onlineOrgFlows;
-            else
-                query = allOrgFlows;
+            	pst = db.prepareStatement(query);
+            	pst.setString(1, userInfo.getOrganization());
+            	pst.setString(2, userInfo.getOrganization());
+            }
+            else if (anSelection == nLIST_ONLINE) {
+            	query = onlineOrgFlows;
+            	pst = db.prepareStatement(query);
+        		pst.setString(1, userInfo.getOrganization());
+            }
+            else {
+            	query = allOrgFlows;
+            	pst = db.prepareStatement(query);
+        		pst.setString(1, userInfo.getOrganization());
+            }
             pst = db.prepareStatement(query);
             rs = pst.executeQuery();
-            
+            pst.close();
             ArrayList<String> altmp = new ArrayList<String>();
             while (rs.next()) {
                 altmp.add(rs.getString("flowfile"));
@@ -2139,23 +2144,24 @@ public class FlowHolderBean implements FlowHolder {
     }
     
     private synchronized byte[] readData(UserInfoInterface userInfo,
-            String name, boolean isFlow, int version) {
+        String name, boolean isFlow, int version) {
         String query = null;
         Connection db = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
         byte[] data = null;
-        String sub = isFlow ? "" : "sub_";
+        //String sub = isFlow ? "" : "sub_";
+        
         try {
             db = Utils.getDataSource().getConnection();
             if (version < 0) {
-                query = "select flowdata from " + sub
+                query = "select flowdata from " + "?"
                         + "flow where flowfile=? and organizationid=?";
             } else {
                 query = "select h.data as flowdata from "
-                        + sub
+                        + "?"
                         + "flow f, "
-                        + sub
+                        + "?"
                         + "flow_history h where f.flowfile=? and f.organizationid=? and f.flowid=h.flowid and h.flowversion=?";
             }
             
@@ -2166,11 +2172,26 @@ public class FlowHolderBean implements FlowHolder {
                             + userInfo.getOrganization() + "; version="
                             + version);
             pst = db.prepareStatement(query);
-            pst.setString(1, name);
-            pst.setString(2, userInfo.getOrganization());
-            if (version >= 0)
-                pst.setInt(3, version);
             
+            if(isFlow) 
+            	pst.setString(1, "");
+            else 
+                pst.setString(1, "sub_");
+            	
+        	if (version >= 0) {
+        		if(isFlow)
+        			pst.setString(2, "");
+        		else
+        			pst.setString(2, "sub_");
+            	pst.setString(3, name);
+                pst.setString(4, userInfo.getOrganization());
+                pst.setInt(5, version);
+        	}
+        	else {
+        		pst.setString(2, name);
+        		pst.setString(3, userInfo.getOrganization());
+        	}
+          
             rs = pst.executeQuery();
             
             boolean flowFound = false;
@@ -2189,14 +2210,18 @@ public class FlowHolderBean implements FlowHolder {
                 Logger.debug(userInfo.getUtilizador(), this, "readData",
                         "Flow not found. Searching templates.");
                 // copy from template
-                query = "select data FROM " + sub
+                query = "select data FROM " + "?"
                         + "flow_template where name=?";
                 Logger.debug(userInfo.getUtilizador(), this, "readData",
                         "Executing query: " + query);
                 Logger.debug(userInfo.getUtilizador(), this, "readData",
                         "Query params: name=" + name);
                 pst = db.prepareStatement(query);
-                pst.setString(1, name);
+                if(isFlow) 
+                	pst.setString(1, "");
+                else 
+                    pst.setString(1, "sub_");
+                pst.setString(2, name);
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     InputStream is = rs.getBinaryStream(1);
@@ -2365,13 +2390,15 @@ public class FlowHolderBean implements FlowHolder {
                 int pos = indexVar.get(var);
                 String escapedVar = StringEscapeUtils.escapeSql(var);
                 String oldIdx = null;
-                
+                pst.close();
                 // get previous index
-                query = "select name_idx" + pos + " from flow where flowid="
-                        + flowid;
+                query = "select name_idx ? from flow where flowid=?";
+                pst.setInt(1, pos);
+                pst.setInt(2, flowid);
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
                 pst = db.prepareStatement(query);
+                
                 rs = pst.executeQuery();
                 if (rs.next())
                     oldIdx = rs.getString(1);
@@ -2444,7 +2471,7 @@ public class FlowHolderBean implements FlowHolder {
                     "Error reindexing process data.", e);
         } finally {
             // free db connections
-            DatabaseInterface.closeResources(db, st, rs);
+            DatabaseInterface.closeResources(db, pst, rs);
         }
     }
     

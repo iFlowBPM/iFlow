@@ -131,9 +131,10 @@ public class UsersSyncManager extends Thread {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       db.setAutoCommit(true);
-      String query = "SELECT username FROM users u INNER JOIN organizational_units ou on u.unitid=ou.unitid WHERE ou.organizationid = '" + orgId + "'";
+      String query = "SELECT username FROM users u INNER JOIN organizational_units ou on u.unitid=ou.unitid WHERE ou.organizationid = ?";
       pst = db.prepareStatement(query);
-      rs = pst.executeQuery(query);
+      pst.setString(1, orgId);
+      rs = pst.executeQuery();
       while (rs.next()) {
         retObj.add(rs.getString("username"));
       }

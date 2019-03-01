@@ -120,8 +120,9 @@ public class ProfilesSyncManager extends Thread {
       db = ds.getConnection();
       db.setAutoCommit(true);
      
-      String query = "SELECT name FROM profiles WHERE organizationid = '" + orgId + "'";
+      String query = "SELECT name FROM profiles WHERE organizationid =? ";
       pst = db.prepareStatement(query);
+      pst.setString(1, orgId);
       rs = pst.executeQuery();
       while (rs.next()) {
         retObj.add(rs.getString("name"));

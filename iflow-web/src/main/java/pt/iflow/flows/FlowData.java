@@ -985,7 +985,7 @@ public class FlowData implements IFlowData,Serializable {
          Enumeration<ForkJoinDep> enumJFStates = fjp.elementsJFStates();
          while (enumJFStates.hasMoreElements()) {
            ForkJoinDep fjpSon = enumJFStates.nextElement();
-           st.executeUpdate("insert into forkjoin_hierarchy (flowid, "
+           pst.executeUpdate("insert into forkjoin_hierarchy (flowid, "
                + "parentblockid, blockid) values (" + this._nId
                + "," + fjp.getBlockId() + ","
                + fjpSon.getBlockId() + ")");
@@ -994,7 +994,7 @@ public class FlowData implements IFlowData,Serializable {
          Iterator<Integer> itStates = fjp.iteratorStates();
          while (itStates.hasNext()) {
            Integer iState = itStates.next();
-           st.executeUpdate("insert into forkjoin_state_dep (flowid, "
+           pst.executeUpdate("insert into forkjoin_state_dep (flowid, "
                + "parentblockid, blockid) values (" + this._nId
                + "," + fjp.getBlockId() + "," + iState + ")");
          }
@@ -1017,7 +1017,7 @@ public class FlowData implements IFlowData,Serializable {
        } catch (Exception el) {
        }
      } finally {
-       DatabaseInterface.closeResources(db,st);
+       DatabaseInterface.closeResources(db,pst);
      }
    }
 

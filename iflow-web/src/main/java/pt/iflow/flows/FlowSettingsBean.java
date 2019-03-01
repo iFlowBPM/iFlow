@@ -257,8 +257,9 @@ public class FlowSettingsBean
     try
     {
       db = Utils.getDataSource().getConnection();
-      st = db.prepareStatement("Insert into flow_calendar (flowid,calendar_id) values (?," + calendId + ")");
+      st = db.prepareStatement("Insert into flow_calendar (flowid,calendar_id) values (?,?)");
       st.setInt(1, id);
+      st.setString(2, calendId);
       st.execute();
       c = true;
     }
@@ -532,8 +533,10 @@ public class FlowSettingsBean
       
       rs = null;
       
-      sQuery = "select * from flow_settings where FLOWID=" + flowid + " and name='" + settingVar + "'";
+      sQuery = "select * from flow_settings where FLOWID=? and name=?";
       pst = db.prepareStatement(sQuery);
+      pst.setInt(1, flowid);
+      pst.setString(2, settingVar);
       rs = pst.executeQuery();
       if (rs.next()) {
         retObj = new FlowSetting(rs.getInt("flowid"), rs.getString("name"), rs.getString("description"), rs.getString("value"), rs.getBoolean("isQuery"), rs.getTimestamp("mdate"));
