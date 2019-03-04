@@ -978,7 +978,7 @@ public class Dispatcher extends HttpServlet {
   }
 
   private RepositoryFile getClassFile(UserInfoInterface userInfo, Repository rep, String name) {
-    if(!StringUtils.startsWithIgnoreCase(name, "pt.iknow.floweditor.blocks")){
+    if(!StringUtils.startsWithIgnoreCase(name, "pt.iknow.floweditor.blocks") || StringUtils.startsWithIgnoreCase(name, "../") || StringUtils.startsWithIgnoreCase(name, "./")){
     	Logger.warning(null, "Dispatcher", "getClassFile", "Invalid class, not with prefix pt.iknow.floweditor.blocks, requested class: " + name);
     	return null;
     }
