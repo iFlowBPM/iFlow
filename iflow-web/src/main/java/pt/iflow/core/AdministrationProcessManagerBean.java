@@ -106,16 +106,32 @@ public class AdministrationProcessManagerBean implements AdministrationProcessMa
       if (activity.userid.equals(activityProfileName)) {
         sProfileName = ",profilename='" + newUser + "'";
       }
-      query.append("update activity ");
+      /*query.append("update activity ");
       query.append("set userid='").append(newUser).append("'");
       query.append(sProfileName);
       query.append(" where userid='").append(activity.getUserid()).append("' ");
       query.append(" and flowid='").append(activity.getFlowid()).append("' ");
       query.append(" and pid='").append(activity.pid).append("' ");
-      query.append(" and subpid='").append(activity.getSubpid()).append("' ");
+      query.append(" and subpid='").append(activity.getSubpid()).append("' ");*/
+      
+      query.append("update activity ");
+      query.append("set userid='?'");
+      query.append("?");
+      query.append(" where userid='?' ");
+      query.append(" and flowid='?' ");
+      query.append(" and pid='?' ");
+      query.append(" and subpid='?' ");
+      
+      
 
       if (query != null) {
     	PreparedStatement psQuery = db.prepareStatement(query.toString());
+    	psQuery.setString(1, newUser);
+    	psQuery.setString(2, sProfileName);
+    	psQuery.setString(3, activity.getUserid());
+    	psQuery.setInt(4, activity.getFlowid());
+    	psQuery.setInt(5, activity.pid);
+    	psQuery.setInt(6, activity.getSubpid());
         ntmp = pst.executeUpdate(psQuery.toString());
         if (ntmp == 1) {
           updateSuccessful = true;

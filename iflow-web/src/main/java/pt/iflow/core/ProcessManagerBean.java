@@ -1540,7 +1540,7 @@ public class ProcessManagerBean implements ProcessManager {
       }
       DatabaseInterface.closeResources(rs);
       rs = null;
-      query = new StringBuffer();
+      /*query = new StringBuffer();
       query.append("SELECT log.*");
       query.append(" FROM " + FlowStateLogTO.TABLE_NAME + " as fsl");
       query.append(", " + LogTO.TABLE_NAME + " as log");
@@ -1550,11 +1550,42 @@ public class ProcessManagerBean implements ProcessManager {
       if(subpid > 0) {
         query.append(" AND fsl." + FlowStateLogTO.SUBPID + "=" + subpid);
       }
-      query.append(" AND fsl." + FlowStateLogTO.STATE + "=" + state);
+      query.append(" AND fsl." + FlowStateLogTO.STATE + "=" + state);*/
+      
+      query = new StringBuffer();
+      query.append("SELECT log.*");
+      query.append(" FROM ? as fsl");
+      query.append(", ? as log");
+      query.append(" WHERE fsl.?=log.?");
+      query.append(" AND fsl.?=?");
+      query.append(" AND fsl.?=?" );
+      if(subpid > 0) {
+        query.append(" AND fsl.?=?");
+      }
+      query.append(" AND fsl.?=?");
+      
       if (Logger.isDebugEnabled()) {
         Logger.debug(login, this, "getFlowStateLogs","QUERY=" + query.toString());
       }
       pst = db.prepareStatement(query.toString());
+      pst.setString(1, FlowStateLogTO.TABLE_NAME);
+      pst.setString(2, LogTO.TABLE_NAME);
+      pst.setString(3, FlowStateLogTO.LOG_ID);
+      pst.setString(4, LogTO.LOG_ID);
+      pst.setString(5, FlowStateLogTO.FLOW_ID);
+      pst.setInt(6, flowid);
+      pst.setString(7, FlowStateLogTO.PID);
+      pst.setInt(8, pid);
+      if(subpid > 0) {
+    	  	pst.setString(9, FlowStateLogTO.SUBPID);
+      		pst.setInt(10, subpid);
+      		pst.setString(11, FlowStateLogTO.STATE);
+      		pst.setInt(12, state);
+      } else {
+    	  pst.setString(9, FlowStateLogTO.STATE);
+    	  pst.setInt(10, state);  
+      }
+
       rs = pst.executeQuery();
       while (rs.next()) {
         LogTO log = new LogTO(rs.getInt(LogTO.LOG_ID), rs.getString(LogTO.USERNAME), 
