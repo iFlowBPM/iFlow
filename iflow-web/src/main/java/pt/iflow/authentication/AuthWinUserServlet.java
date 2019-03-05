@@ -61,8 +61,8 @@ public class AuthWinUserServlet extends javax.servlet.http.HttpServlet implement
 
     if(bIsSystem != null) isSystem = bIsSystem.booleanValue();
 
-    String login = Utils.decrypt(username);
-    String pass = Utils.decrypt(password);
+    String login = Utils.decrypt(username, username);
+    String pass = Utils.decrypt(password, username);
 
     if (login != null) {
       login = login.trim();
@@ -181,7 +181,7 @@ public class AuthWinUserServlet extends javax.servlet.http.HttpServlet implement
 
     if (result.isAuth && StringUtils.equals(keepSession, "on")) {
       sessionUsername = ServletUtils.newCookie(Const.SESSION_COOKIE_USERNAME, login);
-      sessionPassword = ServletUtils.newCookie(Const.SESSION_COOKIE_PASSWORD, Utils.encrypt(password));
+      sessionPassword = ServletUtils.newCookie(Const.SESSION_COOKIE_PASSWORD, Utils.encrypt(password, login));
       response.addCookie(sessionUsername);
       response.addCookie(sessionPassword);
     }

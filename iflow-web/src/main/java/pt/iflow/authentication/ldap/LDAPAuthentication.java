@@ -78,7 +78,7 @@ public class LDAPAuthentication implements Authentication {
 
   private static String generateSessionId(String username) {
     String sessionId = username + Long.toString((new Date()).getTime());
-    sessionId = Utils.encrypt(sessionId);
+    sessionId = Utils.encrypt(sessionId, username);
     return sessionId;
   }
 

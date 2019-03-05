@@ -425,6 +425,8 @@ public class Const {
   //how many days until FLOW_STATE_HISTORY and LOGS are purged from database
   public static Long DAYS_UNTIL_PURGE;
   
+  public static String CRYPT_UTILS_KEY;
+  
   private static List<String> ALLOWED_LOCALES = new ArrayList<String>();
 
   public static String sFLOW_INITIALS_DESC = "Iniciais do Fluxo em Tarefas";
@@ -796,6 +798,10 @@ public class Const {
 		DAYS_UNTIL_PURGE=Long.parseLong(Setup.getProperty("DAYS_UNTIL_PURGE"));
     } catch (Exception e) { 
     	DAYS_UNTIL_PURGE=new Long(-1); 
+    }
+	try { CRYPT_UTILS_KEY = Setup.getProperty("CRYPT_UTILS_KEY");
+    } catch (Exception e) { 
+    	CRYPT_UTILS_KEY="achave"; 
     }
   }
 

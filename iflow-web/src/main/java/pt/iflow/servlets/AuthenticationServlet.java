@@ -186,7 +186,7 @@ public class AuthenticationServlet extends javax.servlet.http.HttpServlet implem
 
     if (result.isAuth && StringUtils.equals(keepSession, "on")) {
       sessionUsername = ServletUtils.newCookie(Const.SESSION_COOKIE_USERNAME, login);
-      sessionPassword = ServletUtils.newCookie(Const.SESSION_COOKIE_PASSWORD, Utils.encrypt(password));
+      sessionPassword = ServletUtils.newCookie(Const.SESSION_COOKIE_PASSWORD, Utils.encrypt(password, login));
       response.addCookie(sessionUsername);
       response.addCookie(sessionPassword);      
     }    	

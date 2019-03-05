@@ -47,7 +47,7 @@ public class DBAuthentication implements Authentication {
 
     String sessionId = username + Long.toString((new Date()).getTime());
 
-    sessionId = Utils.encrypt(sessionId);
+    sessionId = Utils.encrypt(sessionId, username);
     
     return sessionId;
   }
@@ -77,7 +77,7 @@ public class DBAuthentication implements Authentication {
       result = false;
     } else {
       String checkPass = users.iterator().next().get("USERPASSWORD");
-      checkPass = Utils.decrypt(checkPass);
+      checkPass = Utils.decrypt(checkPass, username);
       if(!checkPass.equals(password)){
         Logger.debug(null,this,"checkUser","Passwords do not match for username " + username);
         result = false;

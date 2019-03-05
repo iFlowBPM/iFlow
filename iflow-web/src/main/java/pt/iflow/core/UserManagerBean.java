@@ -164,7 +164,7 @@ public class UserManagerBean
       pst.setString(1, gender);
       pst.setString(2, unit);
       pst.setString(3, username);
-      pst.setString(4, Utils.encrypt(password));
+      pst.setString(4, Utils.encrypt(password, username));
       pst.setString(5, emailAddress);
       pst.setString(6, firstName);
       pst.setString(7, lastName);
@@ -548,7 +548,17 @@ public class UserManagerBean
       String password = null;
       if ((!Const.bUSE_EMAIL) && (StringUtils.isNotEmpty(newPassword)))
       {
-        password = Utils.encrypt(newPassword);
+    	  String username="";
+    	  pst = db.prepareStatement("select username from users where userid=?");
+          pst.setString(1, userId);
+          rs = pst.executeQuery();
+          if (rs.next()) {
+        	  username = rs.getString(1);
+          }
+          rs.close();
+          pst.close();
+          
+        password = Utils.encrypt(newPassword, username);
         setPassword = ",PASSWORD_RESET=0,USERPASSWORD=?";
       }
       String setExtras = "";
@@ -767,7 +777,18 @@ public class UserManagerBean
         }
       }
       pst.setString(++pos, userId);
-      String encPwd = Utils.encrypt(password);
+      
+      String username="";
+	  pst = db.prepareStatement("select username from users where userid=?");
+      pst.setString(1, userId);
+      rs = pst.executeQuery();
+      if (rs.next()) {
+    	  username = rs.getString(1);
+      }
+      rs.close();
+      pst.close();
+      
+      String encPwd = Utils.encrypt(password, username);
       pst.setString(++pos, encPwd);
       int upd = pst.executeUpdate();
       db.commit();
@@ -2012,7 +2033,7 @@ public class UserManagerBean
       pst.setString(1, gender);
       pst.setInt(2, unitId);
       pst.setString(3, username);
-      pst.setString(4, Utils.encrypt(password));
+      pst.setString(4, Utils.encrypt(password, username));
       pst.setString(5, emailAddress == null ? "" : emailAddress);
       pst.setString(6, firstName);
       pst.setString(7, lastName);
@@ -2258,7 +2279,7 @@ public class UserManagerBean
     UserCredentialsImpl(String username, String password)
     {
       this.username = username;
-      this.password = Utils.decrypt(password);
+      this.password = Utils.decrypt(password, username);
     }
     
     public String getUsername()
@@ -2334,7 +2355,7 @@ public class UserManagerBean
         password = RandomStringUtils.random(8, true, true);
         
         pst = db.prepareStatement("update users set password_reset=1, userpassword=? where userid=?");
-        pst.setString(1, Utils.encrypt(password));
+        pst.setString(1, Utils.encrypt(password, username));
         pst.setInt(2, userId);
         pst.executeUpdate();
         pst.close();
@@ -2395,10 +2416,11 @@ public class UserManagerBean
       db.setAutoCommit(false);
       
 
-      pst = db.prepareStatement("update users set password_reset=0, userpassword=? where username=? and userpassword=?");
-      pst.setString(1, Utils.encrypt(password));
+      pst = db.prepareStatement("update users set password_reset=0, userpassword=? where username=? and (userpassword=? or userpassword=?)");
+      pst.setString(1, Utils.encrypt(password, username));
       pst.setString(2, username);
-      pst.setString(3, Utils.encrypt(oldPassword));
+      pst.setString(3, Utils.encrypt(oldPassword, username));
+      pst.setString(4, Utils.encrypt(oldPassword));
       colsModified = pst.executeUpdate();
       pst.close();
       
@@ -2434,9 +2456,9 @@ public class UserManagerBean
       db = ds.getConnection();
       
       pst = db.prepareStatement("update system_users set userpassword=? where username=? and userpassword=?");
-      pst.setString(1, Utils.encrypt(password));
+      pst.setString(1, Utils.encrypt(password, username));
       pst.setString(2, username);
-      pst.setString(3, Utils.encrypt(oldPassword));
+      pst.setString(3, Utils.encrypt(oldPassword, username));
       colsModified = pst.executeUpdate();
       pst.close();
       

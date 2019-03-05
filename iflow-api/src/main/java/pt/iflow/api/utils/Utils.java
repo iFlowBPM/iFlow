@@ -50,7 +50,7 @@ public class Utils {
 
   private final static String sLIST_PREFIX = "@";
   private final static String sLIST_SUFFIX = "_#_";
-  private static final CryptUtils _crypt = new CryptUtils("achave");
+  private static final CryptUtils _crypt = new CryptUtils(Const.CRYPT_UTILS_KEY);
 
   public static final long ONE_MINUTE_MS = 1000*60;
   public static final long ONE_HOUR_MS = ONE_MINUTE_MS*60;
@@ -1234,6 +1234,16 @@ public class Utils {
 
   public static String decrypt(String toDecrypt) {
     return _crypt.decrypt(toDecrypt);
+  }
+  
+  public static String encrypt(String toEncrypt, String salt) {
+    String saltChecked = StringUtils.defaultIfEmpty(salt, "");
+	return _crypt.encrypt(toEncrypt + saltChecked);
+  }
+
+  public static String decrypt(String toDecrypt, String salt) {
+	String saltChecked = StringUtils.defaultIfEmpty(salt, "");	
+    return StringUtils.removeEnd(_crypt.decrypt(toDecrypt), saltChecked);
   }
 
   public static String transformStringAndPrepareForDB(UserInfoInterface userInfo, String asString, ProcessData adsDataSet) {
