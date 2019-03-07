@@ -152,18 +152,21 @@ public class RepositoryAccessOracleImpl implements RepositoryAccess {
 
         sbQuery = new StringBuffer("DELETE FROM repository_data WHERE id IN (");
         for (int jj = 0, ii = (alIds.size() - 1); ii >= 0; ii--, jj++) {
-          if (jj > 0) {
-            sbQuery.append(",");
+            if (jj > 0) {
+              sbQuery.append(",");
+            }
+            sbQuery.append("?");
+           // pst.setString(ii, (String) alIds.get(ii));
           }
-          sbQuery.append((String) alIds.get(ii));
-        }
-        sbQuery.append(")");
+          sbQuery.append(")");
 
-        db = this.getConnection();
-        db.setAutoCommit(true);
-        pst = db.prepareStatement(sbQuery.toString());
-
-        pst.executeUpdate();
+          db = this.getConnection();
+          db.setAutoCommit(true);
+          pst = db.prepareStatement(sbQuery.toString());
+          for (int jj = 0, ii = (alIds.size() - 1); ii >= 0; ii--, jj++) {
+          	pst.setString(jj+1, (String) alIds.get(ii));
+          }
+          pst.executeUpdate();
 
         retObj = true;
 

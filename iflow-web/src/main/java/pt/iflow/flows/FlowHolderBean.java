@@ -344,7 +344,7 @@ public class FlowHolderBean implements FlowHolder {
     private synchronized FlowData[] listFlows(UserInfoInterface userInfo,
             int anSelection, FlowType type, FlowType[] typeExcluded, boolean showOnlyFlowsToBePresentInMenu) {
         FlowData[] retObj = new FlowData[] {};
-
+        int pos = 0;
         ArrayList<FlowScheduleDataInterface> listOfFlowJobs =  new ArrayList<FlowScheduleDataInterface>();
         try {
           AdministrationFlowScheduleInterface adminFlowScheduleBean = BeanFactory.getAdministrationFlowScheduleBean();
@@ -378,30 +378,44 @@ public class FlowHolderBean implements FlowHolder {
             if (showOnlyFlowsToBePresentInMenu){
               sQuery.append(", flow_settings FS");
             }
-            sQuery.append(" where organizationid='").append(userInfo.getOrganization()).append("' ");
+            sQuery.append(" where organizationid='").append("?").append("' ");
             if (anSelection != nLIST_ALL){
               sQuery.append("and enabled=").append((anSelection == nLIST_ONLINE ? 1 : 0));
             }
             if(null != type){
-              sQuery.append(" and type_code='").append(type.getCode()).append("'");
+              sQuery.append(" and type_code='").append("?").append("'");
             }
             if(null != typeExcluded){
               for (int i=0; i<typeExcluded.length;i++){
-                sQuery.append(" and type_code<>'").append(typeExcluded[i].getCode()).append("'");
+                sQuery.append(" and type_code<>'").append("?").append("'");
               }
             }
             if (showOnlyFlowsToBePresentInMenu){
               sQuery.append(" and F.flowid = FS.flowid");
-              sQuery.append(" and FS.name like '").append(Const.sFLOW_MENU_ACCESSIBLE).append("'");
+              sQuery.append(" and FS.name like '").append("?").append("'");
               sQuery.append(" and (");
               sQuery.append(" FS.value is null ");
               sQuery.append(" or ");
-              sQuery.append(" FS.value like '").append(Const.sFLOW_MENU_ACCESSIBLE_YES).append("'");
+              sQuery.append(" FS.value like '").append("?").append("'");
               sQuery.append(" )");
             }
             sQuery.append(" order by F.flowid");
             
             pst = db.prepareStatement(sQuery.toString());
+            
+            pst.setString(++pos, userInfo.getOrganization());
+            if(null != type)
+            	pst.setString(++pos, type.getCode());
+            if(null != typeExcluded){
+                for (int i=0; i<typeExcluded.length;i++){
+                  pst.setString(++pos, typeExcluded[i].getCode());
+                }
+              }
+            if (showOnlyFlowsToBePresentInMenu) {
+            	pst.setString(++pos, Const.sFLOW_MENU_ACCESSIBLE);
+            	pst.setString(++pos, Const.sFLOW_MENU_ACCESSIBLE_YES);
+            	
+            }
             rs = pst.executeQuery();
 
             ArrayList<FlowData> altmp = new ArrayList<FlowData>();

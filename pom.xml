@@ -527,9 +527,20 @@
 				<version>1.17</version>
 				<scope>provided</scope>
 			</dependency>
-		</dependencies>
+			<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+			<!--<dependency>
+			    <groupId>com.google.guava</groupId>
+			    <artifactId>guava</artifactId>
+			    <version>27.0.1-jre</version>
+			</dependency>-->
+			<!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
+			<dependency>
+			    <groupId>com.google.protobuf</groupId>
+			    <artifactId>protobuf-java</artifactId>
+			    <version>3.6.1</version>
+			</dependency>
+		</dependencies>		
 	</dependencyManagement>
-
 	<build>
 		<plugins>
 			<plugin>

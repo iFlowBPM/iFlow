@@ -742,12 +742,15 @@ public class DelegationManager extends Thread {
       final StringBuilder sbQueryDelegation = new StringBuilder();
       /* If the userid is delegating a flow to delegateduser
            becoming a circular delegation */
-      sbQueryDelegation.append("select * from activity_hierarchy where flowid=");
-      sbQueryDelegation.append(flowid).append(" and userid='").append(owner);
-      sbQueryDelegation.append("' and ownerid='").append(delegated);
+      sbQueryDelegation.append("select * from activity_hierarchy where flowid=?");
+      sbQueryDelegation.append(" and userid='?");
+      sbQueryDelegation.append("' and ownerid='?");
       sbQueryDelegation.append("'");
       
       pst = db.prepareStatement(sbQueryDelegation.toString());
+      pst.setString(1, flowid);
+      pst.setString(2, owner);
+      pst.setString(3, delegated);
       rs = pst.executeQuery();
 
       return rs.next();
@@ -961,11 +964,14 @@ public class DelegationManager extends Thread {
 
           final StringBuilder sbQueryUserDelegation = new StringBuilder();
           /* If the userid is delegating a flow that was delegated to him */
-          sbQueryUserDelegation.append("select * from activity_hierarchy where flowid = ");
-          sbQueryUserDelegation.append(flowid).append(" and userid='");
-          sbQueryUserDelegation.append(StringEscapeUtils.escapeSql(user)).append("' and ownerid='");
-          sbQueryUserDelegation.append(StringEscapeUtils.escapeSql(owner)).append("'");
+          sbQueryUserDelegation.append("select * from activity_hierarchy where flowid = ?");
+          sbQueryUserDelegation.append(" and userid='?");
+          sbQueryUserDelegation.append("' and ownerid='?");
+          sbQueryUserDelegation.append("'");
           pst2 = db.prepareStatement(sbQueryUserDelegation.toString());
+          pst2.setString(1, flowid);
+          pst2.setString(2, StringEscapeUtils.escapeSql(user));
+          pst2.setString(3, StringEscapeUtils.escapeSql(owner));
           rs = pst2.executeQuery();
 
           if (rs.next()) {
