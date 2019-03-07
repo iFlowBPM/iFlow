@@ -238,26 +238,33 @@ public class ReportManagerBean implements ReportManager {
       db = ds.getConnection();
 
       StringBuffer sql = new StringBuffer();
-      sql.append("SELECT rep." + ReportTO.START_REPORTING);
-      sql.append(", rep." + ReportTO.STOP_REPORTING);
-      sql.append(" FROM " + ReportTO.TABLE_NAME + " rep");
-      sql.append(" WHERE rep." + ReportTO.FLOWID + "=?");
-      sql.append(" AND rep." + ReportTO.COD_REPORTING + " LIKE ?");
-          if (includeOpen) 
-            sql.append(" AND rep.start_reporting > ? AND ( rep.stop_reporting < ? or rep.active = 1)");
-            else
-              sql.append(" AND rep.start_reporting > ? AND rep.stop_reporting < ?");    
-      sql.append(" ORDER BY rep." + ReportTO.START_REPORTING);
+    
+      sql.append("SELECT rep.?");
+      sql.append(", rep.?");
+      sql.append(" FROM ? rep");
+      sql.append(" WHERE rep.?=?");
+      sql.append(" AND rep.? LIKE ?");
+            if (includeOpen) 
+              sql.append(" AND rep.start_reporting > ? AND ( rep.stop_reporting < ? or rep.active = 1)");
+                else
+                  sql.append(" AND rep.start_reporting > ? AND rep.stop_reporting < ?");
+      sql.append(" ORDER BY rep.?");
 
       if (Logger.isDebugEnabled()) {
         Logger.debug(userInfo.getUtilizador(), this, "getFlowReports", "QUERY=" + sql);
       }
 
       pst = db.prepareStatement(sql.toString());
-      pst.setInt(1, flowid);
-      pst.setString(2, codReporting);
-      pst.setTimestamp(3,  new Timestamp(startDate.getTime()));
-      pst.setTimestamp(4,  new Timestamp(endDate.getTime()));
+      pst.setString(1, ReportTO.START_REPORTING);
+      pst.setString(2, ReportTO.STOP_REPORTING);
+      pst.setString(3, ReportTO.TABLE_NAME);
+      pst.setString(4, ReportTO.FLOWID);
+      pst.setInt(5, flowid);
+      pst.setString(6, ReportTO.COD_REPORTING );     
+      pst.setString(7, codReporting);;
+      pst.setTimestamp(8,  new Timestamp(startDate.getTime()));
+      pst.setTimestamp(9,  new Timestamp(endDate.getTime()));
+      pst.setString(10, ReportTO.START_REPORTING ); ;
 
       rs = pst.executeQuery();
       int counter = 0;
@@ -298,16 +305,16 @@ public class ReportManagerBean implements ReportManager {
 
       StringBuffer sql = new StringBuffer();
 
-      sql.append("SELECT rep." + ReportTO.STOP_REPORTING);
-      sql.append(", rep." + ReportTO.TTL);
-      sql.append(" FROM " + ReportTO.TABLE_NAME + " rep");
-      sql.append(" WHERE rep." + ReportTO.FLOWID + "=?");
-      sql.append(" AND rep." + ReportTO.COD_REPORTING + " LIKE ?");
+      sql.append("SELECT rep.?");
+      sql.append(", rep.?");
+      sql.append(" FROM ? rep");
+      sql.append(" WHERE rep.?=?");
+      sql.append(" AND rep.? LIKE ?");
             if (includeOpen) 
               sql.append(" AND rep.start_reporting > ? AND ( rep.stop_reporting < ? or rep.active = 1)");
                 else
                   sql.append(" AND rep.start_reporting > ? AND rep.stop_reporting < ?");
-      sql.append(" ORDER BY rep." + ReportTO.START_REPORTING);
+      sql.append(" ORDER BY rep.?");
 
       if (Logger.isDebugEnabled()) {
         Logger.debug(userInfo.getUtilizador(), this, "getFlowReports", "QUERY=" + sql);
@@ -315,10 +322,16 @@ public class ReportManagerBean implements ReportManager {
 
       pst = db.prepareStatement(sql.toString());
       //pst.setObject(1, ReportTO.STOP_REPORTING);
-      pst.setInt(1, flowid);
-      pst.setString(2, codReporting);
-      pst.setTimestamp(3,  new Timestamp(startDate.getTime()));
-      pst.setTimestamp(4,  new Timestamp(endDate.getTime()));
+      pst.setString(1, ReportTO.STOP_REPORTING);
+      pst.setString(2, ReportTO.TTL);
+      pst.setString(3, ReportTO.TABLE_NAME);
+      pst.setString(4, ReportTO.FLOWID);
+      pst.setInt(5, flowid);
+      pst.setString(6, ReportTO.COD_REPORTING );     
+      pst.setString(7, codReporting);;
+      pst.setTimestamp(8,  new Timestamp(startDate.getTime()));
+      pst.setTimestamp(9,  new Timestamp(endDate.getTime()));
+      pst.setString(10, ReportTO.START_REPORTING ); ;
       rs = pst.executeQuery();
 
       AuditData green = new AuditData(codReporting, "0");

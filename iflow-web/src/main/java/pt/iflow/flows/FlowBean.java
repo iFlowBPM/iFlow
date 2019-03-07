@@ -926,7 +926,7 @@ public class FlowBean implements Flow {
     ProcessManager pm = BeanFactory.getProcessManagerBean();
 
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     PreparedStatement updateStatement = null;
     ResultSet rs = null;
     boolean retObj = false;
@@ -940,20 +940,40 @@ public class FlowBean implements Flow {
         transactionId = userInfo.registerTransaction(new DBConnectionWrapper(db));
       }
 
-      st = db.createStatement();
+      
 
       StringBuffer query = new StringBuffer();
-      query.append("SELECT " + FlowStateHistoryTO.STATE);
-      query.append(" FROM " + FlowStateHistoryTO.TABLE_NAME);
-      query.append(" WHERE " + FlowStateHistoryTO.FLOW_ID + "=" + flowid);
-      query.append(" AND " + FlowStateHistoryTO.PID + "=" + pid);
-      query.append(" AND " + FlowStateHistoryTO.SUBPID + "=" + subpid);
-      query.append(" AND " + FlowStateHistoryTO.STATE + "=" + flowState);
-      query.append(" AND " + FlowStateHistoryTO.MID + "=" + mid);
-      query.append(" AND " + FlowStateHistoryTO.EXIT_FLAG + "=" + exit_flag);
-      query.append(" AND " + FlowStateHistoryTO.UNDO_FLAG + "=0");
-
-      rs = st.executeQuery(query.toString());
+      query.append("SELECT ?");
+      query.append(" FROM ?");
+      query.append(" WHERE ?=?");
+      query.append(" AND ?=?");
+      query.append(" AND ?=?");
+      query.append(" AND ?=?");
+      query.append(" AND ?=?");
+      query.append(" AND ?=?");
+      query.append(" AND ?=0");
+      pst = db.prepareStatement(query.toString());
+      
+      pst.setString(1, FlowStateHistoryTO.STATE);
+      pst.setString(2, FlowStateHistoryTO.TABLE_NAME);
+      pst.setString(3, FlowStateHistoryTO.FLOW_ID);
+      pst.setInt(4, flowid);
+      pst.setString(5, FlowStateHistoryTO.PID);
+      pst.setInt(6, pid);
+      pst.setString(7, FlowStateHistoryTO.SUBPID);
+      pst.setInt(8, subpid);
+      pst.setString(9, FlowStateHistoryTO.STATE);
+      pst.setInt(10, flowState);
+      pst.setString(11, FlowStateHistoryTO.MID);
+      pst.setInt(12, mid);
+      pst.setString(13, FlowStateHistoryTO.EXIT_FLAG);
+      pst.setInt(14, exit_flag);
+      pst.setString(15, FlowStateHistoryTO.UNDO_FLAG);
+      
+      
+      
+      
+      rs = pst.executeQuery();
       if (!rs.next()) {
         throw new Exception("Unable to undo to state " + flowState + ": State does not exist for mid " + mid + "!");
       }
@@ -971,13 +991,13 @@ public class FlowBean implements Flow {
       String sql = DBQueryManager.processQuery("Flow.undo_get_state_result", new Object[] { String.valueOf(flowid),
           String.valueOf(pid), String.valueOf(subpid), String.valueOf(flowState), String.valueOf(mid) });
 
-      rs = st.executeQuery(sql);
+      rs = pst.executeQuery(sql);
       if (rs.next()) {
         // update flow_state set result={4}, mdate=NOW(), state={3} where flowid={0} and pid={1} and subpid={2}
         sql = DBQueryManager.processQuery("Flow.update_state_undo", new Object[] { String.valueOf(flowid), String.valueOf(pid),
             String.valueOf(subpid), String.valueOf(flowState), String.valueOf(rs.getString(1)), String.valueOf(mid) });
 
-        st.executeUpdate(sql);
+        pst.executeUpdate(sql);
       }
       rs.close();
       rs = null;
@@ -1025,7 +1045,7 @@ public class FlowBean implements Flow {
           }
         }
       } finally {
-        DatabaseInterface.closeResources(db, st, updateStatement, rs);
+        DatabaseInterface.closeResources(db, pst, updateStatement, rs);
       }
     }
 
@@ -1645,22 +1665,18 @@ public class FlowBean implements Flow {
       for (int fr = 0; fr < afraRoles.length; fr++) {
         StringBuffer sql = new StringBuffer();
         if (anMode == nMODE_ADD) {
-          sql.append("INSERT INTO " + FlowRolesTO.TABLE_NAME);
-          sql.append(" (" + FlowRolesTO.FLOW_ID);
-          sql.append("," + FlowRolesTO.PROFILE_ID);
-          sql.append("," + FlowRolesTO.PERMISSIONS + ")");
-          sql.append(" values (" + afraRoles[fr].getValueOf(FlowRolesTO.FLOW_ID));
-          sql.append("," + afraRoles[fr].getValueOf(FlowRolesTO.PROFILE_ID));
-          sql.append("," + afraRoles[fr].getValueOf(FlowRolesTO.PERMISSIONS) + ")");
+          sql.append("INSERT INTO ?");
+          sql.append(" (?,?,?)" );
+          sql.append(" values (?,?,?)");
         } else if (anMode == nMODE_REMOVE) {
-          sql.append("DELETE FROM " + FlowRolesTO.TABLE_NAME);
-          sql.append(" WHERE " + FlowRolesTO.FLOW_ID + "=" + afraRoles[fr].getValueOf(FlowRolesTO.FLOW_ID));
-          sql.append(" AND " + FlowRolesTO.PROFILE_ID + "=" + afraRoles[fr].getValueOf(FlowRolesTO.PROFILE_ID));
+          sql.append("DELETE FROM ?");
+          sql.append(" WHERE ?=?");
+          sql.append(" AND ?=?");
         } else if (anMode == nMODE_UPDATE) {
-          sql.append("UPDATE " + FlowRolesTO.TABLE_NAME);
-          sql.append(" SET " + FlowRolesTO.PERMISSIONS + "=" + afraRoles[fr].getValueOf(FlowRolesTO.PERMISSIONS));
-          sql.append(" WHERE " + FlowRolesTO.FLOW_ID + "=" + afraRoles[fr].getValueOf(FlowRolesTO.FLOW_ID));
-          sql.append(" AND " + FlowRolesTO.PROFILE_ID + "=" + afraRoles[fr].getValueOf(FlowRolesTO.PROFILE_ID));
+          sql.append("UPDATE ?");
+          sql.append(" SET ?=?");
+          sql.append(" WHERE ?=?");
+          sql.append(" AND ?=?");
         } else {
           throw new Exception("NO PREDIFINED MODE.. exiting");
         }
@@ -1669,6 +1685,31 @@ public class FlowBean implements Flow {
           Logger.debug(userInfo.getUtilizador(), this, "setFlowRoles", "query[" + fr + "]=" + sql);
         }
         pst = db.prepareStatement(sql.toString());
+        if (anMode == nMODE_ADD) {
+        	pst.setString(1, FlowRolesTO.TABLE_NAME);
+        	pst.setString(2, FlowRolesTO.FLOW_ID);
+        	pst.setString(3, FlowRolesTO.PROFILE_ID);
+        	pst.setString(4, FlowRolesTO.PERMISSIONS);
+        	pst.setString(5, afraRoles[fr].getValueOf(FlowRolesTO.FLOW_ID));
+        	pst.setString(6, afraRoles[fr].getValueOf(FlowRolesTO.PROFILE_ID));
+        	pst.setString(7, afraRoles[fr].getValueOf(FlowRolesTO.PERMISSIONS));
+        } else if (anMode == nMODE_REMOVE) {
+        	pst.setString(1, FlowRolesTO.TABLE_NAME);
+        	pst.setString(2, FlowRolesTO.FLOW_ID);
+        	pst.setString(3, afraRoles[fr].getValueOf(FlowRolesTO.FLOW_ID));
+        	pst.setString(4, FlowRolesTO.PROFILE_ID);
+        	pst.setString(5, afraRoles[fr].getValueOf(FlowRolesTO.PROFILE_ID));
+        } else if (anMode == nMODE_UPDATE) {
+        	pst.setString(1, FlowRolesTO.TABLE_NAME);
+        	pst.setString(2, FlowRolesTO.PERMISSIONS);
+        	pst.setString(3, afraRoles[fr].getValueOf(FlowRolesTO.PERMISSIONS));
+        	pst.setString(4, FlowRolesTO.FLOW_ID);
+        	pst.setString(5, afraRoles[fr].getValueOf(FlowRolesTO.FLOW_ID));
+        	pst.setString(6, FlowRolesTO.PROFILE_ID);
+        	pst.setString(7, afraRoles[fr].getValueOf(FlowRolesTO.PROFILE_ID));
+        	
+        }
+        
         pst.executeUpdate();
       }
       db.commit();
@@ -1706,13 +1747,17 @@ public class FlowBean implements Flow {
       StringBuffer sbtmp = new StringBuffer();
       sbtmp.append("select distinct flowid, userid, permissions from ");
       sbtmp.append("activity_hierarchy where pending=0 ");
-      sbtmp.append("and userid like '");
-      sbtmp.append(userInfo.getUtilizador().toUpperCase()).append("'");
+      sbtmp.append("and userid like '?");
+      sbtmp.append("'");
       if (anFlowId > 0) {
-        sbtmp.append(" and flowid=").append(anFlowId);
+        sbtmp.append(" and flowid=?");
       }
       
       pst = db.prepareStatement(sbtmp.toString());
+      pst.setString(1, userInfo.getUtilizador().toUpperCase());
+      pst.setInt(2, anFlowId);
+      if (anFlowId > 0)
+      
       rs = pst.executeQuery();
 
       altmp = new ArrayList<FlowRolesTO>();
@@ -1758,29 +1803,47 @@ public class FlowBean implements Flow {
         
         rs = null;
         StringBuffer sql = new StringBuffer();
-        sql.append("SELECT r." + FlowRolesTO.FLOW_ID);
-        sql.append(", r." + FlowRolesTO.PROFILE_ID);
-        sql.append(", r." + FlowRolesTO.PERMISSIONS);
-        sql.append(", p." + ProfilesTO.NAME);
-        sql.append(", p." + ProfilesTO.DESCRIPTION);
-        sql.append(" FROM " + FlowRolesTO.TABLE_NAME + " r, flow f");
-        sql.append(", " + ProfilesTO.TABLE_NAME + " p");
-        sql.append(" WHERE r." + FlowRolesTO.PROFILE_ID + "=p." + ProfilesTO.PROFILE_ID);
-        sql.append(" AND p." + ProfilesTO.NAME + " in (");
+        sql.append("SELECT r.?");
+        sql.append(", r.?");
+        sql.append(", r.");
+        sql.append(", p.");
+        sql.append(", p.");
+        sql.append(" FROM ? r, flow f");
+        sql.append(", ? p");
+        sql.append(" WHERE r.?=p.?");
+        sql.append(" AND p.? in (");
         for (int i = 0; i < saProfiles.length; i++) {
           if (i > 0) {
             sql.append(",");
           }
-          sql.append("'" + StringEscapeUtils.escapeSql(saProfiles[i]) + "'");
+          sql.append("'?'");
         }
         sql.append(")");
         if (anFlowId > 0) {
-          sql.append(" AND r." + FlowRolesTO.FLOW_ID + "=" + anFlowId);
+          sql.append(" AND r.?=?");
         }
-        sql.append(" AND f.flowid=r." + FlowRolesTO.FLOW_ID);
+        sql.append(" AND f.flowid=r.?");
         sql.append(" AND f.organizationid LIKE '" + userInfo.getCompanyID() + "'");
-        sql.append(" ORDER BY " + FlowRolesTO.FLOW_ID);
+        sql.append(" ORDER BY ?");
+        int j=0;
         pst = db.prepareStatement(sql.toString());
+        pst.setString(1, FlowRolesTO.FLOW_ID);
+        pst.setString(2, FlowRolesTO.PROFILE_ID);
+        pst.setString(3, FlowRolesTO.PERMISSIONS);
+        pst.setString(4, ProfilesTO.NAME);
+        pst.setString(5, ProfilesTO.DESCRIPTION);
+        pst.setString(6, FlowRolesTO.TABLE_NAME);
+        pst.setString(7, ProfilesTO.TABLE_NAME);
+        pst.setString(8, FlowRolesTO.PROFILE_ID);
+        pst.setString(9, ProfilesTO.PROFILE_ID);
+        pst.setString(10, ProfilesTO.NAME);
+        for ( j = 0; j < saProfiles.length; j++) {
+        	pst.setString(j+11, StringEscapeUtils.escapeSql(saProfiles[j]));
+        }
+        pst.setString(j++, FlowRolesTO.FLOW_ID);
+        pst.setInt(j++, anFlowId);
+        pst.setString(j++, FlowRolesTO.FLOW_ID);
+        pst.setString(j++, FlowRolesTO.FLOW_ID);
         rs = pst.executeQuery();
         altmp = new ArrayList<FlowRolesTO>();
         while (rs.next()) {

@@ -1,10 +1,15 @@
 package pt.iflow.update;
 
 import java.lang.reflect.Modifier;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+
+import javax.sql.DataSource;
 
 import pt.iflow.api.db.DBQueryManager;
 import pt.iflow.api.db.DatabaseInterface;
@@ -12,6 +17,7 @@ import pt.iflow.api.transition.LogTO;
 import pt.iflow.api.transition.UpgradeLogTO;
 import pt.iflow.api.upgrades.Upgradable;
 import pt.iflow.api.utils.Logger;
+import pt.iflow.api.utils.Utils;
 
 /**
  * Abstractg update handler.
@@ -53,19 +59,42 @@ public abstract class UpdateHandler {
   protected boolean canUpgrade(Upgradable upgradable) {
     boolean retObj = true;
     StringBuffer query = new StringBuffer();
-    query.append("SELECT " + UpgradeLogTO.EXECUTED);
-    query.append(", " + UpgradeLogTO.ERROR);
-    query.append(" FROM " + UpgradeLogTO.TABLE_NAME);
-    query.append(" WHERE " + UpgradeLogTO.SIGNATURE + "=" + DBQueryManager.toQueryValue(getSignature(upgradable)));
-    Iterator<Map<String, String>> iter = DatabaseInterface.executeQuery(query.toString()).iterator();
-    while (iter.hasNext()) {
-      Map<String, String> row = iter.next();
-      boolean executed = (Integer.parseInt(row.get(UpgradeLogTO.EXECUTED)) == 1);
-      boolean error = (Integer.parseInt(row.get(UpgradeLogTO.ERROR)) == 1);
+    PreparedStatement pst = null;
+    Connection db = null;
+    DataSource ds = null;
+    ResultSet rs = null;
+    ds = Utils.getDataSource();
+    
+    query.append("SELECT ?");
+    query.append(", ?");
+    query.append(" FROM ?");
+    query.append(" WHERE ?=?");
+    
+    try {
+    	db = ds.getConnection();
+	    pst = db.prepareStatement(query.toString());
+	    pst.setString(1, UpgradeLogTO.EXECUTED);
+	    pst.setString(2, UpgradeLogTO.ERROR);
+	    pst.setString(3, UpgradeLogTO.TABLE_NAME);
+	    pst.setString(4, UpgradeLogTO.SIGNATURE);
+	    pst.setString(5, DBQueryManager.toQueryValue(getSignature(upgradable)));
+	    rs = pst.executeQuery();//DatabaseInterface.executeQuery(query.toString()).iterator();
+
+    while (rs.next()) {
+     // Map<String, String> row = iter.next();
+      boolean executed = (Integer.parseInt(rs.getString(UpgradeLogTO.EXECUTED)) == 1);
+      boolean error = (Integer.parseInt(rs.getString(UpgradeLogTO.ERROR)) == 1);
       if (executed && !error) {
         retObj = false;
       }
       break;
+    }
+    } catch (Exception e) {
+        Logger.error(null, this, "canUpgrade",
+                "exception (" + e.getClass().getName() + ") caught: "
+                        + e.getMessage(), e);
+    } finally {
+        DatabaseInterface.closeResources(db, pst);
     }
     return retObj;
   }
@@ -124,30 +153,64 @@ public abstract class UpdateHandler {
 
   protected int getLogId(String signature) {
     int retObj = -1;
+    PreparedStatement pst = null;
+    Connection db = null;
+    DataSource ds = null;
+    ds = Utils.getDataSource();
+    ResultSet rs = null;
     StringBuffer query = new StringBuffer();
     boolean bExists = exists(signature);
+    
     if (bExists) {
-      query.append("SELECT l." + LogTO.LOG_ID + " as " + LogTO.LOG_ID);
-      query.append(" FROM " + LogTO.TABLE_NAME + " l");
-      query.append(", " + UpgradeLogTO.TABLE_NAME + " ul");
-      query.append(" WHERE l." + LogTO.LOG_ID + "=ul." + UpgradeLogTO.LOG_ID);
-      query.append(" AND ul." + UpgradeLogTO.SIGNATURE + "=" + DBQueryManager.toQueryValue(signature));
+      query.append("SELECT l.? as ?");
+      query.append(" FROM ? l");
+      query.append(", ? ul");
+      query.append(" WHERE l.?=ul.?");
+      query.append(" AND ul.?=?");
     } else {
-      query.append("SELECT max(" + LogTO.LOG_ID + ") as " + LogTO.LOG_ID);
-      query.append(" FROM " + LogTO.TABLE_NAME);
+      query.append("SELECT max(?) as ?");
+      query.append(" FROM ?");
     }
-    Iterator<Map<String, String>> iter = DatabaseInterface.executeQuery(query.toString()).iterator();
-    while (iter.hasNext()) {
-      Map<String, String> row = iter.next();
-      retObj = Integer.parseInt(row.get(LogTO.LOG_ID));
+    try {
+    	db = ds.getConnection();
+	    pst = db.prepareStatement(query.toString());
+	    if (bExists) {
+	    	pst.setString(1, LogTO.LOG_ID);
+	    	pst.setString(2, LogTO.LOG_ID);
+	    	pst.setString(3, LogTO.TABLE_NAME);
+	    	pst.setString(4, UpgradeLogTO.TABLE_NAME);
+	    	pst.setString(5, LogTO.LOG_ID);
+	    	pst.setString(6, UpgradeLogTO.LOG_ID);
+	    	pst.setString(7, UpgradeLogTO.SIGNATURE);
+	    	pst.setString(8, DBQueryManager.toQueryValue(signature));
+	    }else {
+	    	pst.setString(1, LogTO.LOG_ID);
+	    	pst.setString(2, LogTO.LOG_ID);
+	    	pst.setString(3, LogTO.TABLE_NAME);
+	      }
+	    rs = pst.executeQuery();
+    
+    
+    //Iterator<Map<String, String>> iter = DatabaseInterface.executeQuery(query.toString()).iterator();
+    while (rs.next()) {
+      //Map<String, String> row = rs.getInt(LogTO.LOG_ID)
+      retObj = Integer.parseInt(rs.getString(LogTO.LOG_ID));
       break;
     }
     if (!bExists) {
       retObj = retObj + 1;
     }
+    
+  
+  } catch (Exception e) {
+      Logger.error(null, this, "canUpgrade",
+              "exception (" + e.getClass().getName() + ") caught: "
+                      + e.getMessage(), e);
+  } finally {
+      DatabaseInterface.closeResources(db, pst); 
+  }
     return retObj;
   }
-
   protected void debug(String method, String message) {
     if (Logger.isAdminDebugEnabled()) {
       Logger.adminDebug(this.getClass().getName(), method, message);

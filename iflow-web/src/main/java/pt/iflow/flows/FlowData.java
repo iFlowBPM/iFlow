@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -949,54 +950,57 @@ public class FlowData implements IFlowData,Serializable {
      try {
        db = ds.getConnection();
        db.setAutoCommit(false);
-       pst = db.prepareStatement("delete from forkjoin_state_dep where flowid="
-               + this._nId);
+       pst = db.prepareStatement("delete from forkjoin_state_dep where flowid=?");
+       pst.setInt(1, this._nId);
        // clean former deploys
        pst.executeUpdate();
        pst.close();
        
-       pst = db.prepareStatement("delete from forkjoin_hierarchy where flowid="
-               + this._nId);
+       pst = db.prepareStatement("delete from forkjoin_hierarchy where flowid=?");
+       pst.setInt(1, this._nId);
        pst.executeUpdate();
        pst.close();
        
-       pst = db.prepareStatement("delete from forkjoin_blocks    where flowid="
-               + this._nId);
+       pst = db.prepareStatement("delete from forkjoin_blocks    where flowid=?");
+       pst.setInt(1, this._nId);
        pst.executeUpdate();
        pst.close();
        // fill the block table
        Enumeration<ForkJoinDep> enumer = _htForkJoinDepPath.elements();
        while (enumer.hasMoreElements()) {
          ForkJoinDep fjp = enumer.nextElement();
-         pst
-         .executeUpdate("insert into forkjoin_blocks (flowid, blockid, type) "
-             + "values ("
-             + this._nId
-             + ","
-             + fjp.getBlockId() + "," + fjp.getType() + ")");
+         pst = db.prepareStatement("insert into forkjoin_blocks (flowid, blockid, type) "
+                 + "values (?,?,?)");
+         pst.setInt(1, this._nId);
+         pst.setInt(2, fjp.getBlockId());
+         pst.setInt(3, fjp.getType());
+         pst.executeUpdate();
        }
-
        // now fill the 2 dependency tables
        enumer = _htForkJoinDepPath.elements();
        while (enumer.hasMoreElements()) {
          ForkJoinDep fjp = enumer.nextElement();
-
          // build fork/join hierarchy
          Enumeration<ForkJoinDep> enumJFStates = fjp.elementsJFStates();
          while (enumJFStates.hasMoreElements()) {
            ForkJoinDep fjpSon = enumJFStates.nextElement();
-           pst.executeUpdate("insert into forkjoin_hierarchy (flowid, "
-               + "parentblockid, blockid) values (" + this._nId
-               + "," + fjp.getBlockId() + ","
-               + fjpSon.getBlockId() + ")");
+           pst = db.prepareStatement("insert into forkjoin_hierarchy (flowid, "
+                   + "parentblockid, blockid) values (?,?,?)");
+           pst.setInt(1, this._nId);
+           pst.setInt(2, fjp.getBlockId());
+           pst.setInt(3, fjpSon.getBlockId());
+           pst.executeUpdate();
          }
          // build fork/join state dependencies
          Iterator<Integer> itStates = fjp.iteratorStates();
          while (itStates.hasNext()) {
            Integer iState = itStates.next();
-           pst.executeUpdate("insert into forkjoin_state_dep (flowid, "
-               + "parentblockid, blockid) values (" + this._nId
-               + "," + fjp.getBlockId() + "," + iState + ")");
+           pst = db.prepareStatement("insert into forkjoin_state_dep (flowid, "
+                   + "parentblockid, blockid) values ((?,?,?)");
+           pst.setInt(1, this._nId);
+           pst.setInt(2, fjp.getBlockId());
+           pst.setInt(3, iState);
+           pst.executeUpdate();
          }
        }
        db.commit();

@@ -154,14 +154,17 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
           if (jj > 0) {
             sbQuery.append(",");
           }
-          sbQuery.append((String) alIds.get(ii));
+          sbQuery.append("?");
+         // pst.setString(ii, (String) alIds.get(ii));
         }
         sbQuery.append(")");
 
         db = this.getConnection();
         db.setAutoCommit(true);
         pst = db.prepareStatement(sbQuery.toString());
-
+        for (int jj = 0, ii = (alIds.size() - 1); ii >= 0; ii--, jj++) {
+        	pst.setString(jj+1, (String) alIds.get(ii));
+        }
         pst.executeUpdate();
 
         retObj = true;

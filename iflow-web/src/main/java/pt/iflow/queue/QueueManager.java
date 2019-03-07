@@ -290,16 +290,17 @@ public class QueueManager {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       
-
+      List<String> listId = new ArrayList<String>();
       if (bSearchData) {
         final String queueDataQuery = DBQueryManager.processQuery(QueueManager.GET_QUEUE_DATA_IDS, new Object[]{sbQueueDataWhere});
         pst = db.prepareStatement(queueDataQuery);
         rs = pst.executeQuery();
-
+        
         bSearchData = false;
         while (rs.next()) {
           // use data proc id results to narrow proc search (append ids to where clause)
           String sId = rs.getString(QueueManager.sCOL_QUEUE_PROC_ID);
+          
           if (bSearchData) {
             if (bSearchProc) {
               sbQueueProcWhere.append(" and ");
@@ -312,8 +313,10 @@ public class QueueManager {
           else {
             sbQueueProcWhere.append(",");
           }
-          sbQueueProcWhere.append(sId);
+          sbQueueProcWhere.append("?");
+          listId.add(sId);
           bSearchData = true;
+          
         }
         if (bSearchData) {
           sbQueueProcWhere.append(")");
@@ -321,8 +324,14 @@ public class QueueManager {
       }
 
       alProcs = new ArrayList<String>();
-      final String queueProcQuery = DBQueryManager.processQuery(QueueManager.GET_QUEUE_PROC_IDS, new Object[]{sbQueueProcWhere});
+      final String queueProcQuery = DBQueryManager.getQuery(QueueManager.GET_QUEUE_PROC_IDS);
+      queueProcQuery.replaceAll("{0}", sbQueueProcWhere.toString());
+      pst.close();
+      rs.close();
       pst = db.prepareStatement(queueProcQuery);
+      int i = 0;
+      for(String id: listId)
+    	  pst.setString(i++, id);
       rs = pst.executeQuery();
       while (rs.next()) {
         String sId = rs.getString(QueueManager.sCOL_ID);
@@ -390,15 +399,19 @@ public class QueueManager {
           if (ii > 0) {
             sbtmp.append(",");
           }
-          sbtmp.append((String)aalQueueProcIds.get(ii));
+          sbtmp.append("?");
         }
 
         ds = Utils.getDataSource();
         db = ds.getConnection();
        
 
-        stmp = DBQueryManager.processQuery(QueueManager.GET_QUEUE_PROC_IN, new Object[]{sbtmp});
+        stmp = DBQueryManager.getQuery(QueueManager.GET_QUEUE_PROC_IN);
+        stmp.replaceAll("{0}", sbtmp.toString());
         pst = db.prepareStatement(stmp);
+        for (int ii=0; ii < aalQueueProcIds.size(); ii++) {
+        	pst.setString(ii+1, (String)aalQueueProcIds.get(ii));
+        }
         rs = pst.executeQuery();
 
         alProcs = new ArrayList<String>();

@@ -154,24 +154,35 @@ public class UserManagerBean
         Map<String, String> mapExtra = AccessControlManager.getUserDataAccess().getMappingExtra();
         for (int i = 0; i < listExtraProperties.length; i++)
         {
-          auxEP = auxEP + "," + (String)mapExtra.get(listExtraProperties[i]);
-          auxEV = auxEV + ",'" + listExtraValues[i] + "'";
+          auxEP = auxEP + ",?";
+          auxEV = auxEV + ",'?'";
         }
       }
       sQuery = sQuery.replace("#EP#", auxEP).replace("#EV#", auxEV);
      
       pst = db.prepareStatement(sQuery, new String[] { "userid" });
-      pst.setString(1, gender);
-      pst.setString(2, unit);
-      pst.setString(3, username);
-      pst.setString(4, Utils.encrypt(password, username));
-      pst.setString(5, emailAddress);
-      pst.setString(6, firstName);
-      pst.setString(7, lastName);
-      pst.setString(8, phoneNumber);
-      pst.setString(9, faxNumber);
-      pst.setString(10, mobileNumber);
-      pst.setString(11, companyPhone);
+      int i = 0;
+      if ((listExtraProperties != null) && (listExtraProperties.length > 0))
+      {
+    	Map<String, String> mapExtra = AccessControlManager.getUserDataAccess().getMappingExtra();
+        for (i = 0; i < listExtraProperties.length; i++)
+        {
+        	pst.setString(i,(String)mapExtra.get(listExtraProperties[i]));
+        	pst.setString(i+12+listExtraProperties.length,listExtraValues[i]);
+        }
+      }
+      pst.setString(i++, gender);
+      pst.setString(i++, unit);
+      pst.setString(i++, username);
+      pst.setString(i++, Utils.encrypt(password));
+      pst.setString(i++, emailAddress);
+      pst.setString(i++, firstName);
+      pst.setString(i++, lastName);
+      pst.setString(i++, phoneNumber);
+      pst.setString(i++, faxNumber);
+      pst.setString(i++, mobileNumber);
+      pst.setString(i++, companyPhone);
+      
       if (Const.bUSE_EMAIL)
       {
         if (invite) {
@@ -431,16 +442,20 @@ public class UserManagerBean
       db.setAutoCommit(false);
       
       StringBuffer sql = new StringBuffer();
-      sql.append("INSERT INTO " + ProfilesTO.TABLE_NAME);
-      sql.append(" (" + ProfilesTO.NAME + "," + ProfilesTO.DESCRIPTION + "," + ProfilesTO.ORGANIZATION_ID + ")");
+      sql.append("INSERT INTO ?");
+      sql.append(" (?,?,?)");
       sql.append(" values (?,?,?)");
       if (Logger.isDebugEnabled()) {
         Logger.debug(userInfo.getUtilizador(), this, "modifyProfile", "QUERY=" + sql.toString());
       }
       pst = db.prepareStatement(sql.toString(), new String[] { ProfilesTO.PROFILE_ID });
-      pst.setString(1, profile.getName());
-      pst.setString(2, profile.getDescription());
-      pst.setString(3, profile.getOrganizationId());
+      pst.setString(1, ProfilesTO.TABLE_NAME);
+      pst.setString(2, ProfilesTO.NAME);
+      pst.setString(3, ProfilesTO.DESCRIPTION);
+      pst.setString(4, ProfilesTO.ORGANIZATION_ID);
+      pst.setString(5, profile.getName());
+      pst.setString(6, profile.getDescription());
+      pst.setString(7, profile.getOrganizationId());
       pst.executeUpdate();
       
       rs = pst.getGeneratedKeys();
@@ -574,7 +589,7 @@ public class UserManagerBean
         }
       }
       int pos = 0;
-      pst = db.prepareStatement("update users set GENDER=?,EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,FAX_NUMBER=?,MOBILE_NUMBER=?,COMPANY_PHONE=?,ORGADM=?,ORGADM_USERS=?,ORGADM_FLOWS=?,ORGADM_PROCESSES=?,ORGADM_RESOURCES=?,ORGADM_ORG=?" + setUnitId + setExtras + setPassword + " where USERID=?");
+      pst = db.prepareStatement("update users set GENDER=?,EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,FAX_NUMBER=?,MOBILE_NUMBER=?,COMPANY_PHONE=?,ORGADM=?,ORGADM_USERS=?,ORGADM_FLOWS=?,ORGADM_PROCESSES=?,ORGADM_RESOURCES=?,ORGADM_ORG=? ? ? ? where USERID=?");
       
       pst.setString(++pos, gender);
       pst.setString(++pos, emailAddress);
@@ -601,6 +616,9 @@ public class UserManagerBean
       if ((!Const.bUSE_EMAIL) && (StringUtils.isNotEmpty(newPassword))) {
         pst.setString(++pos, password);
       }
+      pst.setString(++pos, setUnitId);
+      pst.setString(++pos, setExtras);
+      pst.setString(++pos, setPassword);
       pst.setString(++pos, userId);
       pst.executeUpdate();
       db.commit();
@@ -751,9 +769,9 @@ public class UserManagerBean
       int pos = 0;
       String query = "";
       if (!userInfo.isSysAdmin()) {
-        query = "update users set GENDER=?,EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,FAX_NUMBER=?,MOBILE_NUMBER=?,COMPANY_PHONE=?" + setExtras + " where USERID=? and USERPASSWORD=?";
+        query = "update users set GENDER=?,EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,FAX_NUMBER=?,MOBILE_NUMBER=?,COMPANY_PHONE=? ? where USERID=? and USERPASSWORD=?";
       } else {
-        query = "update system_users set EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,MOBILE_NUMBER=?" + setExtras + " where USERID=? and USERPASSWORD=?";
+        query = "update system_users set EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,MOBILE_NUMBER=? ? where USERID=? and USERPASSWORD=?";
       }
       pst = db.prepareStatement(query);
       if (!userInfo.isSysAdmin())
@@ -780,6 +798,7 @@ public class UserManagerBean
           pst.setString(++pos, listExtraValues[i]);
         }
       }
+      pst.setString(++pos, setExtras);
       pst.setString(++pos, userId);
       
       String username="";
@@ -987,15 +1006,25 @@ public class UserManagerBean
         db.setAutoCommit(false);
         
         StringBuffer sql = new StringBuffer();
-        sql.append("UPDATE " + ProfilesTO.TABLE_NAME);
-        sql.append(" SET " + ProfilesTO.NAME + "=" + profile.getValueOf(ProfilesTO.NAME));
-        sql.append(", " + ProfilesTO.DESCRIPTION + "=" + profile.getValueOf(ProfilesTO.DESCRIPTION));
-        sql.append(" WHERE " + ProfilesTO.PROFILE_ID + "=" + profile.getValueOf(ProfilesTO.PROFILE_ID));
-        sql.append(" AND " + ProfilesTO.ORGANIZATION_ID + "=" + profile.getValueOf(ProfilesTO.ORGANIZATION_ID));
+        sql.append("UPDATE ?");
+        sql.append(" SET ?=?");
+        sql.append(", ?=?");
+        sql.append(" WHERE ?=?");
+        sql.append(" AND ?=?");
         if (Logger.isDebugEnabled()) {
           Logger.debug(userInfo.getUtilizador(), this, "modifyProfile", "QUERY=" + sql.toString());
         }
         pst = db.prepareStatement(sql.toString());
+        pst.setString(1, ProfilesTO.TABLE_NAME);
+        pst.setString(2, ProfilesTO.NAME);
+        pst.setString(3, profile.getValueOf(ProfilesTO.NAME));
+        pst.setString(4, ProfilesTO.DESCRIPTION);
+        pst.setString(5, profile.getValueOf(ProfilesTO.DESCRIPTION));
+        pst.setString(6, ProfilesTO.PROFILE_ID);
+        pst.setString(7, profile.getValueOf(ProfilesTO.PROFILE_ID));
+        pst.setString(8, ProfilesTO.ORGANIZATION_ID);
+        pst.setString(9, profile.getValueOf(ProfilesTO.ORGANIZATION_ID));
+        
         pst.executeUpdate();
         db.commit();
         
@@ -1805,7 +1834,8 @@ public class UserManagerBean
   private UserViewInterface[] getUsers(UserInfoInterface userInfo, boolean find, String userId, String username, String orgId, boolean filterByOrgUnit)
   {
     UserViewInterface[] result = new UserViewInterface[0];
-    
+    PreparedStatement pst = null;
+    Connection db = null;
     Logger.debug(userInfo.getUtilizador(), this, "getAllUsers", "Listing all users");
     
     String query = "";
@@ -1813,24 +1843,47 @@ public class UserManagerBean
     {
       String append = "";
       if (userId != null || userId != "") {
-        append = " WHERE u.USERID = " + userId;
+        append = " WHERE u.USERID = ?";
       }
-      query = DBQueryManager.processQuery("UserManager.GET_USERS_ADMIN", new Object[] { append });
-    }
+      query = DBQueryManager.getQuery("UserManager.GET_USERS_ADMIN");
+      query.replaceAll("{0}", append);
+      try {
+    	  db = DatabaseInterface.getConnection(userInfo);
+    	  pst = db.prepareStatement(query);
+    	  if (userId != null || userId != "") {
+    		  pst.setString(1, userId);
+    	  }
+          pst.executeQuery();
+      }
+      catch (Exception se) {
+          try {
+        	  DatabaseInterface.rollbackConnection(db);
+          }
+        catch (Exception e) {
+          Logger.error(userInfo.getUtilizador(), this, "getUsers", userInfo + "unable to rollback: " + e.getMessage(),e);
+        }
+        Logger.error(userInfo.getUtilizador(), this, "getUsers",userInfo + "caught exception: " + se.getMessage(), se);
+        
+      } finally {
+        DatabaseInterface.closeResources(db, pst);
+      }
+      }
+
     else
     {
+    	int pos = 0;
       String append = " WHERE u.unitid = ou.unitid and ou.organizationid = o.organizationid";
       if (userId != null) {
-        append = append + " AND u.USERID = " + userId;
+        append = append + " AND u.USERID = ?";
       } else if (username != null) {
-        append = append + " AND u.USERNAME = '" + StringEscapeUtils.escapeSql(username) + "'";
+        append = append + " AND u.USERNAME = '?'";
       }
       if (orgId == null) {
         orgId = userInfo.getCompanyID();
       }
-      append = append + " AND o.ORGANIZATIONID = " + orgId;
+      append = append + " AND o.ORGANIZATIONID = ?";
       if (filterByOrgUnit) {
-        append = append + " AND u.unitid = " + userInfo.getOrgUnitID();
+        append = append + " AND u.unitid = ?";
       }
       String appendExtras = "";
       Map<String, String> mapExtra = AccessControlManager.getUserDataAccess().getMappingExtra();
@@ -1839,7 +1892,42 @@ public class UserManagerBean
           appendExtras = appendExtras + ",u." + (String)mapExtra.get(key) + " as " + key;
         }
       }
-      query = DBQueryManager.processQuery("UserManager.GET_USERS", new Object[] { appendExtras, append });
+      query = DBQueryManager.getQuery("UserManager.GET_USERS");
+      query.replaceAll("{0}", appendExtras);
+      query.replaceAll("{1}", append);
+      try {
+    	  db = DatabaseInterface.getConnection(userInfo);
+    	  pst = db.prepareStatement(query);
+    	  if (userId != null) {
+    		  pst.setString(++pos, userId);
+    	  } else if (username != null) {
+    		  pst.setString(++pos, StringEscapeUtils.escapeSql(username));
+    	  }
+    	  if (orgId == null)
+    		  pst.setString(++pos, orgId);
+    	  if (filterByOrgUnit)
+    		  pst.setString(++pos, userInfo.getOrgUnitID());
+    	  
+    	  if ((mapExtra != null) && (mapExtra.size() > 0)) {
+    	        for (String key : mapExtra.keySet()) {
+    	          pst.setString(++pos, (String)mapExtra.get(key));
+    	          pst.setString(++pos, key);
+    	        }
+    	      }
+    	  pst.executeQuery();
+      } 
+      catch (Exception se) {
+          try {
+        	  DatabaseInterface.rollbackConnection(db);
+          }
+        catch (Exception e) {
+          Logger.error(userInfo.getUtilizador(), this, "getUsers", userInfo + "unable to rollback: " + e.getMessage(),e);
+        }
+        Logger.error(userInfo.getUtilizador(), this, "getUsers",userInfo + "caught exception: " + se.getMessage(), se);
+        
+      } finally {
+        DatabaseInterface.closeResources(db, pst);
+      }
     }
     Collection<Map<String, String>> coll = DatabaseInterface.executeQuery(query);
     
@@ -1920,15 +2008,26 @@ public class UserManagerBean
       if (StringUtils.isEmpty(orgId)) {
         orgId = userInfo.getCompanyID();
       }
-      extra = " WHERE " + ProfilesTO.ORGANIZATION_ID + " LIKE '" + orgId + "'";
+      extra = " WHERE ? LIKE '?'";
       if (profileId != null) {
-        extra2 = " AND " + ProfilesTO.PROFILE_ID + "=" + profileId;
+        extra2 = " AND ?=?";
       }
-      String query = DBQueryManager.processQuery("UserManager.GET_PROFILES", new Object[] { ProfilesTO.PROFILE_ID, ProfilesTO.NAME, ProfilesTO.DESCRIPTION, ProfilesTO.ORGANIZATION_ID, ProfilesTO.TABLE_NAME, extra, extra2 });
+      String query = DBQueryManager.getQuery("UserManager.GET_PROFILES");
       if (Logger.isDebugEnabled()) {
         Logger.debug(userInfo.getUtilizador(), this, "getProfiles", "QUERY=" + query);
       }
+      query.replaceAll("{5}", extra);
+      query.replaceAll("{6}", extra2);
       pst = db.prepareStatement(query);
+      pst.setString(1, ProfilesTO.PROFILE_ID);
+      pst.setString(2, ProfilesTO.NAME);
+      pst.setString(3, ProfilesTO.DESCRIPTION);
+      pst.setString(4, ProfilesTO.ORGANIZATION_ID);
+      pst.setString(5, ProfilesTO.TABLE_NAME);
+      pst.setString(6, ProfilesTO.ORGANIZATION_ID);
+      pst.setString(7, orgId);
+      pst.setString(8, ProfilesTO.PROFILE_ID);
+      pst.setString(9, profileId);
       rs = pst.executeQuery();
       List<ProfilesTO> profiles = new ArrayList();
       while (rs.next())
