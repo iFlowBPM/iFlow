@@ -166,7 +166,7 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			if (dtUtilFund != null && dtMat != null && dtUtilFund.after(dtMat))
 				result.add(new ValidationError("INC015", "infInst", "dtUtilFund", idCont, infInstId, dtUtilFund));
 			//::INC030
-			if (dtUtilFund != null && StringUtils.equals(type, "CIU") && dtUtilFund.compareTo((Date) infInstPreviousInsertValues.get("dtUtilFund"))!=0)
+			if (dtUtilFund != null && StringUtils.equals(type, "CIU") && infInstPreviousInsertValues.get("dtUtilFund")!= null && dtUtilFund.compareTo((Date) infInstPreviousInsertValues.get("dtUtilFund"))!=0)
 				result.add(new ValidationError("INC030", "infInst", "dtUtilFund", idCont, infInstId, dtUtilFund));
 			
 			
@@ -193,7 +193,7 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			if (dtIniInst != null && dtReneg != null && dtIniInst.after(dtReneg))
 				result.add(new ValidationError("INC026", "infInst", "dtIniInst", idCont, infInstId, dtIniInst));
 			//::INC029			
-			if (dtIniInst != null && StringUtils.equals(type, "CIU") && dtIniInst.compareTo((Date) infInstPreviousInsertValues.get("dtIniInst"))!=0)
+			if (dtIniInst != null && StringUtils.equals(type, "CIU") && infInstPreviousInsertValues.get("dtIniInst")!=null && dtIniInst.compareTo((Date) infInstPreviousInsertValues.get("dtIniInst"))!=0)
 				result.add(new ValidationError("INC029", "infInst", "dtIniInst", idCont, infInstId, dtIniInst));
 			
 			//::INC047
