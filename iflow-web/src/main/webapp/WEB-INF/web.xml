@@ -457,7 +457,8 @@ Disabled. Use servlet container defaults
   </servlet>
    <!-- end of kaptcha -->
 
-    <!-- Apache Axis -->
+    <!-- Apache Axis
+  
   <servlet-mapping>
 	  <servlet-name>AxisServlet</servlet-name>
 	  <url-pattern>/ws/AxisServlet</url-pattern>
@@ -467,7 +468,7 @@ Disabled. Use servlet container defaults
 	  <servlet-name>AxisServlet</servlet-name>
 	  <url-pattern>/ws/*</url-pattern>
   </servlet-mapping>
-
+ -->
   <!-- uncomment this if you want the Axis admin servlet -->
   <!--
   <servlet-mapping>
@@ -797,4 +798,13 @@ Disabled. Use servlet container defaults
    <!ELEMENT form-error-page (#PCDATA)>
    -->
 
+<error-page>
+    <error-code>403</error-code>
+    <location>/error.html</location>
+</error-page>
+
+<error-page>
+    <location>/error.html</location>
+</error-page>
+	
 </web-app>

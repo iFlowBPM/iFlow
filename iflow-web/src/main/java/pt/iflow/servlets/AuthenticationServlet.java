@@ -99,7 +99,8 @@ public class AuthenticationServlet extends javax.servlet.http.HttpServlet implem
       // Now set some session vars
       //
       /////////////////////////////
-
+      session.invalidate();
+      session = request.getSession(true);
       //Application Data
       session.setAttribute("login",login);
 
