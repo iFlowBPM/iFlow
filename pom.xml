@@ -528,11 +528,11 @@
 				<scope>provided</scope>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-			<!--<dependency>
+			<dependency>
 			    <groupId>com.google.guava</groupId>
 			    <artifactId>guava</artifactId>
 			    <version>27.0.1-jre</version>
-			</dependency>-->
+			</dependency>
 			<!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
 			<dependency>
 			    <groupId>com.google.protobuf</groupId>
