@@ -217,6 +217,7 @@ public class GestaoCrc {
 				"    comEnt.id = infEnt.comEnt_id and " +
 				"    infEnt.idEnt_id = idEnt.id and " +
 				"    u_gestao.status_id= 4 and " +
+				"    conteudo.id not in (select conteudo_id from comRiscoEnt) and " +
 				"	((idEnt.nif_nipc = ? and idEnt.type='i1') or (idEnt.codigo_fonte = ? and idEnt.type='i2')) " +     
 				"    order by u_gestao.receivedate desc;";
 			
