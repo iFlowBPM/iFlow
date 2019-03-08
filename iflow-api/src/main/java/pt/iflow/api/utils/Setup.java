@@ -254,7 +254,6 @@ public class Setup {
         _pExtraProperties = newExtraProperties;
         
         if(getProperty("MASTER_KEY") == null || getProperty("MASTER_KEY").isEmpty())
-        	System.out.print("asf");
         	System.exit(1);
     }
     
