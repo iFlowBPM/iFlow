@@ -76,9 +76,9 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 					new Object[] { infPerInst_id });
 			
 			//::IP074: Identificador com carateres inváli-dos.
-			if(!(StringUtils.isAlphanumeric(idCont)))
+			if(idCont != null && !(StringUtils.isAlphanumeric(idCont)))
 				result.add(new ValidationError("IP074", "infPerInst", "idCont", idCont, infPerInst_id));
-			if(!(StringUtils.isAlphanumeric(idInst)))
+			if(idInst != null && !(StringUtils.isAlphanumeric(idInst)))
 				result.add(new ValidationError("IP074", "infPerInst", "idInst", idCont, infPerInst_id));
 			
 			for(Integer infRInst_id : infRInstIdList){
@@ -351,8 +351,8 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 						result.add(new ValidationError("IP021", "respEntInst", "idEnt", idEntValue, respEntInstId));
 	
 					//::IP074: Identificador com carateres inváli-dos.
-		
-					if(!(StringUtils.isAlphanumeric((String) respEntInstValues.get("idEnt_id").toString())))
+					String idEnt_id = (String) respEntInstValues.get("idEnt_id").toString();
+					if(idEnt_id != null && !(StringUtils.isAlphanumeric(idEnt_id)))
 						result.add(new ValidationError("IP074", "respEntInst", "idEnt_id", (Integer) respEntInstValues.get("idEnt_id"), infPerInst_id));
 					
 					// tpRespEnt
@@ -502,8 +502,9 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 						result.add(new ValidationError("IP031", "protInst", "idProt", idCont, infPerInst_id));
 					
 					// ::IP074: Identificador com carateres inváli-dos.
-					if(!(StringUtils.isAlphanumeric(idProt)))
-						result.add(new ValidationError("IP074", "protInst", "idProt", idCont, infPerInst_id));
+					String regex = "^[a-zA-Z0-9_]+$";
+					if(idProt != null && !idProt.matches(regex))
+							result.add(new ValidationError("IP074", "protInst", "idProt", idCont, infPerInst_id));
 					
 					// ::IP079: Identificação de proteção duplicada no instrumento.
 					if(retrieveSimpleField(connection, userInfo,
