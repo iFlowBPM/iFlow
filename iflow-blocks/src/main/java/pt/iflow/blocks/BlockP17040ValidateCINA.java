@@ -66,20 +66,20 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 			if(dtRef!=null && dtRef.after(new Date()))
 				result.add(new ValidationError("EF008", "comInfInst", "dtRef", idCont, infPerInst_id, dtRef));
 			
-			//IP001
-			if(GestaoCrc.checkInfInstType(idCont, idInst, dtRef, userInfo.getUtilizador(), connection).getAction() == ImportAction.ImportActionType.CREATE)
-				result.add(new ValidationError("IP001", "infPerInst", "idInst", idInst, infPerInst_id, idInst));
+//			//IP001
+//			if(GestaoCrc.checkInfInstType(idCont, idInst, dtRef, userInfo.getUtilizador(), connection).getAction() == ImportAction.ImportActionType.CREATE)
+//				result.add(new ValidationError("IP001", "infPerInst", "idInst", idInst, infPerInst_id, idInst));
 			
 			//infRInst
 			List<Integer> infRInstIdList = retrieveSimpleField(connection, userInfo,
 					"select infRInst.id from infRInst where infPerInst_id = {0} ",
 					new Object[] { infPerInst_id });
 			
-			//::IP074: Identificador com carateres inváli-dos.
-			if(idCont != null && !(StringUtils.isAlphanumeric(idCont)))
-				result.add(new ValidationError("IP074", "infPerInst", "idCont", idCont, infPerInst_id));
-			if(idInst != null && !(StringUtils.isAlphanumeric(idInst)))
-				result.add(new ValidationError("IP074", "infPerInst", "idInst", idCont, infPerInst_id));
+//			//::IP074: Identificador com carateres inváli-dos.
+//			if(idCont != null && !(StringUtils.isAlphanumeric(idCont)))
+//				result.add(new ValidationError("IP074", "infPerInst", "idCont", idCont, infPerInst_id));
+//			if(idInst != null && !(StringUtils.isAlphanumeric(idInst)))
+//				result.add(new ValidationError("IP074", "infPerInst", "idInst", idCont, infPerInst_id));
 			
 			for(Integer infRInst_id : infRInstIdList){
 				//protExp
@@ -94,8 +94,8 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 					if(protExpValues.get("idProt")!=null && GestaoCrc.checkInfProtType((String) protExpValues.get("idProt"), dtRef, userInfo.getUtilizador(), connection).getAction() == ImportAction.ImportActionType.CREATE)
 						result.add(new ValidationError("IP068", "protExp", "idProt", (String) protExpValues.get("idProt"), (Integer) protExpValues.get("id")));
 					
-					if(protExpValues.get("idProt")!=null && !(StringUtils.isAlphanumeric((String) protExpValues.get("idProt"))))
-						result.add(new ValidationError("IP074", "protExp", "idProt", (String) protExpValues.get("idProt"), (Integer) protExpValues.get("id")));
+//					if(protExpValues.get("idProt")!=null && !(StringUtils.isAlphanumeric((String) protExpValues.get("idProt"))))
+//						result.add(new ValidationError("IP074", "protExp", "idProt", (String) protExpValues.get("idProt"), (Integer) protExpValues.get("id")));
 				}
 			}			
 			
@@ -351,9 +351,9 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 						result.add(new ValidationError("IP021", "respEntInst", "idEnt", idEntValue, respEntInstId));
 	
 					//::IP074: Identificador com carateres inváli-dos.
-					String idEnt_id = (String) respEntInstValues.get("idEnt_id").toString();
-					if(idEnt_id != null && !(StringUtils.isAlphanumeric(idEnt_id)))
-						result.add(new ValidationError("IP074", "respEntInst", "idEnt_id", (Integer) respEntInstValues.get("idEnt_id"), infPerInst_id));
+//					String idEnt_id = (String) respEntInstValues.get("idEnt_id").toString();
+//					if(idEnt_id != null && !(StringUtils.isAlphanumeric(idEnt_id)))
+//						result.add(new ValidationError("IP074", "respEntInst", "idEnt_id", (Integer) respEntInstValues.get("idEnt_id"), infPerInst_id));
 					
 					// tpRespEnt
 					String tpRespEnt = (String) respEntInstValues.get("tpRespEnt");	
@@ -494,17 +494,16 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 					String idProt = (String) protInstValues.get("idProt");
 					
 					//IP031
-					if(GestaoCrc.checkInfProtType(idProt, dtRef, userInfo.getUtilizador(), connection).getAction() == ImportAction.ImportActionType.CREATE)
-						result.add(new ValidationError("IP031", "protInst", "idProt", idCont, infPerInst_id));
-					
-					// ::IP031: Proteção não integrada previamente no sistema.
-					if (idProt == null)
-						result.add(new ValidationError("IP031", "protInst", "idProt", idCont, infPerInst_id));
+//					if(GestaoCrc.checkInfProtType(idProt, dtRef, userInfo.getUtilizador(), connection).getAction() == ImportAction.ImportActionType.CREATE)
+//						result.add(new ValidationError("IP031", "protInst", "idProt", idCont, infPerInst_id));
+//					
+//					// ::IP031: Proteção não integrada previamente no sistema.
+//					if (idProt == null)
+//						result.add(new ValidationError("IP031", "protInst", "idProt", idCont, infPerInst_id));
 					
 					// ::IP074: Identificador com carateres inváli-dos.
-					String regex = "^[a-zA-Z0-9_]+$";
-					if(idProt != null && !idProt.matches(regex))
-							result.add(new ValidationError("IP074", "protInst", "idProt", idCont, infPerInst_id));
+//				if(idProt != null && !StringUtils.isAlphanumeric(idProt))
+//							result.add(new ValidationError("IP074", "protInst", "idProt", idCont, infPerInst_id));
 					
 					// ::IP079: Identificação de proteção duplicada no instrumento.
 					if(retrieveSimpleField(connection, userInfo,

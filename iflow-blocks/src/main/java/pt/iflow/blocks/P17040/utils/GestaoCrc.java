@@ -217,13 +217,15 @@ public class GestaoCrc {
 				"    comEnt.id = infEnt.comEnt_id and " +
 				"    infEnt.idEnt_id = idEnt.id and " +
 				"    u_gestao.status_id= 4 and " +
+				"	 infEnt.dtRefEnt < ? and " +
 				"    conteudo.id not in (select conteudo_id from comRiscoEnt) and " +
 				"	((idEnt.nif_nipc = ? and idEnt.type='i1') or (idEnt.codigo_fonte = ? and idEnt.type='i2')) " +     
 				"    order by u_gestao.receivedate desc;";
 			
 			pst = connection.prepareStatement(query);
-			pst.setString(1, idEntValue);
+			pst.setDate(1, new java.sql.Date(dtRefEnt.getTime()));
 			pst.setString(2, idEntValue);
+			pst.setString(3, idEntValue);
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
@@ -280,11 +282,13 @@ public class GestaoCrc {
 				"    conteudo.id = comProt.conteudo_id and "+
 				"    comProt.id = infProt.comProt_id and "+
 				"    infProt.idProt = ? and "+
+				"    infProt.dtRefProt < ? and "+
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
 			pst = connection.prepareStatement(query);
 			pst.setString(1, idProt);
+			pst.setDate(2, new java.sql.Date(dtRefProt.getTime()));
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
@@ -342,12 +346,14 @@ public class GestaoCrc {
 				"    comCInst.id = infInst.comCInst_id and "+
 				"    infInst.idCont = ? and "+
 				"    infInst.idInst = ? and "+
+				"    infInst.dtRefInst < ? and "+
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
 			pst = connection.prepareStatement(query);
 			pst.setString(1, idCont);
 			pst.setString(2, idInst);
+			pst.setDate(3, new java.sql.Date(dtRefInst.getTime()));			
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
@@ -550,12 +556,14 @@ public class GestaoCrc {
 				"    comInfDia.id = infDiaInstFin.comInfDia_id and "+
 				"    infDiaInstFin.idCont = ? and "+
 				"    infDiaInstFin.idInst = ? and "+
+				"    infDiaInstFin.dtRefInfDia < ? and "+
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
 			pst = connection.prepareStatement(query);
 			pst.setString(1, idCont);
 			pst.setString(2, idInst);
+			pst.setDate(3, new java.sql.Date(dtRefInfDia.getTime()));
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
@@ -715,12 +723,14 @@ public class GestaoCrc {
 				"	comInfComp.id = infCompC.comInfComp_id and"+
 				"    infCompC.idCont = ? and "+
 				"    infCompC.idInst = ? and "+
+				"    infCompC.dtRef < ? and "+
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
 			pst = connection.prepareStatement(query);
 			pst.setString(1, idCont);
 			pst.setString(2, idInst);
+			pst.setDate(3, new java.sql.Date(dtRef.getTime()));
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
