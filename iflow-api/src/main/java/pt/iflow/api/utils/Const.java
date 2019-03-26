@@ -425,7 +425,7 @@ public class Const {
   //how many days until FLOW_STATE_HISTORY and LOGS are purged from database
   public static Long DAYS_UNTIL_PURGE;
   
-  public static String CRYPT_UTILS_KEY;
+  public static String CRYPT_UTILS_KEY = "achave";
   
   private static List<String> ALLOWED_LOCALES = new ArrayList<String>();
 
