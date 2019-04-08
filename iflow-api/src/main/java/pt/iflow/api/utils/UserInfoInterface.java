@@ -116,4 +116,6 @@ public abstract interface UserInfoInterface
   public abstract Connection getTransactionConnection();
 
 public abstract void loginSSO(String employeeid);
+
+public abstract void login(String login, String password, Boolean useWindowsDomainAuth);
 }

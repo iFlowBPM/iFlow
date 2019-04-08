@@ -2,6 +2,8 @@ package pt.iflow.utils;
 
 import java.util.Calendar;
 
+import org.codehaus.plexus.util.StringUtils;
+
 import pt.iflow.api.core.AuthProfile;
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.utils.Logger;
@@ -55,7 +57,7 @@ class SystemUserInfo extends UserInfo implements UserInfoInterface {
 	 * @see pt.iknow.utils.UserInfoInterface#login(java.lang.String, java.lang.String)
 	 */
 	public void login(String asLogin, String asPassword) {
-	    this.login(asLogin, asPassword, null);
+	    this.login(asLogin, asPassword, "");
 	  }
 
 	  /* (non-Javadoc)
@@ -69,7 +71,7 @@ class SystemUserInfo extends UserInfo implements UserInfoInterface {
 	 * @see pt.iknow.utils.UserInfoInterface#profileLogin(java.lang.String, java.lang.String)
 	 */
 	public void profileLogin(String asLogin, String asProfile) {
-	    this.login(asLogin, null, null);
+	    this.login(asLogin, null, "");
 	  }
 
 	
@@ -98,7 +100,7 @@ class SystemUserInfo extends UserInfo implements UserInfoInterface {
 		          this._sError = "User/Password inv&aacute;lidos.";
 		        }
 		      }
-		      else if (asSessionId != null) {
+		      else if (StringUtils.isNotBlank(asSessionId )) {
 		        this._bLogged = ap.authenticateIntranetUser(asLogin, asSessionId);
 		        if (!this._bLogged) {
 		          this._sError = "Sess&atilde;o inv&aacute;lida.";

@@ -50,7 +50,10 @@ public class AuthenticationFilter extends IFlowFilter {
             AuthenticationResult result = AuthenticationServlet.authenticate(httpRequest, httpResponse, username, Utils
                 .decrypt(password), "");
             mustAuthenticate = !result.isAuth;
-          } else {
+          } else if (Const.AUTHENTICATION_WINDOWS){ 
+        	AuthenticationResult result = AuthenticationServlet.authenticate(httpRequest, httpResponse, null, null, null);
+            mustAuthenticate = !result.isAuth;
+          } else {          
             mustAuthenticate = true;
           }
 

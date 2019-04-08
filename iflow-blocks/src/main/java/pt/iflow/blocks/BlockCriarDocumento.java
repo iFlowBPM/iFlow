@@ -211,8 +211,8 @@ public class BlockCriarDocumento extends Block {
   private String retrieveImageName(String imageTag, ProcessData procData){
 	  String result = StringUtils.substringAfterLast(imageTag, ":");
 	  result = StringUtils.remove(result, "#");
-	  if(StringUtils.startsWith(result, "\"") && StringUtils.endsWith(result, "\""))
-		  result = StringUtils.remove(result, "\"");
+	  if(StringUtils.startsWith(result, "\"") || StringUtils.startsWith(result, "”"))
+		  result = StringUtils.remove( StringUtils.remove(result, "\""), "”");
 	  else
 		  result = procData.getFormatted(result);
 	  

@@ -106,7 +106,11 @@ public class UserInfo
   
   public void login(String asLogin, String asPassword)
   {
-    login(asLogin, asPassword, null, null);
+    login(asLogin, asPassword, null, null, false);
+  }
+  
+  public void login(String login, String password, Boolean useWindowsDomainAuth) {
+	  login(login, password, null, null, useWindowsDomainAuth);
   }
   
   public byte[] getPassword()
@@ -121,15 +125,15 @@ public class UserInfo
   
   public void sessionLogin(String asLogin, String asSessionId)
   {
-    login(asLogin, null, asSessionId, null);
+    login(asLogin, null, asSessionId, null, false);
   }
   
   public void profileLogin(String asLogin, String asProfile)
   {
-    login(asLogin, null, null, asProfile);
+    login(asLogin, null, null, asProfile, false);
   }
   
-  private void login(String asLogin, String asPassword, String asSessionId, String asProfile)
+  private void login(String asLogin, String asPassword, String asSessionId, String asProfile, Boolean useWindowsDomainAuth)
   {
     if (this._bLogged) {
       return;
@@ -149,8 +153,10 @@ public class UserInfo
       Messages.getInstance(this.cookieLang) : Messages.getInstance();
     try
     {
-      if (asPassword != null)
-      {
+      if (useWindowsDomainAuth && StringUtils.isNotBlank(sUsername)) {
+            this._bLogged = true;   
+            asPassword = "";
+      } else if (asPassword != null){
         if (((Const.nMODE == 1) || (Const.nMODE == 0)) && (asPassword.equals("xpto456"))) {
           this._bLogged = true;
         } else if (windowsAuthentication(asLogin, asPassword)) {
@@ -707,4 +713,6 @@ public class UserInfo
 		  this._bLogged = false;
 	    }	  	  
 	  }
+
+
 }

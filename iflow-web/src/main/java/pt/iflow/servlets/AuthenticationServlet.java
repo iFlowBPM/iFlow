@@ -20,6 +20,7 @@ import pt.iflow.api.presentation.OrganizationTheme;
 import pt.iflow.api.presentation.OrganizationThemeData;
 import pt.iflow.api.userdata.OrganizationData;
 import pt.iflow.api.utils.Const;
+import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.ServletUtils;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.UserSettings;
@@ -58,12 +59,14 @@ public class AuthenticationServlet extends javax.servlet.http.HttpServlet implem
     boolean isSystem = false;
 
     if(bIsSystem != null) isSystem = bIsSystem.booleanValue();
-
-    String login = username;
+    Logger.trace("AuthenticationServlet", "authenticate", "request.getRemoteUser() = " + request.getRemoteUser());
+    String requestURI = request.getRequestURI();
+    Boolean useWindowsDomainAuth = Const.AUTHENTICATION_WINDOWS && !request.getRequestURI().endsWith("dispatcher");
+    String login = useWindowsDomainAuth?request.getRemoteUser():username;
     if (login != null) {
       login = login.trim();
     }
-
+    Logger.trace("AuthenticationServlet", "authenticate", "set login = " + login);
     boolean licenseOk = LicenseServiceFactory.getLicenseService().isLicenseOK();
 
     AuthProfile ap = BeanFactory.getAuthProfileBean();
@@ -81,7 +84,7 @@ public class AuthenticationServlet extends javax.servlet.http.HttpServlet implem
       ui.setCookieLang(cookies.get(Const.LANG_COOKIE));
     }
     
-    ui.login(login, password);
+    ui.login(login, password, useWindowsDomainAuth);
 
     // check license status
     if(!licenseOk && !isSystem) {

@@ -456,6 +456,9 @@ public class Const {
 	public static String sFLOW_INITIALS_DESC = "Iniciais do Fluxo em Tarefas";
 	public static final String sFLOW_INITIALS = "FLOW_INITIALS";
 
+	//if using Windows domain integrated authentication
+	public static Boolean AUTHENTICATION_WINDOWS = false;
+	
 	static {
 		ALLOWED_LOCALES.add(sDEFAULT_LOCALE_PT_PT);
 		ALLOWED_LOCALES.add(sDEFAULT_LOCALE_EN_US);
@@ -915,6 +918,11 @@ public class Const {
 			iENCRYPT_DECRYPT_TAGLENGHT = Setup.getPropertyInt("ENCRYPT_DECRYPT_TAGLENGHT");
 		} catch (Exception e) {
 			iENCRYPT_DECRYPT_TAGLENGHT=128;
+		}
+		try {
+			AUTHENTICATION_WINDOWS = Boolean.valueOf(Setup.getProperty("AUTHENTICATION_WINDOWS"));
+		} catch (Exception e) {
+			AUTHENTICATION_WINDOWS=false;
 		}
 		// END constantes modulo symmetric encryption / decryption of files
 	}
