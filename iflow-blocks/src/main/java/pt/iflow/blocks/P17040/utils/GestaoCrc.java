@@ -217,7 +217,7 @@ public class GestaoCrc {
 				"    comEnt.id = infEnt.comEnt_id and " +
 				"    infEnt.idEnt_id = idEnt.id and " +
 				"    u_gestao.status_id= 4 and " +
-				"	 infEnt.dtRefEnt < ? and " +
+				"	 infEnt.dtRefEnt <= ? and " +
 				"    conteudo.id not in (select conteudo_id from comRiscoEnt) and " +
 				"	((idEnt.nif_nipc = ? and idEnt.type='i1') or (idEnt.codigo_fonte = ? and idEnt.type='i2')) " +     
 				"    order by u_gestao.receivedate desc;";
@@ -282,7 +282,7 @@ public class GestaoCrc {
 				"    conteudo.id = comProt.conteudo_id and "+
 				"    comProt.id = infProt.comProt_id and "+
 				"    infProt.idProt = ? and "+
-				"    infProt.dtRefProt < ? and "+
+				"    infProt.dtRefProt <= ? and "+
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
@@ -346,7 +346,7 @@ public class GestaoCrc {
 				"    comCInst.id = infInst.comCInst_id and "+
 				"    infInst.idCont = ? and "+
 				"    infInst.idInst = ? and "+
-				"    infInst.dtRefInst < ? and "+
+				"    infInst.dtRefInst <= ? and "+
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
@@ -489,7 +489,7 @@ public class GestaoCrc {
 					"    infPerInst.idCont = ? and "+
 					"    infPerInst.idInst = ? and "+
 					"    u_gestao.status_id= 4  "+
-					"    order by u_gestao.receivedate desc;";
+					"    order by u_gestao.receivedate desc, u_gestao.id desc;";
 			
 			pst = connection.prepareStatement(query);
 			pst.setDate(1, new java.sql.Date(dtRef.getTime()));
@@ -516,7 +516,9 @@ public class GestaoCrc {
 				"   fichAce.id not in  "+				
 				"		( select regMsg.fichAce_id from regMsg, msg "+
 				"			where regMsg.id=msg.regMsg_id "+
-				"			and  ((msg.codMsg!='IP002' and operOrig='IFI') or (msg.codMsg!='IP035' and operOrig='ICI') or (msg.codMsg!='IP058' and operOrig='IRI')) " +
+				"			and !(msg.codMsg = 'IP002' and regMsg.operOrig='IFI') " +
+                "           and !(msg.codMsg = 'IP035' and operOrig='ICI') " +
+                "           and !(msg.codMsg = 'IP058' and operOrig='IRI') " +
 				"			and  msg.nvCrit=0 " +
 				"			and regMsg.idCont = ? and regMsg.idInst = ? " + 
 				"           and (operOrig=? or operOrig=?) ); ";
@@ -556,7 +558,7 @@ public class GestaoCrc {
 				"    comInfDia.id = infDiaInstFin.comInfDia_id and "+
 				"    infDiaInstFin.idCont = ? and "+
 				"    infDiaInstFin.idInst = ? and "+
-				"    infDiaInstFin.dtRefInfDia < ? and "+
+				"    infDiaInstFin.dtRefInfDia <= ? and "+
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
@@ -723,7 +725,7 @@ public class GestaoCrc {
 				"	comInfComp.id = infCompC.comInfComp_id and"+
 				"    infCompC.idCont = ? and "+
 				"    infCompC.idInst = ? and "+
-				"    infCompC.dtRef < ? and "+
+				"    infCompC.dtRef <= ? and "+
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
