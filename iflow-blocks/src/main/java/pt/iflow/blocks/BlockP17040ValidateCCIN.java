@@ -324,8 +324,8 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			if (durPlanoFin == null)
 				result.add(new ValidationError("CI100", "infInst", "durPlanoFin", idCont, infInstId, durPlanoFin));
 			//::INC037
-			if(durPlanoFin!=null && dtMat!=null && dtIniInst!=null && durPlanoFin.compareTo((int) TimeUnit.DAYS.convert(dtIniInst.getTime() - dtMat.getTime(), TimeUnit.MILLISECONDS))!=0)
-				result.add(new ValidationError("INC037", "infInst", "dtIniInst", idCont, infInstId, dtIniInst));
+//			if(durPlanoFin!=null && dtMat!=null && dtIniInst!=null && durPlanoFin.compareTo((int) TimeUnit.DAYS.convert(dtMat.getTime() - dtIniInst.getTime(), TimeUnit.MILLISECONDS))!=0)
+//				result.add(new ValidationError("INC037", "infInst", "dtIniInst", idCont, infInstId, dtIniInst));
 
 			// finalidade
 			String finalidade = (String) infInstValues.get("finalidade");
