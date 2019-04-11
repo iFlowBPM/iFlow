@@ -150,15 +150,15 @@ Disabled. Use servlet container defaults
    <filter-mapping>
       <filter-name>RemoteFileInclusionFilterFilter</filter-name>
       <url-pattern>/*</url-pattern>
-   </filter-mapping>
+    </filter-mapping>
  	<filter-mapping>
       <filter-name>MySQLInjectionFilter</filter-name>
       <url-pattern>/*</url-pattern>
    </filter-mapping>
-	<filter-mapping>
+<!--  	<filter-mapping>
       <filter-name>XSSFilter</filter-name>
       <url-pattern>/*</url-pattern>
-   </filter-mapping>
+   </filter-mapping>-->
    <filter-mapping>
       <filter-name>CSRFFilter</filter-name>
       <url-pattern>/*</url-pattern>      
@@ -171,7 +171,6 @@ Disabled. Use servlet container defaults
 	  <filter-name>DisableSomeHTTPRequestsFilter</filter-name>
 	  <url-pattern>/*</url-pattern>	  
 	</filter-mapping>		
-	
    
    <listener>
 	 <listener-class>org.apache.axis.transport.http.AxisHTTPSessionListener</listener-class>
