@@ -442,20 +442,16 @@ public class UserManagerBean
       db.setAutoCommit(false);
       
       StringBuffer sql = new StringBuffer();
-      sql.append("INSERT INTO ?");
-      sql.append(" (?,?,?)");
+      sql.append("INSERT INTO profiles");
+      sql.append(" (name,description,organizationid)");
       sql.append(" values (?,?,?)");
       if (Logger.isDebugEnabled()) {
         Logger.debug(userInfo.getUtilizador(), this, "modifyProfile", "QUERY=" + sql.toString());
       }
       pst = db.prepareStatement(sql.toString(), new String[] { ProfilesTO.PROFILE_ID });
-      pst.setString(1, ProfilesTO.TABLE_NAME);
-      pst.setString(2, ProfilesTO.NAME);
-      pst.setString(3, ProfilesTO.DESCRIPTION);
-      pst.setString(4, ProfilesTO.ORGANIZATION_ID);
-      pst.setString(5, profile.getName());
-      pst.setString(6, profile.getDescription());
-      pst.setString(7, profile.getOrganizationId());
+      pst.setString(1, profile.getName());
+      pst.setString(2, profile.getDescription());
+      pst.setString(3, profile.getOrganizationId());
       pst.executeUpdate();
       
       rs = pst.getGeneratedKeys();
@@ -960,7 +956,7 @@ public class UserManagerBean
       Logger.debug(userInfo.getUtilizador(), this, "modifyProfile", "Updating profile: " + profile.getName());
     }
     boolean profileExists = profileExists(userInfo, profile);
-    if ((!userInfo.isOrgAdmin()) || (!StringUtils.equals(userInfo.getCompanyID(), profile.getOrganizationId()) ) || (profileExists))
+    if ((!userInfo.isOrgAdmin()) || (!StringUtils.equals(userInfo.getCompanyID(), profile.getOrganizationId()))  )
     {
     	
       if (Logger.isDebugEnabled()) {
@@ -985,25 +981,19 @@ public class UserManagerBean
         db.setAutoCommit(false);
         
         StringBuffer sql = new StringBuffer();
-        sql.append("UPDATE ?");
-        sql.append(" SET ?=?");
-        sql.append(", ?=?");
-        sql.append(" WHERE ?=?");
-        sql.append(" AND ?=?");
+        sql.append("UPDATE profiles ");
+        sql.append(" SET name= ?" );
+        sql.append(", description=?");
+        sql.append(" WHERE profileid=?");
+        sql.append(" AND organizationid=?");
         if (Logger.isDebugEnabled()) {
           Logger.debug(userInfo.getUtilizador(), this, "modifyProfile", "QUERY=" + sql.toString());
         }
         pst = db.prepareStatement(sql.toString());
-        pst.setString(1, ProfilesTO.TABLE_NAME);
-        pst.setString(2, ProfilesTO.NAME);
-        pst.setString(3, profile.getValueOf(ProfilesTO.NAME));
-        pst.setString(4, ProfilesTO.DESCRIPTION);
-        pst.setString(5, profile.getValueOf(ProfilesTO.DESCRIPTION));
-        pst.setString(6, ProfilesTO.PROFILE_ID);
-        pst.setString(7, profile.getValueOf(ProfilesTO.PROFILE_ID));
-        pst.setString(8, ProfilesTO.ORGANIZATION_ID);
-        pst.setString(9, profile.getValueOf(ProfilesTO.ORGANIZATION_ID));
-        
+        pst.setString(1, profile.getValueOf(ProfilesTO.NAME));
+        pst.setString(2, profile.getValueOf(ProfilesTO.DESCRIPTION));
+        pst.setInt(3, Integer.valueOf(profile.getValueOf(ProfilesTO.PROFILE_ID)));
+        pst.setInt(4, Integer.valueOf(profile.getValueOf(ProfilesTO.ORGANIZATION_ID)));
         pst.executeUpdate();
         db.commit();
         
@@ -1813,8 +1803,7 @@ public class UserManagerBean
   private UserViewInterface[] getUsers(UserInfoInterface userInfo, boolean find, String userId, String username, String orgId, boolean filterByOrgUnit)
   {
     UserViewInterface[] result = new UserViewInterface[0];
-    PreparedStatement pst = null;
-    Connection db = null;
+    
     Logger.debug(userInfo.getUtilizador(), this, "getAllUsers", "Listing all users");
     
     String query = "";
@@ -1822,47 +1811,24 @@ public class UserManagerBean
     {
       String append = "";
       if (userId != null || userId != "") {
-        append = " WHERE u.USERID = ?";
+        append = " WHERE u.USERID = " + userId;
       }
-      query = DBQueryManager.getQuery("UserManager.GET_USERS_ADMIN");
-      query.replaceAll("{0}", append);
-      try {
-    	  db = DatabaseInterface.getConnection(userInfo);
-    	  pst = db.prepareStatement(query);
-    	  if (userId != null || userId != "") {
-    		  pst.setString(1, userId);
-    	  }
-          pst.executeQuery();
-      }
-      catch (Exception se) {
-          try {
-        	  DatabaseInterface.rollbackConnection(db);
-          }
-        catch (Exception e) {
-          Logger.error(userInfo.getUtilizador(), this, "getUsers", userInfo + "unable to rollback: " + e.getMessage(),e);
-        }
-        Logger.error(userInfo.getUtilizador(), this, "getUsers",userInfo + "caught exception: " + se.getMessage(), se);
-        
-      } finally {
-        DatabaseInterface.closeResources(db, pst);
-      }
-      }
-
+      query = DBQueryManager.processQuery("UserManager.GET_USERS_ADMIN", new Object[] { append });
+    }
     else
     {
-    	int pos = 0;
       String append = " WHERE u.unitid = ou.unitid and ou.organizationid = o.organizationid";
       if (userId != null) {
-        append = append + " AND u.USERID = ?";
+        append = append + " AND u.USERID = " + userId;
       } else if (username != null) {
-        append = append + " AND u.USERNAME = '?'";
+        append = append + " AND u.USERNAME = '" + StringEscapeUtils.escapeSql(username) + "'";
       }
       if (orgId == null) {
         orgId = userInfo.getCompanyID();
       }
-      append = append + " AND o.ORGANIZATIONID = ?";
+      append = append + " AND o.ORGANIZATIONID = " + orgId;
       if (filterByOrgUnit) {
-        append = append + " AND u.unitid = ?";
+        append = append + " AND u.unitid = " + userInfo.getOrgUnitID();
       }
       String appendExtras = "";
       Map<String, String> mapExtra = AccessControlManager.getUserDataAccess().getMappingExtra();
@@ -1871,42 +1837,7 @@ public class UserManagerBean
           appendExtras = appendExtras + ",u." + (String)mapExtra.get(key) + " as " + key;
         }
       }
-      query = DBQueryManager.getQuery("UserManager.GET_USERS");
-      query.replaceAll("{0}", appendExtras);
-      query.replaceAll("{1}", append);
-      try {
-    	  db = DatabaseInterface.getConnection(userInfo);
-    	  pst = db.prepareStatement(query);
-    	  if (userId != null) {
-    		  pst.setString(++pos, userId);
-    	  } else if (username != null) {
-    		  pst.setString(++pos, StringEscapeUtils.escapeSql(username));
-    	  }
-    	  if (orgId == null)
-    		  pst.setString(++pos, orgId);
-    	  if (filterByOrgUnit)
-    		  pst.setString(++pos, userInfo.getOrgUnitID());
-    	  
-    	  if ((mapExtra != null) && (mapExtra.size() > 0)) {
-    	        for (String key : mapExtra.keySet()) {
-    	          pst.setString(++pos, (String)mapExtra.get(key));
-    	          pst.setString(++pos, key);
-    	        }
-    	      }
-    	  pst.executeQuery();
-      } 
-      catch (Exception se) {
-          try {
-        	  DatabaseInterface.rollbackConnection(db);
-          }
-        catch (Exception e) {
-          Logger.error(userInfo.getUtilizador(), this, "getUsers", userInfo + "unable to rollback: " + e.getMessage(),e);
-        }
-        Logger.error(userInfo.getUtilizador(), this, "getUsers",userInfo + "caught exception: " + se.getMessage(), se);
-        
-      } finally {
-        DatabaseInterface.closeResources(db, pst);
-      }
+      query = DBQueryManager.processQuery("UserManager.GET_USERS", new Object[] { appendExtras, append });
     }
     Collection<Map<String, String>> coll = DatabaseInterface.executeQuery(query);
     
@@ -1982,32 +1913,19 @@ public class UserManagerBean
       ds = Utils.getDataSource();
       db = ds.getConnection();
       
-      String extra = "";
-      String extra2 = "";
       if (StringUtils.isEmpty(orgId)) {
         orgId = userInfo.getCompanyID();
       }
-      extra = " WHERE ? LIKE '?'";
-      if (profileId != null) {
-        extra2 = " AND ?=?";
-      }
-      String query = DBQueryManager.getQuery("UserManager.GET_PROFILES");
+     
+      String query = "SELECT profileid, name, description, organizationid FROM profiles  WHERE organizationid LIKE ? " + ((profileId != null)?" AND profileid=?":"") ;
       if (Logger.isDebugEnabled()) {
         Logger.debug(userInfo.getUtilizador(), this, "getProfiles", "QUERY=" + query);
       }
-      query.replaceAll("{5}", extra);
-      query.replaceAll("{6}", extra2);
       pst = db.prepareStatement(query);
-      pst.setString(1, ProfilesTO.PROFILE_ID);
-      pst.setString(2, ProfilesTO.NAME);
-      pst.setString(3, ProfilesTO.DESCRIPTION);
-      pst.setString(4, ProfilesTO.ORGANIZATION_ID);
-      pst.setString(5, ProfilesTO.TABLE_NAME);
-      pst.setString(6, ProfilesTO.ORGANIZATION_ID);
-      pst.setString(7, orgId);
-      pst.setString(8, ProfilesTO.PROFILE_ID);
-      pst.setString(9, profileId);
-      rs = pst.executeQuery();
+      pst.setString(1, orgId);
+      if (profileId != null)
+    	  pst.setInt(2, Integer.valueOf(profileId));
+      rs = pst.executeQuery(query);
       List<ProfilesTO> profiles = new ArrayList();
       while (rs.next())
       {

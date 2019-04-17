@@ -74,6 +74,17 @@
 			<groupId>pt.iknow</groupId>
 			<artifactId>iutils</artifactId>
 			<version>2.0.6</version><!--$NO-MVN-MAN-VER$-->
+			<exclusions>
+	            <exclusion>
+	                <groupId>bouncycastle</groupId>
+	                <artifactId>bcprov-jdk14</artifactId>
+	            </exclusion>
+	        </exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>org.bouncycastle</groupId>
+		    <artifactId>bcprov-jdk14</artifactId>
+		    <version>1.61</version>
 		</dependency>
 		<dependency>
 			<groupId>pt.iknow</groupId>
@@ -367,6 +378,21 @@
 	    <groupId>org.apache.tika</groupId>
 	    <artifactId>tika-parsers</artifactId>
 	    <version>1.20</version>
+	    <!-- Exclusions due to insecure libs -->
+	    <exclusions>
+	     <exclusion>
+	       <groupId>edu.usc.ir</groupId>
+	       <artifactId>sentiment-analysis-parser</artifactId>
+	     </exclusion>
+	     <exclusion>
+	       <groupId>org.apache.opennlp</groupId>
+	       <artifactId>opennlp-tools</artifactId>
+	     </exclusion>
+	     <exclusion>
+	       <groupId>org.gagravarr</groupId>
+	       <artifactId>vorbis-java-tika</artifactId>
+	     </exclusion>
+	   </exclusions>
 	  </dependency>
 	  
 		<!-- TESTS -->

@@ -1106,42 +1106,43 @@ public class DocumentsBean implements Documents {
   public boolean markDocsToSign(UserInfoInterface userInfo, ProcessListVariable docs, ProcessListVariable values) {   
     Connection db = null;
     PreparedStatement pst = null;
-    String queryUpdate0 = "";
-    String queryUpdate1 = "";
+    ArrayList<String> queryUpdate0 = new ArrayList<>();
+    ArrayList<String> queryUpdate1 = new ArrayList<>();
     boolean flag0 = false;
     boolean flag1 = false;
     
     for(int i = 0; i < docs.size(); i++){     
         if(values.getItem(i)!= null && values.getFormattedItem(i).equals("1"))
-          queryUpdate1 += ", "+docs.getItem(i).format();      
+          queryUpdate1.add(docs.getItem(i).format());      
         else
-          queryUpdate0 += ", "+docs.getItem(i).format();
+          queryUpdate0.add(docs.getItem(i).format());
     }
     
-    if(!StringUtils.isEmpty(queryUpdate0)){
-      queryUpdate0 += " )";
-      queryUpdate0 = queryUpdate0.replaceFirst(",", "(");
+    if(!queryUpdate0.isEmpty()){
       flag0 = true;
     }
     
-    if(!StringUtils.isEmpty(queryUpdate1)){
-      queryUpdate1 += " )";
-      queryUpdate1 = queryUpdate1.replaceFirst(",", "(");
+    if(!queryUpdate1.isEmpty()){
       flag1 = true;
     }
     
     try {
       db = DatabaseInterface.getConnection(userInfo);
       if(flag0){
-        pst = db.prepareStatement("UPDATE documents set tosign=0 where docid in ?");
-        pst.setString(1, queryUpdate0);
-        pst.executeUpdate();
-        pst.close();
+    	  for(String docidAux : queryUpdate0){
+	        pst = db.prepareStatement("UPDATE documents set tosign=0 where docid = ?");
+	        pst.setInt(1, Integer.valueOf(docidAux));
+	        pst.executeUpdate();
+	        pst.close();
+    	  }        
       }
       if(flag1){
-        pst = db.prepareStatement("UPDATE documents set tosign=1 where docid in ?");
-        pst.setString(1, queryUpdate1);
-        pst.executeUpdate();
+    	  for(String docidAux : queryUpdate1){
+	        pst = db.prepareStatement("UPDATE documents set tosign=1 where docid = ?");
+	        pst.setInt(1, Integer.valueOf(docidAux));
+	        pst.executeUpdate();
+	        pst.close();
+    	  }
       }
      } catch (SQLException sqle) {
           Logger.error(userInfo.getUtilizador(), this, "markDocsToSign","caught sql exception: " + sqle.getMessage(), sqle);

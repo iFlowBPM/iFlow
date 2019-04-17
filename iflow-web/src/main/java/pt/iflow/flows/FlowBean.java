@@ -1445,16 +1445,14 @@ public class FlowBean implements Flow {
       pm.endProc(userInfo, procData, isCancel);
 
       Logger.info(login, this, "endFlow", procData.getSignature() + "Deleting flow_state associated entry");
-      String sQuery = "update flow_state set closed=1";
-      pst = db.prepareStatement(sQuery);
-
-      
+      String sQuery = "update flow_state set closed=1";            
       if (isCancel) {
         sQuery += ",canceled=1";
       }
       sQuery += " where flowid=?";
       sQuery += " and pid=?";
       sQuery += " and subpid= ?";
+      pst = db.prepareStatement(sQuery);
       pst.setInt(1, flowId);
       pst.setInt(2, pid);
       pst.setInt(3, subpid);
@@ -1747,16 +1745,16 @@ public class FlowBean implements Flow {
       StringBuffer sbtmp = new StringBuffer();
       sbtmp.append("select distinct flowid, userid, permissions from ");
       sbtmp.append("activity_hierarchy where pending=0 ");
-      sbtmp.append("and userid like '?");
-      sbtmp.append("'");
+      sbtmp.append("and userid like ?");
+      
       if (anFlowId > 0) {
         sbtmp.append(" and flowid=?");
       }
       
       pst = db.prepareStatement(sbtmp.toString());
       pst.setString(1, userInfo.getUtilizador().toUpperCase());
-      pst.setInt(2, anFlowId);
       if (anFlowId > 0)
+    	  pst.setInt(2, anFlowId);      
       
       rs = pst.executeQuery();
 
@@ -1784,91 +1782,76 @@ public class FlowBean implements Flow {
   }
 
   public FlowRolesTO[] getUserFlowRoles(UserInfoInterface userInfo, int anFlowId) {
-    FlowRolesTO[] retObj = null;
+	    FlowRolesTO[] retObj = null;
 
-    DataSource ds = null;
-    Connection db = null;
-    PreparedStatement pst = null;
-    ResultSet rs = null;
+	    DataSource ds = null;
+	    Connection db = null;
+	    PreparedStatement pst = null;
+	    ResultSet rs = null;
 
-    List<FlowRolesTO> altmp = null;
-    FlowRolesTO fr = null;
+	    List<FlowRolesTO> altmp = null;
+	    FlowRolesTO fr = null;
 
-    String[] saProfiles = userInfo.getProfiles();
+	    String[] saProfiles = userInfo.getProfiles();
 
-    if (saProfiles != null && saProfiles.length > 0) {
-      try {
-        ds = Utils.getDataSource();
-        db = ds.getConnection();
-        
-        rs = null;
-        StringBuffer sql = new StringBuffer();
-        sql.append("SELECT r.?");
-        sql.append(", r.?");
-        sql.append(", r.");
-        sql.append(", p.");
-        sql.append(", p.");
-        sql.append(" FROM ? r, flow f");
-        sql.append(", ? p");
-        sql.append(" WHERE r.?=p.?");
-        sql.append(" AND p.? in (");
-        for (int i = 0; i < saProfiles.length; i++) {
-          if (i > 0) {
-            sql.append(",");
-          }
-          sql.append("'?'");
-        }
-        sql.append(")");
-        if (anFlowId > 0) {
-          sql.append(" AND r.?=?");
-        }
-        sql.append(" AND f.flowid=r.?");
-        sql.append(" AND f.organizationid LIKE '" + userInfo.getCompanyID() + "'");
-        sql.append(" ORDER BY ?");
-        int j=0;
-        pst = db.prepareStatement(sql.toString());
-        pst.setString(1, FlowRolesTO.FLOW_ID);
-        pst.setString(2, FlowRolesTO.PROFILE_ID);
-        pst.setString(3, FlowRolesTO.PERMISSIONS);
-        pst.setString(4, ProfilesTO.NAME);
-        pst.setString(5, ProfilesTO.DESCRIPTION);
-        pst.setString(6, FlowRolesTO.TABLE_NAME);
-        pst.setString(7, ProfilesTO.TABLE_NAME);
-        pst.setString(8, FlowRolesTO.PROFILE_ID);
-        pst.setString(9, ProfilesTO.PROFILE_ID);
-        pst.setString(10, ProfilesTO.NAME);
-        for ( j = 0; j < saProfiles.length; j++) {
-        	pst.setString(j+11, StringEscapeUtils.escapeSql(saProfiles[j]));
-        }
-        pst.setString(j++, FlowRolesTO.FLOW_ID);
-        pst.setInt(j++, anFlowId);
-        pst.setString(j++, FlowRolesTO.FLOW_ID);
-        pst.setString(j++, FlowRolesTO.FLOW_ID);
-        rs = pst.executeQuery();
-        altmp = new ArrayList<FlowRolesTO>();
-        while (rs.next()) {
-          int flowid = rs.getInt(FlowRolesTO.FLOW_ID);
-          ProfilesTO profile = new ProfilesTO(rs.getInt(FlowRolesTO.PROFILE_ID), rs.getString(ProfilesTO.NAME), rs
-              .getString(ProfilesTO.DESCRIPTION), userInfo.getCompanyID());
-          String permissions = rs.getString(FlowRolesTO.PERMISSIONS);
-          fr = new FlowRolesTO(flowid, profile, permissions);
-          altmp.add(fr);
-        }
-        rs.close();
-        rs = null;
-      } catch (Exception e) {
-        Logger.error(userInfo.getUtilizador(), this, "getUserFlowRoles", "exception caught: " + e.getMessage(), e);
-      } finally {
-        DatabaseInterface.closeResources(db, pst, rs);
-      }
-    }
+	    if (saProfiles != null && saProfiles.length > 0) {
+	      try {
+	        ds = Utils.getDataSource();
+	        db = ds.getConnection();
+	        
+	        rs = null;
+	        StringBuffer sql = new StringBuffer();
+	        sql.append("SELECT r.flowid");
+	        sql.append(", r.profileid" );
+	        sql.append(", r.permissions");
+	        sql.append(", p.name");
+	        sql.append(", p.description");
+	        sql.append(" FROM flow_roles r, flow f");
+	        sql.append(", profiles p");
+	        sql.append(" WHERE r.profileid=p.profileid");
+	        sql.append(" AND p.name in (");
+	        for (int i = 0; i < saProfiles.length; i++) {
+	          if (i > 0) {
+	            sql.append(",");
+	          }
+	          sql.append("'" + StringEscapeUtils.escapeSql(saProfiles[i]) + "'");
+	        }
+	        sql.append(")");
+	        if (anFlowId > 0) {
+	          sql.append(" AND r.flowid=?" + anFlowId);
+	        }
+	        sql.append(" AND f.flowid=r.flowid");
+	        sql.append(" AND f.organizationid LIKE ?");
+	        sql.append(" ORDER BY flowid");
+	        pst = db.prepareStatement(sql.toString());
+	        pst.setInt(1, anFlowId);
+	        pst.setString(2, userInfo.getCompanyID());
+	        
+	        rs = pst.executeQuery(sql.toString());
+	        altmp = new ArrayList<FlowRolesTO>();
+	        while (rs.next()) {
+	          int flowid = rs.getInt(FlowRolesTO.FLOW_ID);
+	          ProfilesTO profile = new ProfilesTO(rs.getInt(FlowRolesTO.PROFILE_ID), rs.getString(ProfilesTO.NAME), rs
+	              .getString(ProfilesTO.DESCRIPTION), userInfo.getCompanyID());
+	          String permissions = rs.getString(FlowRolesTO.PERMISSIONS);
+	          fr = new FlowRolesTO(flowid, profile, permissions);
+	          altmp.add(fr);
+	        }
+	        rs.close();
+	        rs = null;
+	      } catch (Exception e) {
+	        Logger.error(userInfo.getUtilizador(), this, "getUserFlowRoles", "exception caught: " + e.getMessage(), e);
+	      } finally {
+	        DatabaseInterface.closeResources(db, pst, rs);
+	      }
+	    }
 
-    if (altmp != null) {
-      retObj = altmp.toArray(new FlowRolesTO[altmp.size()]);
-    }
+	    if (altmp != null) {
+	      retObj = altmp.toArray(new FlowRolesTO[altmp.size()]);
+	    }
 
-    return retObj;
-  }
+	    return retObj;
+	  }
 
   public FlowRolesTO[] getAllUserFlowRoles(UserInfoInterface userInfo) {
     FlowRolesTO[] fr = this.getUserFlowRoles(userInfo, -1);
