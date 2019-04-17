@@ -1507,99 +1507,59 @@ public class ProcessManagerBean implements ProcessManager {
    * @see pt.iflow.api.core.ProcessManager#getFlowStateLogs(pt.iflow.api.utils.UserInfoInterface, int, java.lang.String, int, int)
    */
   public List<FlowStateLogTO> getFlowStateLogs(UserInfoInterface userInfo, int flowid, String pnumber, int subpid, int state) {
-    String login = userInfo.getUtilizador();
-    Connection db = null;
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    List<FlowStateLogTO> retObj = new ArrayList<FlowStateLogTO>();
-    try {
-      db = DatabaseInterface.getConnection(userInfo);
-      StringBuffer query = new StringBuffer();
-      query.append("SELECT pid FROM process");
-      query.append(" WHERE closed=0 and flowid=" + flowid);
-      if(subpid > 0) {
-        query.append(" AND subpid=" + subpid);
-      }
-      query.append(" AND pnumber LIKE '" + pnumber + "'");
-      if (Logger.isDebugEnabled()) {
-        Logger.debug(login, this, "getFlowStateLogs", "QUERY=" + query.toString());
-      }
-      pst = db.prepareStatement(query.toString());
-      rs = pst.executeQuery();
-      int pid = -1;
-      if(rs.next()) {
-        pid = rs.getInt("pid");
-      } else {
-        try {
-          pid = Integer.parseInt(pnumber);
-        } catch(NumberFormatException ex) {
-          Logger.error(login, this, "getFlowStateLogs", "[pnumber: " + pnumber + "] Unable to get PID from pnumber=" + pnumber, ex);
-          DatabaseInterface.closeResources(db, pst, rs);
-          return retObj;
-        }
-      }
-      DatabaseInterface.closeResources(rs);
-      rs = null;
-      /*query = new StringBuffer();
-      query.append("SELECT log.*");
-      query.append(" FROM " + FlowStateLogTO.TABLE_NAME + " as fsl");
-      query.append(", " + LogTO.TABLE_NAME + " as log");
-      query.append(" WHERE fsl." + FlowStateLogTO.LOG_ID + "=log." + LogTO.LOG_ID);
-      query.append(" AND fsl." + FlowStateLogTO.FLOW_ID + "=" + flowid);
-      query.append(" AND fsl." + FlowStateLogTO.PID + "=" + pid);
-      if(subpid > 0) {
-        query.append(" AND fsl." + FlowStateLogTO.SUBPID + "=" + subpid);
-      }
-      query.append(" AND fsl." + FlowStateLogTO.STATE + "=" + state);*/
-      
-      query = new StringBuffer();
-      query.append("SELECT log.*");
-      query.append(" FROM ? as fsl");
-      query.append(", ? as log");
-      query.append(" WHERE fsl.?=log.?");
-      query.append(" AND fsl.?=?");
-      query.append(" AND fsl.?=?" );
-      if(subpid > 0) {
-        query.append(" AND fsl.?=?");
-      }
-      query.append(" AND fsl.?=?");
-      
-      if (Logger.isDebugEnabled()) {
-        Logger.debug(login, this, "getFlowStateLogs","QUERY=" + query.toString());
-      }
-      pst = db.prepareStatement(query.toString());
-      pst.setString(1, FlowStateLogTO.TABLE_NAME);
-      pst.setString(2, LogTO.TABLE_NAME);
-      pst.setString(3, FlowStateLogTO.LOG_ID);
-      pst.setString(4, LogTO.LOG_ID);
-      pst.setString(5, FlowStateLogTO.FLOW_ID);
-      pst.setInt(6, flowid);
-      pst.setString(7, FlowStateLogTO.PID);
-      pst.setInt(8, pid);
-      if(subpid > 0) {
-    	  	pst.setString(9, FlowStateLogTO.SUBPID);
-      		pst.setInt(10, subpid);
-      		pst.setString(11, FlowStateLogTO.STATE);
-      		pst.setInt(12, state);
-      } else {
-    	  pst.setString(9, FlowStateLogTO.STATE);
-    	  pst.setInt(10, state);  
-      }
-
-      rs = pst.executeQuery();
-      while (rs.next()) {
-        LogTO log = new LogTO(rs.getInt(LogTO.LOG_ID), rs.getString(LogTO.USERNAME), 
-            rs.getString(LogTO.CALLER), rs.getString(LogTO.METHOD), rs.getString(LogTO.LOG), 
-            rs.getTimestamp(LogTO.CREATION_DATE));
-        retObj.add(new FlowStateLogTO(flowid, pid, subpid, state, log));
-      }
-    } catch (Exception ex) {
-      Logger.error(login, this, "getFlowStateLogs", "[pnumber: " + pnumber + "] Caught exception:  ", ex);
-    } finally {
-      DatabaseInterface.closeResources(db, pst, rs);
-    }
-    return retObj;
-  }
+	    String login = userInfo.getUtilizador();
+	    Connection db = null;	    
+	    PreparedStatement pst = null;
+	    ResultSet rs = null;
+	    List<FlowStateLogTO> retObj = new ArrayList<FlowStateLogTO>();
+	    try {
+	      db = DatabaseInterface.getConnection(userInfo);
+	      final String query = "SELECT pid FROM process WHERE closed=0 and flowid=? AND subpid=? AND pnumber LIKE ? ";
+	      pst = db.prepareStatement(query);
+	      pst.setInt(1, flowid);
+	      pst.setInt(2, subpid);
+	      pst.setString(3, pnumber);
+	      if (Logger.isDebugEnabled()) {
+	        Logger.debug(login, this, "getFlowStateLogs", "QUERY=" + query.toString());
+	      }
+	      rs = pst.executeQuery();
+	      int pid = -1;
+	      if(rs.next()) {
+	        pid = rs.getInt("pid");
+	      } else {
+	        try {
+	          pid = Integer.parseInt(pnumber);
+	        } catch(NumberFormatException ex) {
+	          Logger.error(login, this, "getFlowStateLogs", "[pnumber: " + pnumber + "] Unable to get PID from pnumber=" + pnumber, ex);
+	          DatabaseInterface.closeResources(db, pst, rs);
+	          return retObj;
+	        }
+	      }
+	      DatabaseInterface.closeResources(rs);
+	      rs = null;
+	      final String query2 = "SELECT log.* FROM flow_state_log as fsl, log as log WHERE fsl.log_id=log.log_id AND fsl.flowid=? AND fsl.pid=? AND fsl.subpid=? AND fsl.state=? ";
+	      pst = db.prepareStatement(query2);
+	      pst.setInt(1, flowid);
+	      pst.setInt(2, pid);
+	      pst.setInt(3, subpid);
+	      pst.setInt(4, state);
+	      if (Logger.isDebugEnabled()) {
+	        Logger.debug(login, this, "getFlowStateLogs","QUERY=" + query.toString());
+	      }
+	      rs = pst.executeQuery();
+	      while (rs.next()) {
+	        LogTO log = new LogTO(rs.getInt(LogTO.LOG_ID), rs.getString(LogTO.USERNAME), 
+	            rs.getString(LogTO.CALLER), rs.getString(LogTO.METHOD), rs.getString(LogTO.LOG), 
+	            rs.getTimestamp(LogTO.CREATION_DATE));
+	        retObj.add(new FlowStateLogTO(flowid, pid, subpid, state, log));
+	      }
+	    } catch (Exception ex) {
+	      Logger.error(login, this, "getFlowStateLogs", "[pnumber: " + pnumber + "] Caught exception:  ", ex);
+	    } finally {
+	      DatabaseInterface.closeResources(db, pst, rs);
+	    }
+	    return retObj;
+	  }
   
   /*
    * (non-Javadoc)
@@ -1875,9 +1835,7 @@ public class ProcessManagerBean implements ProcessManager {
 
       String escapedUserId = escapeSQL(userid);
 
-      final String activityDelegationsQuery = "select * from activity_delegated where userid=? and flowid=? and pid=? and subpid=?" ;
-     
-      
+      final String activityDelegationsQuery = "select * from activity_delegated where userid=? and flowid=? and pid=? and subpid=?" ;           
       pst = db.prepareStatement(activityDelegationsQuery);
       pst.setString(1,escapedUserId);
       pst.setInt(2, flowid);
@@ -1900,10 +1858,12 @@ public class ProcessManagerBean implements ProcessManager {
         result.mid = rs.getInt("mid");
       } else {
         rs.close();
-        final String activityiesQuery = "select * from activity where userid='" + escapedUserId + "'" + " and flowid=" + flowid
-            + " and pid=" + pid + " and subpid=" + subpid;
-        
+        final String activityiesQuery = "select * from activity where userid=? and flowid=? and pid=? and subpid=? ";
         pst = db.prepareStatement(activityiesQuery);
+        pst.setString(1,escapedUserId);
+        pst.setInt(2, flowid);
+        pst.setInt(3, pid);
+        pst.setInt(4, subpid);
         rs = pst.executeQuery(activityiesQuery);
         pst.close();
 
@@ -2163,25 +2123,12 @@ public class ProcessManagerBean implements ProcessManager {
 
       if (activity.pid > 0) {
        // when the pid is specified, get all activity owners
-       final StringBuilder sbQuery = new StringBuilder("select distinct userid from activity where pid= ?");
-       // sbQuery.append(activity.pid);
-        if (activity.flowid > 0) {
-          sbQuery.append(" and flowid=?");
-        }
-        if (activity.subpid > 0) {
-          sbQuery.append(" and subpid=?");
-        }
+       final String sbQuery = "select distinct userid from activity where pid= ? and flowid=? and subpid=?";       
         
         pst = db.prepareStatement(sbQuery.toString());
         pst.setInt(1, activity.pid);
-        if (activity.flowid > 0 ) {
-        	pst.setInt(2, activity.flowid);
-        	if (activity.subpid > 0)
-        		pst.setInt(3, activity.subpid);
-          }
-        else if(activity.subpid > 0) {
-        	pst.setInt(2, activity.subpid);
-          }
+        pst.setInt(2, activity.flowid);
+		pst.setInt(3, activity.subpid);
         rs = pst.executeQuery();
 
         while (rs.next()) {
@@ -2193,22 +2140,24 @@ public class ProcessManagerBean implements ProcessManager {
       } else {
 
         // check if this is a delegated activity
-        final StringBuilder sbQueryHierarchy = new StringBuilder("select ownerid from activity_hierarchy where flowid=");
-        sbQueryHierarchy.append(activity.flowid).append(" and userid='").append(escapeSQL(activity.userid)).append("'");
-        db.prepareStatement(sbQueryHierarchy.toString());
+        final String sbQueryHierarchy = "select ownerid from activity_hierarchy where flowid=? and userid=? ";
+        pst = db.prepareStatement(sbQueryHierarchy);
+        pst.setInt(1,activity.flowid);
+        pst.setString(2, escapeSQL(activity.userid));
         rs = pst.executeQuery();
 
         while (rs.next()) {
           lUsers.add(rs.getString("ownerid"));
         }
         rs.close();
+        pst.close();
         rs = null;
 
         // when the userInfo user, is also the owner of a process
-        StringBuilder sbQueryActivity = new StringBuilder();
-        sbQueryActivity.append("select count(1) from activity where flowid="); // just check if exists
-        sbQueryActivity.append(activity.flowid).append(" and userid='").append(escapeSQL(activity.userid)).append("'");
-        db.prepareStatement(sbQueryActivity.toString());
+        final String sbQueryActivity = "select count(1) from activity where flowid=? and userid=? ";
+        pst = db.prepareStatement(sbQueryActivity);
+        pst.setInt(1,activity.flowid);
+        pst.setString(2, escapeSQL(activity.userid));
         rs = pst.executeQuery();
 
         if (rs.next()) {
@@ -2856,15 +2805,11 @@ public class ProcessManagerBean implements ProcessManager {
       db = DatabaseInterface.getConnection(userInfo);
       db.setAutoCommit(true);
      
-
-      final String userFilter = "userid='?'";
-
-      StringBuilder query = new StringBuilder();
-      query.append("select * from (select userid,flowid,pid,subpid,type,priority,created,started,archived,description,url,status,notify,delegated,profilename,read_flag,mid from activity where ");
-      query.append(userFilter).append(" union select userid,flowid,pid,subpid,type,priority,created,started,archived,description,url,status,notify,delegated,profilename,read_flag,mid from activity_history where ");
-      query.append(userFilter).append(" and archived is not null and undoflag=0) order by created desc");
+      final String query = "select * from (select userid,flowid,pid,subpid,type,priority,created,started,archived,description,url,status,notify,delegated,profilename,read_flag,mid from activity where userid=? " +
+    	  " union select userid,flowid,pid,subpid,type,priority,created,started,archived,description,url,status,notify,delegated,profilename,read_flag,mid from activity_history where userid=? " +
+    	  " and archived is not null and undoflag=0) order by created desc";
       
-      pst = db.prepareStatement(query.toString());
+      pst = db.prepareStatement(query);
       pst.setString(1, escapeSQL(userid));
       pst.setString(2, escapeSQL(userid));
       rs = pst.executeQuery();
@@ -2962,11 +2907,14 @@ public class ProcessManagerBean implements ProcessManager {
 
       if (retObj == null) {
         // get activities for this process and delegated user
-        final StringBuilder activityDelegatedQuery = new StringBuilder("select userid,url from activity_delegated where flowid=");
-        activityDelegatedQuery.append(flowid).append(" and pid=").append(pid).append(" and subpid=").append(subpid);
+        final StringBuilder activityDelegatedQuery = new StringBuilder("select userid,url from activity_delegated where flowid= ? ");
+        activityDelegatedQuery.append(" and pid=? and subpid=?");
 
         Logger.debug(login, this, "getUserProcessUrl", "Query2=" + activityDelegatedQuery);
         st = db.prepareStatement(activityDelegatedQuery.toString());
+        st.setInt(1, flowid);
+        st.setInt(2, pid);
+        st.setInt(3, subpid);
         rs = st.executeQuery();
 
         while (rs.next()) {
@@ -3336,226 +3284,220 @@ public class ProcessManagerBean implements ProcessManager {
    */
   public void updateActivity(UserInfoInterface userInfo, Activity activity, List<String> aalGroupProcs) {
 
-    String userid = userInfo.getUtilizador();
+	    String userid = userInfo.getUtilizador();
 
-    Logger.trace(this, "updateActivity", "Call for user=" + userid + ", flowid=" + activity.flowid + ", pid=" + activity.pid
-        + ", subpid=" + activity.subpid + ", description=" + activity.description + ", url=" + activity.url + ", read=" + activity.isRead() 
-        + " and GROUPPROCS=" + aalGroupProcs);
+	    Logger.trace(this, "updateActivity", "Call for user=" + userid + ", flowid=" + activity.flowid + ", pid=" + activity.pid
+	        + ", subpid=" + activity.subpid + ", description=" + activity.description + ", url=" + activity.url + ", read=" + activity.isRead() 
+	        + " and GROUPPROCS=" + aalGroupProcs);
 
-    if (activity.pid == Const.nSESSION_PID) {
-      Logger.debug(userid, this, "updateActivity", "Process still in session... returning");
-      return;
-    }
+	    if (activity.pid == Const.nSESSION_PID) {
+	      Logger.debug(userid, this, "updateActivity", "Process still in session... returning");
+	      return;
+	    }
 
-    Connection db = null;
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    PreparedStatement pst2 = null;
-    ResultSet rs2 = null;
-    List<String> alNotify = new ArrayList<String>();
+	    Connection db = null;
+	    PreparedStatement pst = null;
+	    ResultSet rs = null;
+	    PreparedStatement pst2 = null;
+	    ResultSet rs2 = null;
+	    List<String> alNotify = new ArrayList<String>();
 
-    int nUpdatedRows = 0;
-    boolean bHasActivities = false;
+	    int nUpdatedRows = 0;
+	    boolean bHasActivities = false;
 
-    try {
-      db = DatabaseInterface.getConnection(userInfo);
-      db.setAutoCommit(false);
-      pst = (PreparedStatement) db.createStatement();
-      pst2 = (PreparedStatement) db.createStatement();
+	    try {
+	      db = DatabaseInterface.getConnection(userInfo);
+	      db.setAutoCommit(false);	      
 
-      // first check if there are activities for this process
-      final StringBuilder sbActivitiesQuery = new StringBuilder("select userid,notify,delegated from activity where flowid=");
-      sbActivitiesQuery.append(activity.flowid).append(" and pid=").append(activity.pid);
-      sbActivitiesQuery.append(" and subpid=").append(activity.subpid);
-      Logger.debug(userid, this, "updateActivity", "Query1=" + sbActivitiesQuery.toString());
-      pst = db.prepareStatement(sbActivitiesQuery.toString());
-      rs = pst.executeQuery();
-      pst.close();
-      while (rs.next()) {
-        bHasActivities = true;
-        if (rs.getInt("notify") == 1) {
-          String user = rs.getString("userid");
+	      // first check if there are activities for this process
+	      final String sbActivitiesQuery = "select userid,notify,delegated from activity where flowid=? and pid=? and subpid=?";
+	      Logger.debug(userid, this, "updateActivity", "Query1=" + sbActivitiesQuery.toString());
+	      pst=db.prepareStatement(sbActivitiesQuery);
+	      pst.setInt(1, activity.flowid);
+	      pst.setInt(2, activity.pid);
+	      pst.setInt(3, activity.subpid);
+	      rs = pst.executeQuery();
+	      while (rs.next()) {
+	        bHasActivities = true;
+	        if (rs.getInt("notify") == 1) {
+	          String user = rs.getString("userid");
 
-          if (rs.getInt("delegated") == 1) {
-            /* if it is a delegated activity */
-            final StringBuilder sbDelegatedActivity = new StringBuilder("select userid from activity_delegated where flowid=?");
-            sbDelegatedActivity.append(" and pid=?").append(" and subpid=?");
-            //sbDelegatedActivity.append();//.append(" and slave=1");
-            sbDelegatedActivity.append(" and ownerid='?'");
-                      
-            
-            pst2 = db.prepareStatement(sbDelegatedActivity.toString());
-            pst2.setInt(1, activity.flowid);
-            pst2.setInt(2, activity.pid);
-            pst2.setInt(3, activity.subpid);
-            pst2.setString(4, escapeSQL(user));
-            
-            rs2 = pst2.executeQuery();
-            
-            if (rs2.next()) {
-              user = rs2.getString("userid");
-            }
-            rs2.close();
-          }
+	          if (rs.getInt("delegated") == 1) {
+	            /* if it is a delegated activity */
+	            final String sbDelegatedActivity = "select userid from activity_delegated where flowid=? and pid=? and subpid=? and ownerid=?";
+	            pst2 = db.prepareStatement(sbDelegatedActivity);
+	            pst2.setInt(1, activity.flowid);
+	  	      	pst2.setInt(2, activity.pid);
+	  	      	pst2.setInt(3, activity.subpid);
+	  	      	pst2.setString(4, escapeSQL(user));
+	            rs2 = pst2.executeQuery();
+	            if (rs2.next()) {
+	              user = rs2.getString("userid");
+	            }
+	            rs2.close();
+	            pst2.close();
+	          }
 
-          if (!StringUtils.equals(user, userid)) {
-            alNotify.add(user);
-          }
-        }
-      }
-      rs.close();
-      rs = null;
+	          if (!StringUtils.equals(user, userid)) {
+	            alNotify.add(user);
+	          }
+	        }
+	      }
+	      rs.close();
+	      rs = null;
 
-      pst2.close();
-      pst2 = null;
+	      pst2.close();
+	      pst2 = null;
 
-      if (bHasActivities) {
-        // update activity
+	      if (bHasActivities) {
+	        // update activity
 
-        boolean bUpdate = true;
+	        boolean bUpdate = true;
 
-        if (aalGroupProcs != null) {
-          // TODO since the introduction of subpids, this part of allGroupProcs
-          // has not been changed
-          // throw exception to avoid unexpected behaviour!
-          throw new UnsupportedOperationException();
-          
-//          // check if other procs exist in same state and same user
-//          final StringBuilder sbActivityCountQuery = new StringBuilder("select count(1) from activity where flowid=");
-//          sbActivityCountQuery.append(activity.flowid);
-//          if (aalGroupProcs.size() > 0) {
-//            sbActivityCountQuery.append(" and pid in (");
-//            for (int ii = 0; ii < aalGroupProcs.size(); ii++) {
-//              if (ii > 0) {
-//                sbActivityCountQuery.append(",");
-//              }
-//              sbActivityCountQuery.append((String) aalGroupProcs.get(ii));
-//            }
-//            sbActivityCountQuery.append(")");
-//          }
-//          sbActivityCountQuery.append(" and pid<>").append(activity.pid);
-//          sbActivityCountQuery.append(" and description='").append(escapeSQL(activity.description)).append("'");
-//
-//          Logger.debug(userid, this, "updateActivity", "Query(GROUP)=" + sbActivityCountQuery);
-//
-//          ntmp = -1;
-//          rs = st.executeQuery(sbActivityCountQuery.toString());
-//          if (rs.next()) {
-//            ntmp = rs.getInt(1);
-//          }
-//          rs.close();
-//          rs = null;
-//
-//          Logger.debug(userid, this, "updateActivity", "Query(GROUP) COUNT=" + ntmp);
-//
-//          if (ntmp > 0) {
-//            // found at least one activity for group with same
-//            // description.. abort this activity
-//            bUpdate = false;
-//          }
-        }
+	        if (aalGroupProcs != null) {
+	          // TODO since the introduction of subpids, this part of allGroupProcs
+	          // has not been changed
+	          // throw exception to avoid unexpected behaviour!
+	          throw new UnsupportedOperationException();
+	          
+//	          // check if other procs exist in same state and same user
+//	          final StringBuilder sbActivityCountQuery = new StringBuilder("select count(1) from activity where flowid=");
+//	          sbActivityCountQuery.append(activity.flowid);
+//	          if (aalGroupProcs.size() > 0) {
+//	            sbActivityCountQuery.append(" and pid in (");
+//	            for (int ii = 0; ii < aalGroupProcs.size(); ii++) {
+//	              if (ii > 0) {
+//	                sbActivityCountQuery.append(",");
+//	              }
+//	              sbActivityCountQuery.append((String) aalGroupProcs.get(ii));
+//	            }
+//	            sbActivityCountQuery.append(")");
+//	          }
+//	          sbActivityCountQuery.append(" and pid<>").append(activity.pid);
+//	          sbActivityCountQuery.append(" and description='").append(escapeSQL(activity.description)).append("'");
+	//
+//	          Logger.debug(userid, this, "updateActivity", "Query(GROUP)=" + sbActivityCountQuery);
+	//
+//	          ntmp = -1;
+//	          rs = st.executeQuery(sbActivityCountQuery.toString());
+//	          if (rs.next()) {
+//	            ntmp = rs.getInt(1);
+//	          }
+//	          rs.close();
+//	          rs = null;
+	//
+//	          Logger.debug(userid, this, "updateActivity", "Query(GROUP) COUNT=" + ntmp);
+	//
+//	          if (ntmp > 0) {
+//	            // found at least one activity for group with same
+//	            // description.. abort this activity
+//	            bUpdate = false;
+//	          }
+	        }
 
-        if (bUpdate) {
-          // update proc activities
-          final StringBuilder sbUpdateActivity = new StringBuilder("update activity set ");
-          if (activity.notify) {
-            sbUpdateActivity.append("notify=0,");
-          }
-          if (activity.mid > 0) {
-            sbUpdateActivity.append("mid=").append(activity.mid).append(",");
-          }
-          sbUpdateActivity.append("description='?");
-          sbUpdateActivity.append("',url='?");
-          sbUpdateActivity.append("' where flowid=?");
-          sbUpdateActivity.append(" and pid=?");
-          sbUpdateActivity.append(" and subpid=?");
+	        if (bUpdate) {
+	          // update proc activities
+	          final StringBuilder sbUpdateActivity = new StringBuilder("update activity set ");
+	          if (activity.notify) {
+	            sbUpdateActivity.append("notify=0,");
+	          }
+	          if (activity.mid > 0) {
+	            sbUpdateActivity.append("mid=?,");
+	          }
+	          sbUpdateActivity.append("description=?,url=? where flowid=? and pid=? and subpid=?");
 
-          Logger.debug(userid, this, "updateActivity", "Update: Query2(UPD)=" + sbUpdateActivity);
-          pst = db.prepareStatement(sbUpdateActivity.toString());
-          pst.setString(1, escapeSQL(activity.description));
-          pst.setString(2, escapeSQL(activity.url));
-          pst.setInt(3, activity.flowid);
-          pst.setInt(4, activity.pid);
-          pst.setInt(5, activity.subpid);
-         
-          
-          nUpdatedRows = pst.executeUpdate();
-          pst.close();
-          Logger.debug(userid, this, "updateActivity", nUpdatedRows + " activities updated.");
-          
+	          Logger.debug(userid, this, "updateActivity", "Update: Query2(UPD)=" + sbUpdateActivity);
+	          pst = db.prepareStatement(sbUpdateActivity.toString());
+	          int index=1;
+	          if (activity.mid > 0)
+	        	  pst.setInt(index++, activity.mid);
+	          pst.setString(index++, escapeSQL(activity.description));
+	          pst.setString(index++, escapeSQL(activity.url));
+	          pst.setInt(index++, activity.flowid);
+	          pst.setInt(index++, activity.pid);
+	          pst.setInt(index++, activity.subpid);
+	          nUpdatedRows = pst.executeUpdate(sbUpdateActivity.toString());
+	          pst.close();
+	          Logger.debug(userid, this, "updateActivity", nUpdatedRows + " activities updated.");
+	          
 
-          if (activity.isRead()) {
-            // update user activity to read
-            final StringBuilder sbUpdateActivityRead = new StringBuilder("update activity set ");
-            sbUpdateActivityRead.append("read_flag=1");
-            sbUpdateActivityRead.append(" where flowid=").append(activity.flowid);
-            sbUpdateActivityRead.append(" and pid=").append(activity.pid);
-            sbUpdateActivityRead.append(" and subpid=").append(activity.subpid);
-            sbUpdateActivityRead.append(" and read_flag=0");
-            sbUpdateActivityRead.append(" and userid='").append(escapeSQL(userid)).append("'");
+	          if (activity.isRead()) {
+	            // update user activity to read
+	            final StringBuilder sbUpdateActivityRead = new StringBuilder("update activity set ");
+	            sbUpdateActivityRead.append("read_flag=1");
+	            sbUpdateActivityRead.append(" where flowid=?");
+	            sbUpdateActivityRead.append(" and pid=?");
+	            sbUpdateActivityRead.append(" and subpid=?");
+	            sbUpdateActivityRead.append(" and read_flag=0");
+	            sbUpdateActivityRead.append(" and userid=?");
 
-            Logger.debug(userid, this, "updateActivity", "Update: Query Read=" + sbUpdateActivityRead);
-            pst = db.prepareStatement(sbUpdateActivityRead.toString());
-            nUpdatedRows = pst.executeUpdate();
-            pst.close();
-            
-            Logger.debug(userid, this, "updateActivity", nUpdatedRows + " activities updated as read.");
-          }
+	            Logger.debug(userid, this, "updateActivity", "Update: Query Read=" + sbUpdateActivityRead);
+	            pst = db.prepareStatement(sbUpdateActivityRead.toString());
+	            pst.setInt(1, activity.flowid);
+	            pst.setInt(2, activity.pid);
+		        pst.setInt(3, activity.subpid);
+		        pst.setString(4, escapeSQL(userid));
+	            nUpdatedRows = pst.executeUpdate();
+	            pst.close();
+	            Logger.debug(userid, this, "updateActivity", nUpdatedRows + " activities updated as read.");
+	          }
 
-        
-        } else {
-          // delete proc activities
-          final StringBuilder sbDeleteActivity = new StringBuilder("delete from activity ");
-          sbDeleteActivity.append(" where flowid=").append(activity.flowid);
-          sbDeleteActivity.append(" and pid=").append(activity.pid);
-          sbDeleteActivity.append(" and subpid=").append(activity.subpid);
+	        
+	        } else {
+	          // delete proc activities
+	          final StringBuilder sbDeleteActivity = new StringBuilder("delete from activity ");
+	          sbDeleteActivity.append(" where flowid=?");
+	          sbDeleteActivity.append(" and pid=?");
+	          sbDeleteActivity.append(" and subpid=?");
 
-          Logger.debug(userid, this, "updateActivity", "Delete: Query2(DEL)=" + sbDeleteActivity);
-          pst = db.prepareStatement(sbDeleteActivity.toString());
-          nUpdatedRows = pst.executeUpdate();
-          pst.close();
-          
-          Logger.info(userid, this, "updateActivity", 
-              "deleted " + nUpdatedRows + " activities for flow " + 
-              activity.flowid + " and pid " + activity.pid);
-        }
+	          Logger.debug(userid, this, "updateActivity", "Delete: Query2(DEL)=" + sbDeleteActivity);
+	          pst = db.prepareStatement(sbDeleteActivity.toString());
+	          pst.setInt(1, activity.flowid);
+	          pst.setInt(2, activity.pid);
+	          pst.setInt(3, activity.subpid);
+	          nUpdatedRows = pst.executeUpdate(sbDeleteActivity.toString());	          
+	          pst.close();
+	          Logger.info(userid, this, "updateActivity", 
+	              "deleted " + nUpdatedRows + " activities for flow " + 
+	              activity.flowid + " and pid " + activity.pid);
+	        }
 
-        DatabaseInterface.commitConnection(db);
-        // free db connections
-        DatabaseInterface.closeResources(db, pst, rs, pst2, rs2);
-        db = null;
-        pst = pst2 = null; 
-        rs = rs2 = null;
+	        DatabaseInterface.commitConnection(db);
+	        // free db connections
+	        DatabaseInterface.closeResources(db, pst, rs, pst2, rs2);
+	        db = null;
+	        pst = pst2 = null; 
+	        rs = rs2 = null;
 
-        if (bUpdate && activity.notify && alNotify != null && alNotify.size() > 0) {
-          HashMap<String,String> cache = new HashMap<String, String>();
-          for (String user : alNotify) {
-            Activity a = new Activity(user, activity.flowid, activity.pid, activity.subpid, activity.type, activity.priority,
-                activity.description, activity.url, 1);
-            String pnum = getActivityPNumber(userInfo, cache, a);
-            this.notifyUserActivity(userInfo, a, pnum);
-          }
-        }
-      } else {
-        // do nothing... no activities...
-        Logger.warning(userid, this, "updateActivity", 
-            "Trying to update activities for proc " + activity.pid + " in flow "
-            + activity.flowid + " with mid=" + activity.mid + ", URL="
-            + activity.url + ", DESC=" + activity.description + " but NO ACTIVITIES scheduled.");
-      }
+	        if (bUpdate && activity.notify && alNotify != null && alNotify.size() > 0) {
+	          HashMap<String,String> cache = new HashMap<String, String>();
+	          for (String user : alNotify) {
+	            Activity a = new Activity(user, activity.flowid, activity.pid, activity.subpid, activity.type, activity.priority,
+	                activity.description, activity.url, 1);
+	            String pnum = getActivityPNumber(userInfo, cache, a);
+	            this.notifyUserActivity(userInfo, a, pnum);
+	          }
+	        }
+	      } else {
+	        // do nothing... no activities...
+	        Logger.warning(userid, this, "updateActivity", 
+	            "Trying to update activities for proc " + activity.pid + " in flow "
+	            + activity.flowid + " with mid=" + activity.mid + ", URL="
+	            + activity.url + ", DESC=" + activity.description + " but NO ACTIVITIES scheduled.");
+	      }
 
-    } catch (Exception e) {
-      Logger.error(userid, this, "updateActivity", "exception: " + e.getMessage(), e);
-      try {
-        if (db != null)
-          DatabaseInterface.rollbackConnection(db);
-      }
-      catch (Exception ei) {}
-      }
-    finally {
-      DatabaseInterface.closeResources(db, pst, rs, pst2, rs2);
-    }
-  }
+	    } catch (Exception e) {
+	      Logger.error(userid, this, "updateActivity", "exception: " + e.getMessage(), e);
+	      try {
+	        if (db != null)
+	          DatabaseInterface.rollbackConnection(db);
+	      }
+	      catch (Exception ei) {}
+	      }
+	    finally {
+	      DatabaseInterface.closeResources(db, pst, rs, pst2, rs2);
+	    }
+	  }
 
   /*
    * (non-Javadoc)
@@ -3976,8 +3918,7 @@ public class ProcessManagerBean implements ProcessManager {
       pst.setInt(2, pid);
       pst.setInt(3, subpid);
       pst.setInt(4, targetMid);
-      rs = pst.executeQuery();
-      pst.close();
+      rs = pst.executeQuery();      
       if (!rs.next()) {
         rs.close();
         rs = null;
@@ -3986,17 +3927,24 @@ public class ProcessManagerBean implements ProcessManager {
       String modUser = rs.getString("muser");
       rs.close();
       rs = null;
-
-      rs = pst.executeQuery("select min(mid) from activity_history where flowid=" + flowid 
-          + " and pid=" + pid + " and subpid=" + subpid
-          + " and mid>=" + targetMid + " and undoflag=0");
+      pst.close();
+      
+      pst = db.prepareStatement("select min(mid) from activity_history where flowid= ?"   
+          + " and pid=? and subpid= ?"  
+          + " and mid>=? and undoflag=0");
+      pst.setInt(1, flowid);
+      pst.setInt(2, pid);
+      pst.setInt(3, subpid);
+      pst.setInt(4, targetMid);
+      rs = pst.executeQuery();
       int actMid = -1;
       if (rs.next()) {
         actMid = rs.getInt(1);
       }
       rs.close();
       rs = null;
-
+      pst.close();
+      
       String defUrl = Block.getDefaultUrl(userInfo, procData);
       String desc = userInfo.getMessages().getString("ProcessManagerBean.undo.description");
 
@@ -4006,10 +3954,14 @@ public class ProcessManagerBean implements ProcessManager {
         
         this.deleteAllActivities(userInfo, procData);
                 
-        rs = pst.executeQuery("select * from activity_history where flowid=" + flowid 
-            + " and pid=" + pid + " and subpid=" + subpid
-            + " and mid=" + actMid + " and undoflag=0");
-        
+        pst = db.prepareStatement("select * from activity_history where flowid=?"  
+            + " and pid=? and subpid=? " 
+            + " and mid=? and undoflag=0");
+        pst.setInt(1, flowid);
+        pst.setInt(2, pid);
+        pst.setInt(3, subpid);
+        pst.setInt(4, actMid);
+        rs = pst.executeQuery();
         while(rs.next()) {
           Activity a = new Activity(rs.getString("userid"), flowid, pid, subpid, rs.getInt("type"), 
               rs.getInt("priority"), rs.getTimestamp("created"), rs.getTimestamp("started"), null, 
@@ -4023,9 +3975,14 @@ public class ProcessManagerBean implements ProcessManager {
         rs.close();
         rs = null;
         pst.close();
-        pst = db.prepareStatement("update activity_history set undoflag=1 where flowid=" + flowid 
-                + " and pid=" + pid + " and subpid=" + subpid
-                + " and mid>=" + actMid);
+        
+        pst = db.prepareStatement("update activity_history set undoflag=1 where flowid=?" 
+                + " and pid=? and subpid=?"
+                + " and mid>= ?");
+        pst.setInt(1, flowid);
+        pst.setInt(2, pid);
+        pst.setInt(3, subpid);
+        pst.setInt(4, actMid);
         pst.executeUpdate();
         pst.close();
       }
@@ -4040,12 +3997,16 @@ public class ProcessManagerBean implements ProcessManager {
         sb.append(" and subpid=").append(subpid);
         
         pst = db.prepareStatement(sb.toString());
-        pst.executeUpdate();       
+        pst.executeUpdate();  
+        pst.close();
       }
       
       // check at least 1 activity
-      pst = db.prepareStatement("select * from activity where flowid=" + flowid 
-              + " and pid=" + pid + " and subpid=" + subpid);
+      pst = db.prepareStatement("select * from activity where flowid=?" 
+              + " and pid=? and subpid=?");
+      pst.setInt(1, flowid);
+      pst.setInt(2, pid);
+      pst.setInt(3, subpid);
       rs = pst.executeQuery();
       if (!rs.next()) {
         Activity a = new Activity(modUser, flowid, pid, subpid, 0, 0, desc, defUrl);
@@ -4835,8 +4796,7 @@ public class ProcessManagerBean implements ProcessManager {
               continue;
             }
             StringBuilder sbQuery = new StringBuilder();
-            sbQuery.append("select pid, userid from activity where flowid=");
-            sbQuery.append(sFid);
+            sbQuery.append("select pid, userid from activity where flowid=?");
             sbQuery.append(" and pid in (");
             for (int i = 0; i < alFlowPids.size(); i++) {
               if (i > 0) {
@@ -4848,6 +4808,7 @@ public class ProcessManagerBean implements ProcessManager {
             Map<String, List<String>> hmPidUsers = new HashMap<String, List<String>>();
             Logger.debug(userInfo.getUtilizador(), this, "getUserProcesses", "Executing query: " + sbQuery);
             pst1 = db.prepareStatement(sbQuery.toString());
+            pst1.setInt(1, Integer.valueOf(sFid));
             rs = pst1.executeQuery();
             List<String> alPidUsers = new ArrayList<String>();
             while (rs != null && rs.next()) {
@@ -5024,7 +4985,7 @@ public class ProcessManagerBean implements ProcessManager {
 	            Map<String, List<String>> hmPidUsers = new HashMap<String, List<String>>();
 	            Logger.debug(userInfo.getUtilizador(), this, "getUserProcesses", "Executing query: " + sbQuery);
 	            pst1 = db.prepareStatement(sbQuery.toString());
-	            pst1.setString(1, sFid);
+	            pst1.setInt(1, Integer.valueOf(sFid));
 	            for (int i = 0; i < alFlowPids.size(); i++) {
 		              pst1.setString(i+2, (String) alFlowPids.get(i));;
 		            }
@@ -5508,26 +5469,19 @@ public class ProcessManagerBean implements ProcessManager {
     int flowid = procHeader.getFlowId();
     int pid = procHeader.getPid();
     int subpid = procHeader.getSubPid();
+    int nUpdated = 0;
     
     try {
+    	final String query =  DBQueryManager.getQuery("ProcessManager.update_activity_users");
+    	pst1 = db.prepareStatement(query);
 
-      
-
-      StringBuilder sbUsers = new StringBuilder();
       for (int i = 0; i < users.length; i++) {
-        if (i > 0)
-          sbUsers.append(",");
-        sbUsers.append("'").append(escapeSQL(users[i])).append("'");
+    	  pst1.setString(1, escapeSQL(users[i]));
+    	  pst1.setInt(2, flowid);
+    	  pst1.setInt(3, pid);
+    	  pst1.setInt(4, subpid);
+    	  nUpdated += pst1.executeUpdate();        
       }
-
-      String query = DBQueryManager.processQuery("ProcessManager.update_activity_users", new Object[] {
-          sbUsers.toString(),
-          String.valueOf(flowid),
-          String.valueOf(pid),
-          String.valueOf(subpid)
-      });
-      pst1 = db.prepareStatement(query);
-      int nUpdated = pst1.executeUpdate();
 
       if (nUpdated > 0) {
         pst = db.prepareStatement("insert into activity_history (userid,flowid,"
@@ -5605,21 +5559,26 @@ public class ProcessManagerBean implements ProcessManager {
         rs = null;
         if (lastSubProc) {
           // last subprocess belonging to a specific process => delete from forkjoin_mines
-        	pst = db.prepareStatement("delete from forkjoin_mines where flowid=" + procData.getFlowId() + " and pid=" + procData.getPid());
+        	pst = db.prepareStatement("delete from forkjoin_mines where flowid=? and pid=?");
+        	pst.setInt(1, procData.getFlowId());
+        	pst.setInt(2, procData.getPid());
         	pst.execute();
         	pst.close();
         }
 
         // close it
-        StringBuilder sQuery = new StringBuilder("update process set closed=1,mid=");
-        sQuery.append(newmid);
+        StringBuilder sQuery = new StringBuilder("update process set closed=1,mid=?");
         if (isCancel) {
           sQuery.append(",canceled=1");
         }
-        sQuery.append(" where flowid=").append(procData.getFlowId());
-        sQuery.append(" and pid=").append(procData.getPid());
-        sQuery.append(" and subpid=").append(procData.getSubPid());
+        sQuery.append(" where flowid=?");
+        sQuery.append(" and pid=?");
+        sQuery.append(" and subpid=?");
         pst = db.prepareStatement(sQuery.toString());
+        pst.setInt(1, newmid);
+        pst.setInt(2, procData.getFlowId());
+        pst.setInt(3, procData.getPid());
+        pst.setInt(4, procData.getSubPid());
         pst.execute();
 
         Logger.info(login, this, "endProc", procData.getSignature() + "Process ended.");
@@ -5655,22 +5614,28 @@ public class ProcessManagerBean implements ProcessManager {
           sQuery.append("closed,canceled");
           sQuery.append(indexCols.toString());        
           sQuery.append(" from process where ");
-          sQuery.append(" flowid=").append(procData.getFlowId());
-          sQuery.append(" and pid=").append(procData.getPid());
-          sQuery.append(" and subpid=").append(procData.getSubPid());
+          sQuery.append(" flowid=?");
+          sQuery.append(" and pid=?");
+          sQuery.append(" and subpid=?");
           PreparedStatement pst1 = db.prepareStatement(sQuery.toString());
+          pst1.setInt(1, procData.getFlowId());
+          pst1.setInt(2, procData.getPid());
+          pst1.setInt(3, procData.getSubPid());
           if (Const.SAVE_PROCESSHISTORY_METHOD.equals(Const.SAVE_PROCESSHISTORY_METHOD_COMPRESS)){
             StringBuilder sSelect = new StringBuilder("select procdata from process where");
-            sSelect.append(" flowid=").append(procData.getFlowId());
-            sSelect.append(" and pid=").append(procData.getPid());
-            sSelect.append(" and subpid=").append(procData.getSubPid());
+            sSelect.append(" flowid=?");
+            sSelect.append(" and pid=?");
+            sSelect.append(" and subpid=?");
             pst = db.prepareStatement(sSelect.toString());
+            pst.setInt(1, procData.getFlowId());
+            pst.setInt(2, procData.getPid());
+            pst.setInt(3, procData.getSubPid());
             rs = pst.executeQuery();
             rs.next();
             String pdata = rs.getString("procdata");
-            pst.setBytes(1, compress(pdata));
+            pst1.setBytes(1, compress(pdata));
           }
-          pst.executeUpdate();
+          pst1.executeUpdate();
         }
         Logger.info(login, this, "endProc", procData.getSignature() + "Process historified.");
 
@@ -5920,12 +5885,12 @@ public class ProcessManagerBean implements ProcessManager {
 		    try {
 		        db = DatabaseInterface.getConnection(userInfo);
 		       
-		        String query = "update documents set pid = ? , subpid= ? where flowid = ? and docid in ?";
+		        String query = "update documents set pid = ? , subpid= ? where flowid = ? and docid in " + docids;
 		        pst = db.prepareStatement(query);
 		        pst.setInt(1, pid);
 		        pst.setInt(2, mid);
 		        pst.setInt(3, flowid);
-		        pst.setString(4, docids);
+		        
 		        
 		        pst.executeUpdate();      	      
 		    } catch (SQLException sqle) {Logger.error(userInfo.getUtilizador(), this, "updatePidDocs", "sql exception: " + sqle.getMessage(), sqle);
@@ -5952,18 +5917,18 @@ public class ProcessManagerBean implements ProcessManager {
 	      db.setAutoCommit(true);
 	
 	      final StringBuilder sQuery = new StringBuilder(
-              "select a.flowid , a.pid, a.mid, a.subpid, a.type, a.priority, a.created, a.started, a.archived, a.description, a.url, a.status, a.notify, a.profilename, a.read_flag, a.delegated, p.pnumber, PAI.icon, a.folderid from activity a,process p LEFT JOIN process_annotation_icon PAI ON (p.flowid=PAI.flowid AND p.pid=PAI.pid AND p.subpid=PAI.subpid) where p.flowid=a.flowid and p.pid=a.pid and p.subpid=a.subpid and status=0 and userid='"+userid+"' ");
+            "select a.flowid , a.pid, a.mid, a.subpid, a.type, a.priority, a.created, a.started, a.archived, a.description, a.url, a.status, a.notify, a.profilename, a.read_flag, a.delegated, p.pnumber, PAI.icon, a.folderid from activity a,process p LEFT JOIN process_annotation_icon PAI ON (p.flowid=PAI.flowid AND p.pid=PAI.pid AND p.subpid=PAI.subpid) where p.flowid=a.flowid and p.pid=a.pid and p.subpid=a.subpid and status=0 and userid=? ");
 
-          final StringBuilder sQueryDelegated = new StringBuilder(
-              "select a.flowid , a.pid, a.mid, a.subpid, a.type, a.priority, a.created, a.started, a.archived, a.description, a.url, a.status, a.notify, a.profilename, a.read_flag, 1 as delegated, p.pnumber, PAI.icon, -1 as folderid from activity_delegated a,process p LEFT JOIN process_annotation_icon PAI ON (p.flowid=PAI.flowid AND p.pid=PAI.pid AND p.subpid=PAI.subpid) where p.flowid=a.flowid and p.pid=a.pid and p.subpid=a.subpid and status=0 and userid='"+userid+"' ");
-              
-         
+        final StringBuilder sQueryDelegated = new StringBuilder(
+            "select a.flowid , a.pid, a.mid, a.subpid, a.type, a.priority, a.created, a.started, a.archived, a.description, a.url, a.status, a.notify, a.profilename, a.read_flag, 1 as delegated, p.pnumber, PAI.icon, -1 as folderid from activity_delegated a,process p LEFT JOIN process_annotation_icon PAI ON (p.flowid=PAI.flowid AND p.pid=PAI.pid AND p.subpid=PAI.subpid) where p.flowid=a.flowid and p.pid=a.pid and p.subpid=a.subpid and status=0 and userid=? ");
+            
+       
 
-          String queryUnion = "? UNION ? order by created";
-                  
+        String queryUnion = sQuery.toString()+" UNION "+sQueryDelegated.toString()+" order by created";
+                
 	      st = db.prepareStatement(queryUnion);
-	      st.setString(1, sQuery.toString());
-	      st.setString(2, sQueryDelegated.toString());
+	      st.setString(1, userid);
+	      st.setString(2, userid);
 	      rs = st.executeQuery();
 
 	      while (rs.next()) {
@@ -5986,17 +5951,17 @@ public class ProcessManagerBean implements ProcessManager {
 	        else
 		        wle.delegated =  true;	
 
-            String icon = "";
-            try {
-              icon = rs.getString("icon");
-            } catch (Exception e) {
-              Logger.debug(userInfo.getUtilizador(), this, "getUserActivitiesOrderFilters", "No icon assign");
-            }
-            wle.setAnnotationIcon(icon);
+          String icon = "";
+          try {
+            icon = rs.getString("icon");
+          } catch (Exception e) {
+            Logger.debug(userInfo.getUtilizador(), this, "getUserActivitiesOrderFilters", "No icon assign");
+          }
+          wle.setAnnotationIcon(icon);
 
-            int folderid = rs.getInt("folderid");
-            if( folderid > 0)
-                wle.setFolderid(folderid);
+          int folderid = rs.getInt("folderid");
+          if( folderid > 0)
+              wle.setFolderid(folderid);
 
 	        l.add(wle);
 	      }
@@ -6097,18 +6062,18 @@ public class ProcessManagerBean implements ProcessManager {
 	      int nField = 1;
 	      // 1: userid
 
-	      StringBuilder sQuery = new StringBuilder(DBQueryManager.processQuery("ProcessManager.get_activity_filters_user", new Object[]{ userid }));
+	      StringBuilder sQuery = new StringBuilder(DBQueryManager.getQuery("ProcessManager.get_activity_filters_user"));
 	      
 	      if(!filter.getFolderid().equals("0"))
-	    	  sQuery.append(" and folderid="+filter.getFolderid());
+	    	  sQuery.append(" and folderid=?");
 	      
 	       if(!filter.getLabelid().equals("0"))
-             sQuery.append(" and a.pid in ( select pid from process_label where labelid="+filter.getLabelid()+") ");
+           sQuery.append(" and a.pid in ( select pid from process_label where labelid=?");
 	      
 	       if(!maxDeadline.equals(""))
-             sQuery.append(" and a.pid in ( select pid from deadline where deadline < '"+maxDeadline+"' AND deadline != '') ");
+           sQuery.append(" and a.pid in ( select pid from deadline where deadline < ? AND deadline != '') ");
 	      
-	       StringBuilder sQueryDelegated = new StringBuilder(DBQueryManager.processQuery("ProcessManager.get_activity_filters_delegated", new Object[]{ userid }));
+	       StringBuilder sQueryDelegated = new StringBuilder(DBQueryManager.getQuery("ProcessManager.get_activity_filters_delegated"));
 
 	      // 2: anFlowId
 	      if (anFlowId > -1) {
@@ -6127,8 +6092,8 @@ public class ProcessManagerBean implements ProcessManager {
 	      }
 	      // 5: pnumber
 	      if (StringUtils.isNotEmpty(filter.getPnumber())) {
-	        sQuery.append(" and upper(pnumber) like upper('%").append(escapeSQL(filter.getPnumber())).append("%')");
-	        sQueryDelegated.append(" and upper(pnumber) like upper('%").append(escapeSQL(filter.getPnumber())).append("%')");
+	        sQuery.append(" and upper(pnumber) like upper(?)");
+	        sQueryDelegated.append(" and upper(pnumber) like upper(?)");
 	      }
 
 	      if(filter.getOrderType() != null && filter.getOrderType().equals("desc")){
@@ -6138,18 +6103,28 @@ public class ProcessManagerBean implements ProcessManager {
 	         // sQueryDelegated.append(" order by iconid asc, created desc");
 	    	  //sQueryDelegated.append(" order by created desc");
 	      }else{
+	    	  
 	    	  sQueryDelegated.append(" order by created desc");
 	         // sQueryDelegated.append(" order by iconid asc, created asc");
 	    	  //sQueryDelegated.append(" order by created desc");
 	      }
 	      
 	      
-	      union = "? UNION ?";
+	      union = sQuery.toString()+" UNION "+sQueryDelegated.toString();
 
 	      st = db.prepareStatement(union);
-	      st.setString(1, sQuery.toString());
-	      st.setString(2, sQueryDelegated.toString());
-
+	      ///////////////////
+	      int indexAux=1;
+	      st.setString(indexAux++, userid);
+	      if(!filter.getFolderid().equals("0"))
+	    	  st.setInt(indexAux++, Integer.valueOf(filter.getFolderid()));
+	      if(!filter.getLabelid().equals("0"))
+	    	  st.setInt(indexAux++, Integer.valueOf(filter.getLabelid()));
+	      if(!maxDeadline.equals(""))
+	    	  st.setString(indexAux++, maxDeadline);
+	      st.setString(indexAux++, userid);
+	      nField = indexAux;
+	      ///////////////
 	      if (anFlowId > -1) {
 	        st.setInt(nField, anFlowId);
 	        ++nField;
@@ -6162,7 +6137,10 @@ public class ProcessManagerBean implements ProcessManager {
 	        st.setTimestamp(nField, new java.sql.Timestamp(filter.getDateBefore().getTime()));
 	        ++nField;
 	      }
-
+	      if (StringUtils.isNotEmpty(filter.getPnumber())) {
+	    	  st.setString(nField, "%"+escapeSQL(filter.getPnumber())+"%");
+	    	  ++nField;
+	      }
 	
 	      int counter = -1;
 	
@@ -6223,13 +6201,13 @@ public class ProcessManagerBean implements ProcessManager {
 			        if( folderid > 0)
 			        	wle.setFolderid(folderid);
 
-                    String icon = "";
-                    try {
-                      icon = rs.getString("icon");
-                    } catch (Exception e) {
-                      Logger.debug(userInfo.getUtilizador(), this, "getUserActivitiesOrderFilters", "No icon assign");
-                    }
-                    wle.setAnnotationIcon(icon);
+                  String icon = "";
+                  try {
+                    icon = rs.getString("icon");
+                  } catch (Exception e) {
+                    Logger.debug(userInfo.getUtilizador(), this, "getUserActivitiesOrderFilters", "No icon assign");
+                  }
+                  wle.setAnnotationIcon(icon);
 
 			        l.add(wle);
 	        }
@@ -6252,7 +6230,7 @@ public class ProcessManagerBean implements ProcessManager {
 	    Logger.trace(this, "getUserActivities", userid + " call.");
 
 	    Connection db = null;
-	    PreparedStatement pst = null;
+	    PreparedStatement st = null;
 	    ResultSet rs = null;
 	    LinkedList<Activity> l = new LinkedList<Activity>();
 	    ListIterator<Activity> result = null;
@@ -6273,12 +6251,12 @@ public class ProcessManagerBean implements ProcessManager {
 	          "select a.*,p.pnumber from activity a,process p where p.flowid=a.flowid and p.pid=a.pid and p.subpid=a.subpid and status=0 and userid in ")
 	          .append(usersInUnitTxt);
 	      final StringBuilder sQueryDelegated = new StringBuilder(
-	          "select a.*,p.pnumber from activity_delegated a,process p where p.flowid=a.flowid and p.pid=a.pid and p.subpid=a.subpid and status=0 and  userid in ?");
+	          "select a.*,p.pnumber from activity_delegated a,process p where p.flowid=a.flowid and p.pid=a.pid and p.subpid=a.subpid and status=0 and  userid in ")
+	          .append(usersInUnitTxt);
 
-	      pst = db.prepareStatement(sQuery.toString());
-	      pst.setString(1, usersInUnitTxt);
-	      
-	      rs = pst.executeQuery();
+	      st = db.prepareStatement(sQuery.toString());
+
+	      rs = st.executeQuery();
 	      int counter = -1;
 	      while (rs.next()) {
 	        int flowid = rs.getInt("flowid");
@@ -6296,8 +6274,8 @@ public class ProcessManagerBean implements ProcessManager {
 	        wle.mid = rs.getInt("mid");
 	        l.add(wle);
 	      }
-	      DatabaseInterface.closeResources(pst, rs);
-	      pst = null;
+	      DatabaseInterface.closeResources(st, rs);
+	      st = null;
 	      rs = null;
 
 	      result = l.listIterator();
@@ -6308,7 +6286,7 @@ public class ProcessManagerBean implements ProcessManager {
 	      Logger.error(userid, this, "getUserActivities", "exception: " + e.getMessage(), e);
 	      result = null;
 	    } finally {
-	      DatabaseInterface.closeResources(db, pst, rs);
+	      DatabaseInterface.closeResources(db, st, rs);
 	    }
 	    return result;
 	  }

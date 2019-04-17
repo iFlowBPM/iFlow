@@ -70,7 +70,7 @@ public class PersistSession {
     
     try {
       db = DatabaseInterface.getConnection(userInfo);
-      pst = db.prepareStatement("select session from user_session where userid = '?");
+      pst = db.prepareStatement("select session from user_session where userid = ?");
       pst.setString(1, userid);
       
       rs = pst.executeQuery();
@@ -126,7 +126,7 @@ public class PersistSession {
       //HERE
       pst = db.prepareStatement("Update user_session set session=? where userid=?");
       pst.setBytes(1, baos.toByteArray());
-      pst.setObject(2, userInfo.getUtilizador());
+      pst.setString(2, userInfo.getUtilizador());
       rows = pst.executeUpdate();
       pst.close();
       db.close();
@@ -134,7 +134,7 @@ public class PersistSession {
       if(rows <= 0){      
         db = DatabaseInterface.getConnection(userInfo); 
         pst = db.prepareStatement("insert into user_session (userid, session) values (?,?)");
-        pst.setObject(1, userInfo.getUtilizador());
+        pst.setString(1, userInfo.getUtilizador());
         pst.setBytes(2, baos.toByteArray());
         pst.execute();
       }

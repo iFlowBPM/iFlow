@@ -692,7 +692,7 @@ public class DelegationManager extends Thread {
       pst.close();
       pst = null;
       if(stmp.length() > 0) {
-        String query = "delete from activity_hierarchy where hierarchyid in (?)";        
+        String query = "delete from activity_hierarchy where hierarchyid in (" + stmp + ")";        
 
         pst = db.prepareStatement(query);
         pst.setString(1, stmp);
@@ -743,9 +743,8 @@ public class DelegationManager extends Thread {
       /* If the userid is delegating a flow to delegateduser
            becoming a circular delegation */
       sbQueryDelegation.append("select * from activity_hierarchy where flowid=?");
-      sbQueryDelegation.append(" and userid='?");
-      sbQueryDelegation.append("' and ownerid='?");
-      sbQueryDelegation.append("'");
+      sbQueryDelegation.append(" and userid=?");
+      sbQueryDelegation.append(" and ownerid=?");
       
       pst = db.prepareStatement(sbQueryDelegation.toString());
       pst.setString(1, flowid);
@@ -965,9 +964,9 @@ public class DelegationManager extends Thread {
           final StringBuilder sbQueryUserDelegation = new StringBuilder();
           /* If the userid is delegating a flow that was delegated to him */
           sbQueryUserDelegation.append("select * from activity_hierarchy where flowid = ?");
-          sbQueryUserDelegation.append(" and userid='?");
-          sbQueryUserDelegation.append("' and ownerid='?");
-          sbQueryUserDelegation.append("'");
+          sbQueryUserDelegation.append(" and userid=?");
+          sbQueryUserDelegation.append(" and ownerid=?");
+          
           pst2 = db.prepareStatement(sbQueryUserDelegation.toString());
           pst2.setString(1, flowid);
           pst2.setString(2, StringEscapeUtils.escapeSql(user));

@@ -248,11 +248,12 @@ public class CodeTemplateManagerBean implements CodeTemplateManager {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       
-      String sql = "UPDATE serial_code_templates set flag = '?' WHERE name ='?' AND organization = ?";
-      pst.setBoolean(1, mark);
+      String sql = "UPDATE serial_code_templates set flag=? WHERE name=? AND organization=?";
+      pst = db.prepareStatement(sql);
+      pst.setString(1, mark.toString());
       pst.setString(2, templateName);
       pst.setString(3, userInfo.getOrganization());
-      pst = db.prepareStatement(sql);
+      
       if (Logger.isDebugEnabled()) {
         Logger.debug(userInfo.getUtilizador(), this, "markAsTag", "QUERY=" + sql);
       }
@@ -270,43 +271,38 @@ public class CodeTemplateManagerBean implements CodeTemplateManager {
   }
 
   public Boolean checkMetaTag(UserInfoInterface userInfo, Boolean mark) {
-    DataSource ds = null;
-    Connection db = null;
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    try {
-      RestInterface ri = new RestInterface(Setup.getProperty(VFS_URL));
-      KeyValueStructureList keyValues = ri.getKeyValue();
-      String keyValueNames = "(";
-      for (KeyValueStructure keyValueStructure : keyValues.getKeyValueStructure())
-        keyValueNames += "'" + keyValueStructure.getValue() + "',";
-
-      keyValueNames = keyValueNames.substring(0, keyValueNames.length() - 1) + ")";
-
-      ds = Utils.getDataSource();
-      db = ds.getConnection();
-      
-      String sql = "UPDATE serial_code_templates set flag = '?' WHERE name IN ? AND organization = ?";
-      pst.setBoolean(1, mark);
-      pst.setString(2, keyValueNames);
-      pst.setString(3, userInfo.getOrganization());
-      
-      
-      pst = db.prepareStatement(sql);
-      
-      if (Logger.isDebugEnabled()) {
-        Logger.debug(userInfo.getUtilizador(), this, "markAsTag", "QUERY=" + sql);
-      }
-
-      if (StringUtils.isNotBlank(sql.toString())) {
-        int ret = pst.executeUpdate(sql.toString());
-        return (ret > 0);
-      }
-    } catch (SQLException sqle) {
-      Logger.error(userInfo.getUtilizador(), this, "removeCodeTemplate", "caught sql exception: " + sqle.getMessage(), sqle);
-    } finally {
-      DatabaseInterface.closeResources(db, pst, rs);
-    }
-    return false;
-  }
+//	    DataSource ds = null;
+//	    Connection db = null;
+//	    Statement st = null;
+//	    ResultSet rs = null;
+//	    try {
+//	      RestInterface ri = new RestInterface(Setup.getProperty(VFS_URL));
+//	      KeyValueStructureList keyValues = ri.getKeyValue();
+//	      String keyValueNames = "(";
+//	      for (KeyValueStructure keyValueStructure : keyValues.getKeyValueStructure())
+//	        keyValueNames += "'" + keyValueStructure.getValue() + "',";
+//
+//	      keyValueNames = keyValueNames.substring(0, keyValueNames.length() - 1) + ")";
+//
+//	      ds = Utils.getDataSource();
+//	      db = ds.getConnection();
+//	      st = db.createStatement();
+//	      String sql = "UPDATE serial_code_templates set flag = '" + mark + "' WHERE name IN " + keyValueNames + " AND organization = "
+//	          + userInfo.getOrganization();
+//
+//	      if (Logger.isDebugEnabled()) {
+//	        Logger.debug(userInfo.getUtilizador(), this, "markAsTag", "QUERY=" + sql);
+//	      }
+//
+//	      if (StringUtils.isNotBlank(sql.toString())) {
+//	        int ret = st.executeUpdate(sql.toString());
+//	        return (ret > 0);
+//	      }
+//	    } catch (SQLException sqle) {
+//	      Logger.error(userInfo.getUtilizador(), this, "removeCodeTemplate", "caught sql exception: " + sqle.getMessage(), sqle);
+//	    } finally {
+//	      DatabaseInterface.closeResources(db, st, rs);
+//	    }
+	    return false;
+	  }
 }
