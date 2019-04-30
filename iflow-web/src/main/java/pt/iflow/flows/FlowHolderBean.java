@@ -237,7 +237,7 @@ public class FlowHolderBean implements FlowHolder {
             
             // check if flow exists in db and is disabled
             
-            String stmp = "select flowfile from flow where flowid=? and organizationid='?'";
+            String stmp = "select flowfile from flow where flowid=? and organizationid=?";
             pst = db.prepareStatement(stmp);
             pst.setInt(1, flowId);
             pst.setString(2, userInfo.getOrganization());
@@ -344,7 +344,7 @@ public class FlowHolderBean implements FlowHolder {
     private synchronized FlowData[] listFlows(UserInfoInterface userInfo,
             int anSelection, FlowType type, FlowType[] typeExcluded, boolean showOnlyFlowsToBePresentInMenu) {
         FlowData[] retObj = new FlowData[] {};
-        int pos = 0;
+
         ArrayList<FlowScheduleDataInterface> listOfFlowJobs =  new ArrayList<FlowScheduleDataInterface>();
         try {
           AdministrationFlowScheduleInterface adminFlowScheduleBean = BeanFactory.getAdministrationFlowScheduleBean();
@@ -355,8 +355,8 @@ public class FlowHolderBean implements FlowHolder {
 
         DataSource ds = null;
         Connection db = null;
-        PreparedStatement pst = null;
         ResultSet rs = null;
+        PreparedStatement pst=null;
         
         FlowData fd = null;
         
@@ -364,7 +364,6 @@ public class FlowHolderBean implements FlowHolder {
             
             ds = Utils.getDataSource();
             db = ds.getConnection();
-            
             rs = null;
 
             StringBuffer sQuery = new StringBuffer();
@@ -378,43 +377,42 @@ public class FlowHolderBean implements FlowHolder {
             if (showOnlyFlowsToBePresentInMenu){
               sQuery.append(", flow_settings FS");
             }
-            sQuery.append(" where organizationid='").append("?").append("' ");
+            sQuery.append(" where organizationid=? ");
             if (anSelection != nLIST_ALL){
-              sQuery.append("and enabled=").append((anSelection == nLIST_ONLINE ? 1 : 0));
+              sQuery.append("and enabled=? ");
             }
             if(null != type){
-              sQuery.append(" and type_code='").append("?").append("'");
+              sQuery.append(" and type_code=? ");
             }
             if(null != typeExcluded){
               for (int i=0; i<typeExcluded.length;i++){
-                sQuery.append(" and type_code<>'").append("?").append("'");
+                sQuery.append(" and type_code<>? ");
               }
             }
             if (showOnlyFlowsToBePresentInMenu){
               sQuery.append(" and F.flowid = FS.flowid");
-              sQuery.append(" and FS.name like '").append("?").append("'");
+              sQuery.append(" and FS.name like ? ");
               sQuery.append(" and (");
               sQuery.append(" FS.value is null ");
               sQuery.append(" or ");
-              sQuery.append(" FS.value like '").append("?").append("'");
+              sQuery.append(" FS.value like ? ");
               sQuery.append(" )");
             }
             sQuery.append(" order by F.flowid");
             
             pst = db.prepareStatement(sQuery.toString());
-            
-            pst.setString(++pos, userInfo.getOrganization());
+            int counter = 1;
+            pst.setString(counter++, userInfo.getOrganization());
+            if (anSelection != nLIST_ALL)
+            	pst.setInt(counter++, (anSelection == nLIST_ONLINE ? 1 : 0));
             if(null != type)
-            	pst.setString(++pos, type.getCode());
-            if(null != typeExcluded){
-                for (int i=0; i<typeExcluded.length;i++){
-                  pst.setString(++pos, typeExcluded[i].getCode());
-                }
-              }
-            if (showOnlyFlowsToBePresentInMenu) {
-            	pst.setString(++pos, Const.sFLOW_MENU_ACCESSIBLE);
-            	pst.setString(++pos, Const.sFLOW_MENU_ACCESSIBLE_YES);
-            	
+            	pst.setString(counter++,type.getCode());
+            if(null != typeExcluded)
+                for (int i=0; i<typeExcluded.length;i++)
+                	pst.setString(counter++, typeExcluded[i].getCode());
+            if (showOnlyFlowsToBePresentInMenu){
+            	pst.setString(counter++, Const.sFLOW_MENU_ACCESSIBLE);
+            	pst.setString(counter++, Const.sFLOW_MENU_ACCESSIBLE_YES);
             }
             rs = pst.executeQuery();
 
@@ -543,7 +541,7 @@ public class FlowHolderBean implements FlowHolder {
             	pst = db.prepareStatement(query);
         		pst.setString(1, userInfo.getOrganization());
             }
-            pst = db.prepareStatement(query);
+            //pst = db.prepareStatement(query);
             rs = pst.executeQuery();
             pst.close();
             ArrayList<String> altmp = new ArrayList<String>();
@@ -2158,24 +2156,23 @@ public class FlowHolderBean implements FlowHolder {
     }
     
     private synchronized byte[] readData(UserInfoInterface userInfo,
-        String name, boolean isFlow, int version) {
+            String name, boolean isFlow, int version) {
         String query = null;
         Connection db = null;
-        PreparedStatement pst = null;
+        PreparedStatement st = null;
         ResultSet rs = null;
         byte[] data = null;
-        //String sub = isFlow ? "" : "sub_";
-        
+        String sub = isFlow ? "" : "sub_";
         try {
             db = Utils.getDataSource().getConnection();
             if (version < 0) {
-                query = "select flowdata from " + "?"
+                query = "select flowdata from " + sub
                         + "flow where flowfile=? and organizationid=?";
             } else {
                 query = "select h.data as flowdata from "
-                        + "?"
+                        + sub
                         + "flow f, "
-                        + "?"
+                        + sub
                         + "flow_history h where f.flowfile=? and f.organizationid=? and f.flowid=h.flowid and h.flowversion=?";
             }
             
@@ -2185,28 +2182,13 @@ public class FlowHolderBean implements FlowHolder {
                     "Query params: name=" + name + "; organizationid="
                             + userInfo.getOrganization() + "; version="
                             + version);
-            pst = db.prepareStatement(query);
+            st = db.prepareStatement(query);
+            st.setString(1, name);
+            st.setString(2, userInfo.getOrganization());
+            if (version >= 0)
+                st.setInt(3, version);
             
-            if(isFlow) 
-            	pst.setString(1, "");
-            else 
-                pst.setString(1, "sub_");
-            	
-        	if (version >= 0) {
-        		if(isFlow)
-        			pst.setString(2, "");
-        		else
-        			pst.setString(2, "sub_");
-            	pst.setString(3, name);
-                pst.setString(4, userInfo.getOrganization());
-                pst.setInt(5, version);
-        	}
-        	else {
-        		pst.setString(2, name);
-        		pst.setString(3, userInfo.getOrganization());
-        	}
-          
-            rs = pst.executeQuery();
+            rs = st.executeQuery();
             
             boolean flowFound = false;
             if (rs.next()) {
@@ -2218,25 +2200,21 @@ public class FlowHolderBean implements FlowHolder {
             }
             
             rs.close();
-            pst.close();
+            st.close();
             
             if (!flowFound && version < 0) {
                 Logger.debug(userInfo.getUtilizador(), this, "readData",
                         "Flow not found. Searching templates.");
                 // copy from template
-                query = "select data FROM " + "?"
+                query = "select data FROM " + sub
                         + "flow_template where name=?";
                 Logger.debug(userInfo.getUtilizador(), this, "readData",
                         "Executing query: " + query);
                 Logger.debug(userInfo.getUtilizador(), this, "readData",
                         "Query params: name=" + name);
-                pst = db.prepareStatement(query);
-                if(isFlow) 
-                	pst.setString(1, "");
-                else 
-                    pst.setString(1, "sub_");
-                pst.setString(2, name);
-                rs = pst.executeQuery();
+                st = db.prepareStatement(query);
+                st.setString(1, name);
+                rs = st.executeQuery();
                 if (rs.next()) {
                     InputStream is = rs.getBinaryStream(1);
                     data = getBytes(is);
@@ -2249,7 +2227,7 @@ public class FlowHolderBean implements FlowHolder {
             Logger.error(userInfo.getUtilizador(), this, "readData",
                     "Exception occured reading flow data.", e);
         } finally {
-            DatabaseInterface.closeResources(db, pst, rs);
+            DatabaseInterface.closeResources(db, st, rs);
         }
         
         return data;
@@ -2395,7 +2373,6 @@ public class FlowHolderBean implements FlowHolder {
             ds = Utils.getDataSource();
             db = ds.getConnection();
             db.setAutoCommit(false);
-            
             String query = null;
             int nProcs = 0;
             
@@ -2404,15 +2381,13 @@ public class FlowHolderBean implements FlowHolder {
                 int pos = indexVar.get(var);
                 String escapedVar = StringEscapeUtils.escapeSql(var);
                 String oldIdx = null;
-                pst.close();
+                
                 // get previous index
-                query = "select name_idx ? from flow where flowid=?";
-                pst.setInt(1, pos);
-                pst.setInt(2, flowid);
+                query = "select name_idx" + pos + " from flow where flowid= ? ";
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
                 pst = db.prepareStatement(query);
-                
+                pst.setInt(1, flowid);
                 rs = pst.executeQuery();
                 if (rs.next())
                     oldIdx = rs.getString(1);
@@ -2435,20 +2410,23 @@ public class FlowHolderBean implements FlowHolder {
                 queryInfo[2] = escapedVar;
                 
                 // update with new index
-                query = "update flow set name_idx" + pos + "='" + escapedVar
-                        + "' where flowid=" + flowid;
+                query = "update flow set name_idx" + pos + "= ? where flowid= ? ";
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
-                nProcs = pst.executeUpdate(query);
+                pst = db.prepareStatement(query);
+                pst.setString(1, escapedVar);
+                pst.setInt(2, flowid);
+                nProcs = pst.executeUpdate();
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Set new index var: " + nProcs);
                 
                 // open processes
-                query = "update process set idx" + pos + "=null where flowid="
-                        + flowid;
+                query = "update process set idx" + pos + "=null where flowid= ? ";
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
-                nProcs = pst.executeUpdate(query);
+                pst = db.prepareStatement(query);
+                pst.setInt(1, flowid);
+                nProcs = pst.executeUpdate();
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Reset " + nProcs + " process index");
                 
@@ -2463,10 +2441,12 @@ public class FlowHolderBean implements FlowHolder {
                 
                 // closed processes
                 query = "update process_history set idx" + pos
-                        + "=null where flowid=" + flowid + " and closed=1";
+                        + "=null where flowid= ? and closed=1";
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
-                nProcs = pst.executeUpdate(query);
+                pst = db.prepareStatement(query);
+                pst.setInt(1, flowid);
+                nProcs = pst.executeUpdate();
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Reset " + nProcs + " closed process index");
                 

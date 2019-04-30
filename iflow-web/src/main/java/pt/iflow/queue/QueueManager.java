@@ -370,116 +370,118 @@ public class QueueManager {
 
 
   public static QueueProc[] getQueueProcs(UserInfoInterface userInfo, List<String> aalQueueProcIds) {
-    QueueProc[] retObj = null;
+	    QueueProc[] retObj = null;
 
-    String sUser = userInfo.getUtilizador();
+	    String sUser = userInfo.getUtilizador();
 
-    QueueProc qp = null;
-    List<String> alProcs = null;
-    HashMap<String,QueueProc> hmProcs = null;
+	    QueueProc qp = null;
+	    List<String> alProcs = null;
+	    HashMap<String,QueueProc> hmProcs = null;
 
-    DataSource ds = null;
-    Connection db = null;
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    String stmp = null;
-    String stmp2 = null;
-    StringBuffer sbtmp = null;
-    List<String> altmp = null;
-    Properties ptmp = null;
-    int ntmp = 0;
-    java.util.Date dt = null;
+	    DataSource ds = null;
+	    Connection db = null;
+	    PreparedStatement pst = null;
+	    ResultSet rs = null;
+	    String stmp = null;
+	    String stmp2 = null;
+	    StringBuffer sbtmp = null;
+	    List<String> altmp = null;
+	    Properties ptmp = null;
+	    int ntmp = 0;
+	    java.util.Date dt = null;
 
-    try {
+	    try {
 
-      if (aalQueueProcIds != null && aalQueueProcIds.size() > 0) {
+	      if (aalQueueProcIds != null && aalQueueProcIds.size() > 0) {
 
-        sbtmp = new StringBuffer();
-        for (int ii=0; ii < aalQueueProcIds.size(); ii++) {
-          if (ii > 0) {
-            sbtmp.append(",");
-          }
-          sbtmp.append("?");
-        }
+	        sbtmp = new StringBuffer();
+	        StringBuffer sbtmpPlaceHolder = new StringBuffer(); 
+	        for (int ii=0; ii < aalQueueProcIds.size(); ii++) {
+	          if (ii > 0) {
+	        	  sbtmpPlaceHolder.append(",");
+	          }
+	          sbtmpPlaceHolder.append("?");
+	        }
 
-        ds = Utils.getDataSource();
-        db = ds.getConnection();
-       
+	        ds = Utils.getDataSource();
+	        db = ds.getConnection();
+	        
+	        stmp = DBQueryManager.getQuery(QueueManager.GET_QUEUE_PROC_IN);
+	        stmp = stmp.replace("{0}", sbtmpPlaceHolder);
+	        pst = db.prepareStatement(stmp);
+	        for (int ii=0; ii < aalQueueProcIds.size(); ii++)
+	        	pst.setInt(ii+1, Integer.valueOf(aalQueueProcIds.get(ii)));
+	        rs = pst.executeQuery();
 
-        stmp = DBQueryManager.getQuery(QueueManager.GET_QUEUE_PROC_IN);
-        stmp.replaceAll("{0}", sbtmp.toString());
-        pst = db.prepareStatement(stmp);
-        for (int ii=0; ii < aalQueueProcIds.size(); ii++) {
-        	pst.setString(ii+1, (String)aalQueueProcIds.get(ii));
-        }
-        rs = pst.executeQuery();
+	        alProcs = new ArrayList<String>();
+	        hmProcs = new HashMap<String, QueueProc>();
+	        while (rs.next()) {
+	          stmp = rs.getString(QueueManager.sCOL_ID);
 
-        alProcs = new ArrayList<String>();
-        hmProcs = new HashMap<String, QueueProc>();
-        while (rs.next()) {
-          stmp = rs.getString(QueueManager.sCOL_ID);
+	          ptmp = null;
+	          altmp = Utils.tokenize(rs.getString(QueueManager.sCOL_PROPERTIES), QueueManager.sPROPS_SEPARATOR);
+	          if (altmp != null) {
+	            ptmp = new Properties();
+	            for (int jj=0; jj < altmp.size(); jj++) {
+	              stmp2 = (String)altmp.get(jj);
+	              ntmp = stmp2.indexOf("=");
+	              if (ntmp == -1) continue;
+	              ptmp.setProperty(stmp2.substring(0,ntmp),
+	                  stmp2.substring(ntmp+1));
+	            }
+	          }
 
-          ptmp = null;
-          altmp = Utils.tokenize(rs.getString(QueueManager.sCOL_PROPERTIES), QueueManager.sPROPS_SEPARATOR);
-          if (altmp != null) {
-            ptmp = new Properties();
-            for (int jj=0; jj < altmp.size(); jj++) {
-              stmp2 = (String)altmp.get(jj);
-              ntmp = stmp2.indexOf("=");
-              if (ntmp == -1) continue;
-              ptmp.setProperty(stmp2.substring(0,ntmp),
-                  stmp2.substring(ntmp+1));
-            }
-          }
+	          dt = null;
+	          try {
+	            dt = 
+	              new java.util.Date((rs.getTimestamp(QueueManager.sCOL_CREATION_DATE)).getTime());
+	          }
+	          catch (Exception ei) {
+	          }
 
-          dt = null;
-          try {
-            dt = 
-              new java.util.Date((rs.getTimestamp(QueueManager.sCOL_CREATION_DATE)).getTime());
-          }
-          catch (Exception ei) {
-          }
+	          qp = new QueueProc(Integer.parseInt(stmp),
+	              rs.getInt(QueueManager.sCOL_OBJECT),
+	              rs.getString(QueueManager.sCOL_GROUPID),
+	              rs.getInt(QueueManager.sCOL_FLOWID),
+	              rs.getInt(QueueManager.sCOL_PID),
+	              ptmp,
+	              dt,
+	              new Hashtable<String, String>());
+	          alProcs.add(stmp);
+	          hmProcs.put(stmp,qp);
+	        }
+	        rs.close();
+	        rs = null;
 
-          qp = new QueueProc(Integer.parseInt(stmp),
-              rs.getInt(QueueManager.sCOL_OBJECT),
-              rs.getString(QueueManager.sCOL_GROUPID),
-              rs.getInt(QueueManager.sCOL_FLOWID),
-              rs.getInt(QueueManager.sCOL_PID),
-              ptmp,
-              dt,
-              new Hashtable<String, String>());
-          alProcs.add(stmp);
-          hmProcs.put(stmp,qp);
-        }
-        rs.close();
-        rs = null;
+	        stmp = DBQueryManager.getQuery(QueueManager.GET_QUEUE_DATA_IN);
+	        stmp = stmp.replace("{0}", sbtmpPlaceHolder);
+	        pst = db.prepareStatement(stmp);
+	        for (int ii=0; ii < aalQueueProcIds.size(); ii++)
+	        	pst.setInt(ii+1, Integer.valueOf(aalQueueProcIds.get(ii)));
+	        rs = pst.executeQuery();
+	        
+	        while (rs.next()) {
+	          stmp = rs.getString(QueueManager.sCOL_QUEUE_PROC_ID);
+	          qp = hmProcs.get(stmp);
+	          qp.setData(rs.getString(QueueManager.sCOL_NAME), rs.getString(QueueManager.sCOL_VALUE));
+	          hmProcs.put(stmp,qp);
+	        }
 
-        stmp = DBQueryManager.processQuery(QueueManager.GET_QUEUE_DATA_IN, new Object[]{sbtmp});
-        pst = db.prepareStatement(stmp);
-        rs = pst.executeQuery();
+	        retObj = new QueueProc[alProcs.size()];
+	        for (int jj=0; jj < alProcs.size(); jj++) {
+	          retObj[jj] = hmProcs.get((String)alProcs.get(jj));
+	        }
 
-        while (rs.next()) {
-          stmp = rs.getString(QueueManager.sCOL_QUEUE_PROC_ID);
-          qp = hmProcs.get(stmp);
-          qp.setData(rs.getString(QueueManager.sCOL_NAME), rs.getString(QueueManager.sCOL_VALUE));
-          hmProcs.put(stmp,qp);
-        }
-
-        retObj = new QueueProc[alProcs.size()];
-        for (int jj=0; jj < alProcs.size(); jj++) {
-          retObj[jj] = hmProcs.get((String)alProcs.get(jj));
-        }
-
-      } // if (aalQueueProcIds != null && 
-    }
-    catch (Exception e) {
-      Logger.error(sUser,_qm,"getQueueProcs2",e.getMessage(), e);
-    }
-    finally {
-      DatabaseInterface.closeResources(db,pst,rs);
-    }
+	      } // if (aalQueueProcIds != null && 
+	    }
+	    catch (Exception e) {
+	      Logger.error(sUser,_qm,"getQueueProcs2",e.getMessage(), e);
+	    }
+	    finally {
+	      DatabaseInterface.closeResources(db,pst,rs);
+	    }
 
 
-    return retObj;
-  }
+	    return retObj;
+	  }
 }
