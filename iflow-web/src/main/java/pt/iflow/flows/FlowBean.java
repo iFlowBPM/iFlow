@@ -40,7 +40,6 @@ import pt.iflow.api.flows.Flow;
 import pt.iflow.api.flows.FlowSetting;
 import pt.iflow.api.flows.FlowType;
 import pt.iflow.api.flows.IFlowData;
-import pt.iflow.api.index.Index;
 import pt.iflow.api.licensing.LicenseService;
 import pt.iflow.api.licensing.LicenseServiceFactory;
 import pt.iflow.api.notification.NotificationManager;
