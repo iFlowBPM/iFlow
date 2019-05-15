@@ -198,7 +198,7 @@ public class RepositoryWebClient implements RepositoryClient {
 	HttpResponse response = null;
     HttpPost method = new HttpPost(_url); 
     MultipartEntityBuilder partBuilder = MultipartEntityBuilder.create();
-    
+    String responseString = null;
     try {
       //PostMethod method = new PostMethod(_url);
       partBuilder.addTextBody("login", login);
@@ -217,13 +217,15 @@ public class RepositoryWebClient implements RepositoryClient {
       
       response = client.execute(method);
       method.releaseConnection();
+      HttpEntity entity = response.getEntity();
+      responseString = EntityUtils.toString(entity, "UTF-8");
     } catch (FileNotFoundException fnfe) {
       FlowEditor.log("error", fnfe);
     } catch (IOException e) {
       FlowEditor.log("error", e);
     }
-
-    return (Boolean.valueOf(response.toString())).booleanValue();
+    
+    return (Boolean.valueOf(responseString)).booleanValue();
   }
 
   public RepositoryClassLoader getClassLoader() {
@@ -259,7 +261,13 @@ public class RepositoryWebClient implements RepositoryClient {
     HttpResponse response = null;
     HttpPost method = new HttpPost(_url); 
     MultipartEntityBuilder partBuilder = MultipartEntityBuilder.create();
-    final File file = new File(name);
+    File file = null;
+	try {
+		file = (File.createTempFile("blank", "blank"));
+	} catch (IOException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
     FileBody fb = new FileBody(file);
     
     try {
@@ -286,7 +294,7 @@ public class RepositoryWebClient implements RepositoryClient {
 	    response = client.execute(method);
 	    
       //method..getResponseBody();
-      buffer = EntityUtils.toByteArray(multipart); //CONFIRMAR ISTO
+      buffer = EntityUtils.toByteArray(response.getEntity()); //CONFIRMAR ISTO
       method.releaseConnection();
     } catch (FileNotFoundException fnfe) {
       FlowEditor.log("error", fnfe);
@@ -324,14 +332,13 @@ public class RepositoryWebClient implements RepositoryClient {
 	  HttpResponse response = null;
 	  HttpPost method = new HttpPost(_url); 
 	  MultipartEntityBuilder partBuilder = MultipartEntityBuilder.create();
-	  final File file = new File(name);
-	  FileBody fb = new FileBody(file);
 	  
     try {
       //PostMethod method = new PostMethod(_url);
-      name = null==name?"NONE":name; //$NON-NLS-1$
-      desc = null==desc?name:desc;
-      comment = null==comment?"":comment;
+    	final File file = (name!=null)?(new File(name)):(File.createTempFile("blank", "blank"));
+    	FileBody fb = new FileBody(file);
+    	desc = null==desc?"":desc;      
+    	comment = null==comment?"":comment;
       //Part[] parts = {
       
 	    partBuilder.addTextBody("login", _login);
@@ -357,7 +364,7 @@ public class RepositoryWebClient implements RepositoryClient {
       //client.executeMethod(method);
       //buffer = method.getResponseBody();
 	  response = client.execute(method);
-	  buffer = EntityUtils.toByteArray(multipart); //CONFIRMAR ISTO
+	  buffer = EntityUtils.toByteArray(response.getEntity()); //CONFIRMAR ISTO
       method.releaseConnection();
       
       response = client.execute(method);

@@ -2890,8 +2890,7 @@ public class ProcessManagerBean implements ProcessManager {
       st.setInt(1, flowid);
       st.setInt(2, pid);
       st.setInt(3, subpid);
-      rs = st.executeQuery();
-      st.close();
+      rs = st.executeQuery();      
       while (rs.next()) {
         bHasActivities = true;
         String user = rs.getString("userid");

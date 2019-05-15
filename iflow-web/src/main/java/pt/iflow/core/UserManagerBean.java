@@ -1925,7 +1925,7 @@ public class UserManagerBean
       pst.setString(1, orgId);
       if (profileId != null)
     	  pst.setInt(2, Integer.valueOf(profileId));
-      rs = pst.executeQuery(query);
+      rs = pst.executeQuery();
       List<ProfilesTO> profiles = new ArrayList();
       while (rs.next())
       {

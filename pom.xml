@@ -372,7 +372,7 @@
 			<dependency>
 				<groupId>castor</groupId>
 				<artifactId>castor</artifactId>
-				<version>1.0</version>
+				<version>0.9.6</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>

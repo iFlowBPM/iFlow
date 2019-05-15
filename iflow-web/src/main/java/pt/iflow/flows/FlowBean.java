@@ -1817,7 +1817,7 @@ public class FlowBean implements Flow {
 	        }
 	        sql.append(")");
 	        if (anFlowId > 0) {
-	          sql.append(" AND r.flowid=?" + anFlowId);
+	          sql.append(" AND r.flowid=?");
 	        }
 	        sql.append(" AND f.flowid=r.flowid");
 	        sql.append(" AND f.organizationid LIKE ?");
@@ -1826,7 +1826,7 @@ public class FlowBean implements Flow {
 	        pst.setInt(1, anFlowId);
 	        pst.setString(2, userInfo.getCompanyID());
 	        
-	        rs = pst.executeQuery(sql.toString());
+	        rs = pst.executeQuery();
 	        altmp = new ArrayList<FlowRolesTO>();
 	        while (rs.next()) {
 	          int flowid = rs.getInt(FlowRolesTO.FLOW_ID);
