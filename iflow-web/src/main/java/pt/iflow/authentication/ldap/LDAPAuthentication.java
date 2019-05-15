@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
+
 import pt.iflow.api.authentication.Authentication;
 import pt.iflow.api.authentication.AuthenticationInfo;
 import pt.iflow.api.userdata.UserData;
@@ -327,6 +329,10 @@ public class LDAPAuthentication implements Authentication {
    */
   public boolean checkUser(String username, String password) {
     boolean retVal = false;
+    if(!StringUtils.isAlphanumeric(username) || !StringUtils.isAlphanumeric(password)){
+    	Logger.warning(null,this,"checkUser","blacklist invalid parameter: " + username + " " + password);
+    	return false;
+    }
     Logger.debug(null,this,"checkUser","starting with username: " + username );
     try {
       if (username != null && !username.equals("") && password != null
@@ -359,6 +365,10 @@ public class LDAPAuthentication implements Authentication {
    * @see pt.iknow.authentication.Authentication#getProfileUsers(java.lang.String)
    */
   public Collection<Map<String,String>> getProfileUsers(String profileID) {
+    if(!StringUtils.isAlphanumeric(profileID) ){
+    	Logger.warning(null,this,"getProfileUsers","blacklist invalid parameter: " + profileID );
+    	return null;
+    }
     Collection<Map<String,String>> retObj = null;
 
     Logger.debug(null,this,"getProfileUsers","Performing LDAP search " + _listProfileUsers);
@@ -371,7 +381,10 @@ public class LDAPAuthentication implements Authentication {
 
   public AuthenticationInfo loginUser(String username, String password) {
     AuthenticationInfo retObj = null;
-
+    if(!StringUtils.isAlphanumeric(username) || !StringUtils.isAlphanumeric(password)){
+    	Logger.warning(null,this,"loginUser","blacklist invalid parameter: " + username + " " + password);
+    	return null;
+    }
     if(checkUser(username, password)) {
       LDAPDirectory directory = LDAPInterface.getDirectory();
       Logger.debug(null,this,"loginUser","Performing LDAP search " + _searchByUserUid);
@@ -391,7 +404,10 @@ public class LDAPAuthentication implements Authentication {
   }
 
   public boolean checkUserSession(String username, String sessionId) {
-
+    if(!StringUtils.isAlphanumeric(username) || !StringUtils.isAlphanumeric(sessionId)){
+    	Logger.warning(null,this,"checkUserSession","blacklist invalid parameter: " + username + " " + sessionId);
+    	return false;
+    }
     try {
       if (username != null && !username.equals("") && sessionId != null
           && !sessionId.equals("")) {
