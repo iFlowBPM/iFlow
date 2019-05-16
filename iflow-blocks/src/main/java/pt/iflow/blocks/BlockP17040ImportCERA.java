@@ -6,19 +6,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-
-import javax.xml.rpc.ServiceException;
-import javax.xml.soap.SOAPException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -190,8 +185,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 
 		Logger.debug(userInfo.getUtilizador(),this,"importLine","idEnt: " +  lineValues.get("idEnt")+" before dataEnrichment test " );
 		// insert clienteRel
-		/*if (dataEnrichmentOn){
-			
+		if (dataEnrichmentOn){
 			Date start = new Date();
 			insertEntidadeRelacionada(lineValues,  connection,  userInfo, conteudoIdList, riscoEnt_id, (Date)lineValues.get("dtRef"));		
 			Date end = new Date();
@@ -199,7 +193,7 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				"insert into audit (dataregisto, flowId, pid, user, idestado, descricao) "+
 				" values (?,?,?,?,?,?)",
 				new Object[] {new Date(),-1,-1,userInfo.getUtilizador(),(end.getTime() - start.getTime()),"insertEntidadeRelacionada, idEnt:" + lineValues.get("idEnt")});
-		}*/
+		}
 		
 		// insert infRiscoEnt
 		if(!(this instanceof BlockP17040ImportCERAEntRelOn)){

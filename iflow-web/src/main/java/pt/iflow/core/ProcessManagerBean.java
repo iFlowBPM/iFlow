@@ -3343,10 +3343,7 @@ public class ProcessManagerBean implements ProcessManager {
 	        }
 	      }
 	      rs.close();
-	      rs = null;
-
-	      pst2.close();
-	      pst2 = null;
+	      rs = null;	      
 
 	      if (bHasActivities) {
 	        // update activity
@@ -3415,7 +3412,7 @@ public class ProcessManagerBean implements ProcessManager {
 	          pst.setInt(index++, activity.flowid);
 	          pst.setInt(index++, activity.pid);
 	          pst.setInt(index++, activity.subpid);
-	          nUpdatedRows = pst.executeUpdate(sbUpdateActivity.toString());
+	          nUpdatedRows = pst.executeUpdate();
 	          pst.close();
 	          Logger.debug(userid, this, "updateActivity", nUpdatedRows + " activities updated.");
 	          
