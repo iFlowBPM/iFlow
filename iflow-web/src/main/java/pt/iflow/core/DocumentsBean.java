@@ -25,6 +25,7 @@ import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ws.security.util.Base64;
 
 import pt.iflow.api.connectors.DMSConnectorUtils;
 import pt.iflow.api.core.BeanFactory;
@@ -48,6 +49,7 @@ import pt.iflow.api.transition.FlowRolesTO;
 import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
+import pt.iflow.api.utils.Utils;
 import pt.iflow.connector.alfresco.AlfrescoDocument;
 import pt.iflow.connector.credentials.DMSCredential;
 import pt.iflow.connector.dms.DMSUtils;
@@ -358,7 +360,10 @@ public class DocumentsBean implements Documents {
         	  java.nio.file.Files.copy(((DocumentDataStream) adoc).getContentStream(), new File(filePath).toPath(), StandardCopyOption.REPLACE_EXISTING);         	
           } else {
         	  FileOutputStream fos = new FileOutputStream(filePath);              
-        	  fos.write(adoc.getContent());
+        	  byte[] fileContent = adoc.getContent();
+        	  if(Const.ENCRYPT_FILESYSTEM_DOCS)
+        		  fileContent = Base64.decode(Utils.encrypt(Base64.encode(fileContent)));
+        	  fos.write(fileContent);
         	  fos.close();
           }          
         } catch(FileNotFoundException ex) {
@@ -732,7 +737,10 @@ public class DocumentsBean implements Documents {
           }
           baos.flush();
           baos.close();
-          retObj.setContent(baos.toByteArray());
+          if (StringUtils.isNotEmpty(filePath) && Const.ENCRYPT_FILESYSTEM_DOCS)         	  
+        	  retObj.setContent(Base64.decode(Utils.decrypt(Base64.encode(baos.toByteArray()))));
+          else
+        	  retObj.setContent(baos.toByteArray());
         }
       } else {
         retObj = null;

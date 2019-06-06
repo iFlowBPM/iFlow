@@ -426,6 +426,7 @@ public class Const {
   public static Long DAYS_UNTIL_PURGE;
   
   public static String CRYPT_UTILS_KEY = "achave";
+  public static Boolean ENCRYPT_FILESYSTEM_DOCS = false;
   
   private static List<String> ALLOWED_LOCALES = new ArrayList<String>();
 
@@ -698,6 +699,8 @@ public class Const {
     /* Show Button Help */
     
     sSHOW_BUTTON_HELP = Setup.getProperty("SHOW_BUTTON_HELP");
+    if(StringUtils.isBlank(sSHOW_BUTTON_HELP))
+    	sSHOW_BUTTON_HELP = "true";
     
     /* Show MAX NOTIFICATIONS /*  */
     
@@ -802,6 +805,10 @@ public class Const {
 	try { CRYPT_UTILS_KEY = Setup.getProperty("CRYPT_UTILS_KEY");
     } catch (Exception e) { 
     	CRYPT_UTILS_KEY="achave"; 
+    }
+	try { ENCRYPT_FILESYSTEM_DOCS = Boolean.parseBoolean(Setup.getProperty("ENCRYPT_FILESYSTEM_DOCS"));
+    } catch (Exception e) { 
+    	ENCRYPT_FILESYSTEM_DOCS = false; 
     }
   }
 

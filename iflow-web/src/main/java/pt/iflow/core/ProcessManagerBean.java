@@ -1843,7 +1843,7 @@ public class ProcessManagerBean implements ProcessManager {
       pst.setInt(4, subpid);
       
       rs = pst.executeQuery();
-      pst.close();
+//      pst.close();
       
       if (rs.next()) {
         result = new Activity(userid, rs.getInt("flowid"), rs.getInt("pid"), rs.getInt("subpid"), rs.getInt("type"), 
@@ -1864,8 +1864,8 @@ public class ProcessManagerBean implements ProcessManager {
         pst.setInt(2, flowid);
         pst.setInt(3, pid);
         pst.setInt(4, subpid);
-        rs = pst.executeQuery(activityiesQuery);
-        pst.close();
+        rs = pst.executeQuery();
+//        pst.close();
 
         if (rs.next()) {
           result = new Activity(userid, rs.getInt("flowid"), rs.getInt("pid"), rs.getInt("subpid"), rs.getInt("type"), 
@@ -6095,18 +6095,18 @@ public class ProcessManagerBean implements ProcessManager {
 	      if(filter.getOrderType() != null && filter.getOrderType().equals("desc")){
 	    	  
 	    	  //alteração da ordenação Tarefas
-	    	  sQueryDelegated.append(" order by created asc");
+	    	  sQueryDelegated.append(") order by created asc");
 	         // sQueryDelegated.append(" order by iconid asc, created desc");
 	    	  //sQueryDelegated.append(" order by created desc");
 	      }else{
 	    	  
-	    	  sQueryDelegated.append(" order by created desc");
+	    	  sQueryDelegated.append(") order by created desc");
 	         // sQueryDelegated.append(" order by iconid asc, created asc");
 	    	  //sQueryDelegated.append(" order by created desc");
 	      }
 	      
 	      
-	      union = sQuery.toString()+" UNION "+sQueryDelegated.toString();
+	      union = "select * from (" + sQuery.toString()+" UNION "+sQueryDelegated.toString();
 
 	      st = db.prepareStatement(union);
 	      ///////////////////

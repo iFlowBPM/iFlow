@@ -2050,7 +2050,7 @@ public class UserManagerBean
 
 
 
-      pst = db.prepareStatement("insert into users (GENDER,UNITID,USERNAME,USERPASSWORD,EMAIL_ADDRESS,FIRST_NAME,LAST_NAME,PHONE_NUMBER,FAX_NUMBER,MOBILE_NUMBER,COMPANY_PHONE,ACTIVATED,PASSWORD_RESET,ORGADM) values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,0,1)", new String[] { "userid" });
+      pst = db.prepareStatement("insert into users (GENDER,UNITID,USERNAME,USERPASSWORD,EMAIL_ADDRESS,FIRST_NAME,LAST_NAME,PHONE_NUMBER,FAX_NUMBER,MOBILE_NUMBER,COMPANY_PHONE,ACTIVATED,PASSWORD_RESET,ORGADM) values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,0,1)", new String[] { "USERID" });
       pst.setString(1, gender);
       pst.setInt(2, unitId);
       pst.setString(3, username);

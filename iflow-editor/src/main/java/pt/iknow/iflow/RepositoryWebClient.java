@@ -3,6 +3,7 @@ package pt.iknow.iflow;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -28,6 +29,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -179,9 +181,9 @@ public class RepositoryWebClient implements RepositoryClient {
   public boolean login(String asLogin, String asPassword, boolean abPassEncrypted) {
     if(offline) return false;
     String pass = asPassword;
-    if (!abPassEncrypted) {
-      pass = RepositoryWebOpCodes._crypt.encrypt(asPassword);
-    }
+//    if (!abPassEncrypted) {
+//      pass = RepositoryWebOpCodes._crypt.encrypt(asPassword);
+//    }
     boolean retObj = doCheck(RepositoryWebOpCodes.AUTHENTICATE_USER, asLogin, pass);
 
     if (retObj) {
@@ -273,10 +275,10 @@ public class RepositoryWebClient implements RepositoryClient {
     try {
       //name = null==name?"NONE":name; //$NON-NLS-1$
       //PostMethod method = new PostMethod(_url);
-    	partBuilder.addTextBody("login", _login);
-        partBuilder.addTextBody("password", _password);
-        partBuilder.addTextBody("op", String.valueOf(op));
-        partBuilder.addTextBody("name", String.valueOf(op));
+    	partBuilder.addTextBody("login", _login, ContentType.TEXT_PLAIN.withCharset(RepositoryWebOpCodes.DEFAULT_ENCODING));
+        partBuilder.addTextBody("password", _password, ContentType.TEXT_PLAIN.withCharset(RepositoryWebOpCodes.DEFAULT_ENCODING));
+        partBuilder.addTextBody("op", String.valueOf(op), ContentType.TEXT_PLAIN.withCharset(RepositoryWebOpCodes.DEFAULT_ENCODING));
+        partBuilder.addTextBody("name", (name==null)?String.valueOf(op):name, ContentType.TEXT_PLAIN.withCharset(RepositoryWebOpCodes.DEFAULT_ENCODING));
         partBuilder.addPart("file", fb);
         
         
@@ -335,18 +337,20 @@ public class RepositoryWebClient implements RepositoryClient {
 	  
     try {
       //PostMethod method = new PostMethod(_url);
-    	final File file = (name!=null)?(new File(name)):(File.createTempFile("blank", "blank"));
-    	FileBody fb = new FileBody(file);
+    	File file = (name!=null)?(File.createTempFile(name,"")):(File.createTempFile("blank", "blank"));
+    	FileOutputStream fos = new FileOutputStream(file);
+    	fos.write(data);
+    	FileBody fb = new FileBody(file);    	
     	desc = null==desc?"":desc;      
     	comment = null==comment?"":comment;
       //Part[] parts = {
       
-	    partBuilder.addTextBody("login", _login);
-        partBuilder.addTextBody("password", _password);
-        partBuilder.addTextBody("op", String.valueOf(op));
-        partBuilder.addTextBody("name", String.valueOf(op));
-        partBuilder.addTextBody("desc", desc);
-        partBuilder.addTextBody("comment", comment);
+	    partBuilder.addTextBody("login", _login, ContentType.TEXT_PLAIN.withCharset(RepositoryWebOpCodes.DEFAULT_ENCODING));
+        partBuilder.addTextBody("password", _password, ContentType.TEXT_PLAIN.withCharset(RepositoryWebOpCodes.DEFAULT_ENCODING));
+        partBuilder.addTextBody("op", String.valueOf(op), ContentType.TEXT_PLAIN.withCharset(RepositoryWebOpCodes.DEFAULT_ENCODING));
+        partBuilder.addTextBody("name", (name==null)?String.valueOf(op):name, ContentType.TEXT_PLAIN.withCharset(RepositoryWebOpCodes.DEFAULT_ENCODING));
+        partBuilder.addTextBody("desc", (desc==null)?String.valueOf(op):desc, ContentType.TEXT_PLAIN.withCharset(RepositoryWebOpCodes.DEFAULT_ENCODING));
+        partBuilder.addTextBody("comment", (comment==null)?String.valueOf(op):comment, ContentType.TEXT_PLAIN.withCharset(RepositoryWebOpCodes.DEFAULT_ENCODING));
         partBuilder.addPart("file", fb);	  
     	
           /*new StringPart("login", _login, RepositoryWebOpCodes.DEFAULT_ENCODING), //$NON-NLS-1$

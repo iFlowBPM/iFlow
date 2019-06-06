@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
+
+import pt.iflow.api.db.DBQueryManager;
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
@@ -70,7 +72,7 @@ public class PersistSession {
     
     try {
       db = DatabaseInterface.getConnection(userInfo);
-      pst = db.prepareStatement("select session from user_session where userid = ?");
+      pst = db.prepareStatement(DBQueryManager.getQuery("PersistSession.GET_SESSION"));
       pst.setString(1, userid);
       
       rs = pst.executeQuery();

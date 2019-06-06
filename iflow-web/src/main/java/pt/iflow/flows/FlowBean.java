@@ -1662,18 +1662,28 @@ public class FlowBean implements Flow {
       for (int fr = 0; fr < afraRoles.length; fr++) {
         StringBuffer sql = new StringBuffer();
         if (anMode == nMODE_ADD) {
-          sql.append("INSERT INTO ?");
-          sql.append(" (?,?,?)" );
+          sql.append("INSERT INTO " + FlowRolesTO.TABLE_NAME);
+          sql.append(" (" + FlowRolesTO.FLOW_ID + "," + FlowRolesTO.PROFILE_ID + "," +FlowRolesTO.PERMISSIONS+ ")" );
           sql.append(" values (?,?,?)");
+          pst = db.prepareStatement(sql.toString());
+          pst.setString(1, afraRoles[fr].getValueOf(FlowRolesTO.FLOW_ID));
+      	  pst.setString(2, afraRoles[fr].getValueOf(FlowRolesTO.PROFILE_ID));
+      	  pst.setString(3, afraRoles[fr].getValueOf(FlowRolesTO.PERMISSIONS));
         } else if (anMode == nMODE_REMOVE) {
-          sql.append("DELETE FROM ?");
-          sql.append(" WHERE ?=?");
-          sql.append(" AND ?=?");
+          sql.append("DELETE FROM " + FlowRolesTO.TABLE_NAME);
+          sql.append(" WHERE " + FlowRolesTO.FLOW_ID + "=? AND " + FlowRolesTO.PROFILE_ID + "=?");
+          pst = db.prepareStatement(sql.toString());
+          pst.setString(1, afraRoles[fr].getValueOf(FlowRolesTO.FLOW_ID));      	
+      	  pst.setString(2, afraRoles[fr].getValueOf(FlowRolesTO.PROFILE_ID));
         } else if (anMode == nMODE_UPDATE) {
-          sql.append("UPDATE ?");
-          sql.append(" SET ?=?");
-          sql.append(" WHERE ?=?");
-          sql.append(" AND ?=?");
+          sql.append("UPDATE " + FlowRolesTO.TABLE_NAME);
+          sql.append(" SET  " + FlowRolesTO.PERMISSIONS + "=?");
+          sql.append(" WHERE " + FlowRolesTO.FLOW_ID + "=?");
+          sql.append(" AND " + FlowRolesTO.PROFILE_ID + "=?");
+          pst = db.prepareStatement(sql.toString());
+          pst.setString(1, afraRoles[fr].getValueOf(FlowRolesTO.PERMISSIONS));
+          pst.setString(2, afraRoles[fr].getValueOf(FlowRolesTO.FLOW_ID));
+          pst.setString(3, afraRoles[fr].getValueOf(FlowRolesTO.PROFILE_ID));
         } else {
           throw new Exception("NO PREDIFINED MODE.. exiting");
         }
@@ -1681,32 +1691,6 @@ public class FlowBean implements Flow {
         if (Logger.isDebugEnabled()) {
           Logger.debug(userInfo.getUtilizador(), this, "setFlowRoles", "query[" + fr + "]=" + sql);
         }
-        pst = db.prepareStatement(sql.toString());
-        if (anMode == nMODE_ADD) {
-        	pst.setString(1, FlowRolesTO.TABLE_NAME);
-        	pst.setString(2, FlowRolesTO.FLOW_ID);
-        	pst.setString(3, FlowRolesTO.PROFILE_ID);
-        	pst.setString(4, FlowRolesTO.PERMISSIONS);
-        	pst.setString(5, afraRoles[fr].getValueOf(FlowRolesTO.FLOW_ID));
-        	pst.setString(6, afraRoles[fr].getValueOf(FlowRolesTO.PROFILE_ID));
-        	pst.setString(7, afraRoles[fr].getValueOf(FlowRolesTO.PERMISSIONS));
-        } else if (anMode == nMODE_REMOVE) {
-        	pst.setString(1, FlowRolesTO.TABLE_NAME);
-        	pst.setString(2, FlowRolesTO.FLOW_ID);
-        	pst.setString(3, afraRoles[fr].getValueOf(FlowRolesTO.FLOW_ID));
-        	pst.setString(4, FlowRolesTO.PROFILE_ID);
-        	pst.setString(5, afraRoles[fr].getValueOf(FlowRolesTO.PROFILE_ID));
-        } else if (anMode == nMODE_UPDATE) {
-        	pst.setString(1, FlowRolesTO.TABLE_NAME);
-        	pst.setString(2, FlowRolesTO.PERMISSIONS);
-        	pst.setString(3, afraRoles[fr].getValueOf(FlowRolesTO.PERMISSIONS));
-        	pst.setString(4, FlowRolesTO.FLOW_ID);
-        	pst.setString(5, afraRoles[fr].getValueOf(FlowRolesTO.FLOW_ID));
-        	pst.setString(6, FlowRolesTO.PROFILE_ID);
-        	pst.setString(7, afraRoles[fr].getValueOf(FlowRolesTO.PROFILE_ID));
-        	
-        }
-        
         pst.executeUpdate();
       }
       db.commit();
