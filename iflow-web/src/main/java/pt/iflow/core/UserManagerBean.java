@@ -154,8 +154,8 @@ public class UserManagerBean
         Map<String, String> mapExtra = AccessControlManager.getUserDataAccess().getMappingExtra();
         for (int i = 0; i < listExtraProperties.length; i++)
         {
-          auxEP = auxEP + ",?";
-          auxEV = auxEV + ",'?'";
+          auxEP = auxEP + "," + listExtraProperties[i];
+          auxEV = auxEV + ",?";
         }
       }
       sQuery = sQuery.replace("#EP#", auxEP).replace("#EV#", auxEV);
@@ -167,10 +167,11 @@ public class UserManagerBean
     	Map<String, String> mapExtra = AccessControlManager.getUserDataAccess().getMappingExtra();
         for (i = 0; i < listExtraProperties.length; i++)
         {
-        	pst.setString(i,(String)mapExtra.get(listExtraProperties[i]));
-        	pst.setString(i+12+listExtraProperties.length,listExtraValues[i]);
+//        	pst.setString(i,(String)mapExtra.get(listExtraProperties[i]));
+        	pst.setString(i+15,listExtraValues[i]);
         }
       }
+      i=1;
       pst.setString(i++, gender);
       pst.setString(i++, unit);
       pst.setString(i++, username);
@@ -1011,10 +1012,10 @@ public class UserManagerBean
           Logger.debug(userInfo.getUtilizador(), this, "modifyProfile", "QUERY=" + sql.toString());
         }
         pst = db.prepareStatement(sql.toString());
-        pst.setString(1, profile.getValueOf(ProfilesTO.NAME));
-        pst.setString(2, profile.getValueOf(ProfilesTO.DESCRIPTION));
-        pst.setInt(3, Integer.valueOf(profile.getValueOf(ProfilesTO.PROFILE_ID)));
-        pst.setInt(4, Integer.valueOf(profile.getValueOf(ProfilesTO.ORGANIZATION_ID)));
+        pst.setString(1, profile.getName());
+        pst.setString(2, profile.getDescription());
+        pst.setInt(3, profile.getProfileId());
+        pst.setInt(4, Integer.valueOf(profile.getOrganizationId()));
         pst.executeUpdate();
         db.commit();
         
