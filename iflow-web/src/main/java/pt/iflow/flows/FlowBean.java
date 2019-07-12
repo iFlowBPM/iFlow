@@ -1800,15 +1800,16 @@ public class FlowBean implements Flow {
 	          sql.append("'" + StringEscapeUtils.escapeSql(saProfiles[i]) + "'");
 	        }
 	        sql.append(")");
-	        if (anFlowId > 0) {
-	          sql.append(" AND r.flowid=?");
-	        }
 	        sql.append(" AND f.flowid=r.flowid");
 	        sql.append(" AND f.organizationid LIKE ?");
+	        if (anFlowId > 0) 
+	        	sql.append(" AND r.flowid=?");		        
 	        sql.append(" ORDER BY flowid");
 	        pst = db.prepareStatement(sql.toString());
-	        pst.setInt(1, anFlowId);
-	        pst.setString(2, userInfo.getCompanyID());
+	        pst.setString(1, userInfo.getCompanyID());
+	        if (anFlowId > 0)
+	        	pst.setInt(2, anFlowId);
+	        
 	        
 	        rs = pst.executeQuery();
 	        altmp = new ArrayList<FlowRolesTO>();

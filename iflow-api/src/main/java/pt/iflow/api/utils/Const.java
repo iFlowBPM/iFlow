@@ -425,7 +425,7 @@ public class Const {
   //how many days until FLOW_STATE_HISTORY and LOGS are purged from database
   public static Long DAYS_UNTIL_PURGE;
   
-  public static String CRYPT_UTILS_KEY = "achave";
+  public static String CRYPT_UTILS_KEY;
   public static Boolean ENCRYPT_FILESYSTEM_DOCS = false;
   
   private static List<String> ALLOWED_LOCALES = new ArrayList<String>();
@@ -803,8 +803,7 @@ public class Const {
     	DAYS_UNTIL_PURGE=new Long(-1); 
     }
 	try { CRYPT_UTILS_KEY = Setup.getProperty("CRYPT_UTILS_KEY");
-    } catch (Exception e) { 
-    	CRYPT_UTILS_KEY="achave"; 
+    } catch (Exception e) {  
     }
 	try { ENCRYPT_FILESYSTEM_DOCS = Boolean.parseBoolean(Setup.getProperty("ENCRYPT_FILESYSTEM_DOCS"));
     } catch (Exception e) { 

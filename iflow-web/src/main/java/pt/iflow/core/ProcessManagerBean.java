@@ -3222,7 +3222,7 @@ public class ProcessManagerBean implements ProcessManager {
     try {
       db = DatabaseInterface.getConnection(userInfo);
       db.setAutoCommit(false);
-      pst = (PreparedStatement) db.createStatement();
+//      pst = (PreparedStatement) db.createStatement();
 
       historifyActivities(userInfo, db, procHeader, userid);
 
@@ -3651,8 +3651,8 @@ public class ProcessManagerBean implements ProcessManager {
         
         Logger.debug(userid, this, "forwardTo (profile=" + asProfile + ",newuser=" + asNewUser + ")", "Query3="
             + sbDeleteActivities.toString());
-        pst1 = db.prepareStatement(sbDeleteActivities.toString());
-        pst1.executeUpdate();
+//        pst1 = db.prepareStatement(sbDeleteActivities.toString());
+        sbDeleteActivities.executeUpdate();
 
         
         int mid = procData.getMid();
@@ -4681,8 +4681,8 @@ public class ProcessManagerBean implements ProcessManager {
         if (filter.getDateBefore() != null) {
           pst.setTimestamp(++pos, new Timestamp(filter.getDateBefore().getTime()));
         }
-        for (int k = 0; k < idx.length && k < Const.INDEX_COLUMN_COUNT; k++) {
-            if (StringUtils.isNotEmpty(idx[k]))
+        for (int k = 0; k < idx.length && k < Const.INDEX_COLUMN_COUNT; k++) 
+            if (StringUtils.isNotEmpty(idx[k])){
             	pst.setInt(++pos, k);
             	pst.setString(++pos, escapeSQL(idx[k]));
           }
@@ -5519,7 +5519,7 @@ public class ProcessManagerBean implements ProcessManager {
       db = DatabaseInterface.getConnection(userInfo);
       this.deleteAllActivities(userInfo, procData);
 
-      pst = (PreparedStatement) db.createStatement();
+//      pst = (PreparedStatement) db.createStatement();
       pst = db.prepareStatement("select * from process where flowid= ?"
               + " and pid= ?"
               + " and subpid= ?"
@@ -6095,12 +6095,12 @@ public class ProcessManagerBean implements ProcessManager {
 	      if(filter.getOrderType() != null && filter.getOrderType().equals("desc")){
 	    	  
 	    	  //alteração da ordenação Tarefas
-	    	  sQueryDelegated.append(") order by created asc");
+	    	  sQueryDelegated.append(")C order by created asc");
 	         // sQueryDelegated.append(" order by iconid asc, created desc");
 	    	  //sQueryDelegated.append(" order by created desc");
 	      }else{
 	    	  
-	    	  sQueryDelegated.append(") order by created desc");
+	    	  sQueryDelegated.append(")C order by created desc");
 	         // sQueryDelegated.append(" order by iconid asc, created asc");
 	    	  //sQueryDelegated.append(" order by created desc");
 	      }
