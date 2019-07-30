@@ -154,7 +154,7 @@ public class UserManagerBean
         Map<String, String> mapExtra = AccessControlManager.getUserDataAccess().getMappingExtra();
         for (int i = 0; i < listExtraProperties.length; i++)
         {
-          auxEP = auxEP + "," + listExtraProperties[i];
+          auxEP = auxEP + "," + mapExtra.get(listExtraProperties[i]);
           auxEV = auxEV + ",?";
         }
       }
