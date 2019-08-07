@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
+
+import pt.iflow.api.db.DBQueryManager;
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
@@ -63,15 +65,17 @@ public class PersistSession {
   public void getSession(UserInfoInterface userInfo, HttpSession session){
     String userid = userInfo.getUtilizador();    
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     Object[][] valores = new Object[0][2]; 
     byte[] buf = null;
     
     try {
       db = DatabaseInterface.getConnection(userInfo);
-      st = db.createStatement();
-      rs = st.executeQuery("select session from user_session where userid = '"+userid+"'");
+      pst = db.prepareStatement(DBQueryManager.getQuery("PersistSession.GET_SESSION"));
+      pst.setString(1, userid);
+      
+      rs = pst.executeQuery();
       
       if (rs.next()) {
         buf = rs.getBytes("session");
@@ -85,7 +89,7 @@ public class PersistSession {
     } catch (Exception e) {
         Logger.error(userid, "PersistSession", "getSession", "caught exception: " + e.getMessage(), e);
     } finally {
-        DatabaseInterface.closeResources(db, st, rs);
+        DatabaseInterface.closeResources(db, pst, rs);
     }
 
     for(int i=0; i < valores.length; i++){
@@ -120,14 +124,20 @@ public class PersistSession {
     PreparedStatement pst = null;
     try {
       db = DatabaseInterface.getConnection(userInfo);
-      pst = db.prepareStatement("Update user_session set session=? where userid='"+userInfo.getUtilizador()+"'");
+      
+      //HERE
+      pst = db.prepareStatement("Update user_session set session=? where userid=?");
       pst.setBytes(1, baos.toByteArray());
+      pst.setString(2, userInfo.getUtilizador());
       rows = pst.executeUpdate();
+      pst.close();
+      db.close();
 
       if(rows <= 0){      
         db = DatabaseInterface.getConnection(userInfo); 
-        pst = db.prepareStatement("insert into user_session (userid, session) values ('"+userInfo.getUtilizador()+"',?)");
-        pst.setBytes(1, baos.toByteArray());
+        pst = db.prepareStatement("insert into user_session (userid, session) values (?,?)");
+        pst.setString(1, userInfo.getUtilizador());
+        pst.setBytes(2, baos.toByteArray());
         pst.execute();
       }
     } catch (SQLException sqle) {

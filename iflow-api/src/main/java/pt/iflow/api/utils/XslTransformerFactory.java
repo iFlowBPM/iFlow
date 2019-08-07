@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
 
+import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
@@ -63,6 +64,11 @@ public class XslTransformerFactory {
       isXslStream = repFile.getResourceAsStream();
       if (isXslStream != null) {
         TransformerFactory tFactory = TransformerFactory.newInstance();
+//        try {
+//			tFactory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true);
+//		} catch (TransformerConfigurationException e1) {
+//			 Logger.error("ADMIN", "XslTransformerFactory", "getTemplates", "XMLConstants.FEATURE_SECURE_PROCESSING error", e1);
+//		}
         tFactory.setURIResolver(new RepositoryURIResovler(userInfo, tFactory.getURIResolver()));
         try {
           templates = tFactory.newTemplates(new StreamSource(isXslStream));
@@ -154,7 +160,9 @@ public class XslTransformerFactory {
   
   public static Transformer getIdentityTransformer() {
     try {
-      return TransformerFactory.newInstance().newTransformer();
+    	TransformerFactory tFactory = TransformerFactory.newInstance();
+//    	tFactory.setFeature( XMLConstants.FEATURE_SECURE_PROCESSING, true);
+      return tFactory.newTransformer();
     } catch (Throwable e) {
       Logger.warning(null, "XslTransformerFactory", "getIdentityTransformer", "Error retrieving identity transformer", e);
     }

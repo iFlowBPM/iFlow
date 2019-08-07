@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import pt.iflow.api.db.DBQueryManager;
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.processannotation.ProcessAnnotationManager;
 import pt.iflow.api.processannotation.ProcessComment;
@@ -382,13 +383,16 @@ public class ProcessAnnotationManagerBean implements ProcessAnnotationManager {
     ProcessComment retObj = new ProcessComment("");         
 
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
 
     try {
       db = DatabaseInterface.getConnection(userInfo);
-      st = db.createStatement();
-      rs = st.executeQuery("select id,date,userid,comment from comment where flowid="+flowid+" and pid="+pid+" and subpid ="+subpid);
+      pst = db.prepareStatement(DBQueryManager.getQuery("ProcessAnnotationManagerBean.GET_PROCESS_COMMENT"));
+      pst.setInt(1, flowid);
+      pst.setInt(2, pid);
+      pst.setInt(3, subpid);
+      rs = pst.executeQuery();
 
       if(rs.next())
         retObj = new ProcessComment(rs.getString("comment"), rs.getString("userid"), rs.getString("date"), rs.getInt("id"));
@@ -400,7 +404,7 @@ public class ProcessAnnotationManagerBean implements ProcessAnnotationManager {
     } catch (Exception e) {
       Logger.error(userid, this, "getProcessComment","caught exception: " + e.getMessage(), e);
     } finally {
-      DatabaseInterface.closeResources(db, st, rs);
+      DatabaseInterface.closeResources(db, pst, rs);
     }
     return retObj;
   }
@@ -410,13 +414,16 @@ public class ProcessAnnotationManagerBean implements ProcessAnnotationManager {
     String userid = userInfo.getUtilizador();
 
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
 
     try {
       db = DatabaseInterface.getConnection(userInfo);
-      st = db.createStatement();
-      rs = st.executeQuery("select id,comment,userid,date from comment_history where flowid="+flowid+" and pid="+pid+" and subpid ="+subpid);
+      pst = db.prepareStatement(DBQueryManager.getQuery("ProcessAnnotationManagerBean.GET_PROCESS_COMMENT_HISTORY"));
+      pst.setInt(1, flowid);
+      pst.setInt(2, pid);
+      pst.setInt(3, subpid);
+      rs = pst.executeQuery();
 
       while (rs.next())
         retObj.add(new ProcessComment(rs.getString("comment"), rs.getString("userid"), rs.getString("date"), rs.getInt("id")));
@@ -428,7 +435,7 @@ public class ProcessAnnotationManagerBean implements ProcessAnnotationManager {
     } catch (Exception e) {
       Logger.error(userid, this, "getProcessComment","caught exception: " + e.getMessage(), e);
     } finally {
-      DatabaseInterface.closeResources(db, st, rs);
+      DatabaseInterface.closeResources(db, pst, rs);
     }
     return retObj;
   }

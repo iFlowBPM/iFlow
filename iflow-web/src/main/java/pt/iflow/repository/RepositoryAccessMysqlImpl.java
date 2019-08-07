@@ -107,7 +107,7 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
     boolean retObj = false;
 
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     int id = 0;
     ArrayList alIds = new ArrayList();
     String[] files = null;
@@ -154,15 +154,18 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
           if (jj > 0) {
             sbQuery.append(",");
           }
-          sbQuery.append((String) alIds.get(ii));
+          sbQuery.append("?");
+         // pst.setString(ii, (String) alIds.get(ii));
         }
         sbQuery.append(")");
 
         db = this.getConnection();
         db.setAutoCommit(true);
-        st = db.createStatement();
-
-        st.executeUpdate(sbQuery.toString());
+        pst = db.prepareStatement(sbQuery.toString());
+        for (int jj = 0, ii = (alIds.size() - 1); ii >= 0; ii--, jj++) {
+        	pst.setString(jj+1, (String) alIds.get(ii));
+        }
+        pst.executeUpdate();
 
         retObj = true;
 
@@ -178,7 +181,7 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
     }
     finally {
       try {
-        if (st != null) st.close();
+        if (pst != null) pst.close();
       }
       catch (Exception e) {
       }
@@ -263,7 +266,7 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
   private int createId(String fullname) {
 
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst1 = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
     int id = 0;
@@ -276,7 +279,7 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
 
         db = this.getConnection();
         db.setAutoCommit(false);
-        st = db.createStatement();
+        
         pst = db.prepareStatement("INSERT INTO repository_data (id,parentid,name,value,data,modification) VALUES (NULL,?,?,'Dir',NULL,NOW())", new String[]{"id"});
 
         // creates directory path
@@ -286,10 +289,15 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
           String dir = stok.nextToken();
           boolean found = false;
           if (parentid == 0) {
-            rs = st.executeQuery("SELECT id,parentid FROM repository_data WHERE parentid is null and name='" + dir + "'");
+        	pst1 = db.prepareStatement("SELECT id,parentid FROM repository_data WHERE parentid is null and name=?");
+            pst1.setString(1, dir);
+        	rs = pst1.executeQuery();
           }
           else {
-            rs = st.executeQuery("SELECT id,parentid FROM repository_data WHERE parentid=" + parentid + " and name='" + dir + "'");
+        	pst1 = db.prepareStatement("SELECT id,parentid FROM repository_data WHERE parentid=? and name=?");
+        	pst.setInt(1, parentid);
+        	pst.setString(2, dir);
+        	rs = pst1.executeQuery();
           }
           
           if(rs.next()) {
@@ -332,7 +340,7 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
       catch (Exception e) {
       }
       try {
-        if (st != null) st.close();
+        if (pst1 != null) pst1.close();
       }
       catch (Exception e) {
       }
@@ -507,7 +515,7 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
     boolean retObj = false;
 
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst1 = null;
     ResultSet rs = null;
     PreparedStatement pst = null;
     int id = 0;
@@ -523,24 +531,32 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
         // open connection
         db = this.getConnection();
         db.setAutoCommit(false);
-        st = db.createStatement();
+        
 
         // get blob handler
-
-        rs = st.executeQuery("SELECT parentid FROM repository_data WHERE id=" + id);
+        pst1 = db.prepareStatement("SELECT parentid FROM repository_data WHERE id=?");
+        pst1.setInt(1, id);
+        rs = pst1.executeQuery();
+       
         if (rs.next()) {
           parentid = rs.getInt("parentid");
         }
         rs.close();
-
+        pst1.close();
         String sIsDir = "null";
         if (bIsDir) sIsDir = "'Dir'";
+        
+        pst1 = db.prepareStatement("DELETE FROM repository_data WHERE id=?");
+        pst1.setInt(1, id);
+        pst1.executeUpdate();  // TODO improve this
+        pst1 = db.prepareStatement("INSERT INTO repository_data (id,parentid,name,value,data,modification) VALUES (?,?,?,?,NULL,NOW())");
+        pst1.setInt(1, id);
+        pst1.setInt(2, parentid);
+        pst1.setString(3, shortname);
+        pst1.setString(4, sIsDir);
+        pst1.executeUpdate();
 
-        st.executeUpdate("DELETE FROM repository_data WHERE id=" + id);  // TODO improve this
-        st.executeUpdate("INSERT INTO repository_data (id,parentid,name,value,data,modification) VALUES (" + id + "," + parentid
-            + ",'" + shortname + "'," + sIsDir + ",NULL,NOW())");
-
-        st.close();
+        pst1.close();
 
         pst = db.prepareStatement("UPDATE repository_data SET data=?,modification=NOW() WHERE id=?");
 
@@ -580,7 +596,7 @@ public class RepositoryAccessMysqlImpl implements RepositoryAccess {
       catch (Exception e) {
       }
       try {
-        if (st != null) st.close();
+        if (pst1 != null) pst1.close();
       }
       catch (Exception e) {
       }

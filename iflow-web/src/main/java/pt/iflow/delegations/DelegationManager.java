@@ -694,7 +694,9 @@ public class DelegationManager extends Thread {
       if(stmp.length() > 0) {
         String query = "delete from activity_hierarchy where hierarchyid in (" + stmp + ")";        
 
-        db.createStatement().executeUpdate(query);
+        pst = db.prepareStatement(query);
+        pst.setString(1, stmp);
+        pst.executeUpdate();
       }
       db.commit();
 
@@ -729,27 +731,31 @@ public class DelegationManager extends Thread {
   private boolean checkCircularDelegation(UserInfoInterface userInfo, String flowid, String owner, String delegated) throws Exception {
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
 
     try {
       ds = Utils.getDataSource();
       db = ds.getConnection();
-      st = db.createStatement();
+      
       
       final StringBuilder sbQueryDelegation = new StringBuilder();
       /* If the userid is delegating a flow to delegateduser
            becoming a circular delegation */
-      sbQueryDelegation.append("select * from activity_hierarchy where flowid=");
-      sbQueryDelegation.append(flowid).append(" and userid='").append(owner);
-      sbQueryDelegation.append("' and ownerid='").append(delegated);
-      sbQueryDelegation.append("'");
-      rs = st.executeQuery(sbQueryDelegation.toString());
+      sbQueryDelegation.append("select * from activity_hierarchy where flowid=?");
+      sbQueryDelegation.append(" and userid=?");
+      sbQueryDelegation.append(" and ownerid=?");
+      
+      pst = db.prepareStatement(sbQueryDelegation.toString());
+      pst.setString(1, flowid);
+      pst.setString(2, owner);
+      pst.setString(3, delegated);
+      rs = pst.executeQuery();
 
       return rs.next();
     }
     finally {
-      DatabaseInterface.closeResources(db, st, rs);
+      DatabaseInterface.closeResources(db, pst, rs);
     }
   }
 
@@ -923,7 +929,7 @@ public class DelegationManager extends Thread {
 
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst2 = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
 
@@ -952,16 +958,20 @@ public class DelegationManager extends Thread {
           ds = Utils.getDataSource();
           db = ds.getConnection();
           db.setAutoCommit(false);
-          st = db.createStatement();
+          
 
 
           final StringBuilder sbQueryUserDelegation = new StringBuilder();
           /* If the userid is delegating a flow that was delegated to him */
-          sbQueryUserDelegation.append("select * from activity_hierarchy where flowid = ");
-          sbQueryUserDelegation.append(flowid).append(" and userid='");
-          sbQueryUserDelegation.append(StringEscapeUtils.escapeSql(user)).append("' and ownerid='");
-          sbQueryUserDelegation.append(StringEscapeUtils.escapeSql(owner)).append("'");
-          rs = st.executeQuery(sbQueryUserDelegation.toString());
+          sbQueryUserDelegation.append("select * from activity_hierarchy where flowid = ?");
+          sbQueryUserDelegation.append(" and userid=?");
+          sbQueryUserDelegation.append(" and ownerid=?");
+          
+          pst2 = db.prepareStatement(sbQueryUserDelegation.toString());
+          pst2.setString(1, flowid);
+          pst2.setString(2, StringEscapeUtils.escapeSql(user));
+          pst2.setString(3, StringEscapeUtils.escapeSql(owner));
+          rs = pst2.executeQuery();
 
           if (rs.next()) {
             fatherid = rs.getInt("hierarchyid");
@@ -1058,7 +1068,7 @@ public class DelegationManager extends Thread {
       Logger.error(userInfo.getUtilizador(), this, "requestDelegation", "Error creating a new delegation request", e);
       try { db.rollback(); } catch (Exception e1) { }
     } finally {
-      DatabaseInterface.closeResources(db, pst, st, rs);
+      DatabaseInterface.closeResources(db, pst, pst2, rs);
     }
     return recordInserted;
   }

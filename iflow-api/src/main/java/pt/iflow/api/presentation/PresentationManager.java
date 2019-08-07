@@ -191,7 +191,7 @@ public class PresentationManager
       {
         if (htSubst.containsKey("flowid"))
         {
-          int flowid = Integer.valueOf((String) htSubst.get("flowid")).intValue();
+          int flowid = Integer.valueOf("" +  htSubst.get("flowid")).intValue();
           FlowSetting fs = BeanFactory.getFlowSettingsBean().getFlowSetting(flowid, "ENABLE_HISTORY");
           if ((fs != null) && (!StringUtils.equals(fs.getValue(), "flow_settings.showHist.no")))
           {

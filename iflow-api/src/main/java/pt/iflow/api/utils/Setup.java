@@ -30,6 +30,7 @@ public class Setup {
     private static final String CERT_PROP_FILE = "certificates.properties";
     private static final String SIGN_PROP_FILE = "signatures.properties";
     private static final String SSO_PROP_FILE = "sso.properties";
+    private static final String CRYPTO_PROP_FILE = "crypto.properties";
     
     
     // Hashtable with properties keys,values
@@ -39,7 +40,7 @@ public class Setup {
     private static String _configHome = "";
     
     static {
-        loadProperties();
+			loadProperties();
     }
     
     public static Properties readPropertiesFile(String fileName) {
@@ -87,8 +88,9 @@ public class Setup {
     
     /**
      * This method loads the necessary setup parameters.
+     * @throws NoSuchFieldException 
      */
-    public static synchronized void loadProperties() {
+    public static synchronized void loadProperties(){
         
         String sFile = null;
         
@@ -227,8 +229,32 @@ public class Setup {
             propertiesFile = null;
         }
         
+        try {
+            sFile = FilenameUtils.concat(_configHome, CRYPTO_PROP_FILE);
+            // Open properties file and get contents
+            
+            propertiesFile = new FileInputStream(sFile);
+            newExtraProperties.load(propertiesFile);
+
+        } catch (Exception e) {
+          Logger.error("", "Setup", "loadProperties", "Setup: unable to load properties file (" + sFile + ").", e);
+          System.exit(1);
+        } finally {
+            if (null != propertiesFile) {
+                try {
+                    propertiesFile.close();
+                } catch (IOException e) {
+                }
+            }
+            propertiesFile = null;
+            
+        }
+        
         _pMainProperties = newMainProperties;
         _pExtraProperties = newExtraProperties;
+        
+        if(getProperty("MASTER_KEY") == null || getProperty("MASTER_KEY").isEmpty())
+        	System.exit(1);
     }
     
     public static String getProperty(String key) {

@@ -2,6 +2,8 @@
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://jakarta.apache.org/taglibs/core" prefix="c" %>
 <%@ taglib uri="http://www.iknow.pt/jsp/jstl/iflow" prefix="if" %>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <%
@@ -9,6 +11,7 @@
 %>
 <%@page import="pt.iflow.api.core.BeanFactory"%>
 <%@page import="pt.iflow.api.utils.Const"%>
+<%@page import="org.apache.taglibs.standard.functions.Functions"%>
 <%@page import="pt.iflow.api.utils.UserInfoInterface"%><html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -21,7 +24,7 @@
   <link rel="stylesheet" href="Themes/<%=BeanFactory.getOrganizationThemeBean().getOrganizationTheme(userInfo).getThemeName() %>/css/iflow_ie.css" type="text/css">
 <![endif]-->
 <script type="text/javascript">
-setTimeout('Redirect()',5000);
+setTimeout('Redirect()',5444000);
 function Redirect() {
   document.formulario.submit();
 }
@@ -32,7 +35,8 @@ function Redirect() {
 		<div class="rc_header"></div> 
 		<div class="rc_content">
 			<form name="formulario" id="formulario" action="<%=response.encodeURL("confirm") %>" method="post">
-				<input type="hidden" name="activation" value="${param['activation']}"/>
+				
+				<input type="hidden" name="activation" value="${fn:escapeXml(param['activation'])}"/>
 				<input type="hidden" name="continue" value="continue"/>
 				<fieldset class="rp_background">
 					<legend style="border: none;font-size: 2rem;"><if:message string="register.title.activated" /></legend>

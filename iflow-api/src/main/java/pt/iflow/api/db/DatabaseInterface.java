@@ -1,6 +1,7 @@
 package pt.iflow.api.db;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -11,7 +12,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import javax.sql.DataSource;
 
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
@@ -216,6 +216,49 @@ public class DatabaseInterface
     finally
     {
       closeResources(new Object[] {con, st, rs });
+    }
+    return result;
+  }
+  
+  public static Collection<Map<String, String>> executeQuery(PreparedStatement statement)
+  {
+    Logger.debug("", null, "executeQuery", statement.toString());
+    Collection<Map<String, String>> result = new ArrayList();
+    
+    ResultSet rs = null;
+    Connection con = null;
+    try
+    {
+      rs = statement.executeQuery();
+      
+      ResultSetMetaData rsmd = rs.getMetaData();
+      int numberOfColumns = rsmd.getColumnCount();
+      
+      String[] fieldNames = new String[numberOfColumns];
+      for (int i = 0; i < numberOfColumns; i++) {
+        fieldNames[i] = rsmd.getColumnLabel(i + 1);
+      }
+      while (rs.next())
+      {
+        Map<String, String> tmp = new Hashtable();
+        for (int i = 0; i < fieldNames.length; i++)
+        {
+          String tmpVal = rs.getString(fieldNames[i]);
+          if (tmpVal != null) {
+            tmp.put(fieldNames[i], tmpVal);
+          }
+        }
+        result.add(tmp);
+      }
+    }
+    catch (Exception e)
+    {
+      Logger.error(null, null, "executeQuery", "Error excuting query " + statement + " : " + e.getMessage());
+      e.printStackTrace();
+    }
+    finally
+    {
+      closeResources(new Object[] {con, statement, rs });
     }
     return result;
   }

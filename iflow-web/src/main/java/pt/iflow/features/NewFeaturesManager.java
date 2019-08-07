@@ -10,6 +10,7 @@
 package pt.iflow.features;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -34,7 +35,7 @@ public class NewFeaturesManager {
     String userid = userInfo.getUtilizador();
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
 
     boolean retObj = false;
 
@@ -42,23 +43,28 @@ public class NewFeaturesManager {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       db.setAutoCommit(true);
-      st = db.createStatement();
+      
       StringBuffer sbInsertQuery = new StringBuffer();
 
       sbInsertQuery.append("insert into new_features (newfeaturesid, version, feature, ");
-      sbInsertQuery.append("description, created) values (seq_new_features.nextval,'");
-      sbInsertQuery.append(nfFeature.getVersion()).append("','").append(nfFeature.getFeature());
-      sbInsertQuery.append("','").append(nfFeature.getDescription()).append("',");
+      sbInsertQuery.append("description, created) values (seq_new_features.nextval,'?");
+      sbInsertQuery.append("','?");
+      sbInsertQuery.append("','?").append("',");
       if (nfFeature.getCreated() == null) {
         sbInsertQuery.append("sysdate");
       } else {
-        sbInsertQuery.append("'").append(nfFeature.getCreated()).append("'");
+        sbInsertQuery.append("'?").append("'");
       }
       sbInsertQuery.append(")");
 
       Logger.debug(userid, NewFeaturesManager.class, "insertNewFeature", "NewFeaturesManager: insert: " + sbInsertQuery.toString());
-      
-      int i = st.executeUpdate(sbInsertQuery.toString());
+      pst = db.prepareStatement(sbInsertQuery.toString());
+      pst.setString(1, nfFeature.getVersion());
+      pst.setString(2, nfFeature.getFeature());
+      pst.setString(3, nfFeature.getDescription());
+      if (nfFeature.getCreated() != null)
+    		  pst.setTimestamp(1, nfFeature.getCreated());
+      int i = pst.executeUpdate();
       if (i > 0) {
         retObj = true;
       }
@@ -69,7 +75,7 @@ public class NewFeaturesManager {
       Logger.error(userid, NewFeaturesManager.class, "insertNewFeature", "caught exception: "
           + e.getMessage(), e);
     } finally {
-      DatabaseInterface.closeResources(db, st);
+      DatabaseInterface.closeResources(db, pst);
     }
 
     return retObj;
@@ -79,7 +85,7 @@ public class NewFeaturesManager {
     String userid = userInfo.getUtilizador();
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
 
     boolean retObj = false;
 
@@ -87,17 +93,21 @@ public class NewFeaturesManager {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       db.setAutoCommit(true);
-      st = db.createStatement();
+      
       StringBuffer sbtmp = new StringBuffer();
 
-      sbtmp.append("update new_features set version='").append(nfa.getVersion());
-      sbtmp.append("', feature='").append(nfa.getFeature());
-      sbtmp.append("', description='").append(nfa.getDescription());
-      sbtmp.append("', created=sysdate where newfeaturesid=").append(nfa.getId());
+      sbtmp.append("update new_features set version='?");
+      sbtmp.append("', feature='?");
+      sbtmp.append("', description='?");
+      sbtmp.append("', created=sysdate where newfeaturesid=?");
 
       Logger.debug(userid, NewFeaturesManager.class, "insertNewFeature", "NewFeaturesManager: update: " + sbtmp.toString());
-      
-      int i = st.executeUpdate(sbtmp.toString());
+      pst = db.prepareStatement(sbtmp.toString());
+      pst.setString(1, nfa.getVersion());
+      pst.setString(2, nfa.getFeature());
+      pst.setString(3, nfa.getDescription());
+      pst.setInt(4, nfa.getId());
+      int i = pst.executeUpdate();
       if (i > 0) {
         retObj = true;
       }
@@ -109,7 +119,7 @@ public class NewFeaturesManager {
       Logger.error(userid, NewFeaturesManager.class, "insertNewFeature", "caught exception: "
           + e.getMessage(), e);
     } finally {
-      DatabaseInterface.closeResources(db, st);
+      DatabaseInterface.closeResources(db, pst);
     }
 
     return retObj;

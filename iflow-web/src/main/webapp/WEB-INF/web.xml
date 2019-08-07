@@ -225,15 +225,15 @@ Disabled. Use servlet container defaults
    <filter-mapping>
       <filter-name>RemoteFileInclusionFilterFilter</filter-name>
       <url-pattern>/*</url-pattern>
-   </filter-mapping>
+    </filter-mapping>
  	<filter-mapping>
       <filter-name>MySQLInjectionFilter</filter-name>
       <url-pattern>/*</url-pattern>
    </filter-mapping>
-	<filter-mapping>
+<!--  	<filter-mapping>
       <filter-name>XSSFilter</filter-name>
       <url-pattern>/*</url-pattern>
-   </filter-mapping>
+   </filter-mapping>-->
    <filter-mapping>
       <filter-name>CSRFFilter</filter-name>
       <url-pattern>/*</url-pattern>      
@@ -246,7 +246,6 @@ Disabled. Use servlet container defaults
 	  <filter-name>DisableSomeHTTPRequestsFilter</filter-name>
 	  <url-pattern>/*</url-pattern>	  
 	</filter-mapping>		
-	
    
    <listener>
 	 <listener-class>org.apache.axis.transport.http.AxisHTTPSessionListener</listener-class>
@@ -532,7 +531,8 @@ Disabled. Use servlet container defaults
   </servlet>
    <!-- end of kaptcha -->
 
-    <!-- Apache Axis -->
+    <!-- Apache Axis
+  
   <servlet-mapping>
 	  <servlet-name>AxisServlet</servlet-name>
 	  <url-pattern>/ws/AxisServlet</url-pattern>
@@ -542,7 +542,7 @@ Disabled. Use servlet container defaults
 	  <servlet-name>AxisServlet</servlet-name>
 	  <url-pattern>/ws/*</url-pattern>
   </servlet-mapping>
-
+ -->
   <!-- uncomment this if you want the Axis admin servlet -->
   <!--
   <servlet-mapping>
@@ -796,7 +796,7 @@ Disabled. Use servlet container defaults
       <url-pattern>/saml2/SSOService</url-pattern>
    </servlet-mapping>
    
-   <!-- REST Servlet -->
+   <!-- REST Servlet 
    <servlet>
     <servlet-name>iFlow REST Service</servlet-name>
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
@@ -806,7 +806,7 @@ Disabled. Use servlet container defaults
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
-  
+  -->
      <servlet-mapping>
       <servlet-name>AuthenticationBICServlet</servlet-name>
       <url-pattern>/AuthenticationBICServlet</url-pattern>
@@ -872,4 +872,13 @@ Disabled. Use servlet container defaults
    <!ELEMENT form-error-page (#PCDATA)>
    -->
 
+<error-page>
+    <error-code>403</error-code>
+    <location>/error.html</location>
+</error-page>
+
+<error-page>
+    <location>/error.html</location>
+</error-page>
+	
 </web-app>

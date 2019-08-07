@@ -257,8 +257,9 @@ public class FlowSettingsBean
     try
     {
       db = Utils.getDataSource().getConnection();
-      st = db.prepareStatement("Insert into flow_calendar (flowid,calendar_id) values (?," + calendId + ")");
+      st = db.prepareStatement("Insert into flow_calendar (flowid,calendar_id) values (?,?)");
       st.setInt(1, id);
+      st.setString(2, calendId);
       st.execute();
       c = true;
     }
@@ -522,19 +523,21 @@ public class FlowSettingsBean
     
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     String sQuery = null;
     try
     {
       ds = Utils.getDataSource();
       db = ds.getConnection();
-      st = db.createStatement();
+      
       rs = null;
       
-      sQuery = "select * from flow_settings where FLOWID=" + flowid + " and name='" + settingVar + "'";
-      
-      rs = st.executeQuery(sQuery);
+      sQuery = "select * from flow_settings where FLOWID=? and name=?";
+      pst = db.prepareStatement(sQuery);
+      pst.setInt(1, flowid);
+      pst.setString(2, settingVar);
+      rs = pst.executeQuery();
       if (rs.next()) {
         retObj = new FlowSetting(rs.getInt("flowid"), rs.getString("name"), rs.getString("description"), rs.getString("value"), rs.getBoolean("isQuery"), rs.getTimestamp("mdate"));
       }
@@ -547,7 +550,7 @@ public class FlowSettingsBean
     }
     finally
     {
-      DatabaseInterface.closeResources(new Object[] { db, st, rs });
+      DatabaseInterface.closeResources(new Object[] { db, pst, rs });
     }
     return retObj;
   }

@@ -1,6 +1,7 @@
 package pt.iflow.core;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -32,13 +33,13 @@ public class CalendarManagerBean
     Calendar cal = new Calendar();
     
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     try
     {
       db = DatabaseInterface.getConnection(userInfo);
-      st = db.createStatement();
-      rs = st.executeQuery("select * from calendar where id = (select calendar_id from flow_calendar where flowid = '" + flowid + "')");
+      pst = db.prepareStatement("select * from calendar where id = (select calendar_id from flow_calendar where flowid = '" + flowid + "')");
+      rs = pst.executeQuery();
       if (rs.next())
       {
         cal.setId(rs.getInt("id"));
@@ -69,7 +70,7 @@ public class CalendarManagerBean
     }
     finally
     {
-      DatabaseInterface.closeResources(new Object[] { db, st, rs });
+      DatabaseInterface.closeResources(new Object[] { db, pst, rs });
     }
     return cal;
   }
@@ -80,13 +81,18 @@ public class CalendarManagerBean
     ArrayList<Timestamp> holidays = new ArrayList();
     
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     try
     {
       db = DatabaseInterface.getConnection(userInfo);
-      st = db.createStatement();
-      rs = st.executeQuery("select * from calendar_holidays where calendar_id = '" + calendar_id + "' and holiday >= '" + tsStart + "' and holiday <= '" + tsStop + "'");
+      pst = db.prepareStatement("select * from calendar_holidays where calendar_id = ? and holiday >= ? and holiday <= ?");;
+      pst.setInt(1, calendar_id);
+      pst.setTimestamp(2, tsStart);
+      pst.setTimestamp(3, tsStop);
+      
+      rs = pst.executeQuery();
+           
       while (rs.next()) {
         holidays.add(rs.getTimestamp("holiday"));
       }
@@ -103,7 +109,7 @@ public class CalendarManagerBean
     }
     finally
     {
-      DatabaseInterface.closeResources(new Object[] { db, st, rs });
+      DatabaseInterface.closeResources(new Object[] { db, pst, rs });
     }
     return holidays;
   }
@@ -114,13 +120,13 @@ public class CalendarManagerBean
     ArrayList<Time> periods = new ArrayList();
     
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     try
     {
       db = DatabaseInterface.getConnection(userInfo);
-      st = db.createStatement();
-      rs = st.executeQuery("select * from calendar_periods where calendar_id = '" + calendar_id + "'");
+      pst = db.prepareStatement("select * from calendar_periods where calendar_id = '" + calendar_id + "'");
+      rs = pst.executeQuery();
       while (rs.next())
       {
         periods.add(rs.getTime("period_start"));
@@ -139,7 +145,7 @@ public class CalendarManagerBean
     }
     finally
     {
-      DatabaseInterface.closeResources(new Object[] { db, st, rs });
+      DatabaseInterface.closeResources(new Object[] { db, pst, rs });
     }
     return periods;
   }

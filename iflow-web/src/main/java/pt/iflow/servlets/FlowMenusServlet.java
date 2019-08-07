@@ -81,8 +81,8 @@ public class FlowMenusServlet  extends HttpServlet implements Servlet {
 
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
-    Statement st2 = null;
+    PreparedStatement pst = null;
+    PreparedStatement pst2 = null;
     ResultSet rs = null;
     ResultSet rs2 = null;
 
@@ -91,12 +91,12 @@ public class FlowMenusServlet  extends HttpServlet implements Servlet {
     try {
       ds = Utils.getDataSource();
       db = ds.getConnection();
-      st = db.createStatement();
-      st2 = db.createStatement();
+      pst = db.prepareStatement("select linkid,name,flowid from links_flows where parentid = 0 and organizationid=?");
+      pst.setString(1, userInfo.getCompanyID());
 
       ArrayList<FlowMenuItem> menuItems = new ArrayList<FlowMenuItem>();
       
-      rs = st.executeQuery("select linkid,name,flowid from links_flows where parentid = 0 and organizationid='"+userInfo.getCompanyID()+"'");
+      rs = pst.executeQuery();
       while (null != rs && rs.next()) {
         int linkid = rs.getInt("linkid");
         String name = rs.getString("name");
@@ -107,8 +107,10 @@ public class FlowMenusServlet  extends HttpServlet implements Servlet {
         
         FlowMenuItem item = new FlowMenuItem(linkid, name);
         menuItems.add(item);
-
-        rs2 = st2.executeQuery("select linkid,name,flowid from links_flows where parentid = " + linkid+" and organizationid='"+userInfo.getCompanyID()+"'");
+        pst2 = db.prepareStatement("select linkid,name,flowid from links_flows where parentid = ? and organizationid=?");
+        pst2.setInt(1, linkid);
+        pst2.setString(2, userInfo.getCompanyID());
+        rs2 = pst2.executeQuery();
         while (null != rs2 && rs2.next()) {
           String childName = rs2.getString("name");
           int childId = rs2.getInt("linkid");
@@ -131,8 +133,8 @@ public class FlowMenusServlet  extends HttpServlet implements Servlet {
     } catch (SQLException sqle) {
       sqle.printStackTrace();
     } finally {
-      Utils.closeDB(null,st2,rs2);
-      Utils.closeDB(db,st,rs);
+      Utils.closeDB(null,pst2,rs2);
+      Utils.closeDB(db,pst,rs);
     }
 
 

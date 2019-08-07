@@ -14,6 +14,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.rometools.rome.feed.synd.SyndCategory;
+import com.rometools.rome.feed.synd.SyndCategoryImpl;
+import com.rometools.rome.feed.synd.SyndContent;
+import com.rometools.rome.feed.synd.SyndContentImpl;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndEntryImpl;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.feed.synd.SyndFeedImpl;
+import com.rometools.rome.io.SyndFeedOutput;
+import com.rometools.rome.io.impl.DateParser;
+
 import pt.iflow.api.core.Activity;
 import pt.iflow.api.feed.FeedGenerator;
 import pt.iflow.api.flows.IFlowData;
@@ -25,17 +36,6 @@ import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.msg.Messages;
-
-import com.sun.syndication.feed.synd.SyndCategory;
-import com.sun.syndication.feed.synd.SyndCategoryImpl;
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
-import com.sun.syndication.io.SyndFeedOutput;
-import com.sun.syndication.io.impl.DateParser;
 
 /**
  * 
@@ -228,7 +228,7 @@ public class DefaultFeedGenerator implements FeedGenerator {
             String url = baseUrl + "GoTo?goto=actividade_user.jsp&flowid=" + aFlow.getId() + "&pid=" + theActivity.pid +"&subpid=" + theActivity.subpid;// + "&channel=rss&key="+user.getFeedKey(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             descText.append("<a href=\"" + url + "\">"); //$NON-NLS-1$ //$NON-NLS-2$
             descText.append(msg.getString("DefaultFeedGenerator.tasks.task") + theActivity.pid + msg.getString("DefaultFeedGenerator.tasks.toFlow") + aFlow.getName()); //$NON-NLS-1$ //$NON-NLS-2$
-            descText.append(msg.getString("DefaultFeedGenerator.tasks.initiated") + DateParser.formatRFC822(theActivity.created)); //$NON-NLS-1$
+            descText.append(msg.getString("DefaultFeedGenerator.tasks.initiated") + DateParser.formatRFC822(theActivity.created, null )); //$NON-NLS-1$
             descText.append(msg.getString("</a><br>")); //$NON-NLS-1$
 
             if(theActivity.created.before(first)) {
@@ -395,7 +395,7 @@ public class DefaultFeedGenerator implements FeedGenerator {
 	            String url = baseUrl + "GoTo?goto=actividade_user.jsp&flowid=" + aFlow.getId() + "&pid=" + theActivity.pid +"&subpid=" + theActivity.subpid;// + "&channel=rss&key="+user.getFeedKey(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	            descText.append("<a href=\"" + url + "\">"); //$NON-NLS-1$ //$NON-NLS-2$
 	            descText.append(msg.getString("DefaultFeedGenerator.tasks.task") + theActivity.pid + msg.getString("DefaultFeedGenerator.tasks.toFlow") + aFlow.getName()); //$NON-NLS-1$ //$NON-NLS-2$
-	            descText.append(msg.getString("DefaultFeedGenerator.tasks.initiated") + DateParser.formatRFC822(theActivity.created)); //$NON-NLS-1$
+	            descText.append(msg.getString("DefaultFeedGenerator.tasks.initiated") + DateParser.formatRFC822(theActivity.created, null)); //$NON-NLS-1$
 	            descText.append(msg.getString("</a><br>")); //$NON-NLS-1$
 	            if(theActivity.created.after(last)) last=theActivity.created;
 	            

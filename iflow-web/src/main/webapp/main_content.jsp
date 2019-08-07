@@ -72,7 +72,7 @@ java.util.Hashtable<String,Object> hsSubstLocal = new java.util.Hashtable<String
 StringBuffer sbError = new StringBuffer();
 
 String data = (String) fdFormData.getParameter("data");
-if (data == null)
+if (data == null || (!data.equals("procs") && !data.equals("delegs") && !data.equals("tasks") && !data.equals("alerts")))
   data = "tasks";
 String pageContent = "task_list";
 

@@ -62,7 +62,7 @@ public class CodeTemplateManagerBean implements CodeTemplateManager {
 
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     try {
       List<CodeTemplate> existingCodeTemplates = this.listCodeTemplates(userInfo, procData);
@@ -73,7 +73,7 @@ public class CodeTemplateManagerBean implements CodeTemplateManager {
 
       ds = Utils.getDataSource();
       db = ds.getConnection();
-      st = db.createStatement();
+      
       StringBuffer sql = new StringBuffer();
       if (contains(listCodeTemplates(userInfo, procData), codeTemplate)) {
         return false;
@@ -86,12 +86,13 @@ public class CodeTemplateManagerBean implements CodeTemplateManager {
       }
 
       if (StringUtils.isNotBlank(sql.toString())) {
-        st.executeUpdate(sql.toString());
+    	pst = db.prepareStatement(sql.toString());
+        pst.executeUpdate(sql.toString());
       }
     } catch (SQLException sqle) {
       Logger.error(userInfo.getUtilizador(), this, "addCodeTemplate", "caught sql exception: " + sqle.getMessage(), sqle);
     } finally {
-      DatabaseInterface.closeResources(db, st, rs);
+      DatabaseInterface.closeResources(db, pst, rs);
     }
     return true;
   }
@@ -146,12 +147,12 @@ public class CodeTemplateManagerBean implements CodeTemplateManager {
 
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     try {
       ds = Utils.getDataSource();
       db = ds.getConnection();
-      st = db.createStatement();
+      
       StringBuffer sql = new StringBuffer();
       sql = buildQuerySqlRemove(name, userInfo.getOrganization());
 
@@ -160,12 +161,13 @@ public class CodeTemplateManagerBean implements CodeTemplateManager {
       }
 
       if (StringUtils.isNotBlank(sql.toString())) {
-        st.executeUpdate(sql.toString());
+    	pst = db.prepareStatement(sql.toString());
+        pst.executeUpdate(sql.toString());
       }
     } catch (SQLException sqle) {
       Logger.error(userInfo.getUtilizador(), this, "removeCodeTemplate", "caught sql exception: " + sqle.getMessage(), sqle);
     } finally {
-      DatabaseInterface.closeResources(db, st, rs);
+      DatabaseInterface.closeResources(db, pst, rs);
     }
   }
 
@@ -240,64 +242,67 @@ public class CodeTemplateManagerBean implements CodeTemplateManager {
   public Boolean markAsTag(UserInfoInterface userInfo, String templateName, Boolean mark) {
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     try {
       ds = Utils.getDataSource();
       db = ds.getConnection();
-      st = db.createStatement();
-      String sql = "UPDATE serial_code_templates set flag = '" + mark + "' WHERE name ='" + templateName + "' AND organization = "
-          + userInfo.getOrganization();
-
+      
+      String sql = "UPDATE serial_code_templates set flag=? WHERE name=? AND organization=?";
+      pst = db.prepareStatement(sql);
+      pst.setString(1, mark.toString());
+      pst.setString(2, templateName);
+      pst.setString(3, userInfo.getOrganization());
+      
       if (Logger.isDebugEnabled()) {
         Logger.debug(userInfo.getUtilizador(), this, "markAsTag", "QUERY=" + sql);
       }
 
       if (StringUtils.isNotBlank(sql.toString())) {
-        int ret = st.executeUpdate(sql.toString());
+        int ret = pst.executeUpdate(sql.toString());
         return (ret > 0);
       }
     } catch (SQLException sqle) {
       Logger.error(userInfo.getUtilizador(), this, "removeCodeTemplate", "caught sql exception: " + sqle.getMessage(), sqle);
     } finally {
-      DatabaseInterface.closeResources(db, st, rs);
+      DatabaseInterface.closeResources(db, pst, rs);
     }
     return false;
   }
 
   public Boolean checkMetaTag(UserInfoInterface userInfo, Boolean mark) {
-    DataSource ds = null;
-    Connection db = null;
-    Statement st = null;
-    ResultSet rs = null;
-    try {
-      RestInterface ri = new RestInterface(Setup.getProperty(VFS_URL));
-      KeyValueStructureList keyValues = ri.getKeyValue();
-      String keyValueNames = "(";
-      for (KeyValueStructure keyValueStructure : keyValues.getKeyValueStructure())
-        keyValueNames += "'" + keyValueStructure.getValue() + "',";
-
-      keyValueNames = keyValueNames.substring(0, keyValueNames.length() - 1) + ")";
-
-      ds = Utils.getDataSource();
-      db = ds.getConnection();
-      st = db.createStatement();
-      String sql = "UPDATE serial_code_templates set flag = '" + mark + "' WHERE name IN " + keyValueNames + " AND organization = "
-          + userInfo.getOrganization();
-
-      if (Logger.isDebugEnabled()) {
-        Logger.debug(userInfo.getUtilizador(), this, "markAsTag", "QUERY=" + sql);
-      }
-
-      if (StringUtils.isNotBlank(sql.toString())) {
-        int ret = st.executeUpdate(sql.toString());
-        return (ret > 0);
-      }
-    } catch (SQLException sqle) {
-      Logger.error(userInfo.getUtilizador(), this, "removeCodeTemplate", "caught sql exception: " + sqle.getMessage(), sqle);
-    } finally {
-      DatabaseInterface.closeResources(db, st, rs);
-    }
-    return false;
-  }
+//	    DataSource ds = null;
+//	    Connection db = null;
+//	    Statement st = null;
+//	    ResultSet rs = null;
+//	    try {
+//	      RestInterface ri = new RestInterface(Setup.getProperty(VFS_URL));
+//	      KeyValueStructureList keyValues = ri.getKeyValue();
+//	      String keyValueNames = "(";
+//	      for (KeyValueStructure keyValueStructure : keyValues.getKeyValueStructure())
+//	        keyValueNames += "'" + keyValueStructure.getValue() + "',";
+//
+//	      keyValueNames = keyValueNames.substring(0, keyValueNames.length() - 1) + ")";
+//
+//	      ds = Utils.getDataSource();
+//	      db = ds.getConnection();
+//	      st = db.createStatement();
+//	      String sql = "UPDATE serial_code_templates set flag = '" + mark + "' WHERE name IN " + keyValueNames + " AND organization = "
+//	          + userInfo.getOrganization();
+//
+//	      if (Logger.isDebugEnabled()) {
+//	        Logger.debug(userInfo.getUtilizador(), this, "markAsTag", "QUERY=" + sql);
+//	      }
+//
+//	      if (StringUtils.isNotBlank(sql.toString())) {
+//	        int ret = st.executeUpdate(sql.toString());
+//	        return (ret > 0);
+//	      }
+//	    } catch (SQLException sqle) {
+//	      Logger.error(userInfo.getUtilizador(), this, "removeCodeTemplate", "caught sql exception: " + sqle.getMessage(), sqle);
+//	    } finally {
+//	      DatabaseInterface.closeResources(db, st, rs);
+//	    }
+	    return false;
+	  }
 }

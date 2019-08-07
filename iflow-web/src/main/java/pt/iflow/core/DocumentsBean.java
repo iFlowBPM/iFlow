@@ -25,6 +25,7 @@ import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ws.security.util.Base64;
 
 import pt.iflow.api.connectors.DMSConnectorUtils;
 import pt.iflow.api.core.BeanFactory;
@@ -48,6 +49,7 @@ import pt.iflow.api.transition.FlowRolesTO;
 import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
+import pt.iflow.api.utils.Utils;
 import pt.iflow.connector.alfresco.AlfrescoDocument;
 import pt.iflow.connector.credentials.DMSCredential;
 import pt.iflow.connector.dms.DMSUtils;
@@ -358,7 +360,10 @@ public class DocumentsBean implements Documents {
         	  java.nio.file.Files.copy(((DocumentDataStream) adoc).getContentStream(), new File(filePath).toPath(), StandardCopyOption.REPLACE_EXISTING);         	
           } else {
         	  FileOutputStream fos = new FileOutputStream(filePath);              
-        	  fos.write(adoc.getContent());
+        	  byte[] fileContent = adoc.getContent();
+        	  if(Const.ENCRYPT_FILESYSTEM_DOCS)
+        		  fileContent = Base64.decode(Utils.encrypt(Base64.encode(fileContent)));
+        	  fos.write(fileContent);
         	  fos.close();
           }          
         } catch(FileNotFoundException ex) {
@@ -732,7 +737,10 @@ public class DocumentsBean implements Documents {
           }
           baos.flush();
           baos.close();
-          retObj.setContent(baos.toByteArray());
+          if (StringUtils.isNotEmpty(filePath) && Const.ENCRYPT_FILESYSTEM_DOCS)         	  
+        	  retObj.setContent(Base64.decode(Utils.decrypt(Base64.encode(baos.toByteArray()))));
+          else
+        	  retObj.setContent(baos.toByteArray());
         }
       } else {
         retObj = null;
@@ -1105,47 +1113,50 @@ public class DocumentsBean implements Documents {
   
   public boolean markDocsToSign(UserInfoInterface userInfo, ProcessListVariable docs, ProcessListVariable values) {   
     Connection db = null;
-    Statement st = null;
-    String queryUpdate0 = "";
-    String queryUpdate1 = "";
+    PreparedStatement pst = null;
+    ArrayList<String> queryUpdate0 = new ArrayList<>();
+    ArrayList<String> queryUpdate1 = new ArrayList<>();
     boolean flag0 = false;
     boolean flag1 = false;
     
     for(int i = 0; i < docs.size(); i++){     
         if(values.getItem(i)!= null && values.getFormattedItem(i).equals("1"))
-          queryUpdate1 += ", "+docs.getItem(i).format();      
+          queryUpdate1.add(docs.getItem(i).format());      
         else
-          queryUpdate0 += ", "+docs.getItem(i).format();
+          queryUpdate0.add(docs.getItem(i).format());
     }
     
-    if(!StringUtils.isEmpty(queryUpdate0)){
-      queryUpdate0 += " )";
-      queryUpdate0 = queryUpdate0.replaceFirst(",", "(");
+    if(!queryUpdate0.isEmpty()){
       flag0 = true;
     }
     
-    if(!StringUtils.isEmpty(queryUpdate1)){
-      queryUpdate1 += " )";
-      queryUpdate1 = queryUpdate1.replaceFirst(",", "(");
+    if(!queryUpdate1.isEmpty()){
       flag1 = true;
     }
     
     try {
       db = DatabaseInterface.getConnection(userInfo);
       if(flag0){
-        st = db.createStatement();
-        st.executeUpdate("UPDATE documents set tosign=0 where docid in "+queryUpdate0);
-        st.close();
+    	  for(String docidAux : queryUpdate0){
+	        pst = db.prepareStatement("UPDATE documents set tosign=0 where docid = ?");
+	        pst.setInt(1, Integer.valueOf(docidAux));
+	        pst.executeUpdate();
+	        pst.close();
+    	  }        
       }
       if(flag1){
-        st = db.createStatement();
-        st.executeUpdate("UPDATE documents set tosign=1 where docid in "+queryUpdate1);
+    	  for(String docidAux : queryUpdate1){
+	        pst = db.prepareStatement("UPDATE documents set tosign=1 where docid = ?");
+	        pst.setInt(1, Integer.valueOf(docidAux));
+	        pst.executeUpdate();
+	        pst.close();
+    	  }
       }
      } catch (SQLException sqle) {
           Logger.error(userInfo.getUtilizador(), this, "markDocsToSign","caught sql exception: " + sqle.getMessage(), sqle);
           return false;
      } finally {
-          DatabaseInterface.closeResources(db, st);
+          DatabaseInterface.closeResources(db, pst);
      }
      Logger.debug(userInfo.getUtilizador(), this, "markDocsToSign", "Update to not sign "+queryUpdate0+" and to sign "+queryUpdate1);
      return true;
@@ -1156,7 +1167,7 @@ public class DocumentsBean implements Documents {
     Logger.trace(this, "markDocGenerationSuccess", userInfo.getUtilizador() + " call.");
     Boolean result = Boolean.TRUE;
     Connection db = null;
-    PreparedStatement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     LinkedList<Activity> l = new LinkedList();
     StringBuilder sQuery = new StringBuilder(DBQueryManager.processQuery("Documents.markDocGenerationSuccess", new Object[] { Integer.valueOf(adoc.getDocId()), success, success }));
@@ -1165,9 +1176,9 @@ public class DocumentsBean implements Documents {
       db = DatabaseInterface.getConnection(userInfo);
       db.setAutoCommit(true);
       
-      st = db.prepareStatement(sQuery.toString());
-      st.execute();
-      DatabaseInterface.closeResources(new Object[] { st, rs });
+      pst = db.prepareStatement(sQuery.toString());
+      pst.execute();
+      DatabaseInterface.closeResources(new Object[] { pst, rs });
     }
     catch (SQLException sqle)
     {
@@ -1181,7 +1192,7 @@ public class DocumentsBean implements Documents {
     }
     finally
     {
-      DatabaseInterface.closeResources(new Object[] { db, st, rs });
+      DatabaseInterface.closeResources(new Object[] { db, pst, rs });
     }
     return result;
   }

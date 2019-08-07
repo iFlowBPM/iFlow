@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import pt.iflow.applet.StringUtils;
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.core.Repository;
 import pt.iflow.api.core.RepositoryFile;
@@ -49,11 +50,13 @@ public class RepositoryDownload extends HttpServlet {
   public RepositoryDownload() {  }
 
   public void init() throws ServletException {  }
-
+  
+  
+  
   protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     Logger.trace("Memory before: "+Runtime.getRuntime().freeMemory()+" ("+Runtime.getRuntime().totalMemory()+")");
-    String name = request.getParameter("file");
-    String type = request.getParameter("type");
+    String name = request.getParameter("file").replaceAll("[^a-zA-Z ]", "");
+    String type = request.getParameter("type").replaceAll("[^a-zA-Z ]", "");
     
     UserInfoInterface userInfo = (UserInfoInterface)request.getSession().getAttribute(Const.USER_INFO);
     

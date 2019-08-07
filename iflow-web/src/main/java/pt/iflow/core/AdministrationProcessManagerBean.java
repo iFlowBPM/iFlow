@@ -1,5 +1,7 @@
 package pt.iflow.core;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Iterator;
 
 import pt.iflow.api.core.Activity;
@@ -99,22 +101,25 @@ public class AdministrationProcessManagerBean implements AdministrationProcessMa
       db.setAutoCommit(false);
       st = db.createStatement();
 
-      StringBuffer query = new StringBuffer();
-      String sProfileName = "";
-      String activityProfileName = activity.profilename;
-      if (activity.userid.equals(activityProfileName)) {
-        sProfileName = ",profilename='" + newUser + "'";
-      }
-      query.append("update activity ");
-      query.append("set userid='").append(newUser).append("'");
-      query.append(sProfileName);
-      query.append(" where userid='").append(activity.getUserid()).append("' ");
-      query.append(" and flowid='").append(activity.getFlowid()).append("' ");
-      query.append(" and pid='").append(activity.pid).append("' ");
-      query.append(" and subpid='").append(activity.getSubpid()).append("' ");
-
-      if (query != null) {
-        ntmp = st.executeUpdate(query.toString());
+      String activityProfileName = activity.profilename;  
+      final String queryFinal;
+      
+     if(activity.userid.equals(activityProfileName))
+    	  queryFinal = "update activity set userid=?,profilename=? where userid=? and flowid=? and pid=? and subpid=? ";    	  
+      else
+    	  queryFinal = "update activity set userid=? where userid=? and flowid=? and pid=? and subpid=? ";
+      PreparedStatement pst = db.prepareStatement(queryFinal);
+      int index=1;
+      pst.setString(index++, newUser);
+      if(activity.userid.equals(activityProfileName))
+    	  pst.setString(index++, newUser);
+      pst.setString(index++, activity.getUserid());
+      pst.setInt(index++, activity.getFlowid());
+      pst.setInt(index++, activity.getPid());
+      pst.setInt(index++, activity.getSubpid());            
+      
+      if (pst != null) {
+    	  ntmp = pst.executeUpdate();        
         if (ntmp == 1) {
           updateSuccessful = true;
           Logger.info(userInfo.getUtilizador(), this, "updateActivityUser", "Successful update to user [" + newUser

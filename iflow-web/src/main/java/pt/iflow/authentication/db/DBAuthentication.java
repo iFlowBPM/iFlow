@@ -6,7 +6,11 @@
 
 package pt.iflow.authentication.db;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +35,7 @@ import pt.iflow.api.utils.Utils;
 public class DBAuthentication implements Authentication {
 
   // Modificado para nao autenticar utilizadores nao confirmados.
-  private static final String SQL_GET_USER_PASSWORD = "select USERPASSWORD from users where USERNAME=''{0}'' and ACTIVATED=1";
+  private static final String SQL_GET_USER_PASSWORD = "select USERPASSWORD from users where USERNAME=? and ACTIVATED=1";
   private static final String SQL_GET_USER_SESSION = "select SESSIONID from users where USERNAME=''{0}'' and ACTIVATED=1";
   private static final String SQL_GET_USER_INFO = "select USERNAME,SESSIONID from users where USERNAME=''{0}'' and ACTIVATED=1";
   private static final String SQL_GET_PROFILE_USERS = "select USERID from users where profileid={0} and ACTIVATED=1";
@@ -43,7 +47,7 @@ public class DBAuthentication implements Authentication {
 
     String sessionId = username + Long.toString((new Date()).getTime());
 
-    sessionId = Utils.encrypt(sessionId);
+    sessionId = Utils.encrypt(sessionId, username);
     
     return sessionId;
   }
@@ -55,10 +59,16 @@ public class DBAuthentication implements Authentication {
    */
   public boolean checkUser(String username, String password) {
     boolean result = false;
-    
-    Collection<Map<String,String>> users = 
-       DatabaseInterface.executeQuery(MessageFormat.format(SQL_GET_USER_PASSWORD,new Object[]{username}));
-    
+    Collection<Map<String,String>> users = null;
+    try {
+		PreparedStatement statement = Utils.getDataSource().getConnection().prepareStatement(SQL_GET_USER_PASSWORD);
+		statement.setString(1, username);
+		users = DatabaseInterface.executeQuery(statement);
+	} catch (Exception e) {
+		Logger.error(null,this,"checkUser","", e);
+		users = new ArrayList();
+	}
+ 
     if(users.isEmpty()) {
       Logger.error(null,this,"checkUser","No user with username " + username);
       result = false;
@@ -67,7 +77,7 @@ public class DBAuthentication implements Authentication {
       result = false;
     } else {
       String checkPass = users.iterator().next().get("USERPASSWORD");
-      checkPass = Utils.decrypt(checkPass);
+      checkPass = Utils.decrypt(checkPass, username);
       if(!checkPass.equals(password)){
         Logger.debug(null,this,"checkUser","Passwords do not match for username " + username);
         result = false;

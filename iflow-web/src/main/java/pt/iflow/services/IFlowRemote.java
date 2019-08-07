@@ -902,7 +902,7 @@ public class IFlowRemote {
 
       if (pdaResult != null && pdaResult.length > 0) {
         ProcessData process = pdaResult[0];
-
+        saFields= pdaResult[0].getCatalogue().getSimpleVariableNames().toArray(new String[0]);
         List<DataElement> altmp = new ArrayList<DataElement>();
         for (int i = 0; saFields != null && i < saFields.length; i++) {
           String key = saFields[i];

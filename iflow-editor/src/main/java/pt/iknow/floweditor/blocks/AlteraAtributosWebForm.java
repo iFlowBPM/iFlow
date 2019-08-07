@@ -79,6 +79,7 @@ import pt.iknow.floweditor.mozilla.MozillaBrowser;
 import pt.iknow.utils.StringUtilities;
 import pt.iknow.utils.VelocityUtils;
 
+
 @WebFormActionHandler(ContextPath = "/blockWebForm/")
 public class AlteraAtributosWebForm extends AbstractAlteraAtributos implements AlteraAtributosInterface, Runnable {
 	private static final long serialVersionUID = 7332941294794991911L;
@@ -720,8 +721,9 @@ public class AlteraAtributosWebForm extends AbstractAlteraAtributos implements A
 					MozillaBrowser browser = new MozillaBrowser(shell);
 					if (adapter.isRepOn()) {
 						String iflowUrl = adapter.getRepository().getBaseURL() + "/WebForm/preview.jsp";
-						browser.importCookies(adapter.getRepository().getCookies());
+						//browser.importCookies(adapter.getRepository().getCookies());
 						// send post
+						browser.importCookies(null);
 						browser.setText(generateHtmlPost(iflowUrl, sValues, getCatalogJSON()));
 					} else {
 						browser.setText(generateHtmlOffline());

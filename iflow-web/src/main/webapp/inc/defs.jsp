@@ -34,7 +34,7 @@
 %><%@ page import="pt.iflow.api.processdata.ProcessListVariable"
 %><%@ page import="pt.iflow.api.processdata.ProcessListItem"
 %><%@ page import="pt.iflow.api.transition.*"
-%><%@ page import="com.infosistema.crypto.Base64"
+%><%@ page import="com.infosistema.crypto.Base64.*"
 %><%@ page import="pt.iflow.utils.FormDataSanitizer"
 %><%@ page import="org.apache.commons.fileupload.servlet.ServletFileUpload"
 %><%

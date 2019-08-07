@@ -21,6 +21,10 @@ public class DocumentDataStream   extends DocumentData
 	  {
 	    super(aDocId, asFileName, aContent, aUpdated, flowid, pid, subpid);
 	  }
+
+	public DocumentDataStream() {
+		// TODO Auto-generated constructor stub
+	}
 	  
 	 
 	}

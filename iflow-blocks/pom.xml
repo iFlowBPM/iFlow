@@ -17,6 +17,11 @@
 	<dependencies>
 		<!-- APP -->
 		<dependency>
+			<groupId>p17040InfotrustWS</groupId>
+			<artifactId>p17040InfotrustWS</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>pt.iknow.iflow</groupId>
 			<artifactId>iflow-api</artifactId>
 			<version>${iflow.version}</version>
@@ -107,10 +112,29 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.axis2</groupId>
+   			<artifactId>axis2</artifactId>
+		    <type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis-ant</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis-jaxrpc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis-saaj</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>axis</groupId>
+			<artifactId>axis-schema</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>axis</groupId>
 			<artifactId>axis-wsdl4j</artifactId>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
@@ -179,7 +203,6 @@
 		<dependency>
 			<groupId>net.java.dev.glazedlists</groupId>
 			<artifactId>glazedlists_java15</artifactId>
-			<version>1.8.0</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>

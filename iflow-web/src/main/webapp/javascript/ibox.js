@@ -258,8 +258,8 @@ function iBox(opts) {
 					ibox.style.visibility = "visible";
 					ibObj.getElem('ibox_content').style.overflow = "auto";
 					
-					var response = ibObj.http.responseText;
-					ibObj.setIBoxContent(response);
+					//var response = ibObj.http.responseText;
+					//ibObj.setIBoxContent(response);
 					
 				}
 			}
@@ -388,13 +388,15 @@ function iBox(opts) {
 	this.height = elem.offsetHeight || elem.style.pixelHeight;
   };
 
+  /*
   this.setIBoxContent = function(str) {
 	this.clearIboxContent();
 	var e = this.getElem('ibox_content');
 	e.style.overflow = "auto";
 	e.innerHTML = str;
   };
-
+   */
+  
   this.clearIboxContent = function() {
 	var e = this.getElem('ibox_content');
 	e.innerHTML = "";

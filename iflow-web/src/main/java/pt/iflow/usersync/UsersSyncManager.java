@@ -125,15 +125,16 @@ public class UsersSyncManager extends Thread {
     ArrayList<String> retObj = new ArrayList<String>();  
     DataSource ds = null;
     Connection db = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     try {
       ds = Utils.getDataSource();
       db = ds.getConnection();
       db.setAutoCommit(true);
-      st = db.createStatement();
-      String query = "SELECT username FROM users u INNER JOIN organizational_units ou on u.unitid=ou.unitid WHERE ou.organizationid = '" + orgId + "'";
-      rs = st.executeQuery(query);
+      String query = "SELECT username FROM users u INNER JOIN organizational_units ou on u.unitid=ou.unitid WHERE ou.organizationid = ?";
+      pst = db.prepareStatement(query);
+      pst.setString(1, orgId);
+      rs = pst.executeQuery();
       while (rs.next()) {
         retObj.add(rs.getString("username"));
       }
@@ -142,7 +143,7 @@ public class UsersSyncManager extends Thread {
     } catch (Exception e) {
       Logger.adminError("UsersSyncManager", "getAllUsersFromDB", "Error Getting Users from Database", e);
     } finally {
-      DatabaseInterface.closeResources(db, st, rs);
+      DatabaseInterface.closeResources(db, pst, rs);
     }
     return retObj;
   }

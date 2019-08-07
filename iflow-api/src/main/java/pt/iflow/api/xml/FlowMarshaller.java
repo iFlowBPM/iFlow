@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.Properties;
 
+import org.exolab.castor.util.LocalConfiguration;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
@@ -43,6 +45,9 @@ public class FlowMarshaller {
     } catch (UnsupportedEncodingException e) {
       throw new MarshalException(e);
     }
+    Properties castorProperties = LocalConfiguration.getInstance().getProperties();
+    castorProperties.setProperty("org.exolab.castor.sax.features", "http://apache.org/xml/features/disallow-doctype-decl");
+    castorProperties.setProperty("org.exolab.castor.sax.features-to-disable", "http://xml.org/sax/features/external-general-entities,http://xml.org/sax/features/external-parameter-entities,http://apache.org/xml/features/nonvalidating/load-external-dtd");
     XmlFlow retFlow = (XmlFlow) Unmarshaller.unmarshal(XmlFlow.class, source);
 
     return validate(retFlow);

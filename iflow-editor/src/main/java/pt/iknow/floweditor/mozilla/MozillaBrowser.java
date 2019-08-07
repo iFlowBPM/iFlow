@@ -4,14 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.cookie.Cookie;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.CloseWindowListener;
-import pt.iknow.floweditor.MozInit;
 import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.TitleEvent;
 import org.eclipse.swt.browser.TitleListener;
@@ -38,6 +38,7 @@ import org.mozilla.xpcom.Mozilla;
 
 import pt.iknow.floweditor.FlowEditor;
 import pt.iknow.floweditor.FlowEditorConfig;
+import pt.iknow.floweditor.MozInit;
 
 public class MozillaBrowser extends Browser {
 
@@ -262,18 +263,18 @@ public class MozillaBrowser extends Browser {
     }
 
   }
-  public void importCookies(Cookie[] cookies) {
-    if(null == cookies || cookies.length == 0) return;
+  public void importCookies(List<Cookie> cookies) {
+    if(null == cookies || cookies.size() == 0) return;
     nsIServiceManager serviceMan = Mozilla.getInstance().getServiceManager();
     nsICookieManager2 cookieManager = (nsICookieManager2) serviceMan.getServiceByContractID("@mozilla.org/cookiemanager;1", nsICookieManager2.NS_ICOOKIEMANAGER2_IID);
-    for(int i = 0; i < cookies.length; i++) {
-      Cookie cookie = cookies[i];
+    for(int i = 0; i < cookies.size(); i++) {
+      Cookie cookie = cookies.get(i);
       if(null == cookie) continue;
       FlowEditor.log("Injecting cookie: '"+cookie.getDomain()+"' '"+cookie.getPath()+"' '"+cookie.getName()+"' '"+cookie.getValue()+"'");
       Date expiryDate = cookie.getExpiryDate();
       long expiry = System.currentTimeMillis() + (36000000*24); // expira daqui a 24 horas...
       if(null != expiryDate) expiry = expiryDate.getTime();
-      cookieManager.add(cookie.getDomain(), cookie.getPath(), cookie.getName(), cookie.getValue(), cookie.getSecure(), cookie.isDomainAttributeSpecified(), cookie.isPersistent(), expiry);
+      cookieManager.add(cookie.getDomain(), cookie.getPath(), cookie.getName(), cookie.getValue(), cookie.isSecure(), (cookie.getDomain()==null)?false:!cookie.getDomain().isEmpty(), cookie.isPersistent(), expiry);
     }
   }
 

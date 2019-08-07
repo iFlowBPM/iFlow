@@ -260,6 +260,30 @@ public class Const {
 	public static final String sFLOW_MENU_ACCESSIBLE_NO = "Nao";
 
 	public static int nEXPORT_MODE = 1;
+  //Default Locate
+  public static String DEFAULT_LOCALE = null;
+  public static final String sDEFAULT_LOCALE_PT_PT = "pt-PT";
+  public static final String sDEFAULT_LOCALE_EN_US = "en-US";
+  public static final String sDEFAULT_LOCALE_ES_ES = "es-ES";
+  
+  public static String MAX_LOGIN_ATTEMPTS = "MAX_LOGIN_ATTEMPTS";
+  public static String MAX_LOGIN_ATTEMPTS_WAIT = "MAX_LOGIN_ATTEMPTS_WAIT";
+  
+  //Cluester support enabled
+  public static Boolean CLUSTER_ENABLED;
+  
+  //Job Manager times in seconds for Cluster support
+  public static Long BEAT_ACTIVE_TIME;
+  public static Long BEAT_ACTIVE_CHECK_TIME;
+  public static Long BEAT_INACTIVE_CHECK_TIME;
+  
+  //how many days until FLOW_STATE_HISTORY and LOGS are purged from database
+  public static Long DAYS_UNTIL_PURGE;
+  
+  public static String CRYPT_UTILS_KEY;
+  public static Boolean ENCRYPT_FILESYSTEM_DOCS = false;
+  
+  private static List<String> ALLOWED_LOCALES = new ArrayList<String>();
 
 	public static String DEBUG_FORM = null;
 	public static boolean DEBUG_PROC_XML = false;
@@ -330,6 +354,33 @@ public class Const {
 
 	public static final String DEFAULT_SEPARATOR = ",";
 	public final static String CONNECTOR_DEFAULT_PKG = "pt.iflow.api.connectors.handlers";
+    DOCS_BASE_URL = Setup.getProperty("DOCS_BASE_URL");
+    DOCS_DAO_CLASS = Setup.getProperty("DOCS_DAO_CLASS");
+    
+    
+    /* Show Button Help */
+    
+    sSHOW_BUTTON_HELP = Setup.getProperty("SHOW_BUTTON_HELP");
+    if(StringUtils.isBlank(sSHOW_BUTTON_HELP))
+    	sSHOW_BUTTON_HELP = "true";
+    
+    /* Show MAX NOTIFICATIONS /*  */
+    
+    iMAX_NOTIFICATIONS = Setup.getPropertyInt("NOTIFICATIONS_KEEP_DAYS");
+    
+        
+    try {
+      sDELEGATION_NOTIFY_REQUEST_MODE = Setup.getProperty("DELEGATION_NOTIFY_REQUEST_MODE").toLowerCase();
+    } catch (Exception e) { }
+    try {
+      sDELEGATION_NOTIFY_ASSIGN_MODE = Setup.getProperty("DELEGATION_NOTIFY_ASSIGN_MODE").toLowerCase();
+    } catch (Exception e) { }
+    try {
+      sDELEGATION_NOTIFY_ACCEPT_MODE = Setup.getProperty("DELEGATION_NOTIFY_ACCEPT_MODE").toLowerCase();
+    } catch (Exception e) { }
+    try {
+      sDELEGATION_NOTIFY_DELETE_MODE = Setup.getProperty("DELEGATION_NOTIFY_DELETE_MODE").toLowerCase();
+    } catch (Exception e) { }
 
 	public static final String SAVE_PROCESSHISTORY_METHOD_COMPLETE = "COMPLETE";
 	public static final String SAVE_PROCESSHISTORY_METHOD_COMPRESS = "COMPRESS";
@@ -340,6 +391,92 @@ public class Const {
 	public static final String SAVE_PROCESSHISTORY_WHEN_ONCHANGE = "ONCHANGE";
 	public static final String SAVE_PROCESSHISTORY_WHEN_NEVER = "NEVER";
 	public static String SAVE_PROCESSHISTORY_WHEN = SAVE_PROCESSHISTORY_WHEN_ALLWAYS;
+    try {
+      sSAVE_FLOW_STATE_ALLWAYS = Setup.getProperty("SAVE_FLOW_STATE_ALLWAYS").toLowerCase();
+    } catch (Exception e) { }
+    
+    try {    
+    sKEYSTORE_PATH = Setup.getProperty("KEYSTORE_PATH");
+    } catch (Exception e) { }
+    try { 
+    sKEYSTORE_PASS = Setup.getProperty("KEYSTORE_PASS");
+    } catch (Exception e) { }
+  	try { 
+    sALIAS = Setup.getProperty("ALIAS");
+  	} catch (Exception e) { }
+	try { 
+    sALIAS_PASS = Setup.getProperty("ALIAS_PASS");
+	} catch (Exception e) { }
+    
+	//SIGNATURE PROPERTIES
+	try { 
+		sSIGNATURE_CERTIFICATE=Setup.getProperty("SIGNATURE_CERTIFICATE");
+    } catch (Exception e) { 
+    	sSIGNATURE_CERTIFICATE=sYES; 
+    }
+	try { 
+		sSIGNATURE_POSITION_STYLE=Setup.getProperty("SIGNATURE_POSITION_STYLE");
+    } catch (Exception e) { 
+    	sSIGNATURE_POSITION_STYLE=sMATRIX; 
+    }
+	try { 
+		sSIGNATURE_UPLOAD=Setup.getProperty("SIGNATURE_UPLOAD");
+    } catch (Exception e) { 
+    	sSIGNATURE_UPLOAD=sYES; 
+    }
+	try { 
+		sRUBRIC_CERTIFICATE=Setup.getProperty("RUBRIC_CERTIFICATE");
+    } catch (Exception e) { 
+    	sRUBRIC_CERTIFICATE=sYES; 
+    }
+	try { 
+		sRUBRIC_IMAGE=Setup.getProperty("RUBRIC_IMAGE");
+    } catch (Exception e) {
+    	sRUBRIC_IMAGE=sSIGNATURE; 
+    }
+	try { 
+		sRUBRIC_POSITION_STYLE=Setup.getProperty("RUBRIC_POSITION_STYLE");
+    } catch (Exception e) { 
+    	sRUBRIC_POSITION_STYLE=sMATRIX; 
+    }
+	try { 
+		sRUBRIC_UPLOAD=Setup.getProperty("RUBRIC_UPLOAD");
+    } catch (Exception e) { 
+    	sRUBRIC_UPLOAD=sNO; 
+    }
+	try { 
+		CLUSTER_ENABLED = Boolean.parseBoolean(Setup.getProperty("CLUSTER_ENABLED"));
+    } catch (Exception e) { 
+    	CLUSTER_ENABLED=Boolean.FALSE;
+    }
+	try { 
+		BEAT_ACTIVE_TIME=Long.parseLong(Setup.getProperty("BEAT_ACTIVE_TIME"));
+    } catch (Exception e) { 
+    	BEAT_ACTIVE_TIME=new Long(10000); 
+    }
+	try { 
+		BEAT_ACTIVE_CHECK_TIME=Long.parseLong(Setup.getProperty("BEAT_ACTIVE_CHECK_TIME"));
+    } catch (Exception e) { 
+    	BEAT_ACTIVE_CHECK_TIME=new Long(5000); 
+    }
+	try { 
+		BEAT_INACTIVE_CHECK_TIME=Long.parseLong(Setup.getProperty("BEAT_INACTIVE_CHECK_TIME"));
+    } catch (Exception e) { 
+    	BEAT_INACTIVE_CHECK_TIME=new Long(15000); 
+    }
+	try { 
+		DAYS_UNTIL_PURGE=Long.parseLong(Setup.getProperty("DAYS_UNTIL_PURGE"));
+    } catch (Exception e) { 
+    	DAYS_UNTIL_PURGE=new Long(-1); 
+    }
+	try { CRYPT_UTILS_KEY = Setup.getProperty("CRYPT_UTILS_KEY");
+    } catch (Exception e) {  
+    }
+	try { ENCRYPT_FILESYSTEM_DOCS = Boolean.parseBoolean(Setup.getProperty("ENCRYPT_FILESYSTEM_DOCS"));
+    } catch (Exception e) { 
+    	ENCRYPT_FILESYSTEM_DOCS = false; 
+    }
+  }
 
 	public static final String sEXTRA_PROP = "EXTRA.";
 

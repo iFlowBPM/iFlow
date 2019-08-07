@@ -131,7 +131,7 @@ public class Dispatcher extends HttpServlet {
       login = login.trim();
     }
 
-    password = RepositoryWebOpCodes._crypt.decrypt(password);
+//    password = RepositoryWebOpCodes._crypt.decrypt(password);
     UserInfoInterface userInfo = null;
     try {
       AuthenticationServlet.authenticate(request, response, login, password, null);
@@ -978,11 +978,15 @@ public class Dispatcher extends HttpServlet {
   }
 
   private RepositoryFile getClassFile(UserInfoInterface userInfo, Repository rep, String name) {
-    RepositoryFile classFile = rep.getClassFile(userInfo.getOrganization(), name);
-    if (null == classFile || !classFile.exists()) {
-      classFile = getClasspathFile(name);
+    if(StringUtils.startsWithIgnoreCase(name, "pt.iknow.floweditor.blocks") || StringUtils.startsWithIgnoreCase(name, "pt/iknow/floweditor/blocks")){// || StringUtils.startsWithIgnoreCase(name, "../") || StringUtils.startsWithIgnoreCase(name, "./")){
+    	RepositoryFile classFile = rep.getClassFile(userInfo.getOrganization(), name);
+        if (null == classFile || !classFile.exists()) {
+          classFile = getClasspathFile(name);
+        }
+        return classFile;    	
     }
-    return classFile;
+    Logger.warning(null, "Dispatcher", "getClassFile", "Invalid class, not with prefix pt.iknow.floweditor.blocks, requested class: " + name);
+	return null;	
   }
 
   private static RepositoryFile getClasspathFile(final String name) {

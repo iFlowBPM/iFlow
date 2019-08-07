@@ -154,24 +154,36 @@ public class UserManagerBean
         Map<String, String> mapExtra = AccessControlManager.getUserDataAccess().getMappingExtra();
         for (int i = 0; i < listExtraProperties.length; i++)
         {
-          auxEP = auxEP + "," + (String)mapExtra.get(listExtraProperties[i]);
-          auxEV = auxEV + ",'" + listExtraValues[i] + "'";
+          auxEP = auxEP + "," + mapExtra.get(listExtraProperties[i]);
+          auxEV = auxEV + ",?";
         }
       }
       sQuery = sQuery.replace("#EP#", auxEP).replace("#EV#", auxEV);
-      
+     
       pst = db.prepareStatement(sQuery, new String[] { "userid" });
-      pst.setString(1, gender);
-      pst.setString(2, unit);
-      pst.setString(3, username);
-      pst.setString(4, Utils.encrypt(password));
-      pst.setString(5, emailAddress);
-      pst.setString(6, firstName);
-      pst.setString(7, lastName);
-      pst.setString(8, phoneNumber);
-      pst.setString(9, faxNumber);
-      pst.setString(10, mobileNumber);
-      pst.setString(11, companyPhone);
+      int i = 0;
+      if ((listExtraProperties != null) && (listExtraProperties.length > 0))
+      {
+    	Map<String, String> mapExtra = AccessControlManager.getUserDataAccess().getMappingExtra();
+        for (i = 0; i < listExtraProperties.length; i++)
+        {
+//        	pst.setString(i,(String)mapExtra.get(listExtraProperties[i]));
+        	pst.setString(i+15,listExtraValues[i]);
+        }
+      }
+      i=1;
+      pst.setString(i++, gender);
+      pst.setString(i++, unit);
+      pst.setString(i++, username);
+      pst.setString(i++, Utils.encrypt(password));
+      pst.setString(i++, emailAddress);
+      pst.setString(i++, firstName);
+      pst.setString(i++, lastName);
+      pst.setString(i++, phoneNumber);
+      pst.setString(i++, faxNumber);
+      pst.setString(i++, mobileNumber);
+      pst.setString(i++, companyPhone);
+      
       if (Const.bUSE_EMAIL)
       {
         if (invite) {
@@ -264,15 +276,16 @@ public class UserManagerBean
   private boolean assUserCalend(UserInfoInterface userInfo, String cal, int userId)
   {
     Connection db = null;
-    PreparedStatement st = null;
+    PreparedStatement pst = null;
     ResultSet rs = null;
     boolean c = false;
     try
     {
       db = Utils.getDataSource().getConnection();
-      st = db.prepareStatement("Insert into user_calendar (userid,calendar_id)values (?," + cal + ")");
-      st.setInt(1, userId);
-      st.execute();
+      pst = db.prepareStatement("Insert into user_calendar (userid,calendar_id)values (?,?)");
+      pst.setInt(1, userId);
+      pst.setString(2, cal);
+      pst.execute();
       c = true;
     }
     catch (Exception e)
@@ -283,7 +296,7 @@ public class UserManagerBean
     }
     finally
     {
-      DatabaseInterface.closeResources(new Object[] { rs, db, st });
+      DatabaseInterface.closeResources(new Object[] { rs, db, pst });
     }
     return c;
   }
@@ -359,12 +372,15 @@ public class UserManagerBean
       if (calid.equals(" ")) {
         calid = "0";
       }
-      pst = db.prepareStatement("insert into organizational_units (ORGANIZATIONID,PARENT_ID,NAME,DESCRIPTION,calendid) values (?,?,?,?," + calid + ")", new String[] { "unitid" });
+      pst = db.prepareStatement("insert into organizational_units (ORGANIZATIONID,PARENT_ID,NAME,DESCRIPTION,calendid) values (?,?,?,?,?)", new String[] { "unitid" });
       
       pst.setString(1, organizationid);
       pst.setString(2, parentid);
       pst.setString(3, name);
       pst.setString(4, description);
+      pst.setString(5, calid);
+      
+      
       pst.executeUpdate();
       rs = pst.getGeneratedKeys();
       int unitid = -1;
@@ -427,8 +443,8 @@ public class UserManagerBean
       db.setAutoCommit(false);
       
       StringBuffer sql = new StringBuffer();
-      sql.append("INSERT INTO " + ProfilesTO.TABLE_NAME);
-      sql.append(" (" + ProfilesTO.NAME + "," + ProfilesTO.DESCRIPTION + "," + ProfilesTO.ORGANIZATION_ID + ")");
+      sql.append("INSERT INTO profiles");
+      sql.append(" (name,description,organizationid)");
       sql.append(" values (?,?,?)");
       if (Logger.isDebugEnabled()) {
         Logger.debug(userInfo.getUtilizador(), this, "modifyProfile", "QUERY=" + sql.toString());
@@ -548,7 +564,17 @@ public class UserManagerBean
       String password = null;
       if ((!Const.bUSE_EMAIL) && (StringUtils.isNotEmpty(newPassword)))
       {
-        password = Utils.encrypt(newPassword);
+    	  String username="";
+    	  pst = db.prepareStatement("select username from users where userid=?");
+          pst.setString(1, userId);
+          rs = pst.executeQuery();
+          if (rs.next()) {
+        	  username = rs.getString(1);
+          }
+          rs.close();
+          pst.close();
+          
+        password = Utils.encrypt(newPassword, username);
         setPassword = ",PASSWORD_RESET=0,USERPASSWORD=?";
       }
       String setExtras = "";
@@ -560,7 +586,7 @@ public class UserManagerBean
         }
       }
       int pos = 0;
-      pst = db.prepareStatement("update users set GENDER=?,EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,FAX_NUMBER=?,MOBILE_NUMBER=?,COMPANY_PHONE=?,ORGADM=?,ORGADM_USERS=?,ORGADM_FLOWS=?,ORGADM_PROCESSES=?,ORGADM_RESOURCES=?,ORGADM_ORG=?" + setUnitId + setExtras + setPassword + " where USERID=?");
+      pst = db.prepareStatement("update users set GENDER=?,EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,FAX_NUMBER=?,MOBILE_NUMBER=?,COMPANY_PHONE=?,ORGADM=?,ORGADM_USERS=?,ORGADM_FLOWS=?,ORGADM_PROCESSES=?,ORGADM_RESOURCES=?,ORGADM_ORG=? ? ? ? where USERID=?");
       
       pst.setString(++pos, gender);
       pst.setString(++pos, emailAddress);
@@ -587,6 +613,9 @@ public class UserManagerBean
       if ((!Const.bUSE_EMAIL) && (StringUtils.isNotEmpty(newPassword))) {
         pst.setString(++pos, password);
       }
+      pst.setString(++pos, setUnitId);
+      pst.setString(++pos, setExtras);
+      pst.setString(++pos, setPassword);
       pst.setString(++pos, userId);
       pst.executeUpdate();
       db.commit();
@@ -737,9 +766,9 @@ public class UserManagerBean
       int pos = 0;
       String query = "";
       if (!userInfo.isSysAdmin()) {
-        query = "update users set GENDER=?,EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,FAX_NUMBER=?,MOBILE_NUMBER=?,COMPANY_PHONE=?" + setExtras + " where USERID=? and USERPASSWORD=?";
+        query = "update users set GENDER=?,EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,FAX_NUMBER=?,MOBILE_NUMBER=?,COMPANY_PHONE=? ? where USERID=? and USERPASSWORD=?";
       } else {
-        query = "update system_users set EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,MOBILE_NUMBER=?" + setExtras + " where USERID=? and USERPASSWORD=?";
+        query = "update system_users set EMAIL_ADDRESS=?,FIRST_NAME=?,LAST_NAME=?,PHONE_NUMBER=?,MOBILE_NUMBER=? ? where USERID=? and USERPASSWORD=?";
       }
       pst = db.prepareStatement(query);
       if (!userInfo.isSysAdmin())
@@ -766,8 +795,20 @@ public class UserManagerBean
           pst.setString(++pos, listExtraValues[i]);
         }
       }
+      pst.setString(++pos, setExtras);
       pst.setString(++pos, userId);
-      String encPwd = Utils.encrypt(password);
+      
+      String username="";
+	  pst = db.prepareStatement("select username from users where userid=?");
+      pst.setString(1, userId);
+      rs = pst.executeQuery();
+      if (rs.next()) {
+    	  username = rs.getString(1);
+      }
+      rs.close();
+      pst.close();
+      
+      String encPwd = Utils.encrypt(password, username);
       pst.setString(++pos, encPwd);
       int upd = pst.executeUpdate();
       db.commit();
@@ -932,7 +973,7 @@ public class UserManagerBean
     DataSource ds = null;
     Connection db = null;
     ResultSet rs = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     if (Logger.isDebugEnabled()) {
       Logger.debug(userInfo.getUtilizador(), this, "modifyProfile", "Updating profile: " + profile.getName());
     }
@@ -962,16 +1003,20 @@ public class UserManagerBean
         db.setAutoCommit(false);
         
         StringBuffer sql = new StringBuffer();
-        sql.append("UPDATE " + ProfilesTO.TABLE_NAME);
-        sql.append(" SET " + ProfilesTO.NAME + "=" + profile.getValueOf(ProfilesTO.NAME));
-        sql.append(", " + ProfilesTO.DESCRIPTION + "=" + profile.getValueOf(ProfilesTO.DESCRIPTION));
-        sql.append(" WHERE " + ProfilesTO.PROFILE_ID + "=" + profile.getValueOf(ProfilesTO.PROFILE_ID));
-        sql.append(" AND " + ProfilesTO.ORGANIZATION_ID + "=" + profile.getValueOf(ProfilesTO.ORGANIZATION_ID));
+        sql.append("UPDATE profiles ");
+        sql.append(" SET name= ?" );
+        sql.append(", description=?");
+        sql.append(" WHERE profileid=?");
+        sql.append(" AND organizationid=?");
         if (Logger.isDebugEnabled()) {
           Logger.debug(userInfo.getUtilizador(), this, "modifyProfile", "QUERY=" + sql.toString());
         }
-        st = db.createStatement();
-        st.executeUpdate(sql.toString());
+        pst = db.prepareStatement(sql.toString());
+        pst.setString(1, profile.getName());
+        pst.setString(2, profile.getDescription());
+        pst.setInt(3, profile.getProfileId());
+        pst.setInt(4, Integer.valueOf(profile.getOrganizationId()));
+        pst.executeUpdate();
         db.commit();
         
         result = true;
@@ -983,7 +1028,7 @@ public class UserManagerBean
       }
       finally
       {
-        DatabaseInterface.closeResources(new Object[] { db, st, rs });
+        DatabaseInterface.closeResources(new Object[] { db, pst, rs });
       }
     }
     return result;
@@ -1879,7 +1924,7 @@ public class UserManagerBean
     DataSource ds = null;
     Connection db = null;
     ResultSet rs = null;
-    Statement st = null;
+    PreparedStatement pst = null;
     if ((!userInfo.isSysAdmin()) && (!userInfo.isOrgAdmin()))
     {
       Logger.error(userInfo.getUtilizador(), this, "getAllProfiles", "not sysadmin nor orgadmin, exiting");
@@ -1890,21 +1935,19 @@ public class UserManagerBean
       ds = Utils.getDataSource();
       db = ds.getConnection();
       
-      String extra = "";
-      String extra2 = "";
       if (StringUtils.isEmpty(orgId)) {
         orgId = userInfo.getCompanyID();
       }
-      extra = " WHERE " + ProfilesTO.ORGANIZATION_ID + " LIKE '" + orgId + "'";
-      if (profileId != null) {
-        extra2 = " AND " + ProfilesTO.PROFILE_ID + "=" + profileId;
-      }
-      String query = DBQueryManager.processQuery("UserManager.GET_PROFILES", new Object[] { ProfilesTO.PROFILE_ID, ProfilesTO.NAME, ProfilesTO.DESCRIPTION, ProfilesTO.ORGANIZATION_ID, ProfilesTO.TABLE_NAME, extra, extra2 });
+     
+      String query = "SELECT profileid, name, description, organizationid FROM profiles  WHERE organizationid LIKE ? " + ((profileId != null)?" AND profileid=?":"") ;
       if (Logger.isDebugEnabled()) {
         Logger.debug(userInfo.getUtilizador(), this, "getProfiles", "QUERY=" + query);
       }
-      st = db.createStatement();
-      rs = st.executeQuery(query);
+      pst = db.prepareStatement(query);
+      pst.setString(1, orgId);
+      if (profileId != null)
+    	  pst.setInt(2, Integer.valueOf(profileId));
+      rs = pst.executeQuery();
       List<ProfilesTO> profiles = new ArrayList();
       while (rs.next())
       {
@@ -1922,7 +1965,7 @@ public class UserManagerBean
     }
     finally
     {
-      DatabaseInterface.closeResources(new Object[] { db, st, rs });
+      DatabaseInterface.closeResources(new Object[] { db, pst, rs });
     }
     return result;
   }
@@ -2008,11 +2051,11 @@ public class UserManagerBean
 
 
 
-      pst = db.prepareStatement("insert into users (GENDER,UNITID,USERNAME,USERPASSWORD,EMAIL_ADDRESS,FIRST_NAME,LAST_NAME,PHONE_NUMBER,FAX_NUMBER,MOBILE_NUMBER,COMPANY_PHONE,ACTIVATED,PASSWORD_RESET,ORGADM) values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,0,1)", new String[] { "userid" });
+      pst = db.prepareStatement("insert into users (GENDER,UNITID,USERNAME,USERPASSWORD,EMAIL_ADDRESS,FIRST_NAME,LAST_NAME,PHONE_NUMBER,FAX_NUMBER,MOBILE_NUMBER,COMPANY_PHONE,ACTIVATED,PASSWORD_RESET,ORGADM) values ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,0,1)", new String[] { "USERID" });
       pst.setString(1, gender);
       pst.setInt(2, unitId);
       pst.setString(3, username);
-      pst.setString(4, Utils.encrypt(password));
+      pst.setString(4, Utils.encrypt(password, username));
       pst.setString(5, emailAddress == null ? "" : emailAddress);
       pst.setString(6, firstName);
       pst.setString(7, lastName);
@@ -2258,7 +2301,7 @@ public class UserManagerBean
     UserCredentialsImpl(String username, String password)
     {
       this.username = username;
-      this.password = Utils.decrypt(password);
+      this.password = Utils.decrypt(password, username);
     }
     
     public String getUsername()
@@ -2334,7 +2377,7 @@ public class UserManagerBean
         password = RandomStringUtils.random(8, true, true);
         
         pst = db.prepareStatement("update users set password_reset=1, userpassword=? where userid=?");
-        pst.setString(1, Utils.encrypt(password));
+        pst.setString(1, Utils.encrypt(password, username));
         pst.setInt(2, userId);
         pst.executeUpdate();
         pst.close();
@@ -2395,10 +2438,11 @@ public class UserManagerBean
       db.setAutoCommit(false);
       
 
-      pst = db.prepareStatement("update users set password_reset=0, userpassword=? where username=? and userpassword=?");
-      pst.setString(1, Utils.encrypt(password));
+      pst = db.prepareStatement("update users set password_reset=0, userpassword=? where username=? and (userpassword=? or userpassword=?)");
+      pst.setString(1, Utils.encrypt(password, username));
       pst.setString(2, username);
-      pst.setString(3, Utils.encrypt(oldPassword));
+      pst.setString(3, Utils.encrypt(oldPassword, username));
+      pst.setString(4, Utils.encrypt(oldPassword));
       colsModified = pst.executeUpdate();
       pst.close();
       
@@ -2434,9 +2478,9 @@ public class UserManagerBean
       db = ds.getConnection();
       
       pst = db.prepareStatement("update system_users set userpassword=? where username=? and userpassword=?");
-      pst.setString(1, Utils.encrypt(password));
+      pst.setString(1, Utils.encrypt(password, username));
       pst.setString(2, username);
-      pst.setString(3, Utils.encrypt(oldPassword));
+      pst.setString(3, Utils.encrypt(oldPassword, username));
       colsModified = pst.executeUpdate();
       pst.close();
       
@@ -3133,41 +3177,42 @@ public class UserManagerBean
     try
     {
       db = Utils.getDataSource().getConnection();
-      st = db.prepareStatement("Insert into calendar (version,name, monday, tuesday, wednesday, thursday, friday, saturday, sunday, valid, day_hours, week_hours, month_hours, create_date)values (1,'" + calendnome + "',?,?,?,?,?,?,?,1,8,40,160,now())");
+      st = db.prepareStatement("Insert into calendar (version,name, monday, tuesday, wednesday, thursday, friday, saturday, sunday, valid, day_hours, week_hours, month_hours, create_date)values (1,?,?,?,?,?,?,?,?,1,8,40,160,now())");
+      st.setString(1, calendnome);
       if (((String)days.get(0)).equals("monday")) {
-        st.setInt(1, 1);
-      } else {
-        st.setInt(1, 0);
-      }
-      if (days.contains("tuesday")) {
         st.setInt(2, 1);
       } else {
         st.setInt(2, 0);
       }
-      if (days.contains("wednsday")) {
+      if (days.contains("tuesday")) {
         st.setInt(3, 1);
       } else {
         st.setInt(3, 0);
       }
-      if (days.contains("thursday")) {
+      if (days.contains("wednsday")) {
         st.setInt(4, 1);
       } else {
         st.setInt(4, 0);
       }
-      if (days.contains("friday")) {
+      if (days.contains("thursday")) {
         st.setInt(5, 1);
       } else {
         st.setInt(5, 0);
       }
-      if (days.contains("saturday")) {
+      if (days.contains("friday")) {
         st.setInt(6, 1);
       } else {
         st.setInt(6, 0);
       }
-      if (days.contains("sunday")) {
+      if (days.contains("saturday")) {
         st.setInt(7, 1);
       } else {
         st.setInt(7, 0);
+      }
+      if (days.contains("sunday")) {
+        st.setInt(8, 1);
+      } else {
+        st.setInt(8, 0);
       }
       st.execute();
       c = true;
@@ -3262,8 +3307,10 @@ public class UserManagerBean
     try
     {
       db = Utils.getDataSource().getConnection();
-      st = db.prepareStatement("insert into `iflow`.`calendar_periods` values (?,'" + init + "','" + end + "')");
+      st = db.prepareStatement("insert into `iflow`.`calendar_periods` values (?,?,?)");
       st.setString(1, id);
+      st.setString(2, init);
+      st.setString(3, end);
       st.execute();
       b = true;
     }
