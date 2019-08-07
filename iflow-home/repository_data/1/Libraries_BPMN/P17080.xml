@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by jmv (.) -->
+
+<XmlLibrary xmlns="http://www.iknow.pt/XmlLibrary" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.iknow.pt/XmlLibrary ../schemas/xmllibrary.xsd">
+	<name>P17080</name>
+	<version>1.0</version>
+	<author>Uniksystem</author>
+	<description>P17080</description>
+	<i18nName>library.P17080.name</i18nName>
+	<i18nDescription>library.P17080.description</i18nDescription>
+
+	<XmlBlock>
+		<class>BlockImportIndicioFile</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>DatasourceP17080</name>
+			<description>Datasource of P17080 schema</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>DatasourcePariPersi</name>
+			<description>Datasource of PariPersi schema</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputDocument</name>
+			<description>Main input file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputCRCDISS</name>
+			<description>CRC DISS input file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>infotrustUsername</name>
+			<description>Infotrust webservice username</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>infotrustPassword</name>
+			<description>Infotrust webservice password</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputDocument</name>
+			<description>Result output file</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>ImportIndicioFile</description>
+		<i18n>ImportIndicioFile</i18n>
+	</XmlBlock>
+	
+</XmlLibrary>
