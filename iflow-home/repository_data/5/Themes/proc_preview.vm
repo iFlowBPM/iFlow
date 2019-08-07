@@ -1,0 +1,529 @@
+<html>
+	<head>
+		<title>Detail</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" href="${url_prefix}/Themes/${orgTheme}/css/tips.css" type="text/css">
+		<link rel="stylesheet" type="text/css" media="all" href="${url_prefix}/javascript/calendar/calendar-iflow.css" title="cal-iflow" />
+		<link rel="stylesheet" type="text/css" href="${url_prefix}/javascript/yahoo/container/assets/skins/sam/container.css" />
+		<link rel="stylesheet" type="text/css" href="${url_prefix}/javascript/yahoo/button/assets/skins/sam/button.css" />
+		<link href="${url_prefix}/javascript/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css"/>
+		<link rel="stylesheet" type="text/css" href="${url_prefix}/Themes/newflow/cssNew/main.css">
+		<link href="${url_prefix}/javascript/qtip/jquery.qtip.min.css" rel="stylesheet" type="text/css" />
+
+		<link rel="shortcut icon" href="images/ .ico" />
+	<!--[if IE]>
+		<link rel="stylesheet" href="Themes/${orgTheme}/css/iflow_ie.css" type="text/css">
+	<![endif]-->
+
+	<!--[if lt IE 7]>
+		<style type="text/css">
+			.icon_item { // append this style
+				width:24px;
+				height:24px;
+			}
+			img { behavior: url(iepngfix.htc) }
+		</style>
+	<![endif]-->
+
+		<link type="text/css" rel="stylesheet" href="${url_prefix}/PublicFiles/default.css" />
+		<script src="${url_prefix}/javascript/ajax_processing.js" type="text/javascript"></script>
+		<script src="${url_prefix}/javascript/tabs.js" type="text/javascript"></script>
+		<script src="${url_prefix}/javascript/iflow_main.js" type="text/javascript"></script>
+		<script src="${url_prefix}/javascript/calendar/calendar.js" type="text/javascript"></script>
+		<script src="${url_prefix}/javascript/calendar/lang/calendar-en_US.js" type="text/javascript"></script>
+		<script src="${url_prefix}/javascript/calendar/calendar-setup.js" type="text/javascript"></script>
+		<script src="${url_prefix}/javascript/mootools.js" type="text/javascript"></script>
+		<script src="${url_prefix}/javascript/FormFunctions.js" type="text/javascript"></script>
+		<script src="${url_prefix}/javascript/Stickman.MultiUpload.js" type="text/javascript"></script>
+		<script src="${url_prefix}/javascript/jquery-1.10.2.js"></script>
+                <script src="${url_prefix}/javascript/qtip/jquery.qtip.min.js" type="text/javascript"></script>
+
+	</head>
+	
+	<body>
+	
+	
+<div id="_formLoadingDiv" style="text-align:center;width:99%;height:99%;position:absolute;left:0;top:0;z-index:99;display:none">
+	<div class="loadingDivContainer">
+		<div class="loadingDivInfo">
+                     <p>Em processamento...</p><img src="../images/loading.gif"/>
+						</div>
+					</div>
+</div>
+
+	<style type="text/css">
+		body { 
+			background: white;
+		}
+	</style>
+		<div class="header_processo">
+			<form name="user_proc_print" method="POST" action="$response.encodeURL(${url_prefix},'UserProcPrint')" target="_blank">
+				<input type="hidden" name="flowid" value="$procFlowid">
+				<input type="hidden" name="pid" value="$procPid">
+				<input type="hidden" name="subpid" value="$procSubpid">				
+			</form>
+			<form action="form.jsp" id="dadosPreview" name="dados" method="POST" onsubmit="">
+			#foreach($varName in $hmHidden.keySet())
+				<input type="hidden" name="$varName" id="$varName" value="$hmHidden.get($varName)" />
+			#end				
+			<!--input type="hidden" name="procPreview" id="procPreview" value="true"-->
+        <div class="title_cont" > Dados do processo n&ordm; $procPid (Pr&eacute;-visualiza&ccedil;&atilde;o)</div>
+        <div class="panel-body">
+          <div class="form-horizontal" role="form">
+			<!--div class="table"-->
+			#if ($processDetail.isEmpty())
+					<div class="alert alert-info">
+						$noDetail
+					</div>
+			#else
+				#if (!$error.isEmpty())
+					<div class="alert alert-warning">
+						$error
+					</div>
+				#end
+				#if ($procFlowid == 159 || $procFlowid == 271)
+					#set($varName="Ã�rea")
+					#set($value = "")
+					#if ($processDetail.get(${varName})!="")
+						#set($value = $processDetail.get(${varName}))
+					#end
+					<input type="hidden" name="$processVarnames.get(${varName})" value="${value}">
+					<div class="form-group">
+						<label  class="col-sm-2 control-label"  style=" font-size: 12px; margin-bottom: 2px">${varName}: </label>
+						<div class="col-sm-8" style=" font-size: 12px; margin-top: 5px"> 
+							#if ($processDetail.get(${varName})!="")
+								$processDetail.get(${varName})
+							#end 
+						</div>
+					</div>
+					#set($varName="SubÃ¡rea")
+					#set($value = "")
+					#if ($processDetail.get(${varName})!="")
+						#set($value = $processDetail.get(${varName}))
+					#end
+					<input type="hidden" name="$processVarnames.get(${varName})" value="${value}">
+					<div class="form-group">
+						<label  class="col-sm-2 control-label" style=" font-size: 12px; margin-bottom: 2px">${varName}: </label>
+						<div class="col-sm-8" style=" font-size: 12px; margin-top: 5px"> 
+							#if ($processDetail.get(${varName})!="")
+								$processDetail.get(${varName})
+							#end 
+						</div>
+					</div>						
+					#set($varName="Assunto")
+					#set($value = "")
+					#if ($processDetail.get(${varName})!="")
+						#set($value = $processDetail.get(${varName}))
+					#end
+					<input type="hidden" name="$processVarnames.get(${varName})" value="${value}">
+					<div class="form-group">
+						<label  class="col-sm-2 control-label" style=" font-size: 12px; margin-bottom: 2px">${varName}: </label>
+						<div class="col-sm-8" style=" font-size: 12px; margin-top: 5px"> 
+							#if ($processDetail.get(${varName})!="")
+								$processDetail.get(${varName})
+							#end 
+						</div>
+					</div>	
+					#set($varName="Nome do Cliente Municipal")
+					#set($value = "")
+					#if ($processDetail.get(${varName})!="")
+						#set($value = $processDetail.get(${varName}))
+					#end
+					<input type="hidden" name="$processVarnames.get(${varName})" value="${value}">
+					<div class="form-group">
+
+						<label  class="col-sm-2 control-label">${varName}: </label>
+						<div class="col-sm-8" style=" font-size: 14px; margin-top: 5px"> 
+							#if ($processDetail.get(${varName})!="")
+								$processDetail.get(${varName})
+							#end 
+						</div>
+					</div>	
+					#set($varName="NIF")
+					#set($value = "")
+					#if ($processDetail.get(${varName})!="")
+						#set($value = $processDetail.get(${varName}))
+					#end
+					<input type="hidden" name="$processVarnames.get(${varName})" value="${value}">
+					<div class="form-group">
+						<label  class="col-sm-2 control-label">${varName}: </label>
+						<div class="col-sm-8" style=" font-size: 14px; margin-top: 5px"> 
+							
+							#if ($processDetail.get(${varName})!="")
+								$processDetail.get(${varName})
+							#end 
+						</div>
+					</div>
+
+			#set($FlagDecisao=0)
+			#foreach($profile in $user_profiles)
+				#if ($profile == "Aprov/Presidente" || $profile == "Aprov/Vereador" || $profile == "Aprov/ChefeDivisao")
+					#set($FlagDecisao=1)
+				#end 
+			#end
+					
+			#if ($FlagDecisao == 0 || $FlagDecisao == 1)		
+
+						
+						#set($sOrdem=$processDetail.get("Ordem"))
+						#set($lOrdem=$sOrdem.split("] "))
+						#if ($lOrdem != "")
+							#set($listOrdem = [])
+								#foreach($ordem in $lOrdem)
+									#if($ordem.indexOf("<br>") >= 0)
+										#if ($listOrdem.add($ordem.substring(0, $ordem.indexOf("<br>"))))
+										#end
+									#end
+								#end
+						#end
+						
+						#set($sAccoes=$processDetail.get("AcÃ§Ãµes"))
+						#set($lAccoes=$sAccoes.split("] "))
+						#set($countAccoes = 0)
+						#if ($lAccoes != "")
+							#set($listAccoes = [])
+								#foreach($accao in $lAccoes)
+									#if($accao.indexOf("<br>") > 0)
+										#set($countAccoes = $velocityCount - 1)
+										#if ($listAccoes.add($accao.substring(0, $accao.indexOf("<br>"))))
+										#end
+									#end
+								#end
+						#end
+						
+						#set($sComents=$processDetail.get("ComentÃ¡rios"))
+						#set($lComents=$sComents.split("] "))
+						#if ($lComents != "")
+							#set($listComents = [])
+								#foreach($coment in $lComents)
+									#if($coment.lastIndexOf("<br>") >= 0)
+										#if ($listComents.add($coment.substring(0, $coment.lastIndexOf("<br>"))))
+										#end
+									#end
+								#end
+						#end
+
+						#set($sDatas=$processDetail.get("datas"))
+						#set($lDatas=$sDatas.split("] "))
+						#if ($lDatas != "")
+							#set($listDatas = [])
+								#foreach($data in $lDatas)
+									#if($data.indexOf("<br>") >= 0)
+										#if ($listDatas.add($data.substring(0, $data.indexOf("<br>"))))
+										#end
+									#end
+								#end
+						#end
+
+						#set($sPessoas=$processDetail.get("pessoas"))
+						#set($lPessoas=$sPessoas.split("] "))
+						#if ($lPessoas != "")
+							#set($listPessoas = [])
+								#foreach($pessoa in $lPessoas)
+									#if($pessoa.indexOf("<br>") >= 0)
+										#if ($listPessoas.add($pessoa.substring(0, $pessoa.indexOf("<br>"))))
+										#end
+									#end
+								#end
+						#end
+
+						#set($sMarcar=$processDetail.get("marcar"))
+						#set($lMarcar=$sMarcar.split("] "))
+						#set($countCheck = 0)
+						#if ($lMarcar != "")
+							#set($listMarcar = [])
+								#foreach($marcar in $lMarcar)
+									#if($marcar.indexOf("<br>") >= 0)
+										#set($countCheck = $velocityCount - 1)
+										#if ($listMarcar.add($marcar.substring(0, $marcar.indexOf("<br>"))))
+										#end
+									#end
+								#end
+						#end
+
+						#set($range = [$countCheck..$countAccoes])
+						#foreach($i in $range)
+						   #if ($listMarcar.add(""))
+						   #end
+						#end
+
+						#if($countAccoes > 4)
+							#set($limite = $countAccoes - 4)
+						#else
+							#set($limite = 0)
+						#end
+
+						<div class="form-group">
+							<label  class="col-sm-2 control-label" style=" font-size: 12px; margin-bottom: 2px">TramitaÃ§Ã£o: </label>
+							<div class="col-sm-8">&nbsp;</div>				
+						</div>
+						<div class="form-group">					
+							<table class="col-sm-11" border="1" cellpadding="10%" style=" font-size: 12px; margin-top: 5px; margin-left: 15px">
+							<tr align="center" style="font-weight:bold"><td>Ordem</td><td>AcÃ§Ã£o</td><td>Por</td><td>Em</td>
+							#if ($FlagDecisao == 1)
+								<td>Marcar para Despacho</td>
+							#end
+							</tr>
+											#foreach ($accao in $listAccoes)
+												#set($pos = $velocityCount)
+												#if ($pos > $limite)
+														#foreach ($coment in $listComents)
+															#if ($velocityCount == $pos)
+																#if ($coment!="" && $coment!="null")
+																	#set($tool = $coment.replaceAll("</?[^>]+/?>", ""))
+																#else
+																	#set($tool = "Sem comentÃ¡rio")
+																#end
+																
+															#end
+														#end
+													
+														<tr title="$tool" align="center">
+															
+															#foreach ($ordem in $listOrdem)
+																#if ($velocityCount == $pos)
+																	<td>$ordem </td>
+																#end
+															#end
+														
+															<td>$accao </td>
+
+															#foreach ($pessoa in $listPessoas)
+																#if ($velocityCount == $pos)
+																	<td>$pessoa </td>
+																#end
+															#end
+															
+															#foreach ($data in $listDatas)
+																#if ($velocityCount == $pos)
+																	<td>$data </td>
+																#end
+															#end
+													#if ($FlagDecisao == 1)
+															#set($pos2 = $pos - 1)
+															#set($max_row = 0)
+															#foreach ($marcar in $listMarcar)
+															#set($max_row = $velocityCount - 1)
+																#if ($velocityCount == $pos)
+																	<td>
+																	#if($marcar == 1)
+																		<input class="txt" type="checkbox" title="" checked="true" value="1" name="docs_assinar_seleccionados[$pos2]" checked>
+																	#else
+																		<input class="txt" type="checkbox" title="" value="1" name="docs_assinar_seleccionados[$pos2]">
+																	#end															
+																	</td>
+																#end
+															#end
+													#end		
+														</tr>	
+											#end
+										#end
+							</table>
+						</div>		
+						<input id="91_MAX_ROW" type="hidden" value="$max_row" name="91_MAX_ROW">
+					#end
+					
+					#if ($FlagDecisao == 1 && $processDetail.get("AcÃ§Ãµes")!="" && (!($processDetail.get("AÃ§Ã£o escolhida")!="") || $processDetail.get("AÃ§Ã£o escolhida")=="pre_decisao" || $processDetail.get("AÃ§Ã£o escolhida")=="parecer") )
+
+						#set($valueName="AÃ§Ã£o a executar")
+						#set($varName="DecisÃ£o")
+						#set($value = "") 
+						#if ($processDetail.get(${valueName})!="")
+							#set($value = $processDetail.get(${valueName}))
+						#end
+						#set($sValues=$processDetail.get($varName))
+						#set($sTexts=$processDetail.get("DecisÃ£o Texto"))
+						#set($lValues=$sValues.split("] "))
+						#set($lTexts=$sTexts.split("] "))
+						#if ($lTexts != "")
+							#set($listTexts = [])
+							#foreach($text in $lTexts)
+								#if($text.indexOf("<br>") > 0)
+									#if ($listTexts.add($text.substring(0, $text.indexOf("<br>"))))
+									#end
+								#end
+							#end
+
+							#if ($lValues != "")
+								<div class="form-group">
+									<label  class="col-sm-2 control-label">${varName}: </label>
+									<select class="txt  form-control pull-right combobox" style="width:250px;" name="$processVarnames.get(${valueName})"
+											onchange="camouflageForm();document.dadosPreview.op.value='16';jQuery('#dadosPreview').submit();" >
+									#set($idx = 0)
+									<option value="OpÃ§Ã£o de decisÃ£o" >OpÃ§Ã£o de decisÃ£o</option>
+									#foreach($val in $lValues)
+										#if($val.indexOf("<br>") > 0)
+											#set($val = $val.substring(0, $val.indexOf("<br>")))
+											#if($val != "35")
+												<option value="$val" 
+												#if($val == $value)
+													selected= "selected"
+												#end
+												>$listTexts.get($idx)</option>
+											#end
+											#set($idx = $idx+1)
+										#end
+									#end
+									</select>
+								</div>
+							#end
+						#end
+					#end
+				#else
+					#if ($procFlowid == 90 || $procFlowid == 205)
+								<div class="form-group">
+									<label  class="col-sm-2 control-label" style=" font-size: 12px; margin-bottom: 2px">Criado por: </label>
+									<div class="col-sm-8" style=" font-size: 12px; margin-top: 5px"> 
+										#if ($processDetail.get("Criado por")!="")
+											$processDetail.get("Criado por")
+										#end 
+									</div>
+								</div>
+								<div class="form-group">
+									<label  class="col-sm-2 control-label" style=" font-size: 12px; margin-bottom: 2px">Prioridade: </label>
+									<div class="col-sm-8" style=" font-size: 12px; margin-top: 5px"> 
+										#if ($processDetail.get("Prioridade")!="")
+											$processDetail.get("Prioridade")
+										#end 
+									</div>
+								</div>
+								<div class="form-group">
+									<label  class="col-sm-2 control-label" style=" font-size: 12px; margin-bottom: 2px">Assunto: </label>
+									<div class="col-sm-8" style=" font-size: 12px; margin-top: 5px"> 
+										#if ($processDetail.get("Assunto")!="")
+											$processDetail.get("Assunto")
+										#end 
+									</div>
+								</div>
+								<div class="form-group">
+									<label  class="col-sm-2 control-label" style=" font-size: 12px; margin-bottom: 2px">DescriÃ§Ã£o da tarefa: </label>
+									<div class="col-sm-8" style=" font-size: 12px; margin-top: 5px"> 
+										#if ($processDetail.get("DescriÃ§Ã£o da tarefa")!="")
+											$processDetail.get("DescriÃ§Ã£o da tarefa")
+										#end 
+									</div>
+								</div>
+								<div class="form-group">
+									<label  class="col-sm-2 control-label" sty2e=" font-size: 12px; margin-bottom: 2px">ComentÃ¡rio: </label>
+									<div class="col-sm-8" style=" font-size: 12px; margin-top: 5px">
+										#if ($processDetail.get("ComentÃ¡rio")!="")
+											$processDetail.get("ComentÃ¡rio")
+										#end 										
+									</div>
+								</div>								
+					#else
+						#foreach($varName in $processDetail.keySet())
+							#set($value = "")
+							#if ($processDetail.get(${varName})!="")
+								#set($value = $processDetail.get(${varName}))
+							#end
+							<input type="hidden" name="$processVarnames.get(${varName})" value="${value}">	
+							<div class="form-group">
+								<label  class="col-sm-2 control-label"  style=" font-size: 12px; margin-bottom: 2px">${varName}: </label>
+								<div class="col-sm-8" style=" font-size: 12px; margin-top: 5px"> 
+									#if ($processDetail.get(${varName})!="")
+										$processDetail.get(${varName})
+									#end 
+								</div>
+							</div>
+						#end
+					#end
+				#end
+			#end
+			#if($isForward)
+				</div>
+					<div class="form-group">
+				</div>
+			#else
+				</div>
+				<div class="form-group">
+					<div class="col-sm-12" style=" font-size: 12px; margin-bottom: -10px;clear:both;"> Op&ccedil;&otilde;es dispon&iacute;veis </div>
+				</div>
+			#end
+			<!--
+		    #if (!$processDetail.isEmpty())
+				<fieldset class="submit">
+				#foreach($button in $buttonList)
+					#set($name=$button.get("name"))
+					#set($id=$button.get("id"))
+					#set($operation=$button.get("operation"))
+					#set($tooltip=$button.get("tooltip"))
+					#set($text=$button.get("text"))
+					#set($buttonimagesrc=$button.get("buttonimagesrc"))
+					#set($buttonimagealt=$button.get("buttonimagealt"))
+					#set($hiddenfield=$button.get("hiddenfield"))
+					&nbsp;
+
+					<button type="button" align="center" valign="center" class="btn btn-default" name="$name" value="$text" id="$id" 
+						onClick="javascript:$operation jQuery('#dadosPreview').submit();return false;" title="$tooltip">
+						$text 
+					</button>
+					&nbsp;
+				#end
+				</fieldset>
+			#end
+			-->
+			</form>
+		</div>
+		</div>
+	</div>
+		<div id="preview" class="Preview">
+			<button id="Aceder" style=" font-size: 24px; padding: 10px;" class="btn btn-default navbar-btn"
+				onclick="javascript:openProcess($procFlowid, '$response.encodeURL($url_prefix,$uri)', 'flowid=$procFlowid&pid=$procPid&subpid=$procSubpid', false, 3);"> #*$act.get("runMax")*#
+				Aceder
+			</button>
+		</div>
+		<script language="JavaScript" type="text/javascript">
+
+  try {
+      $('[title]').qtip({
+	      		  position: {
+		  target: 'mouse', // Track the mouse as the positioning target
+			  adjust: { x: 5, y: 5 } // Offset it slightly from under the mouse
+	      },
+		  show: { delay: 400 },
+
+	  
+		  style: { 
+		  classes: 'qtip-dark qtip-shadow qtip-rounded'
+		  }
+
+
+	  });
+  } catch (err) {}
+
+
+			var jQuery = jQuery.noConflict();
+			jQuery("#dadosPreview").submit(function(e)
+			{
+				var postData = jQuery(this).serializeArray(); 
+				var formURL = jQuery(this).attr("action");
+				jQuery.ajax(
+				{
+					url : formURL,
+					type: "POST",
+					data : postData,
+					success: function(data, textStatus, jqXHR) { openProcessWithContent('3', jqXHR.responseText); },
+					/*
+					success:function(data, textStatus, jqXHR) {
+                        var tabnr = '3';
+                        parent.tabber(tabnr);
+                        var ctrl = sectionDiv + tabnr;
+                        var iframe =  document.getElementById(ctrl);
+                        if (iframe == null) iframe = parent.document.getElementById(ctrl);
+                        if (iframe != null) {
+						    var domdoc = iframe.contentDocument || iframe.contentWindow.document;
+						    domdoc.write(htmlContent);
+						    domdoc.close();
+						}
+                    },
+                    */
+					error: function(jqXHR, textStatus, errorThrown){openProcess($procFlowid, '$response.encodeURL($url_prefix,$uri)', 'flowid=$procFlowid&pid=$procPid&subpid=$procSubpid', false, 3);}
+				});
+			    e.preventDefault();	
+			});
+
+    	</script>
+		</body>
+
+</html>

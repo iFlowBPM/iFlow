@@ -1,0 +1,593 @@
+
+<style type="text/css">
+	ul.dropdown-menu li {
+		text-align: left;
+		padding-left: 10px;
+		padding-top:2px;
+		padding-bottom:2px;
+		height: 18px;	
+		padding-right:10px;
+	}
+	
+	ul.dropdown-menu li .btn-group {
+		padding-right:10px;
+	}
+
+	ul.topt-menu li {
+		padding-left:0px;
+		padding-right:0px;
+		padding-bottom: 25px;
+	}
+	ul.topt-menu li a {
+		text-decoration:none;
+		padding-left:10px;
+		padding-right:10px;
+		padding-
+	}
+	ul.topt-menu {
+		text-decoration:none;
+	}
+
+</style>
+
+	#if($layout==0)
+
+<input id="usersStr" type="hidden" value="$allUsers"></input>
+<input id="datesStr" type="hidden" value="$allDates"></input>
+
+	<div id ="view_proc_annotation_dashboard"></div>
+
+<div id="taskbar" class="slide02">
+
+	<div style=" border-bottom: 1px Solid #cccccc; padding: 5px 2px 5px 2px; text-align: left;">
+		<form style="display:inline">
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">$sort<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
+			<ul class="dropdown-menu" role="menu" style="width:250px; top:110px; left: 190px;">
+				<li class="form-group">
+					<label></label>
+					<button type="button" class="close pull-right" onclick="">&times;</button>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$process_number
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=pid&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=pid&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+					</span>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$previous_user
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=previousUserId&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=previousUserId&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$send_date
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=created&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=created&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$description
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=description&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=description&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+			</ul>  
+		</form>
+		<form style="display:inline" class="dropdown keep-open">
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">$filter<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
+			<ul class="dropdown-menu" role="menu" style="width:350px; top:20px; left: 0px;; padding-top: 10px">
+				<li class="form-group">
+					<label></label>
+					<button type="button" class="close pull-right" onclick="">&times;</button>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$select_flow
+					</label>
+					<select id="filterflowid" name="filterflowid" class="form-control donotclosemenu pull-right" style="width:150px;height:25px;font-size:0.8em;padding: 0 0 0 5px">
+						<option value="-1">$selectFlow</option>
+						$filterFlowOptions
+					</select>
+
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$previous_user
+					</label>
+					<input type="text" class="form-control donotclosemenu pull-right" id="previousUseridText" title="Utilizador Anterior" value="$filterPreviousUserid"
+							style="display: inline; width: 150px; height: 20px; padding: 0;">
+					</input>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$description
+					</label>
+					<input type="text" class="form-control donotclosemenu pull-right" id="filterSubject" title="Descrição" value="$filterSubject"
+							style="display: inline; width: 150px; height: 20px; padding: 0;">
+					</input>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$date_from
+					</label>
+					<span class="pull-right">
+						<input type="text" class="form-control donotclosemenu" id="dataCriacaoText" title="Data de"  value="$filterDate"
+								onmouseover="caltasks(this.id, '%d/%m/%Y');this.onmouseover=null;" style="display: inline; width: 150px; height: 20px; padding: 0;">
+						</input>
+						<!--img class="toolTipImg" border="0" title="Apagar" src="images/icon_delete.png" onClick="javascript: alert($jquery('dataCriacaoText').value)"-->
+					</span>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$date_to
+					</label>
+					<span class="pull-right">
+						<input type="text" class="form-control donotclosemenu" id="dataUltMovText" title="Data ate"  value="$filterLastMoveDate"
+								 onmouseover="caltasks(this.id, '%d/%m/%Y');this.onmouseover=null;" style="display: inline; width: 150px; height: 20px; padding: 0;">						
+						</input>
+						<!--img class="toolTipImg" border="0" title="Apagar" src="images/icon_delete.png" onClick="javascript: tabber_right(2, 'main_content.jsp', 'filterLastMoveDate='); return false; "-->
+					</span>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$process_number
+					</label>
+					<input type="text" class="form-control donotclosemenu pull-right" id="filterProcessNumber" title="$process_number" value="$filterProcessNumber"
+							style="display: inline; width: 150px; height: 20px; padding: 0;">
+					</input>
+				</li>
+				<li class="form-group">
+					<button id="layout1" type="button" class="btn btn-default btn-sm pull-right" onclick="javascript: tabber_right(2, 'main_content.jsp', 
+					 'filterLastMoveDate=' + document.getElementById('dataUltMovText').value
+					+'&filterProcessNumber=' + document.getElementById('filterProcessNumber').value
+					+'&filterDate=' + document.getElementById('dataCriacaoText').value
+					+'&filterSubject=' + document.getElementById('filterSubject').value
+					+'&filterPreviousUserid=' + document.getElementById('previousUseridText').value
+					+'&showflowid=' + document.getElementById('filterflowid').value					
+					); return false; ">Aplicar</button>
+					<button type="button" class="btn btn-default btn-sm pull-right" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1&startindex=0');">Limpar</button>
+				</li>
+				
+			</ul>  
+		</form>
+		<div class="btn-group">
+		<div> &nbsp;&nbsp; $preview
+			<button id="layout1" title="$preview_off" type="button" class="btn btn-default btn-sm" onclick="javascript:tabber_right(2, 'main_content.jsp', 'layout=1');">ON</button>
+		</div>
+		</div>
+
+
+		<form style="display:inline">
+			<div class="btn-group ">
+		#if($previousIndex != "-1")
+				<button type="button" class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$previousIndex');">&lt;</button> 
+		#else
+				<button type="button" disabled="disabled" class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$previousIndex');">&lt;</button>
+		#end
+		#if($nextIndex != "0")
+				<button type="button"  class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$nextIndex');">&gt;</button>
+		#else
+				<button type="button" disabled="disabled" class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$nextIndex');">&gt;</button>
+		#end
+			</div>
+		</form>
+		<div class="btn-group pull-right">
+			<div style="padding-top:10px;padding-right:4px;">$startTask - $endTask </div>
+		</div>
+		
+		#if(!$cleanFilter)
+				
+		<div style="height:30px;clear:both;padding-right: 10px;">
+			<div class="left" style="padding-top:10px;text-align:left;font-size:1em;color:#aaa;">
+				$filters $selectedFlow $selectedFolderName $selectedDate $selectedPreviousUser $selectedProcessNumber <button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1');">&times;</button>
+			</div>
+		</div>
+		#end
+		
+	</div>
+
+
+		#if($hasActivities)
+
+			#set($maxLen = 70)
+			#foreach($act in $newact)
+				#set($style_read="")
+				#set($display_read="")
+				#set($display_unread="")
+				#if($act.get("read") == 0)
+					#set($style_read="font-weight:bold;")
+					#set($display_unread="display:none")
+				#else
+					#set($style_read="color:#888888;")
+					#set($display_read="display:none")
+				#end
+				#set($valToAssign=$act.get("flowid")+"_"+$act.get("pid")+"_"+$act.get("subpid"))
+
+		<div id="ptc_$act.get("pid")" class="process activity" 
+			onclick='javascript:process_detail_new("user_proc_preview.jsp", "div_process_preview", $act.get("flowid"), $act.get("pid"), $act.get("subpid"), -4, "$act.get("uri")");changeColor(this);'
+			 style="$style_read">
+			<div id="cube_$act.get("pid")" class="cube draggable" valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
+				$act.get("pinitials") 
+			</div>
+			<!--<div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
+			$act.get("pinitials") 
+		</div>-->
+			<div class="left">
+				$act.get("pnumber")
+				#if($act.get("previousUserid") != "")
+				&nbsp;de:<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterPreviousUserid=$act.get("previousUserid")')">$act.get("previousUserid")</a>
+				
+				#end
+				<br/>
+				#set($descr = $act.get("desc"))
+				#if ($descr.length() > $maxLen)
+					<span id="span_short_$act.get("pnumber")">
+						$descr.substring(0, $maxLen)
+						<span style="color:blue" onClick="javascript:cancelMenu=true;document.getElementById('span_short_$act.get("pnumber")').style.display='none';document.getElementById('span_long_$act.get("pnumber")').style.display='inline';">&nbsp;...</span>
+					</span>
+					<span id="span_long_$act.get('pnumber')" style="display:none">
+						$descr
+						<span style="color:blue" onClick="javascript:cancelMenu=true;document.getElementById('span_short_$act.get("pnumber")').style.display='block';document.getElementById('span_long_$act.get("pnumber")').style.display='none';">&nbsp;[.]</span>
+					</span>
+				#else
+					$descr
+				#end
+			</div>
+			<div class="right">
+				<div>
+					<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterDate=$act.get("createdDate")&filterLastMoveDate=$act.get("createdDate")')">$act.get("createdDate")</a>
+				</div>
+				<div class="dropdown">
+					<div class="dropdown-toggle" data-toggle="dropdown" id="dropdownmenu_$act.get('pnumber')" data-toggle="dropdown" onClick="cancelMenu=true;"><img src="Themes/newflow/images/V.png"/></div>
+					<ul class="dropdown-menu topt-menu" role="menu" aria-labelledby="dropdownmenu_$act.get('pnumber')" style="top:10px;left:30px">
+						<li id="mread_$act.get("pid")" style="$display_read" role="presentation">
+							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(1, $act.get("flowid"), $act.get("pid"));return false;">$mark_read</a>
+						</li>
+						<li id="munread_$act.get("pid")" style="$display_unread" role="presentation">
+							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(0, $act.get("flowid"), $act.get("pid"));return false;">$mark_unread</a>
+						</li>
+						<li role="presentation"  style="text-transform: uppercase;">
+							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true; MarkCategory('$valToAssign', $act.get("pid"), '');return false;">
+								<div class="cube" style="background-color:#666;width:20px;height:20px">&nbsp;</div>
+								&nbsp;&nbsp;Retirar da categoria &nbsp;&nbsp;&nbsp;&nbsp;
+							</a>
+						</li>
+				#foreach($folder in $folders)
+					#set($folderName = $folder.getName())
+					#if($folderName.length() > 16)
+						#set($folderName=$folderName.substring(0, 13)+"...")
+					#end
+						<li role="presentation" style="text-transform: uppercase;">
+							<a role="menuitem" title="$folder.getName()" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;MarkCategory('$valToAssign', $act.get("pid"), $folder.getFolderid());return false;">
+								<div class="cube" style="background-color:$folder.getColor();width:20px;height:20px">&nbsp;</div>
+								&nbsp;&nbsp;$folderName
+							</a>
+						</li>
+				#end
+					</ul>
+				</div>	
+				<div style="text-align: center">
+					#if($act.get("delegated") == "1")
+			   			<img src="$response.encodeURL($url_prefix,'images/icon_delegations.png')" alt="$act.get("delegated_alt")"  />
+			 		#end
+			 		$act.get("task_annotation_icon") 
+				</div>
+			</div>
+		</div>
+	
+			#end
+
+		#else
+
+			#if($actsize <= 0 && $selectedFolder == 0 && $selectedLabel == 0 && $selectedDays==0)
+	
+	<div class="alert alert-info">${no_tasks}</div>
+	
+			#else
+	
+	<div class="alert alert-info">${no_tasks_filter}</div>
+	
+			#end
+
+		#end
+	
+</div>
+<div id="div_process_preview" class="content_template1">
+</div>
+	
+	#else
+<div id ="view_proc_annotation_dashboard"></div>	
+<div class="content_template3" style="width:100%">
+	<div class="process_t3" style=" border-bottom: 1px Solid #cccccc; padding: 5px 2px 5px 2px; height:40px;">
+		<form style="display:inline">
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">$sort<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
+			<ul class="dropdown-menu" role="menu" style="width:250px; top:110px; left: 190px;">
+				<li class="form-group">
+					<label></label>
+					<button type="button" class="close pull-right" onclick="">&times;</button>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$process_number
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=pid&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=pid&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+					</span>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$previous_user
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=previousUserId&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=previousUserId&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$send_date
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=created&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=created&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$description
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=description&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=description&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+			</ul>  
+		</form>
+		<form style="display:inline" class="dropdown keep-open">
+			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">$filter<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
+			<ul class="dropdown-menu" role="menu" style="width:350px; top:10px; left: 0px; margin-top:10px">
+				<li class="form-group">
+					<label></label>
+					<button type="button" class="close pull-right" onclick="">&times;</button>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$select_flow
+					</label>
+					<select id="filterflowid" name="filterflowid" class="form-control donotclosemenu pull-right" style="width:150px;height:25px;font-size:0.8em;padding: 0 0 0 5px">
+						<option value="-1">$selectFlow</option>
+						$filterFlowOptions
+					</select>
+
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$previous_user
+					</label>
+					<input type="text" class="form-control donotclosemenu pull-right" id="previousUseridText" title="Utilizador Anterior" value="$filterPreviousUserid"
+							style="display: inline; width: 150px; height: 20px; padding: 0;">
+					</input>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$description
+					</label>
+					<input type="text" class="form-control donotclosemenu pull-right" id="filterSubject" title="Descrição" value="$filterSubject"
+							style="display: inline; width: 150px; height: 20px; padding: 0;">
+					</input>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$date_from
+					</label>
+					<span class="pull-right">
+						<input type="text" class="form-control donotclosemenu" id="dataCriacaoText" title="Data de"  value="$filterDate"
+								onmouseover="caltasks(this.id, '%d/%m/%Y');this.onmouseover=null;" style="display: inline; width: 150px; height: 20px; padding: 0;">
+						</input>
+						<!--img class="toolTipImg" border="0" title="Apagar" src="images/icon_delete.png" onClick="javascript: tabber_right(2, 'main_content.jsp', 'filterDate='); return false;"-->
+					</span>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$date_to
+					</label>
+					<span class="pull-right">
+						<input type="text" class="form-control donotclosemenu" id="dataUltMovText" title="Data ate"  value="$filterLastMoveDate"
+								onmouseover="caltasks(this.id, '%d/%m/%Y');this.onmouseover=null;" style="display: inline; width: 150px; height: 20px; padding: 0;">						
+						</input>
+						<!--img class="toolTipImg" border="0" title="Apagar" src="images/icon_delete.png" onClick="javascript: tabber_right(2, 'main_content.jsp', 'filterLastMoveDate='); return false; "-->
+					</span>
+				</li>
+				<li class="form-group">
+					<label class="form-label">
+						$process_number
+					</label>
+					<input type="text" class="form-control donotclosemenu pull-right" id="filterProcessNumber" title="N processo" value="$filterProcessNumber"
+							style="display: inline; width: 150px; height: 20px; padding: 0;">
+					</input>
+				</li>
+				<li class="form-group">
+					<button id="layout1" type="button" class="btn btn-default btn-sm pull-right" onclick="javascript: tabber_right(2, 'main_content.jsp', 
+					 'filterLastMoveDate=' + document.getElementById('dataUltMovText').value
+					+'&filterProcessNumber=' + document.getElementById('filterProcessNumber').value
+					+'&filterDate=' + document.getElementById('dataCriacaoText').value
+					+'&filterSubject=' + document.getElementById('filterSubject').value
+					+'&filterPreviousUserid=' + document.getElementById('previousUseridText').value
+					+'&showflowid=' + document.getElementById('filterflowid').value					
+					); return false; ">$apply</button>
+					<button type="button" class="btn btn-default btn-sm pull-right" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1&startindex=0');">$clean</button>
+				</li>
+			</ul>
+		</form>
+		<div class="btn-group">
+		<div> &nbsp;&nbsp; $preview
+			<button id="layout0" title="$preview_on" type="button" class="btn btn-default btn-sm" onclick="javascript:tabber_right(2, 'main_content.jsp', 'layout=0');">OFF</button> 
+		</div>
+		</div>
+
+		<form style="display:inline">
+			<div class="btn-group">
+				
+		#if($previousIndex != "-1")
+				<button type="button" class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$previousIndex');">&lt;</button> 
+		#else
+				<button type="button" disabled="disabled" class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$previousIndex');">&lt;</button>
+		#end
+		#if($nextIndex != "0")
+				<button type="button"  class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$nextIndex');">&gt;</button>
+		#else
+				<button type="button" disabled="disabled" class="btn btn-default btn-sm" onClick="javascript:tabber_right(2, 'main_content.jsp', 'startindex=$nextIndex');">&gt;</button>
+		#end
+			</div>
+
+		</form>
+		<div class="btn-group">
+<div>$startTask - $endTask</div>
+		</div>		
+
+	</div>
+
+				#if(!$cleanFilter)
+				
+		<div class="process_t3" style=" border-bottom: 1px Solid #cccccc; padding: 0 2px 5px 2px;height:30px;">
+		<div style="height:30px;margin-bottom:20px;padding-right: 10px;">
+			<div class="left" style="padding-top:10px;text-align:left;font-size:1em;color:#aaa;width:200px;">
+				$filters $selectedFlow $selectedFolderName $selectedDate $selectedPreviousUser $selectedProcessNumber <button type="button" class="close" data-dismiss="alert" aria-hidden="true" onclick="javascript:tabber_right(2, 'main_content.jsp', 'cleanFilter=1');">&times;</button>
+			</div>
+		</div>
+		</div>
+		#end
+
+
+		#if($hasActivities)
+
+	<div  class="process_t3">
+		<div class="pr01" style="text-align: left;width:40px;font-weight:bold"></div>
+		<div class="pr01" style="text-align: left;width:15%;font-weight:bold">$process_number</div>
+		<div class="pr02" style="text-align: left;width:10%;font-weight:bold">$previous_user</div>
+		<div class="pr04" style="text-align: left;width:40%; font-weight:bold">$description</div>
+		<div class="pr05" style="text-align: left;width:6%; font-weight:bold"></div>
+		<div class="pr06" style="text-align: left;width:10%; font-weight:bold">$pending_for</div>
+		<div class="pr07" style="text-align: left;width:10%;font-weight:bold">$send_date</div>
+	</div>
+
+	#set($maxLen = 70)
+	#foreach($act in $newact)
+				#set($style_read="")
+				#set($display_read="")
+				#set($display_unread="")
+				#if($act.get("read") == 0)
+					#set($style_read="font-weight:bold;")
+					#set($display_unread="display:none")
+				#else
+					#set($style_read="color:#888888;")
+					#set($display_read="display:none")
+				#end
+				#set($valToAssign=$act.get("flowid")+"_"+$act.get("pid")+"_"+$act.get("subpid"))
+
+	<div id="pte_$act.get("pid")" class="process_t3" onclick="javascript:changeColor(this); openProcess($act.get("flowid"), '$response.encodeURL($url_prefix, $act.get("uri"))', 'flowid=$act.get("flowid")&pid=$act.get("pid")&subpid=$act.get("subpid")', false, 3);"
+		style="$style_read;">
+		<div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
+			$act.get("pinitials") 
+		</div>
+		<!-- <div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
+			$act.get("pinitials") 
+		</div>-->
+		<div class="pr01" style="width:15%">$act.get("pnumber") </div>
+		<div class="pr02" style="width:10%">
+			<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterPreviousUserid=$act.get("previousUserid")')">$act.get("previousUserid")</a>
+		</div>
+		<div class="pr04" style="width:40%">
+				#set($descr = $act.get("desc"))
+				#if ($descr.length() > $maxLen)
+					<span id="span_short_$act.get("pnumber")">
+						$descr.substring(0, $maxLen)
+						<span style="color:blue" onClick="javascript:cancelMenu=true;document.getElementById('span_short_$act.get("pnumber")').style.display='none';document.getElementById('span_long_$act.get("pnumber")').style.display='inline';">&nbsp;...</span>
+					</span>
+					<span id="span_long_$act.get('pnumber')" style="display:none">
+						$descr
+						<span style="color:blue" onClick="javascript:cancelMenu=true;document.getElementById('span_short_$act.get("pnumber")').style.display='block';document.getElementById('span_long_$act.get("pnumber")').style.display='none';">&nbsp;[.]</span>
+					</span>
+				#else
+					$descr
+				#end
+		</div>
+		<div class="pr05" style="text-align: left;width:6%; font-weight:bold"></div>
+		<div  class="pr06" style="width:10%;"><div>$act.get("duration")</div>
+		<!--div style="height:2px;width:$act.get("diffDays")px;background-color:$act.get("durationColor")"></div-->
+		</div>
+		<div class="pr07" style="width:10%;">
+			<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterDate=$act.get("createdDate")&filterLastMoveDate=$act.get("createdDate")')">$act.get("createdDate")</a>
+			<br>
+			<div class="dropdown">
+				<div class="dropdown-toggle" style="text-align:right;margin-right:40px" id="dropdownmenu_$act.get('pnumber')" data-toggle="dropdown" onClick="cancelMenu=true;"><img src="Themes/newflow/images/V.png"/></div>
+				<ul class="dropdown-menu topt-menu" role="menu" aria-labelledby="dropdownmenu_$act.get('pnumber')" style="top:10px;left:-72px">
+					<li id="mread_$act.get("pid")" style="$display_read" role="presentation">
+						<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(1, $act.get("flowid"), $act.get("pid"));return false;">$mark_read</a>
+					</li>
+					<li id="munread_$act.get("pid")" style="$display_unread" role="presentation">
+						<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;markActivityRead(0, $act.get("flowid"), $act.get("pid"));return false;">$mark_unread</a>
+					</li>
+						<li role="presentation"  style="text-transform: uppercase;">
+							<a role="menuitem" tabindex="-1" href="#" onClick="javascript:cancelMenu=true; MarkCategory('$valToAssign', $act.get("pid"), '');return false;">
+								<div class="cube" style="background-color:#666;width:20px;height:20px">&nbsp;</div>
+								&nbsp;&nbsp;Retirar da categoria &nbsp;&nbsp;&nbsp;&nbsp;
+							</a>
+						</li>
+				#foreach($folder in $folders)
+					#set($folderName = $folder.getName())
+					#if($folderName.length() > 16)
+						#set($folderName=$folderName.substring(0, 13)+"...")
+					#end
+						<li role="presentation" style="text-transform: uppercase;">
+							<a role="menuitem" title="$folder.getName()" tabindex="-1" href="#" onClick="javascript:cancelMenu=true;MarkCategory('$valToAssign', $act.get("pid"), $folder.getFolderid());return false;">
+								<div class="cube" style="background-color:$folder.getColor();width:20px;height:20px">&nbsp;</div>
+								&nbsp;&nbsp;$folderName
+							</a>
+						</li>
+				#end
+				</ul>
+			</div>	
+			<div style="text-align: center" onclick="event.cancelBubble = true; if(event.stopPropagation) { event.stopPropagation(); }">
+				#if($act.get("delegated") == "1")
+		   			<img src="$response.encodeURL($url_prefix,'images/icon_delegations.png')" alt="$act.get("delegated_alt")" />
+				#end
+				$act.get("task_annotation_icon") 
+			</div>
+		</div>
+	</div>
+	
+			#end
+
+		#else
+
+			#if($actsize <= 0 && $selectedFolder == 0 && $selectedLabel == 0 && $selectedDays==0)
+	
+	<div class="alert alert-info">${no_tasks}</div>
+	
+			#else
+	
+	<div class="alert alert-info">${no_tasks_filter}</div>
+	
+			#end
+
+		#end
+
+</div>
+	
+	#end

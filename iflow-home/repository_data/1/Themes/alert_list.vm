@@ -1,0 +1,60 @@
+#if("$Tab12" != "no")
+<h1>$notes_title</h1>
+	#if($notifications.size()> 0)
+		#set($msg_display="")
+		#set($msg_empty_display="none")
+	#else
+		#set($msg_display="none")
+		#set($msg_empty_display="")
+	#end
+	
+	
+<div class="table_inc" id="msg_table" style="display:$msg_display">
+	<div class="alert alert-info">$notificationsMsg</div>
+	<table class="item_list process">
+		<tr class="tab_header">
+			<td></td>
+			<td>$notes_from/$notes_date</td>
+			<td>$notes_message<br>$notificationtitle</td>			
+		</tr>
+	#set($odd=1)
+	#foreach($note in $notifications)
+		#if($odd == 0)
+			#set($class_type="even")
+			#set($odd=1)
+		#else
+			#set($class_type="odd")
+			#set($odd=0)
+		#end
+		<tr class="tab_row_$class_type" id='msg_tr_$note.get("id")'>
+			<td class="itemlist_icon">
+				<a href="javascript: document.getElementById('delegButtonCount').text= document.getElementById('delegButtonCount').text-1; if(document.getElementById('delegButtonCount').text<'0') document.getElementById('delegButtonCount').text=0; markNotification($note.get("id"), 'M');">
+					<img class="toolTipImg" src="images/icon_unread.png" id="msg_img_$note.get("id")"width="16" height="16" border="0" title="$notes_tooltip">
+				</a>
+			</td>
+			<td>
+				$note.get("from")<br>/$note.get("date")
+				#if($note.get("link")!="false")				
+					<br><a href="javascript:process_detail($note.get("link"));"> $notificationitem </a>						
+				#end
+			</td>
+			<td>$note.get("message")</td>					
+		</tr>
+	#end
+	</table>
+	
+</div>
+<div id="msg_empty_div" style="display:$msg_empty_display">
+	<div class="info_msg alert alert-info small">
+		${notes_empty}. <br/><a class="toolTipImg" style="color:#666;" href="javascript:tabber('inbox','','',inboxJSP,'ts=$ts');" title="$tooltip_inbox">$notes_empty_link_text</a>.
+	</div>
+</div>
+#end
+
+	
+	<div id="msg_empty_div" style="display:$msg_empty_display">
+		<div class="info_msg alert alert-info small">
+			${no_delegs}.<br/><a class="toolTipImg" style="color:#666;" href="javascript:tabber(5, gestaoTarefasNavJSP, '', gestaoTarefasJSP, 'ts=$ts');" title="$tooltip_delegs">$no_delegs_link_text</a>.
+		</div>
+	</div>
+
