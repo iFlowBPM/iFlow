@@ -109,4 +109,17 @@ public class FileValidationUtils {
 			return false;
 		return true;
     }
+
+
+	public static Integer retrieveCriticalLevelBDP(String code, Connection connection, UserInfoInterface userInfo) {
+		try {
+			HashMap<String,Object> values = fillAtributtes(null, connection, userInfo,
+					"select * from u_bdp_erros where id = ''{0}'' ", new Object[] { code });
+			
+			return (Integer) values.get("criticidade");
+		} catch (SQLException e) {
+			Logger.error(userInfo.getUtilizador(), null, "retrieveCriticalLevelBDP","caught exception: " + e.getMessage(), e);
+		}
+		return null;
+	}
 }

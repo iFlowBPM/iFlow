@@ -6,14 +6,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+
+import javax.xml.rpc.ServiceException;
+import javax.xml.soap.SOAPException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -346,7 +352,8 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 					// insert docId
 					FileImportUtils.insertSimpleLine(connection, userInfo,
 							"insert into docId(tpDoc,numDoc,paisEmissao,dtEmissao,dtValidade,infEnt_id) values(?,?,?,?,?,?)",
-							new Object[] { tpDoc,numDoc,paisEmissao,dtEmissao,dtValidade, infEnt_id });
+							new Object[] { tpDoc,numDoc,paisEmissao,dtEmissao,dtValidade, infEnt_id },
+							new Integer[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.DATE, Types.DATE, Types.INTEGER});
 					
 					//dadosEntt2
 					Integer morada_id = FileImportUtils.insertSimpleLine(connection, userInfo,

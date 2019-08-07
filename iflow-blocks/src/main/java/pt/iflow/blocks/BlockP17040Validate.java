@@ -43,6 +43,7 @@ public abstract class BlockP17040Validate extends Block {
 	private static final String OUTPUT_ERROR_VALUE = "outputErrorValue";
 	private static final String OUTPUT_ERROR_DESCRIPTION = "outputErrorDescription";
 	private static final String OUTPUT_ERROR_DOCUMENT = "outputErrorDocument";
+	private static final String OUTPUT_ERROR_CRITICAL = "outputErrorCritical" ; 
 
 	public BlockP17040Validate(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
@@ -83,6 +84,7 @@ public abstract class BlockP17040Validate extends Block {
 	 * @return the port to go to the next block
 	 */
 	public Port after(UserInfoInterface userInfo, ProcessData procData) {
+		Block block = BeanFactory.getFlowBean().getBlockById(userInfo, procData.getProcessHeader(), 15);
 		Port outPort = portSuccess;
 		String login = userInfo.getUtilizador();
 		StringBuffer logMsg = new StringBuffer();
@@ -99,6 +101,7 @@ public abstract class BlockP17040Validate extends Block {
 		String outputErrorValueVar=this.getAttribute(OUTPUT_ERROR_VALUE); 
 		String outputErrorDescVar=this.getAttribute(OUTPUT_ERROR_DESCRIPTION); 
 		String sOutputErrorDocumentVar = this.getAttribute(OUTPUT_ERROR_DOCUMENT);
+		String outputErrorCriticalVar = this.getAttribute(OUTPUT_ERROR_CRITICAL);
 		
 		if (StringUtilities.isEmpty(outputErrorCodeVar) || 
 				StringUtilities.isEmpty(outputErrorTableVar) || 
@@ -107,7 +110,9 @@ public abstract class BlockP17040Validate extends Block {
 				StringUtilities.isEmpty(outputErrorDescVar) ||
 				StringUtilities.isEmpty(outputErrorIdBdpVar) ||
 				StringUtilities.isEmpty(outputErrorIdVar) || 
-				StringUtilities.isEmpty(sOutputErrorDocumentVar)) {
+				StringUtilities.isEmpty(sOutputErrorDocumentVar) 
+//				||StringUtilities.isEmpty(outputErrorCriticalVar)
+				) {
 			Logger.error(login, this, "after", procData.getSignature() + "empty value for return lists");
 			outPort = portError;
 		} 			
@@ -142,6 +147,7 @@ public abstract class BlockP17040Validate extends Block {
 			procData.getList(outputErrorDescVar).clear();			
 			procData.getList(outputErrorIdBdpVar).clear();
 			procData.getList(outputErrorIdVar).clear();
+//			procData.getList(outputErrorCriticalVar).clear();
 			for(ValidationError error: result){
 				procData.getList(outputErrorCodeVar).parseAndAddNewItem(error.getCode());
 				procData.getList(outputErrorTableVar).parseAndAddNewItem(error.getTable());
@@ -150,6 +156,7 @@ public abstract class BlockP17040Validate extends Block {
 				procData.getList(outputErrorValueVar).parseAndAddNewItem(error.getValueFormatted());
 				procData.getList(outputErrorDescVar).parseAndAddNewItem(FileValidationUtils.retrieveErrorBDPDescription(error.getCode(), connection, userInfo));
 				procData.getList(outputErrorIdVar).addNewItem(error.getId());
+//				procData.getList(outputErrorCriticalVar).addNewItem(FileValidationUtils.retrieveCriticalLevelBDP(error.getCode(), connection, userInfo));
 			}
 			
 			//determine original file

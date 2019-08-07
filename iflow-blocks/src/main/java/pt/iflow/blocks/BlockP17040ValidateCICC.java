@@ -64,8 +64,8 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 				if(dtRef==null)
 					result.add(new ValidationError("CC001", "infCompC", "dtRef", idCont, infCompC_id, dtRef));
 				else
-					//CC002
 					if(dtRef.after(new Date()))
+						//CC002
 						result.add(new ValidationError("CC002", "infCompC", "dtRef", idCont, infCompC_id, dtRef));
 				
 				

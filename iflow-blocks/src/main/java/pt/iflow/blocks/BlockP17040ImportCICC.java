@@ -86,7 +86,19 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 				ImportAction actionOnLine = GestaoCrc.checkinfCompC(dtRef, idCont, idInst,
 						userInfo.getUtilizador(), connection);
 				if (actionOnLine == null)
-					continue;				
+					continue;		
+				
+				//check if UPDATE has actual changed values				
+				if(actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
+					HashMap<String,Object> keysToIdentify = new HashMap<>();
+					ArrayList<String> keysToRemove = new ArrayList<>();
+					keysToIdentify.put("idCont", idCont);
+					keysToIdentify.put("idInst", idInst);
+					keysToIdentify.put("idEnt", idEnt);
+					keysToRemove.add("dtRef");
+					if(!GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove))
+						continue;
+				}
 				
 				// adicionar acçao
 				String type = actionOnLine.getAction().equals(ImportAction.ImportActionType.CREATE) ? "CCI" : "CCU";

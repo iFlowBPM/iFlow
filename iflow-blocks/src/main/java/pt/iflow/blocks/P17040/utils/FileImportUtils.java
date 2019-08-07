@@ -151,6 +151,11 @@ public class FileImportUtils {
 	
 	public static Integer insertSimpleLine(Connection connection, UserInfoInterface userInfo, String query,
 			Object[] parameters) throws SQLException {
+		return insertSimpleLine(connection, userInfo, query, parameters, null);
+	}
+	
+	public static Integer insertSimpleLine(Connection connection, UserInfoInterface userInfo, String query,
+			Object[] parameters, Integer[] types) throws SQLException {
 		Connection db = null;
 		PreparedStatement pst = null;
 		ResultSet rs = null;
@@ -161,7 +166,10 @@ public class FileImportUtils {
 			filledQuery = MessageFormat.format(query, parameters);
 			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			for (int i = 0; i < parameters.length; i++)
-				pst.setObject((i + 1), parameters[i]);
+				if(types!=null && parameters.length==types.length)
+					pst.setObject((i + 1), parameters[i], types[i]);
+				else
+					pst.setObject((i + 1), parameters[i]);
 			pst.executeUpdate();
 			rs = pst.getGeneratedKeys();
 

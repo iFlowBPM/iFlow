@@ -414,13 +414,15 @@ public class GestaoCrc {
 		ResultSet rs = null;
 		try {
 			String query = "select u_gestao.id, comRiscoEnt.dtRef, idEnt.id "+
-				"from u_gestao, crc, conteudo, comRiscoEnt, riscoEnt, idEnt "+
+				"from u_gestao, crc, conteudo, comRiscoEnt, riscoEnt, idEnt, infRiscoEnt "+
 				"where u_gestao.out_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
 				"    conteudo.id = comRiscoEnt.conteudo_id and "+
 				"    comRiscoEnt.id = riscoEnt.comRiscoEnt_id and "+
 				"    riscoEnt.idEnt_id = idEnt.id and "+
+				"    riscoEnt.id = infRiscoEnt.riscoEnt_id and "+
 				"    u_gestao.status_id= 4  and "+
+				"    (infRiscoEnt.type='ERI' or infRiscoEnt.type='ERU') and " +
 				"    comRiscoEnt.dtRef = ?  and "+
 				"	((idEnt.nif_nipc = ? and idEnt.type='i1') or (idEnt.codigo_fonte = ? and idEnt.type='i2')) "+
 				"    order by u_gestao.receivedate desc;";
@@ -577,7 +579,7 @@ public class GestaoCrc {
 			pst.close();
 			rs.close();
 			
-			query = "select fichAce.id "+
+			query = "select fichAce.id, u_gestao.id "+
 				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
 				"where  u_gestao.in_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
@@ -744,7 +746,7 @@ public class GestaoCrc {
 			pst.close();
 			rs.close();
 			
-			query = "select fichAce.id "+
+			query = "select fichAce.id, u_gestao.id "+
 				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
 				"where  u_gestao.in_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
@@ -754,7 +756,7 @@ public class GestaoCrc {
 				"   fichAce.id not in  "+
 				"		( select regMsg.fichAce_id from regMsg, msg "+
 				"			where regMsg.idCont = ? and regMsg.idInst = ? "+
-				"			and  msg.nvCrit=0 " +
+				"			and (msg.nvCrit=0 or msg.codMsg!='CC003')" +	
 				"           and (operOrig='CCI' or operOrig='CCU')); ";
 			
 			pst = connection.prepareStatement(query);

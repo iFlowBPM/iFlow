@@ -44,7 +44,7 @@ public class BlockP17040GenerateCPRT extends BlockP17040Generate {
 					"select * from infProt where id = {0} ", new Object[] { infProtId });
 
 			// idEnt
-			HashMap<String, Object> idEntValue = FileGeneratorUtils.fillAtributtesIdEnt(null, connection, userInfo, infProtValues.get("idEnt_id") );
+			HashMap idEntValue = FileGeneratorUtils.fillAtributtesIdEnt(null, connection, userInfo, infProtValues.get("idEnt_id") );
 			if(!idEntValue.isEmpty()){
 				writer.writeStartElement("idEnt");
 				FileGeneratorUtils.fillAtributtesIdEnt(writer, connection, userInfo, infProtValues.get("idEnt_id") );
