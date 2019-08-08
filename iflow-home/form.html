@@ -13,11 +13,8 @@
 <link type="text/css" rel="stylesheet" href="/iFlow//javascript/bootstrap/css/bootstrap.css">
 <link type="text/css" rel="stylesheet" href="/iFlow//javascript/sexy-combo/css/sexy-combo.css">
 <link type="text/css" rel="stylesheet" href="/iFlow//javascript/sexy-combo/css/sexy/sexy.css">
-<script src="/iFlow//javascript/yahoo/yahoo-dom-event/yahoo-dom-event.js" type="text/javascript"></script><script src="/iFlow//javascript/yahoo/dragdrop/dragdrop-min.js" type="text/javascript"></script><script src="/iFlow//javascript/yahoo/container/container-min.js" type="text/javascript"></script><script src="/iFlow//javascript/ajax_processing.js" type="text/javascript"></script><script src="/iFlow//javascript/tabs.js" type="text/javascript"></script><script src="/iFlow//javascript/iflow_main.js" type="text/javascript"></script><script src="/iFlow//javascript/calendar/calendar.js" type="text/javascript"></script><script src="/iFlow//javascript/calendar/lang/calendar-pt.js" type="text/javascript"></script><script src="/iFlow//javascript/calendar/calendar-setup.js" type="text/javascript"></script><script src="/iFlow//javascript/mootools.js" type="text/javascript"></script><script src="/iFlow//javascript/FormFunctions.js" type="text/javascript"></script><script src="/iFlow//javascript/Stickman.MultiUpload.js" type="text/javascript"></script><script src="/iFlow//Themes/newflow/javascript/theme.js" type="text/javascript"></script><script src="/iFlow//javascript/jquery-1.10.2.js"></script><script src="/iFlow//javascript/jquery-ui.js"></script><script src="/iFlow//javascript/sorttable.js" type="text/javascript"></script><script src="/iFlow//javascript/yahoo/element/element-min.js" type="text/javascript"></script><script src="/iFlow//javascript/yahoo/editor/editor.js" type="text/javascript"></script><script src="/iFlow//javascript/yahoo/editor/CleanPaste.js" type="text/javascript"></script><script src="/iFlow//javascript/quicksearch.js" type="text/javascript"></script><script src="/iFlow//javascript/sexy-combo/jquery.sexy-combo.js" type="text/javascript"></script><script src="/iFlow//javascript/ckeditor/ckeditor.js" type="text/javascript"></script><script src="/iFlow//javascript/ckeditor/adapters/jquery.js" type="text/javascript"></script><script src="/iFlow//javascript/applet_functions.js" type="text/javascript"></script><script src="/iFlow//javascript/jquery.stickytableheaders.js" type="text/javascript"></script><script type="text/javascript">
+<script src="/iFlow//javascript/yahoo/yahoo-dom-event/yahoo-dom-event.js" type="text/javascript"></script><script src="/iFlow//javascript/yahoo/dragdrop/dragdrop-min.js" type="text/javascript"></script><script src="/iFlow//javascript/yahoo/container/container-min.js" type="text/javascript"></script><script src="/iFlow//javascript/ajax_processing.js" type="text/javascript"></script><script src="/iFlow//javascript/tabs.js" type="text/javascript"></script><script src="/iFlow//javascript/iflow_main.js" type="text/javascript"></script><script src="/iFlow//javascript/calendar/calendar.js" type="text/javascript"></script><script src="/iFlow//javascript/calendar/lang/calendar-en.js" type="text/javascript"></script><script src="/iFlow//javascript/calendar/calendar-setup.js" type="text/javascript"></script><script src="/iFlow//javascript/mootools.js" type="text/javascript"></script><script src="/iFlow//javascript/FormFunctions.js" type="text/javascript"></script><script src="/iFlow//javascript/Stickman.MultiUpload.js" type="text/javascript"></script><script src="/iFlow//Themes/newflow/javascript/theme.js" type="text/javascript"></script><script src="/iFlow//javascript/jquery-1.10.2.js"></script><script src="/iFlow//javascript/jquery-ui.js"></script><script src="/iFlow//javascript/sorttable.js" type="text/javascript"></script><script src="/iFlow//javascript/yahoo/element/element-min.js" type="text/javascript"></script><script src="/iFlow//javascript/yahoo/editor/editor.js" type="text/javascript"></script><script src="/iFlow//javascript/yahoo/editor/CleanPaste.js" type="text/javascript"></script><script src="/iFlow//javascript/quicksearch.js" type="text/javascript"></script><script src="/iFlow//javascript/sexy-combo/jquery.sexy-combo.js" type="text/javascript"></script><script src="/iFlow//javascript/ckeditor/ckeditor.js" type="text/javascript"></script><script src="/iFlow//javascript/ckeditor/adapters/jquery.js" type="text/javascript"></script><script src="/iFlow//javascript/applet_functions.js" type="text/javascript"></script><script src="/iFlow//javascript/jquery.stickytableheaders.js" type="text/javascript"></script><script type="text/javascript">
 					window.addEvent('domready', getAppletElem);
-					function alertbutton() {
-					//alert("Por favor utilize os botões disponíveis");
-					}
 				</script>
 <style type="text/css">
 					html {
@@ -254,7 +251,7 @@
 					empty-cells:
 					show;
 					width: 100%;
-					/*margin-top: 10px;*/
+					margin-top: 10px;
 					font-size: 12px;
 					}
 
@@ -357,7 +354,7 @@
 
 					li.field {
 					margin: 2px 0;
-					text-align: right;
+					text-align: initial;
 					clear: both;
 					min-height:
 					1.3em;
@@ -664,9 +661,6 @@
 
 					}
 
-					.noshow {
-					visibility: hidden;}
-
 					.viewer-responsive{
 					overflow:hidden;
 					padding-bottom:56.25%;
@@ -682,66 +676,16 @@
 					}
 
 				</style>
-<style type="text/css">
-					
-					.scrollableContainer {
-					width: 100%;
-					overflow: auto;
-					margin: 1rem auto;
-					}
-
-					.scrollableContainer {
-					max-height:300px;
-					height:auto;
-					}
-
-					.scrollableContainer {
-					height: expression((this.scrollHeight > 429 || this.scrollHeight == 0) ?
-					'430px' : 'auto');
-					}
-
-					.scrollableTable {
-					width: 99%;
-					}
-
-
-					.scrollableTable>tbody {
-
-					overflow-x:hidden;
-					overflow-y:auto;
-					}
-
-					.scrollableTable thead tr {
-					position:relative;
-					top: expression(offsetParent.scrollTop);
-					}
-
-					.scrollableTable td:last-child {
-					padding-right: 20px;
-					}
-
-					.noshow {
-					visibility: hidden;
-					}
-
-				</style>
 </head>
 <body onload="reloadBootstrapElements(); initProcFrame();">
 <div style="margin:auto;">
 <form enctype="multipart/form-data" method="post" name="dados" style="width: 100%;margin:auto;" id="dados" action="form.jsp">
-<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="4"> <input type="hidden" name="op" id="op" value="0"> <input type="hidden" name="0_MAX_ROW" id="0_MAX_ROW" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="subpid" id="subpid" value="-10"> <input type="hidden" name="pid" id="pid" value="-10"> <input type="hidden" name="_changed_form" id="_changed_form" value="_changed_form"> <input type="hidden" name="flowid" id="flowid" value="214"> <input type="hidden" name="curmid" id="curmid" value="0"> 
+<input type="hidden" name="_button_clicked_id" id="_button_clicked_id" value="null"> <input type="hidden" name="op" id="op" value="0"> <input type="hidden" name="_serv_field_" id="_serv_field_" value="-1"> <input type="hidden" name="flowExecType" id="flowExecType" value=""> <input type="hidden" name="subpid" id="subpid" value="-10"> <input type="hidden" name="pid" id="pid" value="-10"> <input type="hidden" name="_changed_form" id="_changed_form" value="null"> <input type="hidden" name="flowid" id="flowid" value="132"> <input type="hidden" name="curmid" id="curmid" value="0"> 
 <div id="main">
+<div class="blockdivision"></div>
 <div class="blockdivision">
-<div class="columndivision">
-<ol class="fieldlist">
-<li class="info_msg field" id="N1000A" style="">Success , after all blocks</li>
-</ol>
-</div>
-</div>
-<div style="margin-top:10rem" class="blockdivision">
 <div class="columndivision columnholder">
-<div class="submit">
-<input title="NoOp" onclick="alertbutton();return false;" value="NoOp" name="_noop" align="center" valign="center" class="noshow" type="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_repor" value="Repor" onClick="disableForm(); document.dados.op.value=0;" title="Repor">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_guardar" value="Guardar" onClick="disableForm(); document.dados.op.value=2;" title="Guardar">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_avancar" value="Avan&ccedil;ar" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='4'; } else { return false; }" title="Avan&ccedil;ar">&nbsp;</div>
+<div class="submit">&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_repor" value="Repor" onClick="disableForm(); document.dados.op.value=0;" title="Repor">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_guardar" value="Guardar" onClick="disableForm(); document.dados.op.value=2;" title="Guardar">&nbsp;&nbsp;<input type="submit" class="button btn btn-default" valign="center" align="center" name="_avancar" value="Avan&ccedil;ar" onClick="if (CheckEmptyFields()) { disableForm(); document.dados.op.value='3'; document.getElementById('_button_clicked_id').value='4'; } else { return false; }" title="Avan&ccedil;ar">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -750,17 +694,17 @@
 <div style="text-align:center;width:99%;height:99%;position:absolute;left:0;top:0;z-index:99;display:none" id="_formLoadingDiv">
 <div class="loadingDivContainer">
 <div class="loadingDivInfo">
-<p>A processar...</p>
+<p>Processing...</p>
 <img src="/iFlow//images/loading.gif"></div>
 </div>
 </div>
 <script type="text/javascript">
 					window.parent.onresize = function(event) {
-					initProcFrame();};
-				</script><script type="text/javascript">
-					$jQuery(document).ready(function () {
+					initProcFrame();};					
+				</script><script type="text/javascript">			
+				$jQuery(document).ready(function () {
 					$jQuery("table").stickyTableHeaders();
-					});
+				});				
 				</script>
 </body>
 </html>
