@@ -47,10 +47,10 @@ public class Index {
 			Logger.adminDebug("ADMIN", "search", querystr);
 			ArrayList<ProcessHeader> result = new ArrayList<>();
 			Analyzer analyzer = IndexFactory.getInstance().doGetAnalyzer();
-			Query q = new QueryParser(Version.LUCENE_45, FULL_PROC_INFO, analyzer).parse(querystr);		
+			Query q = new QueryParser(FULL_PROC_INFO, analyzer).parse(querystr);		
 			IndexReader reader = IndexFactory.getInstance().doGetIndexReader();
 			IndexSearcher searcher = new IndexSearcher(reader);
-			TopScoreDocCollector collector = TopScoreDocCollector.create(500, true);
+			TopScoreDocCollector collector = TopScoreDocCollector.create(500);
 			searcher.search(q, collector);
 			ScoreDoc[] hits = collector.topDocs().scoreDocs;
 			

@@ -9,9 +9,10 @@ import java.util.ListIterator;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.IndexableField;
 import org.apache.tika.exception.TikaException;
 import org.xml.sax.SAXException;
 
@@ -42,9 +43,9 @@ public class ProcessInformationCompounder {
 		startCoumpounding = new Date();
 		Logger.adminDebug("ADMIN", "ProcessInformationCompounder", procData.getSignature() + " start at" + startCoumpounding);
 		document = new Document();
-		document.add(new IntField(FID, procData.getFlowId(), Field.Store.YES));
-		document.add(new IntField(PID, procData.getPid(), Field.Store.YES));
-		document.add(new IntField(SUBPID, procData.getSubPid(), Field.Store.YES));	
+		document.add(new IntPoint(FID,procData.getFlowId()));
+		document.add(new IntPoint(PID, procData.getPid()));
+		document.add(new IntPoint(SUBPID, procData.getSubPid()));	
 		document.add(new StringField(FID_PID_SUBPID, Index.createProcessTerm(procData), Field.Store.YES));
 		fullProcInfo = new StringBuffer();
 		coumpoundSimpleVariables(procData);

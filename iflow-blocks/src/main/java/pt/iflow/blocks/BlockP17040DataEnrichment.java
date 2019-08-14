@@ -114,7 +114,7 @@ public class BlockP17040DataEnrichment extends Block {
 					new Object[] { comEnt_id, ceraComEntIdList.get(0) });
 				
 				HashMap<String, Object> u_gestaoValues = fillAtributtes(null, connection, userInfo,
-						"select * from u_gestao where id = {0} ", new Object[] {ceraCrcId});
+						"select * from u_gestao where out_id = {0} ", new Object[] {ceraCrcId});
 				
 				GestaoCrc.markAsImported(centCrcId, (Integer)u_gestaoValues.get("original_docid"), null, null, userInfo.getUtilizador(), connection);
 				procData.set(this.getAttribute(CENT_CRC_ID), centCrcId);

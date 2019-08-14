@@ -29,8 +29,8 @@ public class IndexFactory {
 	      try {
 	    	//TODO add extra constructor configuration if eventually needed   
 	        instance = new IndexFactory();
-	        directory = new NIOFSDirectory(new File(Const.IFLOW_HOME + File.separator + LUCENEDIR));
-	        analyzer = new StandardAnalyzer(Version.LUCENE_45);
+	        directory = null;//new NIOFSDirectory(new File(Const.IFLOW_HOME + File.separator + LUCENEDIR));
+	        analyzer = new StandardAnalyzer();
 	        	         	        
 	      } catch (Exception e) {
 	        Logger.error(null, IndexFactory.class, "getInstance", "Error creating IndexerFactory instance", e);
@@ -51,7 +51,7 @@ public class IndexFactory {
 	protected IndexWriter doGetIndexWriter() throws IOException {		
 		if (indexWriter!=null)
 			indexWriter.close();
-		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_45,analyzer);
+		IndexWriterConfig config = new IndexWriterConfig(analyzer);
         indexWriter = new IndexWriter(directory, config);
 		return indexWriter;		
 	  }
@@ -59,7 +59,7 @@ public class IndexFactory {
 	protected IndexReader doGetIndexReader() throws IOException {		
 		if (indexReader!=null)
 			indexReader.close();
-		indexReader = IndexReader.open(doGetDirectory());
+		indexReader = null;//IndexReader.open(doGetDirectory());
 		return indexReader;		
 	  }
 }
