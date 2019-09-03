@@ -2,7 +2,7 @@ package pt.iflow.utils;
 
 import java.util.Calendar;
 
-import org.codehaus.plexus.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import pt.iflow.api.core.AuthProfile;
 import pt.iflow.api.core.BeanFactory;

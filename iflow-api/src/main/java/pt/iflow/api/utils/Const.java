@@ -211,6 +211,11 @@ public class Const {
 	public static final String sSHOW_SCHED_USERS_DESC = "Mostra utilizador(es) para quem foi agendado processo";
 	public static final String sSHOW_YES = "Sim";
 	public static final String sSHOW_NO = "Nao";
+	
+	public static final String sENABLED_TRIAL = "ENABLED_TRIAL";
+	public static final String sENABLED_TRIAL_DESC = "Trial enable/disable";
+	public static final String sENABLED_TRIAL_YES = "Sim";
+	public static final String sENABLED_TRIAL_NO = "Nao";
 
 	public static final String sDIRECT_LINK_AUTHENTICATION = "DIRECT_LINK_AUTHENTICATION";
 	public static final String sDIRECT_LINK_AUTHENTICATION_DESC = "Permite ou n&atilde;o iniciar um fluxo sem autentica&ccedil;&atilde;o (link)";

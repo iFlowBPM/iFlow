@@ -19,6 +19,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
+import org.apache.commons.lang.StringUtils;
 
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.db.DatabaseInterface;
@@ -40,7 +41,7 @@ public class FlowApplicationsBean implements FlowApplications {
   private static final String SQL_GET_APPS="select LINKID,NAME from links_flows where parentid=0 and flowid=0 and organizationid=?";
   private static final String SQL_GET_SINGLE_APP="select LINKID,NAME from links_flows where organizationid=? and linkid=?";
   private static final String SQL_GET_APP_FLOWS="select LINKID,FLOWID,NAME from links_flows where parentid=? and organizationid=?";
-  private static final String SQL_GET_APP_ONLINE_FLOWS="select distinct a.linkid,a.flowid,a.name,a.url from links_flows a, flow b where a.parentid=? and a.organizationid=b.organizationid and b.organizationid=? and ((a.flowid=b.flowid and b.enabled=1) or (a.flowid=0)) order by a.linkid";
+  private static final String SQL_GET_APP_ONLINE_FLOWS="select distinct a.linkid,a.flowid,a.name,a.url,fs.value from links_flows a, flow b LEFT JOIN flow_settings fs ON (b.flowid = fs.flowid and fs.name='ENABLED_TRIAL') where a.parentid=? and a.organizationid=b.organizationid and b.organizationid=? and ((a.flowid=b.flowid and b.enabled=1) or (a.flowid=0)) order by a.linkid";
 
   private static final long serialVersionUID = 1L;
   
@@ -372,6 +373,7 @@ public class FlowApplicationsBean implements FlowApplications {
 					  if (fd != null) {
 						  fd.setApplicationId(String.valueOf(item.getLinkid()));
 						  fd.setApplicationName(item.getText());
+						  fd.setEnabled(StringUtils.equals(rs.getString("VALUE"),"Sim") || StringUtils.isBlank(rs.getString("VALUE")));
 						  menuPart.addFlowData(fd);
 					  }
 				  }

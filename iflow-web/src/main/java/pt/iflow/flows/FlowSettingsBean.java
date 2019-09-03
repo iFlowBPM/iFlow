@@ -815,6 +815,7 @@ public class FlowSettingsBean
     altmp.add(new FlowSetting(anFlowId, "HOT_FOLDER_DOCVAR", "Variável de novo processo para ficheiro encontrado"));
     altmp.add(new FlowSetting(anFlowId, "HOT_FOLDER_IN_USER", "O utilizador a utilizar para criar o processo"));
     
+    altmp.add(new FlowSetting(anFlowId, "ENABLED_TRIAL", "Trial enable/disable"));
     return Collections.unmodifiableList(altmp);
   }
   

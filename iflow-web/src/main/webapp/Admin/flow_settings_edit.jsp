@@ -651,7 +651,26 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
                                             : ""%>><%=Const.sSHOW_NO%>
 			</option>
 		</select> </div><%
-     } else if (stmp.equals(Const.sSHOW_ASSIGNED_TO)) {
+     } else if (stmp.equals(Const.sENABLED_TRIAL)) {
+         if (StringUtils.isEmpty(stmp3)
+                 || ArrayUtils.contains(new Object[] {
+                         Const.sENABLED_TRIAL_YES, "sim", "yes" },
+                         stmp3.toLowerCase())) {
+             stmp3 = Const.sENABLED_TRIAL_YES;
+         } else {
+             stmp3 = Const.sENABLED_TRIAL_NO;
+         }
+		%> <div class="col-sm-3"><select class="txt form-control" name="<%=stmp%>">
+			<option value="<%=Const.sENABLED_TRIAL%>"
+				<%=stmp3.equals(Const.sENABLED_TRIAL_YES) ? "selected"
+                                            : ""%>><%=Const.sENABLED_TRIAL_YES%>
+			</option>
+			<option value="<%=Const.sENABLED_TRIAL_NO%>"
+				<%=stmp3.equals(Const.sENABLED_TRIAL_NO) ? "selected"
+                                            : ""%>><%=Const.sENABLED_TRIAL_NO%>
+			</option>
+		</select></div><%
+		}else if (stmp.equals(Const.sSHOW_ASSIGNED_TO)) {
                      if (stmp3 == null || stmp3.equals("")
                              || stmp3.equalsIgnoreCase(Const.sSHOW_NO)
                              || stmp3.equalsIgnoreCase("nao")

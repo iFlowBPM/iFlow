@@ -112,6 +112,7 @@ public class FlowData implements IFlowData,Serializable {
   private final int iOFFSET = 1100000;
 
   private boolean hasSchedules = false;
+  private Boolean _sEnabled=true;
 
   public static void reloadClasses(UserInfoInterface userInfo) {
     Repository rep = BeanFactory.getRepBean();
@@ -1322,6 +1323,14 @@ public class FlowData implements IFlowData,Serializable {
    public void setApplicationId(String applicationId) {
      _sApplicationId = applicationId;
    }
+      
+   public Boolean getEnabled(){
+ 	  return _sEnabled;
+   }
+
+   public void setEnabled(Boolean enabled){
+ 	_sEnabled = enabled;
+   }
 
    public String getApplicationName() {
      return _sApplicationName;
@@ -1793,4 +1802,5 @@ class FlowClassGenerator {
 	  fcgc.setLinesep(this.linesep);
 	  return fcgc;
   }
+
 }

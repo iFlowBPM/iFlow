@@ -104,4 +104,8 @@ public interface IFlowData {
 	public abstract void setHasSchedules(boolean hasSchedules);
 
 	public abstract int getMaxBlockId();
+	
+	public abstract Boolean getEnabled();
+
+	public abstract void setEnabled(Boolean enabled);
 }
