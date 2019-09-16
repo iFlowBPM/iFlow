@@ -73,6 +73,11 @@
 			<description>Id of created Crc</description>
 			<value />
 		</XmlAttribute>
+		<XmlAttribute>
+			<name>isDelete</name>
+			<description>delete action?</description>
+			<value />
+		</XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>ImportCICC</description>
 		<i18n>library.dms.block.p17040.import.cicc</i18n>

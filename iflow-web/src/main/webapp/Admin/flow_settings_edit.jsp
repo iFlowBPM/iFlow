@@ -661,7 +661,7 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
              stmp3 = Const.sENABLED_TRIAL_NO;
          }
 		%> <div class="col-sm-3"><select class="txt form-control" name="<%=stmp%>">
-			<option value="<%=Const.sENABLED_TRIAL%>"
+			<option value="<%=Const.sENABLED_TRIAL_YES%>"
 				<%=stmp3.equals(Const.sENABLED_TRIAL_YES) ? "selected"
                                             : ""%>><%=Const.sENABLED_TRIAL_YES%>
 			</option>

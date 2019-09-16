@@ -746,8 +746,9 @@ public class GestaoCrc {
 			pst.close();
 			rs.close();
 			
-			query = "select fichAce.id, u_gestao.id "+
-				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
+			query = "select fichAce.id, u_gestao.id, infCompC.type "+
+				"from u_gestao, crc, conteudo, avisRec, fichAce "+ 
+				"LEFT JOIN infCompC ON (infCompC.comInfComp_id = (SELECT id FROM comInfComp WHERE comInfComp.conteudo_id = (SELECT conteudo.id FROM conteudo WHERE crc_id=u_gestao.out_id)) AND infCompC.idCont=? AND infCompC.idInst=? AND infCompC.dtRef=?)  "+	
 				"where  u_gestao.in_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
 				"	conteudo.id = avisRec.conteudo_id and "+
@@ -757,16 +758,22 @@ public class GestaoCrc {
 				"		( select regMsg.fichAce_id from regMsg, msg "+
 				"			where regMsg.idCont = ? and regMsg.idInst = ? "+
 				"			and (msg.nvCrit=0 or msg.codMsg!='CC003')" +	
-				"           and (operOrig='CCI' or operOrig='CCU')); ";
+				"           and (operOrig='CCI' or operOrig='CCU' or operOrig = 'CCD')); ";
 			
 			pst = connection.prepareStatement(query);
-			pst.setInt(1, u_gestao_id);
-			pst.setString(2, idCont);
-			pst.setString(3, idInst);
+			pst.setString(1, idCont);
+			pst.setString(2, idInst);
+			pst.setDate(3, new java.sql.Date(dtRefInfDiaAux.getTime()));
+			pst.setInt(4, u_gestao_id);
+			pst.setString(5, idCont);
+			pst.setString(6, idInst);
 			rs = pst.executeQuery();
 			
 			if(rs.next() && dtRefInfDiaAux.getTime()<=dtRef.getTime())
-				return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));			
+				if (StringUtils.equalsIgnoreCase(rs.getString("type"),"CCD"))
+					return new ImportAction(ImportActionType.CREATE);
+				else 
+					return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));			
 			else 
 				return new ImportAction(ImportActionType.CREATE);
 			

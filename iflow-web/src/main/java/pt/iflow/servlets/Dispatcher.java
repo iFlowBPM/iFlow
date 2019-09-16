@@ -978,7 +978,7 @@ public class Dispatcher extends HttpServlet {
   }
 
   private RepositoryFile getClassFile(UserInfoInterface userInfo, Repository rep, String name) {
-    if(StringUtils.startsWithIgnoreCase(name, "pt.iknow.floweditor.blocks") || StringUtils.startsWithIgnoreCase(name, "pt/iknow/floweditor/blocks")){// || StringUtils.startsWithIgnoreCase(name, "../") || StringUtils.startsWithIgnoreCase(name, "./")){
+    if(!StringUtils.startsWithIgnoreCase(name, "pt.iflow") && !StringUtils.startsWithIgnoreCase(name, "pt/iflow")){// || StringUtils.startsWithIgnoreCase(name, "../") || StringUtils.startsWithIgnoreCase(name, "./")){
     	RepositoryFile classFile = rep.getClassFile(userInfo.getOrganization(), name);
         if (null == classFile || !classFile.exists()) {
           classFile = getClasspathFile(name);

@@ -388,8 +388,7 @@ public class FlowApplicationsBean implements FlowApplications {
 			  }
 		  }
 		  colApplications = null;
-		  pst.close();
-		  pst = null;
+		  
 
 		  if (hmFlows.size() > 0) {
 			  // now uncategorized flows
@@ -407,6 +406,12 @@ public class FlowApplicationsBean implements FlowApplications {
 
 				  IFlowData fd = (IFlowData)hmFlows.get(sFlowId);
 				  if (fd != null) {
+					  pst = db.prepareStatement("select fs.value from flow b LEFT JOIN flow_settings fs ON (b.flowid = fs.flowid and fs.name='ENABLED_TRIAL') where b.flowid=? and b.organizationid=?");
+					  pst.setLong(1, fd.getId());
+					  pst.setString(2, userInfo.getCompanyID());
+					  rs = pst.executeQuery();
+					  if(rs.next())
+						  fd.setEnabled(StringUtils.equals(rs.getString("VALUE"),"Sim") || StringUtils.isBlank(rs.getString("VALUE")));
 					  menuPart.addFlowData(fd);
 				  }
 			  }

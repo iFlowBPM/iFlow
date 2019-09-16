@@ -24,6 +24,7 @@ import pt.iflow.blocks.P17040.utils.FileImportUtils;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
 import pt.iflow.blocks.P17040.utils.ImportAction;
 import pt.iflow.blocks.P17040.utils.ValidationError;
+import pt.iflow.blocks.P17040.utils.ImportAction.ImportActionType;
 
 public class BlockP17040ImportCICC extends BlockP17040Import {
 
@@ -82,9 +83,14 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 					continue;
 				}
 
-				// determinar se é insert ou update
-				ImportAction actionOnLine = GestaoCrc.checkinfCompC(dtRef, idCont, idInst,
+				// determinar se é insert ou update ou delete
+				ImportAction actionOnLine = null;
+				if(getIsDelete())
+					actionOnLine = new ImportAction(ImportActionType.DELETE);
+				else
+					actionOnLine = GestaoCrc.checkinfCompC(dtRef, idCont, idInst,
 						userInfo.getUtilizador(), connection);
+				
 				if (actionOnLine == null)
 					continue;		
 				
@@ -101,7 +107,14 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 				}
 				
 				// adicionar acçao
-				String type = actionOnLine.getAction().equals(ImportAction.ImportActionType.CREATE) ? "CCI" : "CCU";
+				String type = null;
+				if(actionOnLine.getAction()==ImportActionType.CREATE )				
+					type = "CCI"; 
+				else if(actionOnLine.getAction()==ImportActionType.UPDATE )
+					type = "CCU";
+				else if(actionOnLine.getAction()==ImportActionType.DELETE )
+					type = "CCD";
+				
 				actionList.add(new ImportAction(actionOnLine.getAction(), idCont + "-" + idInst + "-" + dtRef));
 				try {
 					// inserir na bd

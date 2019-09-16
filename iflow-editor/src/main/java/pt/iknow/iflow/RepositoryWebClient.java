@@ -221,6 +221,7 @@ public class RepositoryWebClient implements RepositoryClient {
 //      method.releaseConnection();
       HttpEntity entity = response.getEntity();
       responseString = EntityUtils.toString(entity, "UTF-8");
+      method.releaseConnection();
     } catch (FileNotFoundException fnfe) {
       FlowEditor.log("error", fnfe);
     } catch (IOException e) {

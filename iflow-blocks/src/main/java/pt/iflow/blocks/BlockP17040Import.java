@@ -48,6 +48,16 @@ public abstract class BlockP17040Import extends Block {
 	private static final String OUTPUT_ACTION_DOCUMENT = "outputActionDocument";
 	private static final String DATASOURCE = "Datasource";
 	private static final String CRC_ID = "crc_id";
+	private static final String IS_DELETE = "isDelete";
+	Boolean isDelete = false;
+
+	public Boolean getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(Boolean isDelete) {
+		this.isDelete = isDelete;
+	}
 
 	public BlockP17040Import(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
@@ -98,6 +108,7 @@ public abstract class BlockP17040Import extends Block {
 		String sInputDocumentVar3 = this.getAttribute(INPUT_DOCUMENT3);
 		String sOutputErrorDocumentVar = this.getAttribute(OUTPUT_ERROR_DOCUMENT);
 		String sOutputActionDocumentVar = this.getAttribute(OUTPUT_ACTION_DOCUMENT);
+		setIsDelete((StringUtils.equalsIgnoreCase("true", this.getAttribute(IS_DELETE)) || StringUtils.equalsIgnoreCase("1", this.getAttribute(IS_DELETE)) || StringUtils.equalsIgnoreCase("yes", this.getAttribute(IS_DELETE)) || StringUtils.equalsIgnoreCase("sim", this.getAttribute(IS_DELETE))));
 		DataSource datasource = null;
 		Connection connection = null;
 

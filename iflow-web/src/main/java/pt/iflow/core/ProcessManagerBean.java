@@ -5534,7 +5534,7 @@ public class ProcessManagerBean implements ProcessManager {
       pst.setInt(2, procData.getPid());
       pst.setInt(3, procData.getSubPid());
       rs = pst.executeQuery();
-      pst.close();
+//      pst.close();
 
       if (rs.next()) {
         rs.close();
@@ -5552,7 +5552,7 @@ public class ProcessManagerBean implements ProcessManager {
         pst.setInt(1, procData.getFlowId());
         pst.setInt(2, procData.getPid());
         rs = pst.executeQuery();
-        pst.close();
+//        pst.close();
         
         rs.next();
         boolean lastSubProc = (rs.getInt(1) == 1);
