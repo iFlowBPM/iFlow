@@ -11,6 +11,8 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.lang.StringUtils;
+
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.FileGeneratorUtils;
@@ -48,12 +50,18 @@ public class BlockP17040GenerateCICC extends BlockP17040Generate {
 					new Object[] { crcId });
 				int i = 0;
 				for (Integer infCompCId : infCompCidList) {
+					HashMap<String, Object> infCompCValues = fillAtributtes(null, connection, userInfo,
+							"select * from infCompC where id = {0} ", new Object[] { infCompCId });					
 					i++;
-					if (i%LOGCYCLE == 0)
-						Logger.debug(userInfo.getUserId(), "BlockP17040GenerateCICC", "createFileContent", null, null);
+					if (i%LOGCYCLE == 0) Logger.debug(userInfo.getUserId(), "BlockP17040GenerateCICC", "createFileContent", null, null);
 					writer.writeStartElement("infCompC");
+					
+					if(StringUtils.equalsIgnoreCase((String) infCompCValues.get("type"),"CCD")){
 						fillAtributtes(writer, connection, userInfo,
-								"select * from infCompC where id = {0} ", new Object[] { infCompCId });					
+								"select type,dtRef,idCont,idInst from infCompC where id = {0} ", new Object[] { infCompCId });	
+					} else {
+						fillAtributtes(writer, connection, userInfo,
+								"select * from infCompC where id = {0} ", new Object[] { infCompCId });																						
 					//lstEntComp
 					List<Integer> lstEntCompIdList = retrieveSimpleField(connection, userInfo,
 							"select id from entComp where infCompC_id = {0} ",
@@ -104,7 +112,7 @@ public class BlockP17040GenerateCICC extends BlockP17040Generate {
 								}
 							writer.writeEndElement();
 						//}			
-			
+					}
 						writer.writeEndElement();
 					}
 			}

@@ -3,6 +3,7 @@ package pt.iflow.blocks;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
@@ -115,7 +116,8 @@ public class BlockPutFileInDisk extends Block {
 	  else {
           	doc = docBean.getDocument(userInfo, procData, ((Long) docsVar.getItem(i).getValue()).intValue());
 	  }
-          FileUtils.writeByteArrayToFile(new File(sPath + File.separator + doc.getFileName()), doc.getContent());
+	  	  String unsescapedPath = StringEscapeUtils.unescapeHtml(sPath);
+          FileUtils.writeByteArrayToFile(new File(unsescapedPath + File.separator + doc.getFileName()), doc.getContent());
         }
 
         outPort = portSuccess;
