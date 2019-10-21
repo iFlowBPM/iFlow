@@ -411,8 +411,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcprov-jdk15on</artifactId>
-				<version>1.60</version> <!--  replicated in iflow-applet -->
+				<artifactId>bcprov-jdk15to18</artifactId>
+				<version>1.64</version> <!--  replicated in iflow-applet -->
 			</dependency>
 			<dependency>
 				<groupId>bouncycastle</groupId>
@@ -693,11 +693,7 @@
 	</scm>
 
 	<repositories>
-		<!-- <repository> <snapshots> <enabled>true</enabled> </snapshots> <id>iflowInternal</id> 
-			<name>Maven Repository at Eddie (internal)</name> <url>http://vmsvn01.infosistema.com/maven2</url> 
-			</repository> <repository> <snapshots> <enabled>true</enabled> </snapshots> 
-			<id>iflowExternal</id> <name>Maven Repository at Eddie</name> <url>http://vmsvn01.infosistema.com/maven2</url> 
-			</repository> -->
+		
 		<repository>
 			<id>maven2</id>
 			<url>https://repo.maven.apache.org/maven2/</url>
@@ -715,24 +711,11 @@
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
-			<id>tlc</id>
-			<name>TLC Repository</name>
-			<url>http://commons.ucalgary.ca/pub/m2</url>
+			<id>maven2plugin</id>
+			<name>mavenplugn</name>
+			<url>https://repo.maven.apache.org/maven2/</url>
 		</pluginRepository>
 	</pluginRepositories>
-
-	<distributionManagement>
-		<repository>
-			<id>eddie</id>
-			<name>Local Repository</name>
-			<url>scp://vmsvn01.infosistema.com/var/www/html/maven2</url>
-		</repository>
-		<snapshotRepository>
-			<id>eddie</id>
-			<name>Local Repository</name>
-			<url>scp://vmsvn01.infosistema.com/var/www/html/maven2</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<developers>
 		<developer>

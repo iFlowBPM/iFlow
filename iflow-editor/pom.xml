@@ -28,6 +28,12 @@
 			<artifactId>iflow-api</artifactId>
 			<version>${iflow.version}</version>
 			<type>jar</type>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk15on</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>pt.iknow.iflow</groupId>
@@ -41,6 +47,12 @@
 			<groupId>pt.iknow</groupId>
 			<artifactId>iutils</artifactId>
 			<type>jar</type>
+			<exclusions>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bcprov-jdk14</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- OEM -->
