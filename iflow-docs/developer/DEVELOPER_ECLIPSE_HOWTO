@@ -1,0 +1,36 @@
+
+IDE
+
+Install and run eclipse for JEE with a new workspace
+Clone https://github.com/iFlowBPM/iFlow
+Go to Git perspective, expand project tree, right click on Working Tree and "Import projects..."
+Go to JEE perspective, right click on a project and do "Maven->Updata Project..." with all selected
+At iflow-api, right click, Run As->Maven generate-sources
+Set iflow-api/target/generated-sources/castor as source directory (iflow-api, right click, Build Path->Use as source folder)
+ouside eclipse, goto iFlow root dir (git working tree) and do mvn install (with maven 2.1.)
+do mvn install
+
+DATABASE
+Run mysql, mariadb, sqlserver or oracle
+Create database schema iflow and user iflow
+Run respective create_database.sql script
+
+
+SERVER
+install apache tomcat server
+goto to tab servers on lower eclipse bar
+create a tomcat server 8.5 or 9 or more recent
+configure apache datasources in conf/context.xml (copy and adapt context.xml examples from iflow-home/Servers/tomcat)
+(datasource name must match database configuration of iflow-home/config/iflow.properties)
+add correct jdbc drivers to tomcat directory
+
+RUN
+run iFlow on server: iflow-web, Run As->Run on server 
+
+
+
+
+
+
+
+
