@@ -35,7 +35,7 @@ public class IKnowKaptcha implements Producer {
   private Color boxColor = Color.black;
   private int boxThick = 1;
   private WordRenderer wordRenderer = null;
-  private GimpyEngine gimpy = null;
+  //private GimpyEngine gimpy = null;
   private BackgroundProducer backGroundImp = null;
   private TextProducer textProducer = null;
 
@@ -63,7 +63,8 @@ public class IKnowKaptcha implements Producer {
           boxThick = 1;
       }
 
-      this.gimpy = (GimpyEngine) Helper.ThingFactory.loadImpl(Helper.ThingFactory.OBSCURIFICATOR_IMPL, props);
+      //this.gimpy = (GimpyEngine) Helper.ThingFactory.loadImpl(Helper.ThingFactory.OBSCURIFICATOR_IMPL, props);
+      
       this.backGroundImp = (BackgroundProducer) Helper.ThingFactory.loadImpl(Helper.ThingFactory.BACKGROUND_IMPL, props);
       this.wordRenderer = (WordRenderer) Helper.ThingFactory.loadImpl(Helper.ThingFactory.WORDRENDERER_IMPL, props);
       this.textProducer = (TextProducer) Helper.ThingFactory.loadImpl(Helper.ThingFactory.TEXTPRODUCER_IMPL, props);
@@ -102,8 +103,8 @@ public class IKnowKaptcha implements Producer {
       BufferedImage bi = wordRenderer.renderWord(text, w, h);
 
       // create a new distorted (wound version of) the image
-      gimpy.setProperties(props);
-      bi = gimpy.getDistortedImage(bi);
+      //gimpy.setProperties(props);
+      //bi = gimpy.getDistortedImage(bi);
 
       // add a background to the image
       bi = this.backGroundImp.addBackground(bi);
@@ -166,7 +167,7 @@ public class IKnowKaptcha implements Producer {
    * 
    */
   public void setObscurificator(GimpyEngine engine) {
-    this.gimpy = engine;
+    //this.gimpy = engine;
   }
 
   /**
@@ -176,7 +177,7 @@ public class IKnowKaptcha implements Producer {
     this.textProducer = textP;
   }
 
-  char[] captchars = new char[] { 'i', 'k', 'n', 'o', 'w', 'i', 'f', 'l', 'o', 'w', };
+  char[] captchars = new char[] { 'u', 'n', 'i', 'k', 's', 'y', 's', 't', 'e', 'm', 'i', 'f', 'l', 'o', 'w', };
 
   char[] captcharsx = new char[] { 'a', 'b', 'c', 'd', 'e', '2', '3', '4', '5', '6', '7', '8', 'g', 'f', 'y', 'n', 'm', 'n', 'p',
       'w', 'x' };
