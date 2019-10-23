@@ -23,6 +23,7 @@ create a tomcat server 8.5 or 9 or more recent
 configure apache datasources in conf/context.xml (copy and adapt context.xml examples from iflow-home/Servers/tomcat)
 (datasource name must match database configuration of iflow-home/config/iflow.properties)
 add correct jdbc drivers to tomcat directory
+Copy jniloader-1.0.jar and ESAPI.properties from iflow-home/library to tomcat's lib dir
 
 RUN
 run iFlow on server: iflow-web, Run As->Run on server 
