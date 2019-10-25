@@ -1108,10 +1108,10 @@ SET NEW.`eid` = sequence('email');
 -- @field flowid identificador numerico do fluxo
 create view activity_delegated
     (hierarchyid, userid, pid, subpid, ownerid, flowid, created, type, started, archived, 
-    status, notify, priority, description, url,profilename, requested, responded, read_flag,mid) as
+    status, notify, priority, description, url,profilename, requested, responded, read_flag,mid, previoususerid) as
     select H.hierarchyid, H.userid, A.pid, A.subpid, A.userid as ownerid, A.flowid, A.created, 
     A.type, A.started, A.archived, A.status, A.notify, A.priority, A.description, A.url, A.profilename,
-    H.requested, H.responded, A.read_flag, A.mid
+    H.requested, H.responded, A.read_flag, A.mid, A.previoususerid
     from activity A, activity_hierarchy H
     where ((A.userid = H.ownerid and H.slave=1) or (A.userid = H.userid and slave=0)) 
     and A.flowid = H.flowid and H.pending=0 and A.delegated <> 0;
