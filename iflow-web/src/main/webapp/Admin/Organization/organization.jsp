@@ -54,6 +54,7 @@ OrganizationThemeData orgTheme = BeanFactory.getOrganizationThemeBean().getOrgan
 			    <if:formOption value="default" />
 			    <if:formOption value="classic" />
 			    <if:formOption value="newflow" />
+			    <if:formOption value="uniksystem" />
 		    </if:formSelect>
 			<if:formSelect name="menuLocation" edit="<%= bEdit %>" value='<%= orgTheme.getMenuLocation() %>' labelkey="organization.propertiesform.field.menuLocation">
 			    <if:formOption labelkey="organization.propertiesform.field.menuLocation.label.left" value="left"/>

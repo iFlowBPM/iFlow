@@ -1,0 +1,53 @@
+/*ICON FONT-----------------------------------------------------------------------------------------------------------------------------------------------------*/
+@font-face {
+  font-family: 'icomoon';
+  src:  url(../img/assets/icons/icomoon.eot?jcd87s);
+  src:  url(img/assets/icons/icomoon.eot?jcd87s#iefix) format('embedded-opentype'),
+    url(../img/assets/icons/icomoon.ttf?jcd87s) format('truetype'),
+    url(../img/assets/icons/icomoon.woff?jcd87s) format('woff'),
+    url(../img/assets/icons/icomoon.svg?jcd87s#icomoon) format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-bell:before {
+  content: "\e900";
+}
+.icon-dashboard:before {
+  content: "\e901";
+}
+.icon-gear:before {
+  content: "\e902";
+}
+.icon-logout:before {
+  content: "\e903";
+}
+.icon-moon:before {
+  content: "\e904";
+}
+.icon-search:before {
+  content: "\e905";
+}
+.icon-trophy:before {
+  content: "\e906";
+}
+
+.icon-add:before {
+  content: "\e907";
+}

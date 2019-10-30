@@ -3,7 +3,7 @@
 
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>iFlowBPM</title>
+		<title>Uniksystem BPM</title>
 
 		<!-- CSS antigos -->
 		<link rel="stylesheet" type="text/css" media="all" href="javascript/calendar/calendar-iflow.css" title="cal-iflow" />
@@ -24,7 +24,11 @@
 			<link rel="stylesheet" href="Themes/${orgTheme}/css/tree.css" type="text/css" />
 			<link href="Themes/${orgTheme}/cssNew/main.css" rel="stylesheet" type="text/css" />
 			<link href="Themes/${orgTheme}/cssNew/reset.css" rel="stylesheet" type="text/css" />
-			
+			#if($orgTheme != "uniksystem")
+
+			  <link href="Themes/${orgTheme}/cssNew/styles.css" rel="stylesheet" type="text/css" />			
+			  <link href="Themes/${orgTheme}/cssNew/icons.css" rel="stylesheet" type="text/css" />
+		    #end		
 		
 		#else
 			<link rel="stylesheet" href="Themes/newflow/css/tips.css" type="text/css" />
@@ -106,9 +110,10 @@
 		<script type="text/javascript" src="$response.encodeURL('javascript/encodedURLS.jsp')"></script>
 		<script type="text/javascript" src="javascript/tutorial.js"></script>
 		<script type="text/javascript" src="javascript/processAnnotations.js"></script>
+		#if($orgTheme != "uniksystem")
 		<script type="text/javascript" src="$response.encodeURL('javascript/applet.js')"></script>
 		<script type="text/javascript" src="javascript/applet_functions.js"></script>
-		
+		#end
 		<!-- JAVASCRIPT novos -->
 		<script src="javascript/jQueryAssets/jquery-1.8.3.min.js" type="text/javascript"></script>
                 <script src="javascript/qtip/jquery.qtip.min.js" type="text/javascript"></script>
@@ -368,7 +373,8 @@
 		
 		</head>
 
-	<body onresize="javascript:mainResize()"  onload="javascript:setProcFlow()" /*onload="updateNotifications()"*/>
+	<body onresize="javascript:mainResize()"  onload="javascript:setProcFlow()" /*onload="updateNotifications()"*/ style="
+    background-image: linear-gradient(-90deg, #a9d7e4, #aea2cc);">
 	<script language="JavaScript">
 	function setProcFlow(){
 		/*[OPEN PROCESS WITH URL] :  Para testes = getCookie("toRedirect") ... openProcess(OP_flowid, OP_params[0], OP_params[1], false, 3);
@@ -410,6 +416,9 @@
 			font-size: 1.2em;
 		}
 	</style>
+	
+	
+	#if($orgTheme != "uniksystem")
 	
 		<div id="container">
 		
@@ -477,9 +486,22 @@
 				
 			</div>
 
+			
+			
+			
+	#end
+			
+			
 			#if($sys_admin == "no")
 
 			<div id="main_sidebar" class="sidebar1">
+					#if($orgTheme == "uniksystem")
+		
+					<h3 class="Acor_01"><div id="dashboardplaceholder" height="48px">Dashboard</div></h3>
+		
+					#end
+
+				
 				<div id="Accordion1">
 					#if("$Tab2" != "no")	
 					<h3 class="Acor_01">
@@ -583,6 +605,9 @@
 					#end
 					
 				</div>
+					<h3 class="Acor_01" style="height:104px;">
+					
+					</h3>
 				
 				
 			</div>

@@ -39,7 +39,7 @@
 
 <div id="taskbar" class="slide02">
 
-	<div style=" border-bottom: 1px Solid #cccccc; padding: 5px 2px 5px 2px; text-align: left;">
+	<div class="process_t3" style=" border-bottom: 1px Solid #cccccc; padding: 5px 2px 5px 2px; text-align: left;min-width:auto;float:none">
 		<form style="display:inline">
 			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Ordenar<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
 			<ul class="dropdown-menu" role="menu" style="width:250px; top:110px; left: 190px;">
@@ -308,8 +308,8 @@
 	
 	#else
 <div id ="view_proc_annotation_dashboard"></div>	
-<div class="content_template3" style="width:100%">
-	<div class="process_t3" style=" border-bottom: 1px Solid #cccccc; padding: 5px 2px 5px 2px; height:40px;">
+<div class="content_template3" style="width:90%;margin:10px">
+	<div class="process_t3" style=" border-bottom: 1px Solid #cccccc; padding: 5px 2px 5px 2px; height:40px;float:none;">
 		<form style="display:inline">
 			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Ordenar<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
 			<ul class="dropdown-menu" role="menu" style="width:250px; top:110px; left: 190px;">
