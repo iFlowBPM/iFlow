@@ -1973,8 +1973,10 @@ function reloadBootstrapElements(){
   try {
     $jQuery('.accordion').accordion({
       collapsible:true,
-      animate:{easing: "swing"}
+      animate:{easing: "swing"},
+      icons:false
     }); 
+        
   } catch (err) {}
   try {
 	$jQuery( ".accordionclose" ).accordion({
@@ -2098,7 +2100,8 @@ function reloadJS(doCloseMenus) {
     try {
       $( "#Accordion1" ).accordion({ // Accordion template1
         heightStyle:"content",
-        active:0
+        active:0,
+        icons:false
       }); 
     } catch (err) {}
 

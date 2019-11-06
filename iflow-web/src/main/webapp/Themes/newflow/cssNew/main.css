@@ -916,8 +916,10 @@ a.active {
 }
 
 .main {
-	
+	margin-left: 220px; 
+	display: none;
 }
+
 
 /*	border: 1px rgb( 217, 217, 217 ) solid;*/
 

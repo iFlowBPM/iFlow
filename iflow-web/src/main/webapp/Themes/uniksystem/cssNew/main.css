@@ -173,7 +173,18 @@ a.linkform:active {
 	background-image: none;
 	background-image: none;
 	border: none;
-	color: #b4b8ba !important;
+	/* color: #b4b8ba !important;*/
+}
+
+#Accordion1 .Acor_01:hover {	
+	color: #3a3b45;
+    background-color: #cdcae1 !important;
+    transition: .2s ease-out;
+}
+
+#Accordion1 .Acor_01:active {	
+    background-color: #33058d !important;
+    transition: .2s ease-out;
 }
 
 #Accordion1 .Acor_02 {
@@ -242,6 +253,17 @@ a.linkform:active {
 	text-decoration: none;
 }
 
+.ui-state-active a:active
+	{
+	color: white !important;
+	text-decoration: none;
+}
+
+
+.ui-accordion .ui-accordion-header {
+	margin-top: 0px;
+}
+
 /*________End CSS Acordiom templates  menu silide 1*/
 .txt_categ {
 	text-transform: uppercase;
@@ -276,8 +298,9 @@ ul, ul ul {
 }
 
 .menu {
-	background-color: #cccccc !important;
+	background-color:#e6e6e6; !important;
 	font-size: 1em;
+	margin-bottom: 0px;
 }
 
 .menu a {
@@ -285,25 +308,44 @@ ul, ul ul {
 }
 
 .menu>li {
-	margin-bottom: 5px;
+	margin-bottom: 0px;
+	padding-left:32px;
 }
 
 .menu>li>a {
+	color: #3a3b45 !important;
 	text-decoration: none;
-	padding-left: 30px;
-	min-height: 30px;
-	padding-top: 5px;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+	font-size: 16px;
+	padding-left: 16px;
+	min-height: 48px;
+	padding-top: 12px;
 	padding-bottom: 5px;
 	display: block;
-	color: #5d6d7a;
-	background-image: url(../images/arrow_sbmenu_new.png);
+	/* color: #5d6d7a;*/
+	/* background-image: url(../images/arrow_sbmenu_new.png);*/
 	background-repeat: no-repeat;
+	background-color:#e6e6e6;
+}
+
+.menu>li>a:hover {
+		color: #3a3b45 !important;
+	text-decoration: none;
+	font-size:16px;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+	    background-color: #cdcae1 !important;
+    transition: .2s ease-out;
+}
+
+.menu>li>a:active {
+		background-color: #33058d !important;
+    transition: .2s ease-out;
 }
 
 .menu ul li a {
 	text-decoration: none;
 	min-height: 25px;
-	padding-top: 5px;
+	padding-top: 12px;
 	color: #263238;
 	padding-right: 5px;
 	padding-left: 40px;
@@ -312,50 +354,86 @@ ul, ul ul {
 }
 
 .menu>li>a:hover, .menu>li>a.active {
+	/*
 	min-height: 25px;
 	padding-top: 5px;
 	display: block;
 	color: #ffffff;
 	background-color: #1f2c36;
 	border-left: 5px solid #33058d;
+	*/
 }
 
 .menu>li>a.active {
-	background-image: url(../images/arrow_sbmenu_open_new.png);
-	background-repeat: no-repeat;
+			border-left: 5px solid #33058d;	
+	/* background-image: url(../images/arrow_sbmenu_open_new.png);
+	background-repeat: no-repeat;*/
 	color: #ffffff;
-	min-height: 25px;
-	padding-top: 5px;
+	/*min-height: 25px;*/
+	heigth: 48px;
+	
 	display: block;
+	font-size:16px;
+	 
 }
 
 .menu>li>ul li {
 	color: #263238;
 	margin-bottom: -5px !important;
-	min-height: 25px;
+	min-height: 48px;
+	padding-left: 48px;
+	padding-top:0px;
+	padding-bottom:0px;
 }
 
 .menu>li>ul li:hover a, .menu>li>ul li:hover a span, .menu>li>ul li:hover,
 	.menu>li>ul li>a.active {
 	/* Altera��o no menu */
-	font-weight: bold;
-	color: white !important;
+	/* font-weight: bold;
+	color: white !important; */
 	/* background: #afcad8; */
-	min-height: 25px;
-	padding-top: 5px;
-	padding-bottom: 6px;
-	display: block;
+	
+	/* padding-top: 5px;
+	padding-bottom: 6px;*/
+	
+	
+	color: #3a3b45 !important;
+	text-decoration: none;
+	font-size:16px;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+	background-color: #cdcae1 !important;
+    transition: .2s ease-out;
+    
+    
+}
+
+.menu>li>ul {
+	position: relative;
+    left: -32px;
+    width: 312px;
 }
 
 .menu>li>ul li a {
-	padding-top: 5px;
-	padding-bottom: 5px;
+			color: #3a3b45 !important;
+	text-decoration: none;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+	font-size: 16px;
+	padding-left: 10px;
+	min-height: 48px;
+    padding-top: 12px;
+    border:none;
+
+	
 }
 
 .menu>li>ul li {
-	min-height: 25px;
-	padding-top: 5px;
-	padding-bottom: 5px;
+	min-height: 48px;
+	/*padding-top: 12px;
+	padding-bottom: 5px;*/
+	background-color:#ccc;	
+	
+	
+	
 }
 
 .menu>a {
@@ -367,6 +445,9 @@ ul, ul ul {
 	color: #333;
 	background-image: url(../images/arrow_sbmenu.png);
 	background-repeat: no-repeat;
+	
+
+	
 }
 
 .menu>a.active {
@@ -928,6 +1009,26 @@ a.active {
 }
 
 .main {
+	margin-left: 270px; 
+	/* margin-top: 10px; */
+	/* float:left; */
+	background-color: white; 
+	display: none;
+	margin-right: 10px;
+	box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+	padding-bottom: 5px;
+	
+}
+
+.clearfix:after { 
+   content: "."; 
+   visibility: hidden; 
+   display: block; 
+   height: 0; 
+   clear: both;
+}
+
+.tabadmin {
 	
 }
 
@@ -976,8 +1077,11 @@ td.itemlist_icon {
 
 #title_admin, #title_delegations, #title_account {
 	color: #333333;
-	font-size: 1.2em;
+	font-size: 16px;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 	padding: 10px 15px 0 10px;
+	
+	/*
 	border-bottom: 1px rgb(217, 217, 217) solid;
 	background-image: -moz-linear-gradient(90deg, rgb(238, 238, 241) 0%,
 		rgb(250, 250, 250) 100%);
@@ -985,10 +1089,12 @@ td.itemlist_icon {
 		rgb(250, 250, 250) 100%);
 	background-image: -ms-linear-gradient(90deg, rgb(238, 238, 241) 0%,
 		rgb(250, 250, 250) 100%);
+		*/
+		background-color:rgba(0,0,0,.03);
 	height: 53px;
 	margin-bottom: 10px;
 	margin-top: 0px;
-	margin-left: -5px;
+	margin-left: 0px;
 	padding-top: 15px;
 }
 
@@ -1015,7 +1121,8 @@ a>img:hover {
         
         */
 	color: white !important font-weight:bold;
-	border-left: 6px solid #6c95be;
+	border-left: 5px solid #33058d;
+	   font-weight:bold;
 }
 
 td.gauge_full {

@@ -89,6 +89,10 @@
 	} else {
 		hsSubst.put("supervisor", "no");
 	}
+	
+	// TODO jcosta 20191030: static uniksystem theme - dynamic in the future, received as parameter
+	hsSubst.put("subTheme", "indigo");
+	
 	hsSubst.put("field_dashboard", messages.getString("main.tab.dashboard"));
 	hsSubst.put("field_tasks", messages.getString("main.tab.tasks"));
 	hsSubst.put("tooltip_signature", messages.getString("main.tab.signature"));

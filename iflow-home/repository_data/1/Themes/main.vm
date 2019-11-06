@@ -497,7 +497,7 @@
 			<div id="main_sidebar" class="sidebar1">
 					#if($orgTheme == "uniksystem")
 		
-					<h3 class="Acor_01"><div id="dashboardplaceholder" height="48px">Dashboard</div></h3>
+					<div id="dashboardplaceholder" style="height:48px;width:260px:color:#eee">Dashboard</div>
 		
 					#end
 
@@ -506,7 +506,11 @@
 					#if("$Tab2" != "no")	
 					<h3 class="Acor_01">
 						<a href="" onclick="javascript:tabber_right(1, 'main_content.jsp', 'cleanFilter=1');" title="$field_tasks">	
+						#if($orgTheme == "uniksystem")
+							<img src="Themes/${orgTheme}/subthemes/${subTheme}/images/filled-checklist.png" width="24" height="24" alt="" />
+						#else
 							<img src="images/tarefas.png" width="24" height="24" alt="" />
+						#end
 							$field_tasks
 						</a>
 					</h3>
@@ -531,7 +535,12 @@
 					#if("$Tab3" != "no")
 					<h3 class="Acor_01">
 						<a href="" onclick="javascript:tabber_load(3, '');" title="$tooltip_processes">
-						<img src="images/processos.png" width="24" height="24" alt=""/>$field_processes</a>
+						#if($orgTheme == "uniksystem")
+							<img src="Themes/${orgTheme}/subthemes/${subTheme}/images/filled-flow.png" width="24" height="24" alt="" />
+						#else
+						    <img src="images/processos.png" width="24" height="24" alt=""/>
+						#end
+						$field_processes</a>
 					</h3>
 					<div class="Acor_02" style=" margin: 0 ; padding:20px 0 0 0 ;">
 						<div id="container_flow_list"></div>
@@ -551,7 +560,12 @@
 					#if("$Tab5" != "no")	
 					<h3 class="Acor_01">
 						<a href="" onclick="javascript:tabber_load(5, '');" title="$tooltip_delegations">
-						<img src="images/delegacaoes.png" width="24" height="24" alt="" />$field_delegations</a>
+						#if($orgTheme == "uniksystem")
+							<img src="Themes/${orgTheme}/subthemes/${subTheme}/images/filled-management.png" width="24" height="24" alt="" />
+						#else
+						    <img src="images/delegacaoes.png" width="24" height="24" alt="" />
+						#end
+						$field_delegations</a>
 					</h3>
 					<div class="Acor_02" style=" margin: 0 ; padding:20px 0 0 0 ;">
 						<div id="container_delegations">
@@ -576,7 +590,12 @@
 					#if($supervisor == "yes")
 					<h3 class="Acor_01">
 						<a href="" onclick="javascript:tabber_load(10, ''); title="$tooltip_reports">
-						<img src="images/relatorios.png" width="24" height="24" alt="" />$field_reports</a>
+						#if($orgTheme == "uniksystem")
+							<img src="Themes/${orgTheme}/subthemes/${subTheme}/images/filled-business-report.png" width="24" height="24" alt="" />
+						#else
+							<img src="images/relatorios.png" width="24" height="24" alt="" />
+						#end
+						$field_reports</a>
 					</h3>
 						#if($org_admin == "yes")
 					<div class="Acor_02" style=" margin: 0 ; padding:20px 0 0 0 ;">
@@ -596,7 +615,13 @@
 					#if($org_admin == "yes" || $sys_admin=="yes")
 					<h3 class="Acor_01">
 						<a href="#" onclick="javascript:tabber_load(4, '');">
-						<img src="images/admin.png" width="24" height="24" alt="" /> Admin</a>
+						
+						#if($orgTheme == "uniksystem")
+							<img src="Themes/${orgTheme}/subthemes/${subTheme}/images/filled-administrator.png" width="24" height="24" alt="" />
+						#else
+							<img src="images/admin.png" width="24" height="24" alt="" />
+						#end 
+						Admin</a>
 					</h3>
 					<div class="Acor_02" style=" margin: 0 ; padding:20px 0 0 0 ;">
 						<div id="container_admin">
@@ -627,20 +652,20 @@
 			  
 			  SysAdmin = 12
 			-->
-			<div id="section_div_1" class="main" style="margin-left: 220px; display: none">
+			<div id="section_div_1" class="main">
 			<a id="link_process_help" href="javascript:showHelpDialogItem('processes');">
 			<img class="help_button" src="Themes/${orgTheme}/images/question_mark_qm.png"/></a>
 			</div>
-			<!--div id="section_div_2" class="main" style="margin-left: 220px; display: none"></div-->
-			<div id="section_div_3" class="main" style="margin-left: 220px; display: none"></div>
-			<div id="section_div_4" class="main" style="margin-left: 220px; display: none"></div>
-			<div id="section_div_5" class="main" style="margin-left: 220px; display: none"></div>
-			<div id="section_div_6" class="main" style="margin-left: 220px; display: none"></div>
-			<!--div id="section_div_7" class="main" style="margin-left: 220px; display: none"></div-->
-			<div id="section_div_8" class="main" style="margin-left: 220px; display: none"></div>
-			<!--div id="section_div_9" class="main" style="margin-left: 220px; display: none"></div-->
-			<div id="section_div_10" class="main" style="margin-left: 220px; display: none"></div>
-			<div id="section_div_11" class="main" style="margin-left: 220px; display: none"></div>
+			<!--div id="section_div_2" class="main"></div-->
+			<div id="section_div_3" class="main"></div>
+			<div id="section_div_4" class="main tabadmin"></div>
+			<div id="section_div_5" class="main"></div>
+			<div id="section_div_6" class="main"></div>
+			<!--div id="section_div_7" class="main"></div-->
+			<div id="section_div_8" class="main"></div>
+			<!--div id="section_div_9" class="main"></div-->
+			<div id="section_div_10" class="main"></div>
+			<div id="section_div_11" class="main"></div>
 			<div id="delegations-form" class="cma_dialog" title="$link_alert" style="display:none"></div>
 
 			<div class="yui-skin-sam">
@@ -713,17 +738,17 @@
 			  
 			  SysAdmin = 12
 			-->
-			<div id="section_div_1" class="main" style="margin-left: 220px; display: none"></div>
-			<!--div id="section_div_2" class="main" style="margin-left: 220px; display: none"></div-->
-			<div id="section_div_3" class="main" style="margin-left: 220px; display: none"></div>
-			<div id="section_div_4" class="main" style="margin-left: 220px; display: none"></div>
-			<div id="section_div_5" class="main" style="margin-left: 220px; display: none"></div>
-			<div id="section_div_6" class="main" style="margin-left: 220px; display: none"></div>
-			<!--div id="section_div_7" class="main" style="margin-left: 220px; display: none"></div-->
-			<div id="section_div_8" class="main" style="margin-left: 220px; display: none"></div>
-			<!--div id="section_div_9" class="main" style="margin-left: 220px; display: none"></div-->
-			<div id="section_div_10" class="main" style="margin-left: 220px; display: none"></div>
-			<div id="section_div_11" class="main" style="margin-left: 220px; display: none"></div>
+			<div id="section_div_1" class="main"></div>
+			<!--div id="section_div_2" class="main"></div-->
+			<div id="section_div_3" class="main"></div>
+			<div id="section_div_4" class="main tabadmin"></div>
+			<div id="section_div_5" class="main"></div>
+			<div id="section_div_6" class="main"></div>
+			<!--div id="section_div_7" class="main"></div-->
+			<div id="section_div_8" class="main"></div>
+			<!--div id="section_div_9" class="main"></div-->
+			<div id="section_div_10" class="main"></div>
+			<div id="section_div_11" class="main"></div>
 			<div id="delegations-form" class="cma_dialog" title="$link_alert" style="display:none"></div>
 
 			<div class="yui-skin-sam">
