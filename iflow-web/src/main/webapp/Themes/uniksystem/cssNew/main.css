@@ -1009,14 +1009,15 @@ a.active {
 }
 
 .main {
-	margin-left: 270px; 
+    margin-left: 270px; 
 	/* margin-top: 10px; */
-	/* float:left; */
+	/* float:left; */ 
 	background-color: white; 
 	display: none;
 	margin-right: 10px;
 	box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
 	padding-bottom: 5px;
+	
 	
 }
 

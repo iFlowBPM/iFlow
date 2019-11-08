@@ -24,9 +24,9 @@
 			<link rel="stylesheet" href="Themes/${orgTheme}/css/tree.css" type="text/css" />
 			<link href="Themes/${orgTheme}/cssNew/main.css" rel="stylesheet" type="text/css" />
 			<link href="Themes/${orgTheme}/cssNew/reset.css" rel="stylesheet" type="text/css" />
-			#if($orgTheme != "uniksystem")
+			#if($orgTheme == "uniksystem")
 
-			  <link href="Themes/${orgTheme}/cssNew/styles.css" rel="stylesheet" type="text/css" />			
+			  <!-- link href="Themes/${orgTheme}/cssNew/styles.css" rel="stylesheet" type="text/css" /-->			
 			  <link href="Themes/${orgTheme}/cssNew/icons.css" rel="stylesheet" type="text/css" />
 		    #end		
 		
@@ -373,7 +373,7 @@
 		
 		</head>
 
-	<body onresize="javascript:mainResize()"  onload="javascript:setProcFlow()" /*onload="updateNotifications()"*/ style="
+	<body onresize="javascript:mainResize()"  onload="javascript:setProcFlow();$('#new_task_categ').hide()" /*onload="updateNotifications()"*/ style="
     background-image: linear-gradient(-90deg, #a9d7e4, #aea2cc);">
 	<script language="JavaScript">
 	function setProcFlow(){
@@ -496,29 +496,36 @@
 
 			<div id="main_sidebar" class="sidebar1">
 					#if($orgTheme == "uniksystem")
-		
-					<div id="dashboardplaceholder" style="height:48px;width:260px:color:#eee">Dashboard</div>
-		
+					<h3 class="Acor_01" style="height:48px;width:260px;text-align: left; padding: 12px 16px; margin:0; width: 100%; color: white;font-weight: 700;background-color: #33058d;font-size:16px;">
+						<a class="nav-link" href="#" style="text-decoration:none;color: white;font-weight: 700;font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';font-size:1em;line-height: 1.5;cursor: pointer;text-align: left;font-decoration:none;color:white">
+						<i class="icon-bpm mr-2" style="margin-right:8px; color:white;"></i><span style="color: white;font-weight: 700;font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';font-size:1em;line-height: 1.5;cursor: pointer;text-align: left;font-decoration:none;color:white" >BPM</span></a>
+				<!-- /div> -->
+					
+					<!-- <div id="dashboardplaceholder" style="height:48px;width:260px:color:#eee">Dashboard</div>-->
+		</h3>
 					#end
 
 				
 				<div id="Accordion1">
 					#if("$Tab2" != "no")	
-					<h3 class="Acor_01">
-						<a href="" onclick="javascript:tabber_right(1, 'main_content.jsp', 'cleanFilter=1');" title="$field_tasks">	
+					<h3 class="Acor_01" style="margin:0">
 						#if($orgTheme == "uniksystem")
-							<img src="Themes/${orgTheme}/subthemes/${subTheme}/images/filled-checklist.png" width="24" height="24" alt="" />
+							<a class="nav-link" href="" onclick="javascript:tabber_right(1, 'main_content.jsp', 'cleanFilter=1');$('#task-categs-ul').show();$('#new_task_categ').show()" title="$field_tasks">	
+								<i class="icon-tarefas mr-2" style="margin-right:8px;"></i><span>$field_tasks</span></a>				
+							</a>
 						#else
-							<img src="images/tarefas.png" width="24" height="24" alt="" />
+							<a href="" onclick="javascript:tabber_right(1, 'main_content.jsp', 'cleanFilter=1');" title="$field_tasks">	
+								<img src="images/tarefas.png" width="24" height="24" alt="" />
+								$field_tasks
+							</a>
 						#end
-							$field_tasks
-						</a>
 					</h3>
 					
-					<div class="Acor_02">
-						<div id='container_task_labels' class="txt_categ" style="height:0"></div>
-						<div style="font-size: 0.9em; color: #666666;" style="height:0">
-							<!--<a id="bt_edit_0" href="" onClick="editLabel('0','1'); return false;" class="lmenu" style="cursor:pointer">$new_label</a>-->
+					
+					<div class="Acor_02 clearfix">
+						<div id='container_task_labels' class="txt_categ clearfix" style="height:fit-content;"></div>
+						<div id="new_task_categ" style="font-size: 0.9em; color: #666666; bgcolor:#e6e6e6;" style="height:0;">
+							<a id="bt_edit_0" href="" onClick="editLabel('0','1'); return false;" class="lmenu" style="cursor:pointer">$new_label</a>
 							<a id="bt_confirm_0" href="" onClick="javascript:editLabel('0','0'); return false;" title="Confirmar" style="display:none">
 								<img border="0" src="Themes/newflow/images/confirm.png"  class="toolTipImg" href="javascript:editFolder('0','0');"/>
 							</a>
@@ -531,12 +538,13 @@
 						</div>
 					</div>
 					
+					
 					#end
 					#if("$Tab3" != "no")
-					<h3 class="Acor_01">
+					<h3 class="Acor_01" style="margin:0">
 						<a href="" onclick="javascript:tabber_load(3, '');" title="$tooltip_processes">
 						#if($orgTheme == "uniksystem")
-							<img src="Themes/${orgTheme}/subthemes/${subTheme}/images/filled-flow.png" width="24" height="24" alt="" />
+							<i class="icon-processos mr-2" style="margin-right:8px;"></i>
 						#else
 						    <img src="images/processos.png" width="24" height="24" alt=""/>
 						#end
@@ -548,9 +556,14 @@
 					#end
 					
 					#if("$Tab8" != "no")
-					<h3 class="Acor_01">
+					<h3 class="Acor_01" style="margin:0">
 						<a href="" onclick="javascript:tabber_load(8, '');" title="$tooltip_myprocesses">
-						<img src="images/pesquisa.png" width="24" height="24" alt="" />$field_myprocesses</a>
+						#if($orgTheme == "uniksystem")
+							<i class="icon-trophy mr-2" style="margin-right:8px;"></i>
+						#else
+						    <img src="images/pesquisa.png" width="18" height="18" alt="" />
+						#end
+						$field_myprocesses</a>
 					</h3>
 					<div class="Acor_02" style=" margin: 0 ; padding:20px 0 0 0 ;">
 						<div id="container_search"></div>
@@ -558,10 +571,10 @@
 					#end
 
 					#if("$Tab5" != "no")	
-					<h3 class="Acor_01">
+					<h3 class="Acor_01" style="margin:0">
 						<a href="" onclick="javascript:tabber_load(5, '');" title="$tooltip_delegations">
 						#if($orgTheme == "uniksystem")
-							<img src="Themes/${orgTheme}/subthemes/${subTheme}/images/filled-management.png" width="24" height="24" alt="" />
+							<i class="icon-hr mr-2" style="margin-right:8px;"></i>
 						#else
 						    <img src="images/delegacaoes.png" width="24" height="24" alt="" />
 						#end
@@ -588,10 +601,10 @@
 					#end
 					
 					#if($supervisor == "yes")
-					<h3 class="Acor_01">
+					<h3 class="Acor_01" style="margin:0">
 						<a href="" onclick="javascript:tabber_load(10, ''); title="$tooltip_reports">
 						#if($orgTheme == "uniksystem")
-							<img src="Themes/${orgTheme}/subthemes/${subTheme}/images/filled-business-report.png" width="24" height="24" alt="" />
+							<i class="icon-reports mr-2" style="margin-right:8px;"></i>
 						#else
 							<img src="images/relatorios.png" width="24" height="24" alt="" />
 						#end
@@ -613,11 +626,11 @@
 					#end
 
 					#if($org_admin == "yes" || $sys_admin=="yes")
-					<h3 class="Acor_01">
+					<h3 class="Acor_01" style="margin:0">
 						<a href="#" onclick="javascript:tabber_load(4, '');">
 						
 						#if($orgTheme == "uniksystem")
-							<img src="Themes/${orgTheme}/subthemes/${subTheme}/images/filled-administrator.png" width="24" height="24" alt="" />
+							<i class="icon-gear mr-2" style="margin-right:8px;"></i>
 						#else
 							<img src="images/admin.png" width="24" height="24" alt="" />
 						#end 

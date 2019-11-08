@@ -30,9 +30,9 @@
 	List<Folder> folders = fm.getUserFolders(userInfo);
 %>
 
-<ul>
+<ul id="task-categs-ul" style="display:none;">
 	<%for (Folder folder: folders) { %>
-	<li class="droppable" style="height:34px;padding:2px;margin:2px;" valToAssign="<%= folder.getFolderid()%>">
+	<li class="droppable clearfix" style="height:34px;padding:2px;margin:2px;" valToAssign="<%= folder.getFolderid()%>">
 
 		<a href="" onClick="deleteLabel('<%=folder.getFolderid()%>'); return false;" class="lmenu" id="bt_delete_<%=folder.getFolderid()%>">
 			<img id="bte_change_<%=folder.getFolderid()%>" title="Remover" width="10" height="10" src="images/icon_delete.png" style="margin-left:-20px"/>

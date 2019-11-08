@@ -135,7 +135,7 @@ fill:#0093b2;
 
 /*MENU-------------------------------------------------------------------------------------------------------------------------------------------------------*/
 .menu {
-width: 20%;
+width: 260px;
 min-height: 100vh;
 }
 
@@ -156,19 +156,19 @@ font-weight: 700;
 background-color: #33058d
 }
 
-/* 2º NÍVEL DE MENU */
+/* 2Âº NÃ�VEL DE MENU */
 .menu .menulvl-2 {
 padding: 0rem 0rem 0rem 2rem;
-display: block;
+/* display: block; */
 color: #3a3b45;
 text-decoration: none;
 background-color: #e6e6e6;
 }
 
-/* 3º NÍVEL DE MENU */
+/* 3Âº NÃ�VEL DE MENU */
 .menu .menulvl-3 {
 padding: 0rem 0rem 0rem 4rem;
-display: block;
+/*display: block;*/
 color: #3a3b45;
 text-decoration: none;
 background-color: #cccccc;
@@ -195,72 +195,72 @@ transition: .2s ease-out;
 
 /*PUZZLE-----------------------------------------------------------------------------------------------------------------------------------------------------*/
 .tile1 {
-width:52px;
-height:52px;
-line-height:52px;
+width:65px;
+height:65px;
+line-height:65px;
 background: url(../img/assets/buymenu/bg.png);
 background-position: 0px 0px;
 text-align: center;
 }
 
 .tile2 {
-width:52px;
-height:52px;
-line-height:52px;
+width:65px;
+height:65px;
+line-height:65px;
 background: url(../img/assets/buymenu/bg.png);
 background-position: -52px 0px;
 text-align: center;
 }
 
 .tile3 {
-width:52px;
-height:52px;
-line-height:52px;
+width:65px;
+height:65px;
+line-height:65px;
 background: url(../img/assets/buymenu/bg.png);
 background-position: -104px 0px;
 text-align: center;
 }
 
 .tile4 {
-width:52px;
-height:52px;
-line-height:52px;
+width:65px;
+height:65px;
+line-height:65px;
 background: url(../img/assets/buymenu/bg.png);
 background-position: -156px 0px;
 text-align: center;
 }
 
 .tile5 {
-width:52px;
-height:52px;
-line-height:52px;
+width:65px;
+height:65px;
+line-height:65px;
 background: url(../img/assets/buymenu/bg.png);
 background-position: 0px -52px;
 text-align: center;
 }
 
 .tile6 {
-width:52px;
-height:52px;
-line-height:52px;
+width:65px;
+height:65px;
+line-height:65px;
 background: url(../img/assets/buymenu/bg.png);
 background-position: -52px -52px;
 text-align: center;
 }
 
 .tile7 {
-width:52px;
-height:52px;
-line-height:52px;
+width:65px;
+height:65px;
+line-height:65px;
 background: url(../img/assets/buymenu/bg.png);
 background-position: -104px -52px;
 text-align: center;
 }
 
 .tile8 {
-width:52px;
-height:52px;
-line-height:52px;
+width:65px;
+height:65px;
+line-height:65px;
 background: url(../img/assets/buymenu/bg.png);
 background-position: -156px -52px;
 text-align: center;

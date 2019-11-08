@@ -1,4 +1,4 @@
-#if ($orgTheme == "newflow")
+#if ($orgTheme == "newflow" || $orgTheme == "uniksystem")
 
 #if(${procMenuVisible} == "visible")
 <ul class="menu">

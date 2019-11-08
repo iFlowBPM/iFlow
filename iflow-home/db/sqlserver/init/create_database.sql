@@ -1991,7 +1991,7 @@ GO
 
 CREATE TABLE subflow_block_mapping (
   id INT NOT NULL IDENTITY,
-  created timestamp NOT NULL,
+  created datetime NOT NULL,
   flowname varchar(64) NOT NULL,
   sub_flowname varchar(64) NOT NULL,
   original_blockid INT NOT NULL,
