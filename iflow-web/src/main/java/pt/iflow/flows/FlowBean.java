@@ -1268,7 +1268,7 @@ public class FlowBean implements Flow {
     String login = userInfo.getUtilizador();
 
     Connection db = null;
-    PreparedStatement pst = null;
+    PreparedStatement pst = null,pst2 = null;
     ResultSet rs = null;
 
     String sResult = "";
@@ -1308,7 +1308,9 @@ public class FlowBean implements Flow {
           String query = DBQueryManager
               .processQuery("Flow.update", new Object[] { String.valueOf(block.getId()), sResult, String.valueOf(nExitFlag),
                   String.valueOf(flowid), String.valueOf(pid), String.valueOf(subpid), String.valueOf(mid) });
-          pst.executeUpdate(query);
+          pst2 = db.prepareStatement(query);
+          pst2.execute();
+          pst2.close();
 
           if (block.getId() != currState || !StringUtils.equals(sResult, currResult) || nExitFlag != currExitFlag) {
 
@@ -1317,7 +1319,9 @@ public class FlowBean implements Flow {
               query = DBQueryManager.processQuery("Flow.insert_state_history", new Object[] { String.valueOf(flowid),
                   String.valueOf(pid), String.valueOf(subpid), String.valueOf(block.getId()), sResult, String.valueOf(nExitFlag),
                   String.valueOf(mid), outPort == null ? null : "'" + outPort.getName() + "'" });
-              pst.executeUpdate(query);
+              pst2 = db.prepareStatement(query);
+              pst2.execute();
+              pst2.close();
             }
           }
 
@@ -1327,13 +1331,17 @@ public class FlowBean implements Flow {
           String query = DBQueryManager.processQuery("Flow.insert_state", new Object[] { String.valueOf(flowid),
               String.valueOf(pid), String.valueOf(subpid), String.valueOf(block.getId()), sResult, String.valueOf(nExitFlag),
               String.valueOf(mid) });
-          pst.executeUpdate(query);
+          pst2 = db.prepareStatement(query);
+          pst2.execute();
+          pst2.close();
 
           if (block.isSaveFlowState() && Const.sSAVE_FLOW_STATE_ALLWAYS.equals("true")) {
             query = DBQueryManager.processQuery("Flow.insert_state_history", new Object[] { String.valueOf(flowid),
                 String.valueOf(pid), String.valueOf(subpid), String.valueOf(block.getId()), sResult, String.valueOf(nExitFlag),
                 String.valueOf(mid), outPort == null ? null : "'" + outPort.getName() + "'" });
-            pst.executeUpdate(query);
+            pst2 = db.prepareStatement(query);
+            pst2.execute();
+            pst2.close();
           }
 
           DatabaseInterface.commitConnection(db);
@@ -1350,7 +1358,7 @@ public class FlowBean implements Flow {
         }
         return false;
       } finally {
-        DatabaseInterface.closeResources(db, pst, rs);
+        DatabaseInterface.closeResources(db, pst, pst2, rs);
       }
 
       procData.setTempData(DataSetVariables.FLOW_STATE, null);

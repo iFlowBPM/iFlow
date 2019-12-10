@@ -679,6 +679,7 @@ try {
         hm.put("pnumber", pnumber);
         hm.put("previousUserid", sPreviousUserid);
       
+        sFlow = sFlow.trim();
         FlowSetting fs = BeanFactory.getFlowSettingsBean().getFlowSetting(fd.getId(), Const.sFLOW_INITIALS);
         String pinitials = (fs==null || fs.getValue()==null)?"":(fs.getValue()+"   ").substring(0,3);
         if (sFlow != null && sFlow.length()>2 && (pinitials==null || pinitials.trim().length()==0)) {

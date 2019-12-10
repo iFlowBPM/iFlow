@@ -54,7 +54,7 @@
                                    font-size="11pt"
                                    font-family="Arial,sans-serif"
                                    text-align="start"
-                                   font-weight="bold">ID PRODUTO: <fop:inline>$id_produto:t$</fop:inline>
+                                   font-weight="bold">ID PRODUTO: <fop:inline>$texto:t$</fop:inline>
                         </fop:block>
                         <fop:block line-height="110%" hyphenation-ladder-count="no-limit" hyphenate="false"
                                    language="pt"

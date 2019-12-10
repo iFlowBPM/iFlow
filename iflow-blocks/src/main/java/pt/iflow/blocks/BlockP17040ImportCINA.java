@@ -5,6 +5,7 @@ import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleFiel
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -276,14 +277,21 @@ public class BlockP17040ImportCINA extends BlockP17040Import {
 	}
 
 	private void importInfContbInst(Connection connection, UserInfoInterface userInfo, String type,
-			HashMap<String, Object> lineValues, Integer infPerInst_id) throws SQLException {		
+			HashMap<String, Object> lineValues, Integer infPerInst_id) throws SQLException {
+		Double montAcumImp = (Double) lineValues.get("montAcumImp");
+		BigDecimal bigDecimal = new BigDecimal(montAcumImp);
+		BigDecimal roundedWithScale = bigDecimal.setScale(2, BigDecimal.ROUND_HALF_UP);
+		
+		if(bigDecimal.compareTo(BigDecimal.ZERO)==1 && roundedWithScale.compareTo(BigDecimal.ZERO)==0)
+			montAcumImp = 0.01;
+		
 		FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `infContbInst` (`infPerInst_id`, `type`, `classContbInst`, `recBal`, "
 				+ "`formaConstOnus`, `montAcumImp`, `tpImp`, `metValImp`, `varAcumRC`, `perfStat`, "
 				+ "`dtPerfStat`, `provPRExtp`, `sitDifReneg`, `recAcumIncump`, `dtEstDifReneg`, `cartPrud`, `montEscrit`) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
 				new Object[] { infPerInst_id, type, lineValues.get("classContbInst"), lineValues.get("recBal"),
-						lineValues.get("formaConstOnus"), lineValues.get("montAcumImp"),
+						lineValues.get("formaConstOnus"), montAcumImp/*lineValues.get("montAcumImp")*/,
 						lineValues.get("tpImp"), lineValues.get("metValImp"), lineValues.get("varAcumRC"),
 						lineValues.get("perfStat"), lineValues.get("dtPerfStat"), lineValues.get("provPRExtp"), lineValues.get("sitDifReneg"),
 						lineValues.get("recAcumIncump"), lineValues.get("dtEstDifReneg"), lineValues.get("cartPrud"), lineValues.get("montEscrit")});

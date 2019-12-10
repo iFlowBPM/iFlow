@@ -65,9 +65,9 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 					new Object[] { crcId, idInst, idCont }).size() > 1)
 				result.add(new ValidationError("EF012", "infInst", "idCont", idCont, infInstId));
 
-			HashMap<String, Object> infInstPreviousInsertValues = fillAtributtes(null, connection, userInfo,
-					"select * from infInst 	where idCont=''{0}'' and idInst=''{1}'' and dtRefInst=''{2}'' and type=''CII'' order by id desc limit 1 ", 
-					new Object[] { idCont, idInst, dtRefInst });
+//			HashMap<String, Object> infInstPreviousInsertValues = fillAtributtes(null, connection, userInfo,
+//					"select * from infInst 	where idCont=''{0}'' and idInst=''{1}'' and dtRefInst=''{2}'' and type=''CII'' order by id desc limit 1 ", 
+//					new Object[] { idCont, idInst, dtRefInst });
 			
 			// balcao
 			String balcao = (String) infInstValues.get("balcao");
@@ -89,13 +89,13 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 
 			// IEB
 			String IEB = (String) infInstValues.get("IEB");
-			if (retrieveSimpleField(connection, userInfo,
-					"select id from infInst where IEB = ''{1}'' and !(idCont= ''{1}'' and idInst = ''{2}'')",
-					new Object[] { IEB, idCont, idInst }).size() > 0)
-				result.add(new ValidationError("CI058", "infInst", "IEB", idCont, infInstId, IEB));
+//			if (retrieveSimpleField(connection, userInfo,
+//					"select id from infInst where IEB = ''{1}'' and !(idCont= ''{1}'' and idInst = ''{2}'')",
+//					new Object[] { IEB, idCont, idInst }).size() > 0)
+//				result.add(new ValidationError("CI058", "infInst", "IEB", idCont, infInstId, IEB));
 			//::INC031
-			if (StringUtils.equals(type, "CIU") && !StringUtils.equals(IEB, (String) infInstPreviousInsertValues.get("IEB")))
-				result.add(new ValidationError("INC030", "infInst", "IEB", idCont, infInstId, IEB));
+//			if (StringUtils.equals(type, "CIU") && !StringUtils.equals(IEB, (String) infInstPreviousInsertValues.get("IEB")))
+//				result.add(new ValidationError("INC030", "infInst", "IEB", idCont, infInstId, IEB));
 
 			// paisLegis
 			String paisLegis = (String) infInstValues.get("paisLegis");
@@ -166,8 +166,8 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			if (dtUtilFund != null && dtMat != null && dtUtilFund.after(dtMat))
 				result.add(new ValidationError("INC015", "infInst", "dtUtilFund", idCont, infInstId, dtUtilFund));
 			//::INC030
-			if (dtUtilFund != null && StringUtils.equals(type, "CIU") && infInstPreviousInsertValues.get("dtUtilFund")!= null && dtUtilFund.compareTo((Date) infInstPreviousInsertValues.get("dtUtilFund"))!=0)
-				result.add(new ValidationError("INC030", "infInst", "dtUtilFund", idCont, infInstId, dtUtilFund));
+//			if (dtUtilFund != null && StringUtils.equals(type, "CIU") && infInstPreviousInsertValues.get("dtUtilFund")!= null && dtUtilFund.compareTo((Date) infInstPreviousInsertValues.get("dtUtilFund"))!=0)
+//				result.add(new ValidationError("INC030", "infInst", "dtUtilFund", idCont, infInstId, dtUtilFund));
 			
 			
 			// jcosta:20180831 - comentado até validar se a condição da mazars é para manter
@@ -193,8 +193,8 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 			if (dtIniInst != null && dtReneg != null && dtIniInst.after(dtReneg))
 				result.add(new ValidationError("INC026", "infInst", "dtIniInst", idCont, infInstId, dtIniInst));
 			//::INC029			
-			if (dtIniInst != null && StringUtils.equals(type, "CIU") && infInstPreviousInsertValues.get("dtIniInst")!=null && dtIniInst.compareTo((Date) infInstPreviousInsertValues.get("dtIniInst"))!=0)
-				result.add(new ValidationError("INC029", "infInst", "dtIniInst", idCont, infInstId, dtIniInst));
+//			if (dtIniInst != null && StringUtils.equals(type, "CIU") && infInstPreviousInsertValues.get("dtIniInst")!=null && dtIniInst.compareTo((Date) infInstPreviousInsertValues.get("dtIniInst"))!=0)
+//				result.add(new ValidationError("INC029", "infInst", "dtIniInst", idCont, infInstId, dtIniInst));
 			
 			//::INC047
 			//::INC048

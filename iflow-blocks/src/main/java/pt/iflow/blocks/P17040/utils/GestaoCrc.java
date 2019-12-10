@@ -481,9 +481,17 @@ public class GestaoCrc {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
+				String subQuery = "";
+				if(StringUtils.equalsIgnoreCase(types[1], "ICI") || StringUtils.equalsIgnoreCase(types[1], "ICU"))
+					subQuery = " right join infContbInst on infPerInst.id = infContbInst.infPerInst_id ";
+				else if(StringUtils.equalsIgnoreCase(types[1], "IFI") || StringUtils.equalsIgnoreCase(types[1], "IFU"))
+					subQuery = " right join infFinInst on infPerInst.id = infFinInst.infPerInst_id ";
+				else if(StringUtils.equalsIgnoreCase(types[1], "IRI") || StringUtils.equalsIgnoreCase(types[1], "IRU"))
+					subQuery = " right join infRInst on infPerInst.id = infRInst.infPerInst_id ";
+				
 				String query = "select u_gestao.id, comInfInst.dtRef "+
-					"from u_gestao, crc, conteudo, comInfInst, infPerInst "+
-					"where u_gestao.out_id = crc.id and "+
+					"from u_gestao, crc, conteudo, comInfInst, infPerInst "+ subQuery +
+					"where u_gestao.out_id = crc.id and "+ 
 					"	crc.id = conteudo.crc_id and "+
 					"    conteudo.id = comInfInst.conteudo_id and "+
 					"    comInfInst.id = infPerInst.comInfInst_id and "+
@@ -719,7 +727,7 @@ public class GestaoCrc {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
-			String query = "select u_gestao.id, infCompC.dtRef "+
+			String query = "select u_gestao.id, infCompC.dtRef, infCompC.type "+
 				"from u_gestao, crc, conteudo, comInfComp, infCompC "+
 				"where u_gestao.out_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
@@ -742,40 +750,52 @@ public class GestaoCrc {
 			
 			Integer u_gestao_id = rs.getInt(1);
 			Date dtRefInfDiaAux = rs.getDate(2);
-			
+			String previousType = rs.getString(3);
 			pst.close();
 			rs.close();
 			
-			query = "select fichAce.id, u_gestao.id, infCompC.type "+
-				"from u_gestao, crc, conteudo, avisRec, fichAce "+ 
-				"LEFT JOIN infCompC ON (infCompC.comInfComp_id = (SELECT id FROM comInfComp WHERE comInfComp.conteudo_id = (SELECT conteudo.id FROM conteudo WHERE crc_id=u_gestao.out_id)) AND infCompC.idCont=? AND infCompC.idInst=? AND infCompC.dtRef=?)  "+	
-				"where  u_gestao.in_id = crc.id and "+
-				"	crc.id = conteudo.crc_id and "+
-				"	conteudo.id = avisRec.conteudo_id and "+
-				"	avisRec.id = fichAce.avisRec_id and "+
-				"   u_gestao.id = ? and "+
-				"   fichAce.id not in  "+
-				"		( select regMsg.fichAce_id from regMsg, msg "+
-				"			where regMsg.idCont = ? and regMsg.idInst = ? "+
-				"			and (msg.nvCrit=0 or msg.codMsg!='CC003')" +	
-				"           and (operOrig='CCI' or operOrig='CCU' or operOrig = 'CCD')); ";
+			query = "select operOrig, codMsg, nvCrit " + 
+				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg, msg " +      
+				"where  u_gestao.in_id = crc.id and " +   
+				"	crc.id = conteudo.crc_id and " +   
+				"	conteudo.id = avisRec.conteudo_id and " +   
+				"	avisRec.id = fichAce.avisRec_id and " +
+				"   fichAce.id = regMsg.fichAce_id and " +
+				"   regMsg.id = msg.regMsg_id and " +
+				"	u_gestao.id = ? and " +
+				"   regMsg.idCont = ? and regMsg.idInst = ? and" +
+				"	msg.nvCrit = 0 ";
 			
 			pst = connection.prepareStatement(query);
-			pst.setString(1, idCont);
-			pst.setString(2, idInst);
-			pst.setDate(3, new java.sql.Date(dtRefInfDiaAux.getTime()));
-			pst.setInt(4, u_gestao_id);
-			pst.setString(5, idCont);
-			pst.setString(6, idInst);
+			pst.setInt(1, u_gestao_id);
+			pst.setString(2, idCont);
+			pst.setString(3, idInst);
 			rs = pst.executeQuery();
 			
-			if(rs.next() && dtRefInfDiaAux.getTime()<=dtRef.getTime())
-				if (StringUtils.equalsIgnoreCase(rs.getString("type"),"CCD"))
+			//error occurred in last processing
+			if(rs.next()){
+				String codMsg = rs.getString(2);
+				while(rs.next())
+					codMsg += rs.getString(2);
+				
+				if(StringUtils.endsWithIgnoreCase("CCI",previousType) && StringUtils.contains(codMsg, "CC003"))
+					return new ImportAction(ImportActionType.UPDATE, u_gestao_id);
+				else if(StringUtils.endsWithIgnoreCase("CCI",previousType))
 					return new ImportAction(ImportActionType.CREATE);
-				else 
-					return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));			
-			else 
-				return new ImportAction(ImportActionType.CREATE);
+				else if(StringUtils.endsWithIgnoreCase("CCU",previousType))
+					return new ImportAction(ImportActionType.UPDATE, u_gestao_id);
+				else if(StringUtils.endsWithIgnoreCase("CCD",previousType))
+					return new ImportAction(ImportActionType.CREATE);
+			}
+			//no error  occurred
+			else {
+				if(StringUtils.endsWithIgnoreCase("CCI",previousType))
+					return new ImportAction(ImportActionType.UPDATE, u_gestao_id);
+				else if(StringUtils.endsWithIgnoreCase("CCU",previousType))
+					return new ImportAction(ImportActionType.UPDATE, u_gestao_id);
+				else if(StringUtils.endsWithIgnoreCase("CCD",previousType))
+					return new ImportAction(ImportActionType.CREATE, u_gestao_id);
+			}
 			
 		} catch (Exception e) {
 

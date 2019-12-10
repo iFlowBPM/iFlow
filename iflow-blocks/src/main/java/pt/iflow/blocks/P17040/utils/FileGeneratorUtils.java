@@ -35,6 +35,8 @@ public class FileGeneratorUtils {
 			for(int i=0; i<parameters.length; i++)
 				if(parameters[i] instanceof Integer)
 					parameters[i] = StringUtils.remove(StringUtils.remove(parameters[i].toString(),','),'.');
+				else if(parameters[i] instanceof Double)
+					parameters[i] = StringUtils.remove(parameters[i].toString(),',');
 			filledQuery = MessageFormat.format(query, parameters);
 			pst = connection.prepareStatement(filledQuery);
 			rs = pst.executeQuery();
@@ -101,12 +103,12 @@ public class FileGeneratorUtils {
 		} catch (Exception e) {
 			Logger.error(userInfo.getUtilizador(), "FileGeneratorUtils", "fillAtributtes",
 					filledQuery + e.getMessage(), e);
-			try {
-				writer.writeAttribute("nome", "nome correcto");
-			} catch (XMLStreamException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+//			try {
+//				writer.writeAttribute("nome", "nome correcto");
+//			} catch (XMLStreamException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
 		} finally {
 			DatabaseInterface.closeResources(db, pst, rs);
 		}

@@ -181,25 +181,42 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 		Integer idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("idEnt"), userInfo, connection);
 		if(idEnt_id==null)
 			throw new SQLException("idEnt ainda não está registado no sistema");
+				
+		List<Integer> entCompList = retrieveSimpleField(connection, userInfo,
+			"select id from entComp where infCompC_id = {0} and idEnt_id = {1} and rendLiq = {2} and rendLiqChoq = {3}",
+			new Object[] { infCompC_id, idEnt_id, lineValues.get("rendLiq"), lineValues.get("rendLiqChoq") });
 		
-		FileImportUtils.insertSimpleLine(connection, userInfo,
+		if(entCompList.isEmpty())
+			FileImportUtils.insertSimpleLine(connection, userInfo,
 				"INSERT INTO `entComp` (`infCompC_id`, `idEnt_id`, `rendLiq`, `rendLiqChoq`) "
 				+ "VALUES ( ?, ?, ?, ?);",
 				new Object[] { infCompC_id, idEnt_id, lineValues.get("rendLiq"), lineValues.get("rendLiqChoq")});
 		
 		//protComp
-		if(StringUtils.isNotBlank((String)lineValues.get("idProt")))
-			FileImportUtils.insertSimpleLine(connection, userInfo,
+		if(StringUtils.isNotBlank((String)lineValues.get("idProt"))){
+			List<Integer> protCompList = retrieveSimpleField(connection, userInfo,
+				"select id from protComp where infCompC_id = {0} and idProt = {1} and imoInst = {2} and dtAq = {3}",
+				new Object[] { infCompC_id, lineValues.get("idProt"), lineValues.get("imoInst"), lineValues.get("dtAq") });
+			
+			if(protCompList.isEmpty())
+				FileImportUtils.insertSimpleLine(connection, userInfo,
 					"INSERT INTO `protComp` (`infCompC_id`, `idProt`, `imoInst`, `dtAq`) "
 					+ "VALUES ( ?, ?, ?, ?);",
 					new Object[] { infCompC_id, lineValues.get("idProt"), lineValues.get("imoInst"), lineValues.get("dtAq")});
+		}
 		
 		//justComp
-		if(StringUtils.isNotBlank(lineValues.get("tpJustif").toString()) || StringUtils.isNotBlank(lineValues.get("justif").toString()))
-		FileImportUtils.insertSimpleLine(connection, userInfo,
-				"INSERT INTO `justComp` (`infCompC_id`, `tpJustif`, `justif`) "
-				+ "VALUES ( ?, ?, ?);",
-				new Object[] { infCompC_id, lineValues.get("tpJustif"), lineValues.get("justif")});
+		if(StringUtils.isNotBlank((String)lineValues.get("tpJustif")) || StringUtils.isNotBlank((String)lineValues.get("justif"))){
+			List<Integer> justCompList = retrieveSimpleField(connection, userInfo,
+					"select id from justComp where infCompC_id = {0} and tpJustif = ''{1}'' and justif = ''{2}''",
+					new Object[] { infCompC_id, lineValues.get("tpJustif"), lineValues.get("justif") });
+			
+			if(justCompList.isEmpty())
+				FileImportUtils.insertSimpleLine(connection, userInfo,
+					"INSERT INTO `justComp` (`infCompC_id`, `tpJustif`, `justif`) "
+					+ "VALUES ( ?, ?, ?);",
+					new Object[] { infCompC_id, lineValues.get("tpJustif"), lineValues.get("justif")});
+		}
 		
 		return crcIdResult;
 	}

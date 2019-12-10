@@ -108,19 +108,24 @@ public class BlockPutFileInDisk extends Block {
         ProcessListVariable docsVar = procData.getList(sDocumentVar);
         String sPath = procData.transform(userInfo, sPathVar);
 
-        for (int i = 0; i < docsVar.size(); i++) {
-	  Document doc = null;
-	  if (docsVar.getItem(i).getValue() instanceof Integer) {
-          	doc = docBean.getDocument(userInfo, procData, ((Integer) docsVar.getItem(i).getValue()).intValue());
-	  }
-	  else {
-          	doc = docBean.getDocument(userInfo, procData, ((Long) docsVar.getItem(i).getValue()).intValue());
-	  }
-	  	  String unsescapedPath = StringEscapeUtils.unescapeHtml(sPath);
-          FileUtils.writeByteArrayToFile(new File(unsescapedPath + File.separator + doc.getFileName()), doc.getContent());
+        if(docsVar.size()==0){
+        	Logger.error(login, this, "after", procData.getSignature() + " no file(s) to write in document var!");
+        	outPort = portError;	
+        } else {
+	        for (int i = 0; i < docsVar.size(); i++) {
+			  Document doc = null;
+			  if (docsVar.getItem(i).getValue() instanceof Integer) {
+		          	doc = docBean.getDocument(userInfo, procData, ((Integer) docsVar.getItem(i).getValue()).intValue());
+			  }
+			  else {
+		          	doc = docBean.getDocument(userInfo, procData, ((Long) docsVar.getItem(i).getValue()).intValue());
+			  }
+			  	  String unsescapedPath = StringEscapeUtils.unescapeHtml(sPath);
+		          FileUtils.writeByteArrayToFile(new File(unsescapedPath + File.separator + doc.getFileName()), doc.getContent());
+		        }
+		
+	        outPort = portSuccess;
         }
-
-        outPort = portSuccess;
       } catch (Exception e) {
         Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
         outPort = portError;

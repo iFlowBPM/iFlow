@@ -276,8 +276,14 @@ public class BlockP17040ValidateCINA extends BlockP17040Validate {
 				Date dtInstVenc = (Date) infFinInstValues.get("dtInstVenc");
 				
 				//::IP009: Data em que o instrumento ficou vencido não deve estar preenchida quando montantes vencido e abatido ao ativo iguais a zero.
-				if (dtInstVenc != null && montVenc != null && montVenc != null && montVenc.compareTo(BigDecimal.ZERO) == 0 && montAbAtv != null && montAbAtv.compareTo(BigDecimal.ZERO) == 0)
-					result.add(new ValidationError("IP009", "infFinInst", "dtInstVenc", idCont, infPerInst_id, dtInstVenc));
+				if ( dtInstVenc!=null && montVenc != null && montVenc.compareTo(BigDecimal.ZERO) == 0 && montAbAtv != null && montAbAtv.compareTo(BigDecimal.ZERO) == 0){
+					List<Integer> respEntInstIdList = retrieveSimpleField(connection, userInfo,
+							"select id from respEntInst where infFinInst_id = {0} and montVencEnt > 0", new Object[] { (Integer)infFinInstValues.get("id") });
+					
+					if(respEntInstIdList.isEmpty())
+						result.add(new ValidationError("IP009", "infFinInst", "dtInstVenc", idCont, infPerInst_id, dtInstVenc));
+				}
+					
 				
 				//::IP010: Data em que o instrumento ficou vencido é obrigatória para montantes ven-cido/abatido ao ativo superiores a zero.
 				if (dtInstVenc == null && ((montVenc != null && montVenc.compareTo(BigDecimal.ZERO) == 1) || (montAbAtv != null && montAbAtv.compareTo(BigDecimal.ZERO) == 1)))
