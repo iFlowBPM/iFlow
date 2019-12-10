@@ -2032,6 +2032,17 @@ public class UserManagerBean
       rs = null;
       Logger.debug(username, this, "newRegistration", "Organization created successfully");
       
+      // set organization theme
+      pst = db.prepareStatement("insert into organization_theme (organizationid,theme, style_url, logo_url) values (?,?,?,?)");
+      pst.setInt(1, orgId);
+      pst.setString(2, "newflow");
+      pst.setString(3, "default");
+      pst.setString(4, "Logo");
+      pst.executeUpdate();
+      DatabaseInterface.closeResources(new Object[] { pst, rs });
+      pst = null;
+      rs = null;
+      Logger.debug(username, this, "newRegistration", "Organization theme created successfully");
 
       pst = db.prepareStatement("insert into organizational_units (ORGANIZATIONID,PARENT_ID,NAME,DESCRIPTION) values (?,?,?,?)", new String[] { "unitid" });
       pst.setInt(1, orgId);

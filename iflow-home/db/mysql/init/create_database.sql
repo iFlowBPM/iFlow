@@ -300,6 +300,7 @@ CREATE TABLE `activity` (
   `read_flag` INT(1) NULL DEFAULT 1,
   `mid` INT NULL DEFAULT 0,
   `folderid` INT NULL,
+  `previoususerid` VARCHAR(100) NULL,
   PRIMARY KEY (`flowid`, `pid`, `subpid`, `userid`),
   CONSTRAINT `activity_process_fk` FOREIGN KEY `activity_process_fk` (`flowid`, `pid`, `subpid`)
     REFERENCES `process` (`flowid`, `pid`, `subpid`)
@@ -369,7 +370,19 @@ CREATE TABLE `activity_history` (
   `read_flag` INT(1) NULL DEFAULT 1,
   `mid` INT NULL DEFAULT 0,
   `worker` INT(1) NULL DEFAULT 0,
-  `undoflag` INT(1) NULL DEFAULT 0
+  `undoflag` INT(1) NULL DEFAULT 0,
+  `previoususerid` VARCHAR(100) NULL,
+<<<<<<< .mine
+
+
+
+
+=======
+  CONSTRAINT `activity_history_process_fk` FOREIGN KEY `activity_history_process_fk` (`flowid`, `pid`, `subpid`)
+    REFERENCES `process_history` (`flowid`, `pid`, `subpid`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+>>>>>>> .theirs
 )
 ENGINE = INNODB DEFAULT CHARSET=utf8;
 
@@ -1896,7 +1909,7 @@ CREATE TABLE `serial_code_templates` (
   PRIMARY KEY (`template`, `name`, `organization`)
 );
 
-ALTER TABLE `iflow`.`reporting` ADD INDEX `IDX_REPORTING`(`flowid`, `pid`, `subpid`);
+ALTER TABLE reporting ADD INDEX `IDX_REPORTING`(`flowid`, `pid`, `subpid`);
 
 -- insert into counter values ('nodekey',0,NOW());
 
