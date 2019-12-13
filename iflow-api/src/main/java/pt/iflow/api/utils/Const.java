@@ -468,6 +468,11 @@ public class Const {
 	//if using Windows domain integrated authentication
 	public static Boolean AUTHENTICATION_WINDOWS = false;
 	
+	//if authenticating with HTTP Param Token
+	public static Boolean AUTHENTICATION_TOKEN = false;
+	public static String AUTHENTICATION_TOKEN_PARAM_NAME = "";
+	public static String AUTHENTICATION_TOKEN_ENDPOINT = "";
+	
 	static {
 		ALLOWED_LOCALES.add(sDEFAULT_LOCALE_PT_PT);
 		ALLOWED_LOCALES.add(sDEFAULT_LOCALE_EN_US);
@@ -941,6 +946,21 @@ public class Const {
 	    } catch (Exception e) { 
 	    	ENCRYPT_FILESYSTEM_DOCS = false; 
 	    }
+		try {
+			AUTHENTICATION_TOKEN = Boolean.valueOf(Setup.getProperty("AUTHENTICATION_TOKEN"));
+		} catch (Exception e) {
+			AUTHENTICATION_TOKEN=false;
+		}
+		try {
+			AUTHENTICATION_TOKEN_PARAM_NAME = Setup.getProperty("AUTHENTICATION_TOKEN_PARAM_NAME");
+		} catch (Exception e) {
+			AUTHENTICATION_TOKEN_PARAM_NAME="";
+		}
+		try {
+			AUTHENTICATION_TOKEN_ENDPOINT = Setup.getProperty("AUTHENTICATION_TOKEN_ENDPOINT");
+		} catch (Exception e) {
+			AUTHENTICATION_TOKEN_ENDPOINT="";
+		}
 	}
 
 	public static void main(String[] args) {

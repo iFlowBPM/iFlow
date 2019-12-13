@@ -371,18 +371,7 @@ CREATE TABLE `activity_history` (
   `mid` INT NULL DEFAULT 0,
   `worker` INT(1) NULL DEFAULT 0,
   `undoflag` INT(1) NULL DEFAULT 0,
-  `previoususerid` VARCHAR(100) NULL,
-<<<<<<< .mine
-
-
-
-
-=======
-  CONSTRAINT `activity_history_process_fk` FOREIGN KEY `activity_history_process_fk` (`flowid`, `pid`, `subpid`)
-    REFERENCES `process_history` (`flowid`, `pid`, `subpid`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
->>>>>>> .theirs
+  `previoususerid` VARCHAR(100) NULL
 )
 ENGINE = INNODB DEFAULT CHARSET=utf8;
 
