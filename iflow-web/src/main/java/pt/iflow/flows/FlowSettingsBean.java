@@ -816,6 +816,7 @@ public class FlowSettingsBean
     altmp.add(new FlowSetting(anFlowId, "HOT_FOLDER_IN_USER", "O utilizador a utilizar para criar o processo"));
     
     altmp.add(new FlowSetting(anFlowId, "ENABLED_TRIAL", "Trial enable/disable"));
+    altmp.add(new FlowSetting(anFlowId, "APPLICATION_SETTING", "SU Application"));
     return Collections.unmodifiableList(altmp);
   }
   
@@ -1042,4 +1043,33 @@ public class FlowSettingsBean
 	    }
 	    
 	  }
+
+@Override
+public List<String> getApplicationNames() {
+    DataSource ds = null;
+    Connection db = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;    
+    List<String> result = new ArrayList<String>(); 
+    
+    try {
+      final String sQuery = "select name from application";
+      ds = Utils.getDataSource();
+      db = ds.getConnection();
+      pst = db.prepareStatement(sQuery);
+      rs = pst.executeQuery();
+      
+      while(rs.next())
+    	  result.add(rs.getString(1));
+
+      rs.close();
+      return result;
+    } catch (Exception e) {
+      Logger.error("ADMIN", this, "getApplicationNames", "exception caught: "
+          + e.getMessage(), e);
+      return result;
+    } finally {
+      DatabaseInterface.closeResources(db, pst, rs);
+    }    
+  }
 }

@@ -216,6 +216,9 @@ public class Const {
 	public static final String sENABLED_TRIAL_DESC = "Trial enable/disable";
 	public static final String sENABLED_TRIAL_YES = "Sim";
 	public static final String sENABLED_TRIAL_NO = "Nao";
+	
+	public static final String sAPPLICATION_SETTING = "APPLICATION_SETTING";
+	public static final String sAPPLICATION_SETTING_DESC = "SU Application";	
 
 	public static final String sDIRECT_LINK_AUTHENTICATION = "DIRECT_LINK_AUTHENTICATION";
 	public static final String sDIRECT_LINK_AUTHENTICATION_DESC = "Permite ou n&atilde;o iniciar um fluxo sem autentica&ccedil;&atilde;o (link)";
@@ -467,6 +470,8 @@ public class Const {
 
 	//if using Windows domain integrated authentication
 	public static Boolean AUTHENTICATION_WINDOWS = false;
+	
+	public static String SU_APPLICATION = "";
 	
 	static {
 		ALLOWED_LOCALES.add(sDEFAULT_LOCALE_PT_PT);
@@ -940,6 +945,9 @@ public class Const {
 		try { ENCRYPT_FILESYSTEM_DOCS = Boolean.parseBoolean(Setup.getProperty("ENCRYPT_FILESYSTEM_DOCS"));
 	    } catch (Exception e) { 
 	    	ENCRYPT_FILESYSTEM_DOCS = false; 
+	    }
+		try { SU_APPLICATION = Setup.getProperty("SU_APPLICATION");
+	    } catch (Exception e) {  
 	    }
 	}
 

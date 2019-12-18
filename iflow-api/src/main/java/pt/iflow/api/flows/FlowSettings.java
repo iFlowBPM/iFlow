@@ -39,4 +39,5 @@ public abstract interface FlowSettings
   
   public abstract void removeFlowSettingsListener(String paramString);
 
+  public abstract List<String> getApplicationNames();
 }

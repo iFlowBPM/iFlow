@@ -714,5 +714,17 @@ public class UserInfo
 	    }	  	  
 	  }
 
+  	private String application;
+	
+  	@Override
+	public void setApplication(String application) {
+		this.application = application;		
+	}
+	
+	@Override
+	public String getApplication() {
+		return application;
+	}
+
 
 }

@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.flows.Flow;
+import pt.iflow.api.flows.FlowSetting;
 import pt.iflow.api.flows.FlowType;
 import pt.iflow.api.flows.IFlowData;
 import pt.iflow.api.presentation.ApplicationItem;
@@ -32,6 +33,7 @@ import pt.iflow.api.presentation.FlowApplications;
 import pt.iflow.api.presentation.FlowMenu;
 import pt.iflow.api.presentation.FlowMenuItems;
 import pt.iflow.api.transition.FlowRolesTO;
+import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
@@ -325,6 +327,9 @@ public class FlowApplicationsBean implements FlowApplications {
 		  // put them in an hashmap for fast index
 		  OrderedMap<Integer,IFlowData> hmFlows = new ListOrderedMap<Integer,IFlowData>();
 		  for (int i=0; i < fdOnlineFlows.length; i++) {
+			  FlowSetting fs = BeanFactory.getFlowSettingsBean().getFlowSetting(fdOnlineFlows[i].getId(), Const.sAPPLICATION_SETTING);
+	          if(fs!=null && !StringUtils.isBlank(fs.getValue()) && !StringUtils.equals(userInfo.getApplication(), fs.getValue()))
+	        	  continue;
 			  if(BeanFactory.getFlowBean().checkUserFlowRoles(userInfo, fdOnlineFlows[i].getId(), "" + flowRolesTOPriv))
 				  hmFlows.put(fdOnlineFlows[i].getId(), fdOnlineFlows[i]);
 		  }
