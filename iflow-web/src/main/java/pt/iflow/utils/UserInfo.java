@@ -106,11 +106,11 @@ public class UserInfo
   
   public void login(String asLogin, String asPassword)
   {
-    login(asLogin, asPassword, null, null, false);
+    login(asLogin, asPassword, null, null, false, null);
   }
   
-  public void login(String login, String password, Boolean useWindowsDomainAuth) {
-	  login(login, password, null, null, useWindowsDomainAuth);
+  public void login(String login, String password, Boolean useWindowsDomainAuth, String token) {
+	  login(login, password, null, null, useWindowsDomainAuth, token);
   }
   
   public byte[] getPassword()
@@ -125,15 +125,15 @@ public class UserInfo
   
   public void sessionLogin(String asLogin, String asSessionId)
   {
-    login(asLogin, null, asSessionId, null, false);
+    login(asLogin, null, asSessionId, null, false, null);
   }
   
   public void profileLogin(String asLogin, String asProfile)
   {
-    login(asLogin, null, null, asProfile, false);
+    login(asLogin, null, null, asProfile, false, null);
   }
   
-  private void login(String asLogin, String asPassword, String asSessionId, String asProfile, Boolean useWindowsDomainAuth)
+  private void login(String asLogin, String asPassword, String asSessionId, String asProfile, Boolean useWindowsDomainAuth, String token)
   {
     if (this._bLogged) {
       return;
@@ -153,7 +153,13 @@ public class UserInfo
       Messages.getInstance(this.cookieLang) : Messages.getInstance();
     try
     {
-      if (useWindowsDomainAuth && StringUtils.isNotBlank(sUsername)) {
+      if(token!=null && !"".equals(token)){
+    	  sUsername = AuthenticationToken.getUserByAuthenticationToken(token);
+    	  if(sUsername!=null && !sUsername.equals(""))
+    		  this._bLogged = true;
+    	  asPassword = "";    	  
+      }
+      else if (useWindowsDomainAuth && StringUtils.isNotBlank(sUsername)) {
             this._bLogged = true;   
             asPassword = "";
       } else if (asPassword != null){
@@ -713,6 +719,18 @@ public class UserInfo
 		  this._bLogged = false;
 	    }	  	  
 	  }
+
+  	private String application;
+	
+  	@Override
+	public void setApplication(String application) {
+		this.application = application;		
+	}
+	
+	@Override
+	public String getApplication() {
+		return application;
+	}
 
 
 }

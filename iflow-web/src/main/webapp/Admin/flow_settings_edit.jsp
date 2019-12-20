@@ -670,7 +670,19 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
                                             : ""%>><%=Const.sENABLED_TRIAL_NO%>
 			</option>
 		</select></div><%
-		}else if (stmp.equals(Const.sSHOW_ASSIGNED_TO)) {
+		} else if (stmp.equals(Const.sAPPLICATION_SETTING)) {	         
+			List<String> applicationNames = BeanFactory.getFlowSettingsBean().getApplicationNames();
+			%><div class="col-sm-3"><select class="txt form-control" name="<%=stmp%>">
+				<option value="<%=""%>" <%=(stmp3==null || "".equals(stmp3)) ? "selected": ""%>>
+					<%=""%>
+				</option>
+				<% for(int anCounter=0; anCounter<applicationNames.size(); anCounter++){ %>
+					<option value="<%=applicationNames.get(anCounter)%>" <%=applicationNames.get(anCounter).equals(stmp3) ? "selected": ""%>>
+						<%=applicationNames.get(anCounter)%>
+					</option>
+				<%} %>				
+			</select></div><%
+			} else if (stmp.equals(Const.sSHOW_ASSIGNED_TO)) {
                      if (stmp3 == null || stmp3.equals("")
                              || stmp3.equalsIgnoreCase(Const.sSHOW_NO)
                              || stmp3.equalsIgnoreCase("nao")

@@ -84,7 +84,7 @@ public class AuthenticationServlet extends javax.servlet.http.HttpServlet implem
       ui.setCookieLang(cookies.get(Const.LANG_COOKIE));
     }
     
-    ui.login(login, password, useWindowsDomainAuth);
+    ui.login(login, password, useWindowsDomainAuth, request.getParameter(Const.AUTHENTICATION_TOKEN_PARAM_NAME));
 
     // check license status
     if(!licenseOk && !isSystem) {

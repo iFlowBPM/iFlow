@@ -192,6 +192,10 @@ Disabled. Use servlet container defaults
   		<filter-name>DisableSomeHTTPRequestsFilter</filter-name>
 	  	<filter-class>pt.iflow.servlets.DisableSomeHTTPRequestsFilter</filter-class>
 	</filter>
+	<filter>
+  		<filter-name>SUApplicationFilter</filter-name>
+	  	<filter-class>pt.iflow.servlets.SUApplicationFilter</filter-class>
+	</filter>
 
     <!--
     To use non XDoclet filter-mappings, create a filter-mappings.xml file that
@@ -245,8 +249,12 @@ Disabled. Use servlet container defaults
 	<filter-mapping>
 	  <filter-name>DisableSomeHTTPRequestsFilter</filter-name>
 	  <url-pattern>/*</url-pattern>	  
-	</filter-mapping>		
-   
+	</filter-mapping>	
+   <filter-mapping>
+	  <filter-name>SUApplicationFilter</filter-name>
+	  <url-pattern>/*</url-pattern>	  
+	</filter-mapping>
+	
    <listener>
 	 <listener-class>org.apache.axis.transport.http.AxisHTTPSessionListener</listener-class>
    </listener>

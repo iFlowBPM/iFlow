@@ -117,5 +117,9 @@ public abstract interface UserInfoInterface
 
 public abstract void loginSSO(String employeeid);
 
-public abstract void login(String login, String password, Boolean useWindowsDomainAuth);
+public abstract void login(String login, String password, Boolean useWindowsDomainAuth, String token);
+
+public abstract void setApplication(String application);
+
+public abstract String getApplication();
 }
