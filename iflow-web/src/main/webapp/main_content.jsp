@@ -90,6 +90,17 @@ if(pid != null && subpid != null){
 }
 
 
+// get single app access
+final String sAPP_ID = "unikapp";
+String sAppID = request.getParameter(sAPP_ID);
+Integer appID = null;
+try {
+	appID = Integer.parseInt(sAppID);
+}
+catch (NumberFormatException nfe) {
+}
+
+
 try {
   if (data.equals("procs")) {
     // start processes
@@ -115,6 +126,8 @@ try {
     boolean procMenuVisible = !StringUtils.equals(tabnr, String.valueOf(HelpNavConsts.TOPIC_TASKS)) || orgTheme.getProcMenuVisible();       
     hsSubstLocal.put("procMenuVisible", procMenuVisible ? "visible" : "hidden");
 
+	
+    
     if (procMenuVisible) {
       ArrayList<OrderedMap<Object,Object>> appFlows = new ArrayList<OrderedMap<Object,Object>>();
       boolean showOnlyFlowsToBePresentInMenu = true;
@@ -210,9 +223,9 @@ try {
     int nOLDEST_LIMIT = 5;
     int nNOTIFICATION_LIMIT = 5;
     int nAll_Tasks = 0;
-  
+    
     // get online flows with app information
-    FlowMenu appflows = appInfo.getAllApplicationOnlineFlows(userInfo, null);
+    FlowMenu appflows = (appID==null)?appInfo.getAllApplicationOnlineFlows(userInfo, null):appInfo.getAllApplicationOnlineFlows(userInfo, appID);;
   
     // now build map with key flowid and value flowdata
     Map<String, IFlowData> hmFlows = new HashMap<String, IFlowData>();
