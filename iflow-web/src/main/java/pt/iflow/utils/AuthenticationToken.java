@@ -17,12 +17,15 @@ public class AuthenticationToken {
 		Logger.info("ADMIN","AuthenticationToken", "getUserByAuthenticationToken", "checking token: " + token);
 		WebResource webResource = client
 		   .resource(Const.AUTHENTICATION_TOKEN_ENDPOINT);
+		
+		webResource.header(Const.AUTHENTICATION_TOKEN_PARAM_NAME, token);
+		Logger.info("ADMIN","AuthenticationToken", "getUserByAuthenticationToken", "set header : " + Const.AUTHENTICATION_TOKEN_PARAM_NAME + " = " + token);
 
 		ClientResponse response = webResource.accept("application/json")
                    .get(ClientResponse.class);
 
 		if (response.getStatus() != 200) {
-			 Logger.info("ADMIN","AuthenticationToken", "getUserByAuthenticationToken", "response status NOK: " + response.getStatus());
+			 Logger.info("ADMIN","AuthenticationToken", "getUserByAuthenticationToken", "response status NOK: " + Const.AUTHENTICATION_TOKEN_ENDPOINT + " - " + response.getStatus());
 		}
 
 		String output = response.getEntity(String.class);
