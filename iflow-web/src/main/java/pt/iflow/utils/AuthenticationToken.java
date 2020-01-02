@@ -15,20 +15,14 @@ public class AuthenticationToken {
 	public static String getUserByAuthenticationToken(String token){
 		Client client = Client.create();
 		Logger.info("ADMIN","AuthenticationToken", "getUserByAuthenticationToken", "checking token: " + token);
-		WebResource webResource = client
-		   .resource(Const.AUTHENTICATION_TOKEN_ENDPOINT);
-		
-		webResource.header(Const.AUTHENTICATION_TOKEN_PARAM_NAME, token);
-		Logger.info("ADMIN","AuthenticationToken", "getUserByAuthenticationToken", "set header : " + Const.AUTHENTICATION_TOKEN_PARAM_NAME + " = " + token);
-
-		ClientResponse response = webResource.accept("application/json")
-                   .get(ClientResponse.class);
+		WebResource webResource = client.resource(Const.AUTHENTICATION_TOKEN_ENDPOINT);
+		ClientResponse response = webResource.accept("application/json").header("Authorization", "Bearer " + token).get(ClientResponse.class);
 
 		if (response.getStatus() != 200) {
-			 Logger.info("ADMIN","AuthenticationToken", "getUserByAuthenticationToken", "response status NOK: " + Const.AUTHENTICATION_TOKEN_ENDPOINT + " - " + response.getStatus());
+			 Logger.info("ADMIN","AuthenticationToken", "getUserByAuthenticationToken", "response status NOK: " + response.getStatus());
 		}
-
 		String output = response.getEntity(String.class);
+		Logger.info("ADMIN","AuthenticationToken", "getUserByAuthenticationToken", "response returned: " + output);
 		Gson gson = new Gson();
 		String username = gson.fromJson(output, UnikUserMeDTO.class).getUsername();
 		Logger.info("ADMIN","AuthenticationToken", "getUserByAuthenticationToken", "username returned: " + username);

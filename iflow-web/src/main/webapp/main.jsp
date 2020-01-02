@@ -60,7 +60,8 @@
 	} else if ("compliance".equals(sApp)) {
 		appName = "Compliance";
 	}
-
+	if(null!=userInfo.getApplication() && !"".equals(userInfo.getApplication()))
+		appName= StringUtils.capitalise(userInfo.getApplication());
 	hsSubst.put("appName", appName);
 
 	String sMenu = fdFormData.getParameter("menu");
