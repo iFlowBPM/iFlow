@@ -47,9 +47,9 @@
 	String appIcon = "icon-bpm";
 	
 	if ("gdpr".equals(sApp)) {
-		appIcon = "icon-hr";
+		appIcon = "icon-gdpr";
 	} else if ("compliance".equals(sApp)) {
-		appIcon = "icon-trophy";
+		appIcon = "icon-compliance";
 	}
 
 	hsSubst.put("appIcon", appIcon);
@@ -60,8 +60,8 @@
 	} else if ("compliance".equals(sApp)) {
 		appName = "Compliance";
 	}
-	if(null!=userInfo.getApplication() && !"".equals(userInfo.getApplication()))
-		appName= StringUtils.capitalise(userInfo.getApplication());
+	//if(null!=userInfo.getApplication() && !"".equals(userInfo.getApplication()))
+	//	appName= StringUtils.capitalise(userInfo.getApplication());
 	hsSubst.put("appName", appName);
 
 	String sMenu = fdFormData.getParameter("menu");

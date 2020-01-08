@@ -157,6 +157,7 @@ a.linkform:active {
 	background-color: #f8f9fa!important;
 	/*height: 100%;*/
 	color: #959ca3 !important;
+	height: inherit;
 }
 
 /*________CSS Acordiom templates  menu silide 1*/
@@ -180,6 +181,7 @@ a.linkform:active {
 	color: #3a3b45;
     background-color: #cdcae1 !important;
     transition: .2s ease-out;
+    text-indent: 10px;
 }
 
 #Accordion1 .Acor_01:active {	
@@ -422,7 +424,9 @@ ul, ul ul {
 	min-height: 48px;
     padding-top: 12px;
     border:none;
-
+	width: 214px;
+	padding-bottom: 5px;
+    padding-top: 8px;
 	
 }
 

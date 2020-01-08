@@ -15,6 +15,7 @@ public class AuthenticationToken {
 	public static String getUserByAuthenticationToken(String token){
 		Client client = Client.create();
 		Logger.info("ADMIN","AuthenticationToken", "getUserByAuthenticationToken", "checking token: " + token);
+		Logger.info("ADMIN","AuthenticationToken", "getUserByAuthenticationToken", "endpoint: " + Const.AUTHENTICATION_TOKEN_ENDPOINT);
 		WebResource webResource = client.resource(Const.AUTHENTICATION_TOKEN_ENDPOINT);
 		ClientResponse response = webResource.accept("application/json").header("Authorization", "Bearer " + token).get(ClientResponse.class);
 
