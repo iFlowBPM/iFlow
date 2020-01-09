@@ -1339,3 +1339,36 @@ td.gauge_empty {
 	background-color: white;
 }
 
+
+#section_div_1 {
+        background: transparent;
+        position: relative;
+        top: -5px;
+        left: -5px;
+}
+
+#section_div_3 {
+        position: relative;
+        top: 10px;
+}
+
+#section_div_4 {
+        position: relative;
+        top: 10px;
+}
+
+#section_div_5 {
+        position: relative;
+        top: 10px;
+}
+
+
+
+#section_div_8 {
+        background: transparent;
+        position: relative;
+        top: -5px;
+        left: -5px;
+}
+
+
