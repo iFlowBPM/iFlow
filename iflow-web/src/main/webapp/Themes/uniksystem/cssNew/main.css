@@ -1371,4 +1371,8 @@ td.gauge_empty {
         left: -5px;
 }
 
+.nav-link-top:hover {
+    text-indent: 10px;
+}
+
 
