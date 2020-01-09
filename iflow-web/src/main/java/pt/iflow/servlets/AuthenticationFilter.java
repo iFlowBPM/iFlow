@@ -10,6 +10,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
 import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.ServletUtils;
 import pt.iflow.api.utils.UserInfoInterface;
@@ -61,6 +63,9 @@ public class AuthenticationFilter extends IFlowFilter {
             sendError(httpResponse);
             return;
           }
+        } else if(null != userInfo && Const.AUTHENTICATION_TOKEN && StringUtils.isNotBlank(request.getParameter(Const.AUTHENTICATION_TOKEN_PARAM_NAME))){
+        	AuthenticationResult result = AuthenticationServlet.authenticate(httpRequest, httpResponse, null, null, null);
+            mustAuthenticate = !result.isAuth;
         }
       } catch (Throwable t) {
       }
