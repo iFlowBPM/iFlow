@@ -368,12 +368,51 @@
 			});
 			
 			
+			function doonload() {
+			
+#if($orgTheme == "uniksystem")
+
+				tasks = "tarefas";
+				processes = "processos";
+				search = "pesquisar"
+            	console.log('doonload');
+            	// prepare to receive SU comunication
+                window.addEventListener('UserContextEvent', function(e) {
+
+                     console.log(e.detail);
+                     appsubstring = "/$app/";
+                     pathname = e.detail.location.pathname;
+                     theme = e.detail.theme;
+                     if (pathname.indexOf(appsubstring) != -1) {
+                        //alert("location is: " + pathname + ", theme is: " + theme);
+                        if (pathname.indexOf(tasks) != -1) {
+                               tabber_right(1, 'main_content.jsp', 'cleanFilter=1');
+                               $('#task-categs-ul').show();
+                               $('#new_task_categ').show();
+                        }
+                        else if (pathname.indexOf(processes) != -1)
+                               tabber_load(3, '');
+                        else if (pathname.indexOf(search) != -1)
+                               tabber_load(8, '');
+
+                     }
+                     return false;
+                  });
+                console.log('register UserContextEvent');
+				
+				// inform SU that iFlow is ready to receive status update
+                window.parent.dispatchEvent(new CustomEvent('SUEvent', {detail: 'from:$app'}));
+                console.log('dispatch SUEvent');
+#end
+                }
+			
+			
 		</script>
 		
 		
 		</head>
 
-	<body onresize="javascript:mainResize()"  onload="javascript:setProcFlow();$('#new_task_categ').hide();openMenu()" /*onload="updateNotifications()"*/ style="
+	<body onresize="javascript:mainResize()"  onload="javascript:setProcFlow();$('#new_task_categ').hide();doonload()" /*onload="updateNotifications()"*/ style="
     background-image: linear-gradient(-90deg, #a9d7e4, #aea2cc);">
 	<script language="JavaScript">
 	function setProcFlow(){
@@ -508,10 +547,10 @@
 				
 				<div id="Accordion1">
 					#if("$Tab2" != "no")	
-					<h3 class="Acor_01" style="margin:0">
+					 <h3 class="Acor_01" style="margin:0;padding-left:16px;">
 						#if($orgTheme == "uniksystem")
 							<a class="nav-link" href="" onclick="javascript:tabber_right(1, 'main_content.jsp', 'cleanFilter=1');$('#task-categs-ul').show();$('#new_task_categ').show()" title="$field_tasks">	
-								<i class="icon-tarefas mr-2" style="margin-right:8px;"></i><span>$field_tasks</span></a>				
+								<i class="icon-tarefas2 mr-2" style="margin-right:8px;"></i><span>$field_tasks</span></a>				
 							</a>
 						#else
 							<a href="" onclick="javascript:tabber_right(1, 'main_content.jsp', 'cleanFilter=1');" title="$field_tasks">	
@@ -541,7 +580,7 @@
 					
 					#end
 					#if("$Tab3" != "no")
-					<h3 class="Acor_01" style="margin:0">
+					 <h3 class="Acor_01" style="margin:0;padding-left:16px;">
 						<a href="" onclick="javascript:tabber_load(3, '');" title="$tooltip_processes">
 						#if($orgTheme == "uniksystem")
 							<i class="icon-processos mr-2" style="margin-right:8px;"></i>
@@ -556,7 +595,7 @@
 					#end
 					
 					#if("$Tab8" != "no")
-					<h3 class="Acor_01" style="margin:0">
+					 <h3 class="Acor_01" style="margin:0;padding-left:16px;">
 						<a href="" onclick="javascript:tabber_load(8, '');" title="$tooltip_myprocesses">
 						#if($orgTheme == "uniksystem")
 							<i class="icon-trophy mr-2" style="margin-right:8px;"></i>
@@ -571,7 +610,7 @@
 					#end
 
 					#if("$Tab5" != "no")	
-					<h3 class="Acor_01" style="margin:0">
+					 <h3 class="Acor_01" style="margin:0;padding-left:16px;">
 						<a href="" onclick="javascript:tabber_load(5, '');" title="$tooltip_delegations">
 						#if($orgTheme == "uniksystem")
 							<i class="icon-hr mr-2" style="margin-right:8px;"></i>
@@ -601,7 +640,7 @@
 					#end
 					
 					#if($supervisor == "yes")
-					<h3 class="Acor_01" style="margin:0">
+					 <h3 class="Acor_01" style="margin:0;padding-left:16px;">
 						<a href="" onclick="javascript:tabber_load(10, ''); title="$tooltip_reports">
 						#if($orgTheme == "uniksystem")
 							<i class="icon-reports mr-2" style="margin-right:8px;"></i>
@@ -626,7 +665,7 @@
 					#end
 
 					#if($org_admin == "yes" || $sys_admin=="yes")
-					<h3 class="Acor_01" style="margin:0">
+					 <h3 class="Acor_01" style="margin:0;padding-left:16px;">
 						<a href="#" onclick="javascript:tabber_load(4, '');">
 						
 						#if($orgTheme == "uniksystem")
@@ -833,17 +872,7 @@
 				return false;	    
 			}
 			
-			function openMenu() {
-				#if($menu == "tasks")
-				   tabber_right(1, 'main_content.jsp', 'cleanFilter=1');$('#task-categs-ul').show();$('#new_task_categ').show();
-				#end
-				#if($menu == "processes")
-				   tabber_load(3, '');
-				#end
-				#if($menu == "search")
-				   tabber_load(8, '');
-				#end
-			}
+
 		</script>
 		
 	</body>
