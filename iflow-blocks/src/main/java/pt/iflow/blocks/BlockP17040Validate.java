@@ -148,16 +148,23 @@ public abstract class BlockP17040Validate extends Block {
 			procData.getList(outputErrorIdBdpVar).clear();
 			procData.getList(outputErrorIdVar).clear();
 //			procData.getList(outputErrorCriticalVar).clear();
-			for(ValidationError error: result){
-				procData.getList(outputErrorCodeVar).parseAndAddNewItem(error.getCode());
-				procData.getList(outputErrorTableVar).parseAndAddNewItem(error.getTable());
-				procData.getList(outputErrorFieldVar).parseAndAddNewItem(error.getField());
-				procData.getList(outputErrorIdBdpVar).parseAndAddNewItem(error.getIdBdp());
-				procData.getList(outputErrorValueVar).parseAndAddNewItem(error.getValueFormatted());
-				procData.getList(outputErrorDescVar).parseAndAddNewItem(FileValidationUtils.retrieveErrorBDPDescription(error.getCode(), connection, userInfo));
-				procData.getList(outputErrorIdVar).addNewItem(error.getId());
-//				procData.getList(outputErrorCriticalVar).addNewItem(FileValidationUtils.retrieveCriticalLevelBDP(error.getCode(), connection, userInfo));
-			}
+			int i=0;
+			for(ValidationError error: result)
+			if(error!=null)
+				{
+					try{i++;
+						procData.getList(outputErrorCodeVar).parseAndAddNewItem(error.getCode());
+						procData.getList(outputErrorTableVar).parseAndAddNewItem(error.getTable());
+						procData.getList(outputErrorFieldVar).parseAndAddNewItem(error.getField());
+						procData.getList(outputErrorIdBdpVar).parseAndAddNewItem(error.getIdBdp());
+						procData.getList(outputErrorValueVar).parseAndAddNewItem(error.getValueFormatted());
+						procData.getList(outputErrorDescVar).parseAndAddNewItem(FileValidationUtils.retrieveErrorBDPDescription(error.getCode(), connection, userInfo));
+						procData.getList(outputErrorIdVar).addNewItem(error.getId());
+		//				procData.getList(outputErrorCriticalVar).addNewItem(FileValidationUtils.retrieveCriticalLevelBDP(error.getCode(), connection, userInfo));
+					} catch (Exception e){
+						Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + i);
+					}
+				}
 			
 			//determine original file
 			HashMap<String, Object> u_gestaoValues = fillAtributtes(null, connection, userInfo,
@@ -195,9 +202,10 @@ public abstract class BlockP17040Validate extends Block {
 		File tmpFile = File.createTempFile(this.getClass().getName(), ".tmp");
 		BufferedWriter tmpOutput = new BufferedWriter(new FileWriter(tmpFile, true));
 		for(ValidationError aux: errorList){			
-			
-			tmpOutput.write(aux.getIdBdpValue() + ";" + aux.getCode() + ";" + FileValidationUtils.retrieveErrorBDPDescription(aux.getCode(), connection, userInfo));
-			tmpOutput.newLine();
+			if(aux!=null){
+				tmpOutput.write(aux.getIdBdpValue() + ";" + aux.getCode() + ";" + FileValidationUtils.retrieveErrorBDPDescription(aux.getCode(), connection, userInfo));
+				tmpOutput.newLine();
+			}
 		}
 		tmpOutput.close();
 		
@@ -212,7 +220,7 @@ public abstract class BlockP17040Validate extends Block {
 	}
 
 	public abstract ArrayList<ValidationError> validate(UserInfoInterface userInfo, ProcessData procData,
-			Connection connection, Integer crcId) throws SQLException;
+			Connection connection, Integer crcId) throws SQLException, InterruptedException;
 
 	@Override
 	public String getDescription(UserInfoInterface userInfo, ProcessData procData) {
