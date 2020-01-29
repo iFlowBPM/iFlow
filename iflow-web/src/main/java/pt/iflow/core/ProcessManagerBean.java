@@ -6167,7 +6167,7 @@ public class ProcessManagerBean implements ProcessManager {
 	        while (rs.next()) {
 	          int flowid = rs.getInt("flowid");
 	          FlowSetting fs = BeanFactory.getFlowSettingsBean().getFlowSetting(flowid, Const.sAPPLICATION_SETTING);
-	          if((fs==null && StringUtils.isNotBlank(userInfo.getApplication())) || !StringUtils.equals(fs.getValue(), userInfo.getApplication())){
+	          if(fs!=null && !StringUtils.isBlank(fs.getValue()) && !StringUtils.equals(userInfo.getApplication(), fs.getValue())){
 	        	  continue;
 	          }
 	          if(filter.ignoreFlow(flowid)) {

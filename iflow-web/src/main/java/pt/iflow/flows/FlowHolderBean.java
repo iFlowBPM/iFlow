@@ -420,7 +420,7 @@ public class FlowHolderBean implements FlowHolder {
             while (rs.next()) {
                 int flowId = rs.getInt("flowid");
                 FlowSetting fs = BeanFactory.getFlowSettingsBean().getFlowSetting(flowId, Const.sAPPLICATION_SETTING);
-  	          	if((fs==null && StringUtils.isNotBlank(userInfo.getApplication())) || !StringUtils.equals(fs.getValue(), userInfo.getApplication()))
+  	          	if(fs!=null && !StringUtils.isBlank(fs.getValue()) && !StringUtils.equals(userInfo.getApplication(), fs.getValue()))
   	          		continue;
                 if (hasCachedFlow(userInfo, flowId)) {
                     fd = getCachedFlow(userInfo, flowId);
