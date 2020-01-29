@@ -8,3 +8,5 @@ INSERT INTO `application` (`name`, `description`) VALUES ('gdpr', 'gdpr');
 INSERT INTO `application` (`name`, `description`) VALUES ('compliance', 'compliance');
 INSERT INTO `application` (`name`, `description`) VALUES ('finance', 'finance');
  
+ALTER TABLE `iflow`.`application` 
+ADD COLUMN `noregister` INT NULL DEFAULT 0 AFTER `description`;

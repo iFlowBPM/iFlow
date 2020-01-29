@@ -328,7 +328,7 @@ public class FlowApplicationsBean implements FlowApplications {
 		  OrderedMap<Integer,IFlowData> hmFlows = new ListOrderedMap<Integer,IFlowData>();
 		  for (int i=0; i < fdOnlineFlows.length; i++) {
 			  FlowSetting fs = BeanFactory.getFlowSettingsBean().getFlowSetting(fdOnlineFlows[i].getId(), Const.sAPPLICATION_SETTING);
-	          if(fs!=null && !StringUtils.isBlank(fs.getValue()) && !StringUtils.equals(userInfo.getApplication(), fs.getValue()))
+	          if((fs==null && StringUtils.isNotBlank(userInfo.getApplication())) || !StringUtils.equals(fs.getValue(), userInfo.getApplication()))
 	        	  continue;
 			  if(BeanFactory.getFlowBean().checkUserFlowRoles(userInfo, fdOnlineFlows[i].getId(), "" + flowRolesTOPriv))
 				  hmFlows.put(fdOnlineFlows[i].getId(), fdOnlineFlows[i]);
