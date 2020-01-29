@@ -575,8 +575,8 @@
 					
 					
 					<div class="Acor_02 clearfix">
-						<div id='container_task_labels' class="txt_categ clearfix" style="height:fit-content;"></div>
-						<div id="new_task_categ" style="font-size: 0.9em; color: #666666; bgcolor:#e6e6e6;" style="height:0;">
+						<div id='container_task_labels' class="txt_categ clearfix" style="height:fit-content;background-color:#e1e1e1;""></div>
+						<div id="new_task_categ" style="font-size: 0.9em; color: #666666; bgcolor:#e6e6e6;min-height: 25px;padding-left:16px;background-color: #e1e1e1;">
 							<a id="bt_edit_0" href="" onClick="editLabel('0','1'); return false;" class="lmenu" style="cursor:pointer">$new_label</a>
 							<a id="bt_confirm_0" href="" onClick="javascript:editLabel('0','0'); return false;" title="Confirmar" style="display:none">
 								<img border="0" src="Themes/newflow/images/confirm.png"  class="toolTipImg" href="javascript:editFolder('0','0');"/>

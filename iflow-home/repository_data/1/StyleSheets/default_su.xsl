@@ -849,7 +849,7 @@
 
 
 
-			<body onload="reloadBootstrapElements(); initProcFrame();">
+			<body onload="reloadBootstrapElements(); initProcFrame();" class="su">
 				<div style="margin:auto;">
 					<xsl:apply-templates select="form" />
 				</div>

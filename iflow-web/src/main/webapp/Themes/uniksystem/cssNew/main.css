@@ -1155,7 +1155,8 @@ td.gauge_empty {
 }
 
 .ui-widget-content a {
-	color: #b4b8ba !important;
+	color: #b4b8ba;
+	/* !important;*/
 }
 
 .li_link {
