@@ -1,11 +1,11 @@
 /*ICON FONT-----------------------------------------------------------------------------------------------------------------------------------------------------*/
 @font-face {
   font-family: 'icomoon';
-  src:  url(../img/assets/icons/icomoon.eot?yxk6lp);
-  src:  url(img/assets/icons/icomoon.eot?yxk6lp#iefix) format('embedded-opentype'),
-    url(../img/assets/icons/icomoon.ttf?yxk6lp) format('truetype'),
-    url(../img/assets/icons/icomoon.woff?yxk6lp) format('woff'),
-    url(../img/assets/icons/icomoon.svg?yxk6lp#icomoon) format('svg');
+  src:  url(../img/assets/icons/icomoon.eot?7l50mf);
+  src:  url(img/assets/icons/icomoon.eot?7l50mf#iefix) format('embedded-opentype'),
+    url(../img/assets/icons/icomoon.ttf?7l50mf) format('truetype'),
+    url(../img/assets/icons/icomoon.woff?7l50mf) format('woff'),
+    url(../img/assets/icons/icomoon.svg?7l50mf#icomoon) format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -26,6 +26,84 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-edit:before {
+  content: "\e92a";
+}
+.icon-left:before {
+  content: "\e925";
+}
+.icon-right:before {
+  content: "\e926";
+}
+.icon-down:before {
+  content: "\e927";
+}
+.icon-up:before {
+  content: "\e928";
+}
+.icon-ellipsis:before {
+  content: "\e929";
+}
+.icon-globe:before {
+  content: "\e924";
+}
+.icon-unik3:before {
+  content: "\e921";
+}
+.icon-unik2:before {
+  content: "\e922";
+}
+.icon-unik:before {
+  content: "\e923";
+}
+.icon-compliance:before {
+  content: "\e91f";
+}
+.icon-pin:before {
+  content: "\e920";
+}
+.icon-user-sheet:before {
+  content: "\e91d";
+}
+.icon-cart:before {
+  content: "\e91e";
+}
+.icon-edit-user:before {
+  content: "\e91b";
+}
+.icon-trash:before {
+  content: "\e91c";
+}
+.icon-mail:before {
+  content: "\e919";
+}
+.icon-phone:before {
+  content: "\e91a";
+}
+.icon-attach:before {
+  content: "\e913";
+}
+.icon-check:before {
+  content: "\e914";
+}
+.icon-tarefas2:before {
+  content: "\e915";
+}
+.icon-rounded-square:before {
+  content: "\e916";
+}
+.icon-circle:before {
+  content: "\e917";
+}
+.icon-external-link:before {
+  content: "\e918";
+}
+.icon-generic:before {
+  content: "\e911";
+}
+.icon-search:before {
+  content: "\e912";
+}
 .icon-history:before {
   content: "\e900";
 }

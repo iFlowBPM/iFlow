@@ -1,61 +1,56 @@
 body{
 margin: 0;
-background-image: linear-gradient(-90deg, #a9d7e4, #aea2cc);
+background-image: linear-gradient(-90deg, #1a1a1a, #333333);
 }
 
 hr, .dropdown-divider{
-border-color:#cbcbcb;
-}
-
-.hr-usermap{
-border-color:#cbcbcb !important;
-margin:0;
+border-color:#4d4d4d;
 }
 
 .card, .modal{
-border-color:#E5E5E5 !important;
+border-color:black !important;
 border-radius:0 !important;
-color:black !important;
+color:#b2b2b2 !important;
 }
 
 .card-header, .card-footer, .modal-header, .modal-footer, .dropdown-menu{
-background-color:#F1F1F1 !important;
-border-color:#CBCBCB !important;
+background-color:#333333 !important;
+border-color:black !important;
 border-radius:0 !important;
-color:#666666 !important;
+color:#cbcbcb !important;
 }
 
 .dropdown-item, .dropdown-header{
-color:#666666 !important;
+color:#cbcbcb !important;
 }
 
 .dropdown-item:hover{
-background-color:#E5E5E5 !important;
+background-color:#4d4d4d !important;
 }
 
 .dropdown-item:active{
-background-color:#cbcbcb !important;
+background-color:#666666 !important;
 }
 
 .progress{
-background-color:#E4E4E4;
+background-color:#000000;
 }
 
 .form-control, .form-control:active{
-background-color:#ffffff;
-border-color:#B2B2B2;
+background-color:#000000;
+border-color:#1a1a1a;
 }
 
 .card-body, .modal-body{
-background-color:#ffffff !important;
+background-color:#1a1a1a !important;
 }
 
 .text-dark{
-color:black !important;
+color:white !important;
 }
 
 .bg-color{
-background-image: linear-gradient(-90deg, #a9d7e4, #aea2cc);
+background-image: linear-gradient(-90deg, #1a1a1a, #333333);
 }
 
 /* DROPDOWN SEM SETA */
@@ -64,15 +59,15 @@ display: none;
 }
 
 .navbar-light, .bg-light{
-background-color: #F1F1F1 !important;
+background-color: #1a1a1a !important;
 }
 
 .nav-item .nav-link{
-color: #545454 !important;
+color: #cbcbcb !important;
 }
 
 .topbar{
-border-bottom: solid #CBCBCB 1px;
+border-bottom: solid black 1px;
 }
 
 .pass-valid{
@@ -141,17 +136,17 @@ background-color:#33058d;
 /*BG COLORS ----------------------------------------------------------------------------------------------------------------------------------------------------*/
 /* INDIGO */
 .bg-indigo {
-background-color: #33058d !important;
+background-color: #0093b2 !important;
 }
 
 /* INDIGO 80% */
 .bg-indigo80 {
-background-color: #5226bf !important;
+background-color: #26c8eb !important;
 }
 
 /* INDIGO 60% */
 .bg-indigo60 {
-background-color: #7c56d8 !important;
+background-color: #50d5f2 !important;
 }
 
 /* AZUL */
@@ -166,12 +161,7 @@ background-color: #d40f7d !important;
 
 /* CINZENTO CLARO */
 .bg-light-gray {
-background-color: #e4e4e4 !important;
-}
-
-/* CINZENTO EXTRA-CLARO */
-.bg-xlight-gray {
-background-color: #f2f2f2 !important;
+background-color: #000000 !important;
 }
 
 
@@ -179,17 +169,17 @@ background-color: #f2f2f2 !important;
 /*COLORS ----------------------------------------------------------------------------------------------------------------------------------------------------*/
 /* INDIGO */
 .c-indigo {
-color: #33058d !important;
+color: #0093b2 !important;
 }
 
 /* INDIGO 80% */
 .c-indigo80 {
-color: #5226bf !important;
+color: #26c8eb !important;
 }
 
 /* INDIGO 60% */
 .c-indigo60 {
-color: #7c56d8 !important;
+color: #50d5f2 !important;
 }
 
 /* AZUL */
@@ -209,7 +199,7 @@ color: #e4e4e4 !important;
 
 /* CINZENTO ESCURO */
 .c-dark-gray {
-color:#666666 !important;
+color:#b2b2b2 !important;
 }
 
 /*DENTRO DO PRAZO*/
@@ -230,6 +220,10 @@ color: #ff1d25 !important;
 
 
 /*HEADER-----------------------------------------------------------------------------------------------------------------------------------------------------*/
+.unik-logo{
+filter:brightness(1000%);
+}
+
 .img-profile-s{
 height: 2rem;
 width: 2rem;
@@ -243,12 +237,12 @@ text-indent: 20px;
 }
 
 .topbar-btn .topbar-btn-shape{
-fill:#33058d;
+fill:#0093b2;
 }
 
 
 .topbar-btn:hover .topbar-btn-shape{
-fill:#5226bf;
+fill:#26c8eb;
 }
 
 /*MENU-------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -271,7 +265,7 @@ width: 100%;
 .menu .nav-item.active .nav-link {
 color: white !important;
 font-weight: 700;
-background-color: #33058d
+background-color: #0093b2
 }
 
 /* 2º NÍVEL DE MENU */
@@ -279,11 +273,11 @@ background-color: #33058d
 padding-left: 33px;
 /* display: block; */
 text-decoration: none;
-background-color: #f1f1f1;
+background-color: #2d2d2d;
 }
 
 .menu .menulvl-2 .nav-link{
-border-left: 5px solid #33058d !important;
+border-left: 5px solid #0093b2 !important;
 }
 
 /* 3º NÍVEL DE MENU */
@@ -291,15 +285,7 @@ border-left: 5px solid #33058d !important;
 padding-left: 50px;
 /*display: block;*/
 text-decoration: none;
-background-color: #e5e5e5;
-}
-
-.pin:hover{
-	color:#ffc658;
-}
-
-.pin:active{
-	color:#dc6b2f;
+background-color: #4d4d4d;
 }
 
 /* 4º NÍVEL DE MENU -----------------------------------------------------------------------------------------------------------------------------------------*/
@@ -307,22 +293,22 @@ background-color: #e5e5e5;
 padding-left: 60px;
 /*display: block;*/
 text-decoration: none;
-background-color: #cbcbcb;
+background-color: #666666;
 }
 
 /* COMPORTAMENTOS ---------------*/
 .menu .menulvl-4 .nav-link:hover {
 /*display: block;*/
-color: #545454 !important;
+color: #3a3b45 !important;
 text-decoration: none;
-background-color: #b2b2b2;
+background-color: #808080;
 }
 
 .menu .menulvl-4 .nav-link:active {
 /*display: block;*/
 color: #ffffff !important;
 text-decoration: none;
-background-color: #989898;
+background-color: #aaaaaa;
 }
 /*--------------------------------*/
 
@@ -332,14 +318,14 @@ text-decoration: none;
 
 .menu .nav-link:hover{
 padding-left:20px;
-color: #545454 !important;
-background-color: #c5b7e5;
+color: #ffffff !important;
+background-color: #003f47;
 transition: .2s ease-out;
 }
 
 .menu .nav-link:active{
 color: #ffffff !important;
-background-color: #33058d;
+background-color: #0093b2;
 transition: .2s ease-out;
 }
 
@@ -474,44 +460,44 @@ border-radius:7px;
 /* BOTÕES ---------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*GENÉRICO*/
 .btn-generic{
-color:#666666;
-background-color:#f1f1f1;
-border: 1px solid #cbcbcb;
+color:#cbcbcb;
+background-color:#333333;
+border: 1px solid #000000;
 }
 .btn-generic:hover{
-color:#666666;
-background-color:#e5e5e5;
+color:#cbcbcb;
+background-color:#4d4d4d;
 }
 .btn-generic:active{
 color:white;
-background-color:#33058d;
+background-color:#0093b2;
 }
 
 /*INDIGO*/
 .btn-indigo{
-background-color:#33058d;
+background-color:#0093b2;
 color:white;
 }
 .btn-indigo:hover{
 color:white;
-background-color:#5226bf;
+background-color:#26c8eb;
 }
 .btn-indigo:active{
 color:white;
-background-color:#7c56d8;
+background-color:#50d5f2;
 }
 
 .btn-outline-indigo{
-border-color:#33058d;
-color:#33058d;
+border-color:#0093b2;
+color:#0093b2;
 }
 .btn-outline-indigo:hover{
-background-color:#c5b7e5;
+background-color:#003f47;
 text-decoration:none;
-color:#33058d;
+color:#ffffff;
 }
 .btn-outline-indigo:active{
-background-color:#33058d;
+background-color:#0093b2;
 color:#ffffff;
 text-decoration:none;
 }
