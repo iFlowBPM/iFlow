@@ -289,9 +289,9 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				String formJurid = StringUtils.defaultIfEmpty(lineValuesAux[12], null);
 				String PSE = StringUtils.defaultIfEmpty(lineValuesAux[13], null);
 				String SI = StringUtils.defaultIfEmpty(lineValuesAux[14], null);
-				String rua = StringUtils.defaultIfEmpty(lineValuesAux[15], null);
-				String localidade = StringUtils.defaultIfEmpty(lineValuesAux[16], null);
-				String codPost = StringUtils.defaultIfEmpty(lineValuesAux[17], null);			
+				String rua = StringUtils.defaultIfEmpty(lineValuesAux[15], "Desconhecido");
+				String localidade = StringUtils.defaultIfEmpty(lineValuesAux[16], "_");
+				String codPost = StringUtils.defaultIfEmpty(lineValuesAux[17], "00000");			
 				Date dtRefEnt = dtRef;
 				
 				//validar dados, se errados salta
