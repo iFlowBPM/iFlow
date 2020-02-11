@@ -2211,7 +2211,7 @@ CREATE TABLE serial_code_templates (
 DROP TABLE subflow_block_mapping;
 CREATE TABLE  subflow_block_mapping (
   id INT NOT NULL,
-  created date NOT NULL,
+  created date NOT NULL default SYSDATE,
   flowname varchar(64) NOT NULL,
   sub_flowname varchar(64) NOT NULL,
   original_blockid int NOT NULL,

@@ -1875,7 +1875,7 @@ ENGINE = INNODB DEFAULT CHARSET=utf8;
 DROP TABLE IF EXISTS subflow_block_mapping;
 CREATE TABLE  subflow_block_mapping (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `created` datetime NOT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `flowname` varchar(64) NOT NULL,
   `sub_flowname` varchar(64) NOT NULL,
   `original_blockid` int NOT NULL,

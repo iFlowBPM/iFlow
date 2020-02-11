@@ -6,9 +6,14 @@ CREATE TABLE application (
   )
 GO
   
-INSERT INTO application (name, description) VALUES ('gdpr', 'gdpr')
+INSERT INTO application (name, description) VALUES ('gdpr', 'GDPR')
 GO
-INSERT INTO application (name, description) VALUES ('compliance', 'compliance')
+INSERT INTO application (name, description) VALUES ('compliance', 'Compliance')
 GO
-INSERT INTO application (name, description) VALUES ('finance', 'finance')
+INSERT INTO application (name, description) VALUES ('financeira', 'Financeira')
+GO
+
+
+ALTER TABLE application 
+ADD noregister INT NULL DEFAULT 0
 GO

@@ -1349,6 +1349,7 @@ public class FlowHolderBean implements FlowHolder {
       while(rst.next())
     	  flowBean.resyncFlow(userInfo, flowId, rst.getInt(1), rst.getInt(2), true, fd);
       
+      if (pst != null) pst.close();
     } catch (Exception e) {
       Logger.error(userInfo.getUtilizador(), this, "resyncDeployedFlowWithSubFlow", "exception caught", e);
       e.printStackTrace();
@@ -1396,17 +1397,15 @@ public class FlowHolderBean implements FlowHolder {
         mappingsChanged = true;            
       pst.close();
       
-      if (mappingsChanged) {    	    	
-        Timestamp d = new Timestamp(new Date().getTime());
+      if (mappingsChanged) {
         Logger.debug(userInfo.getUtilizador(), this, "saveSubFlowExpansionResult", "saving for Flowid " + flowId  + " mappings" + subFlowBlockMappings.size());
         for (SubFlowMapping subFlowMapping : subFlowBlockMappings) {
           String query = DBQueryManager.getQuery("FlowHolder.SAVE_SUBFLOW_EXPANSION");
           pst = db.prepareStatement(query);
-          pst.setTimestamp(1, d);
-          pst.setString(2, subFlowMapping.getMainFlowName());
-          pst.setString(3, subFlowMapping.getSubFlowName());
-          pst.setInt(4, subFlowMapping.getOriginalBlockId());
-          pst.setInt(5, subFlowMapping.getMappedBlockId());
+          pst.setString(1, subFlowMapping.getMainFlowName());
+          pst.setString(2, subFlowMapping.getSubFlowName());
+          pst.setInt(3, subFlowMapping.getOriginalBlockId());
+          pst.setInt(4, subFlowMapping.getMappedBlockId());
           pst.execute();
           pst.close();
         }
