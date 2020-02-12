@@ -50,6 +50,8 @@
 		appIcon = "icon-gdpr";
 	} else if ("compliance".equals(sApp)) {
 		appIcon = "icon-compliance";
+	} else if ("gai".equals(sApp)) {
+		appIcon = "icon-gai";
 	}
 
 	hsSubst.put("appIcon", appIcon);
@@ -59,6 +61,8 @@
 		appName = "GDPR";
 	} else if ("compliance".equals(sApp)) {
 		appName = "Compliance";
+	} else if ("gai".equals(sApp)) {
+		appName = "Avaliação de Imóveis";
 	}
 	//if(null!=userInfo.getApplication() && !"".equals(userInfo.getApplication()))
 	//	appName= StringUtils.capitalise(userInfo.getApplication());
