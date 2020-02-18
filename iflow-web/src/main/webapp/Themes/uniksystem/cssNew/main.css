@@ -1366,10 +1366,11 @@ td.gauge_empty {
 
 
 #section_div_8 {
-        background: transparent;
         position: relative;
+/*        background: transparent;
         top: -5px;
-        left: -5px;
+        left: -5px;*/
+        top: 10px;
 }
 
 .nav-link-top:hover {
