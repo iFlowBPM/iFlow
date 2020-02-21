@@ -18,7 +18,7 @@ public class DBQueryManager {
   private static long _lastModification = 0;
 
   static {
-    _queriesFileLocation = System.getProperty("iflow.home") + File.separator + "dbqueries";
+    _queriesFileLocation = System.getProperty(Const.IFLOW_HOME_PROP) + File.separator + "dbqueries";
     String dbType = Const.DB_TYPE;
     _queriesFileLocation = _queriesFileLocation + File.separator + "queries_" + dbType + ".properties";
     File queriesFile = new File(_queriesFileLocation);

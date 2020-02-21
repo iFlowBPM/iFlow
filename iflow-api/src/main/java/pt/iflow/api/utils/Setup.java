@@ -21,7 +21,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class Setup {
     
-    private static final String IFLOW_HOME = System.getProperty("iflow.home");
+    private static final String IFLOW_HOME = System.getProperty(Const.IFLOW_HOME_PROP);
     
     private static final String MAIN_PROP_FILE = "iflow.properties";
     private static final String AUTH_PROP_FILE = "authentication.properties";

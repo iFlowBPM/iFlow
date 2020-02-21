@@ -12,13 +12,14 @@ import javax.wsdl.Service;
 
 import org.apache.struts.util.GenericDataSource;
 
+import fit.ActionFixture;
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.core.Repository;
 import pt.iflow.api.core.RepositoryFile;
+import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iknow.utils.wsdl.WSDLUtils;
-import fit.ActionFixture;
 
 public class WsdlUtilsFixture extends ActionFixture {
 
@@ -39,7 +40,7 @@ public class WsdlUtilsFixture extends ActionFixture {
     if (this.inputParams == null) {
       this.inputParams = new HashMap<String, Object>();
     }
-    System.setProperty("iflow.home", iflowHome);
+    System.setProperty(Const.IFLOW_HOME_PROP, iflowHome);
     System.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.naming.java.javaURLContextFactory");
     System.setProperty(Context.URL_PKG_PREFIXES, "org.apache.naming");
     Logger.initLogger();

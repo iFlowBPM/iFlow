@@ -34,7 +34,7 @@ public class Logger
   public static synchronized void initLogger()
   {
     loggerLoaded = true;
-    String stmp = System.getProperty("iflow.home");
+    String stmp = System.getProperty(Const.IFLOW_HOME_PROP);
     loggerAvailable = StringUtils.isNotEmpty(stmp);
     if (!loggerAvailable) {
       return;

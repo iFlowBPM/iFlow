@@ -29,7 +29,8 @@ import org.apache.commons.lang.StringUtils;
 
 public class Const {
 
-	public static final String IFLOW_HOME = System.getProperty("iflow.home");
+	public static String IFLOW_HOME_PROP = "iflow.home";
+	public static final String IFLOW_HOME = System.getProperty(Const.IFLOW_HOME_PROP);
 
 	public static final String ENCODING = "UTF-8";
 
@@ -295,7 +296,7 @@ public class Const {
 
 	public static String SIDEBAR_GEN_IMPLEMENTATION = "pt.iknow.sidebar.DesktopSidebarGenerator";
 
-	public static final File fUPLOAD_TEMP_DIR = new File(System.getProperty("iflow.home"), "temp");
+	public static final File fUPLOAD_TEMP_DIR = new File(System.getProperty(Const.IFLOW_HOME_PROP),"temp");
 	public static final int nUPLOAD_THRESHOLD_SIZE = 10 * 1024; // 10 KB
 
 	private static int MAX_FILE_SIZE = -1;
@@ -969,6 +970,7 @@ public class Const {
 		} catch (Exception e) {
 			AUTHENTICATION_TOKEN_ENDPOINT="";
 		}
+		
 	}
 
 	public static void main(String[] args) {

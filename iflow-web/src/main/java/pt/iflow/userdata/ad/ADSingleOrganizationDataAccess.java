@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import pt.iflow.api.userdata.OrganizationData;
 import pt.iflow.api.userdata.OrganizationDataAccess;
 import pt.iflow.api.userdata.OrganizationalUnitData;
+import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.ldap.LDAPInterface;
@@ -165,7 +166,7 @@ public class ADSingleOrganizationDataAccess implements OrganizationDataAccess {
 
   public static void main(String [] args) {
     // define just in case
-    System.setProperty("iflow.home", "/iKnow/work/projects/iFlowRoot/iFlowHome");
+    System.setProperty(Const.IFLOW_HOME_PROP, "/iKnow/work/projects/iFlowRoot/iFlowHome");
     Setup.loadProperties();
     new ADSingleOrganizationDataAccess().init(Setup.readPropertiesFile("ad.properties"));
   }

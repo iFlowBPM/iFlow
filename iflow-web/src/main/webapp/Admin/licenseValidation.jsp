@@ -10,7 +10,7 @@
 <%
 	boolean isLoaded = LibraryLoader.isLoaded();
 int status = SecurityWrapper.getLicenseStatus();
-String libpath = System.getProperty("iflow.home");
+String libpath = System.getProperty(Const.IFLOW_HOME_PROP);
 String fileName = LibraryLoader.getLibraryFileName();
 UserInfoInterface admin = (UserInfoInterface)session.getAttribute(Const.USER_INFO);
 if(null == admin) {
