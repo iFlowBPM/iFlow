@@ -1090,15 +1090,6 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 DELIMITER ;
 
--- sequences
-CREATE TRIGGER trigger_activity_hierarchy
-BEFORE INSERT ON `activity_hierarchy` FOR EACH ROW
-SET NEW.`hierarchyid` = sequence('activity_hierarchy');
-
-CREATE TRIGGER trigger_email
-BEFORE INSERT ON `email` FOR EACH ROW
-SET NEW.`eid` = sequence('email');
-
 --
 -- @view  activity tabela que contem as actividades delegadas a outros
 -- @field id identificador da hierarquia de delegacoes
@@ -1405,7 +1396,7 @@ CREATE FUNCTION get_procdata_value (procdata LONGTEXT, varname VARCHAR(256))
     END
 //
 
-CREATE FUNCTION `sequence`(name CHAR(32))
+CREATE FUNCTION `sequencer`(name CHAR(32))
     RETURNS int(11)
     MODIFIES SQL DATA
     DETERMINISTIC
@@ -1484,6 +1475,17 @@ END;
 
 -- Restore delimiter
 DELIMITER ;
+
+-- sequences
+CREATE TRIGGER trigger_activity_hierarchy
+BEFORE INSERT ON `activity_hierarchy` 
+FOR EACH ROW
+SET NEW.`hierarchyid` = sequencer('activity_hierarchy');
+
+CREATE TRIGGER trigger_email
+BEFORE INSERT ON `email` FOR EACH ROW
+SET NEW.`eid` = sequencer('email');
+
 
 insert into counter values ('pid',0,NOW());
 insert into counter values ('docid',1,NOW());
