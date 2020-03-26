@@ -120,6 +120,7 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 			StringReader sr = new StringReader(readerAux);
 			XMLStreamReader streamReader = factory.createXMLStreamReader(sr);
 									
+			Boolean BDPAccepted = true;
 			Integer crc_id = null, controlo_id = null, avisRec_id = null, fichAce_id = null, regMsg_id = null;
 			String idFichRelac = null;
 			while (streamReader.hasNext()) {
@@ -153,6 +154,7 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 										streamReader.getAttributeValue(null, "descErro") });
 						result.add(streamReader.getAttributeValue(null, "codErro") + ","
 								+ streamReader.getAttributeValue(null, "descErro"));
+						BDPAccepted = false;
 					} else if (StringUtils.equals("fichAce", streamReader.getLocalName())) {
 						fichAce_id = FileImportUtils.insertSimpleLine(connection, userInfo,
 								"INSERT INTO `fichAce` (`avisRec_id`, `numRegRec`, `numRegAce`, `numRegRej`, `numRegAlert`) VALUES (?, ?, ?, ?, ?);",
@@ -237,7 +239,7 @@ public class BlockP17040IntegrateBDPFeedback extends Block {
 				if(outputDoc!=null)
 					procData.getList(sOutputDocumentVar).parseAndAddNewItem(String.valueOf(outputDoc.getDocId()));	
 						
-				GestaoCrc.markAsIntegrated((Integer) u_gestaoValues.get("out_id"), crc_id, inputDoc.getDocId(), userInfo.getUtilizador(), connection);
+				GestaoCrc.markAsIntegrated((Integer) u_gestaoValues.get("out_id"), crc_id, inputDoc.getDocId(), BDPAccepted, userInfo.getUtilizador(), connection);
 			}
 		} catch (Exception e) {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);

@@ -78,7 +78,7 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 				}
 				// validar Entidade do Instrumento
 				String idEnt = (String) lineValues.get("idEnt");
-				if (StringUtils.isBlank(idEnt)) {
+				if (StringUtils.isBlank(idEnt) && !getIsDelete()) {
 					errorList.add(new ValidationError("Identificação de Entidade do Instrumento em falta", "", "", lineNumber));
 					continue;
 				}
@@ -179,19 +179,20 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 		
 		//entComp
 		Integer idEnt_id = GestaoCrc.findIdEnt("" + lineValues.get("idEnt"), userInfo, connection);
-		if(idEnt_id==null)
-			throw new SQLException("idEnt ainda não está registado no sistema");
-				
-		List<Integer> entCompList = retrieveSimpleField(connection, userInfo,
-			"select id from entComp where infCompC_id = {0} and idEnt_id = {1} and rendLiq = {2} and rendLiqChoq = {3}",
-			new Object[] { infCompC_id, idEnt_id, lineValues.get("rendLiq"), lineValues.get("rendLiqChoq") });
-		
-		if(entCompList.isEmpty())
-			FileImportUtils.insertSimpleLine(connection, userInfo,
-				"INSERT INTO `entComp` (`infCompC_id`, `idEnt_id`, `rendLiq`, `rendLiqChoq`) "
-				+ "VALUES ( ?, ?, ?, ?);",
-				new Object[] { infCompC_id, idEnt_id, lineValues.get("rendLiq"), lineValues.get("rendLiqChoq")});
-		
+		if(!getIsDelete()){
+			if(idEnt_id==null)
+				throw new SQLException("idEnt ainda não está registado no sistema");
+					
+			List<Integer> entCompList = retrieveSimpleField(connection, userInfo,
+				"select id from entComp where infCompC_id = {0} and idEnt_id = {1} and rendLiq = {2} and rendLiqChoq = {3}",
+				new Object[] { infCompC_id, idEnt_id, lineValues.get("rendLiq"), lineValues.get("rendLiqChoq") });
+			
+			if(entCompList.isEmpty())
+				FileImportUtils.insertSimpleLine(connection, userInfo,
+					"INSERT INTO `entComp` (`infCompC_id`, `idEnt_id`, `rendLiq`, `rendLiqChoq`) "
+					+ "VALUES ( ?, ?, ?, ?);",
+					new Object[] { infCompC_id, idEnt_id, lineValues.get("rendLiq"), lineValues.get("rendLiqChoq")});
+		}
 		//protComp
 		if(StringUtils.isNotBlank((String)lineValues.get("idProt"))){
 			List<Integer> protCompList = retrieveSimpleField(connection, userInfo,

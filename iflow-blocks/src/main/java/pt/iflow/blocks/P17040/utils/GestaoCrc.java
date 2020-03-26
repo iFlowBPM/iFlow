@@ -32,7 +32,7 @@ import pt.iflow.connector.document.Document;
 public class GestaoCrc {
 
 	static enum Status {
-		IMPORTED(0), VALID(1), NOT_VALID(2), BDP_SENT(3), BDP_RECEIVED(4);
+		IMPORTED(0), VALID(1), NOT_VALID(2), BDP_SENT(3), BDP_RECEIVED(4), BDP_REJECTED(5);
 		private int value;
 
 		private Status(int value) {
@@ -366,7 +366,7 @@ public class GestaoCrc {
 			rs.close();
 			
 			query = "select fichAce.id, u_gestao.id "+
-				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
+				"from u_gestao, crc, conteudo, avisRec, fichAce "+ 
 				"where  u_gestao.in_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
 				"	conteudo.id = avisRec.conteudo_id and "+
@@ -481,8 +481,17 @@ public class GestaoCrc {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
+				String subFileSelectorAux = "";
+				if(StringUtils.equals("IFI", types[0]))
+					subFileSelectorAux = "join infFinInst on infPerInst.id = infFinInst.infPerInst_id ";
+				else if(StringUtils.equals("IRI", types[0]))
+					subFileSelectorAux = "join infRInst on infPerInst.id = infRInst.infPerInst_id ";
+				else if(StringUtils.equals("ICI", types[0]))
+					subFileSelectorAux = "join infContbInst on infPerInst.id = infContbInst.infPerInst_id ";
+				
 				String query = "select u_gestao.id, comInfInst.dtRef "+
 					"from u_gestao, crc, conteudo, comInfInst, infPerInst "+
+					subFileSelectorAux +
 					"where u_gestao.out_id = crc.id and "+
 					"	crc.id = conteudo.crc_id and "+
 					"    conteudo.id = comInfInst.conteudo_id and "+
@@ -509,7 +518,7 @@ public class GestaoCrc {
 			rs.close();
 			
 			query = "select fichAce.id, u_gestao.id "+
-				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
+				"from u_gestao, crc, conteudo, avisRec, fichAce "+ 
 				"where  u_gestao.in_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
 				"	conteudo.id = avisRec.conteudo_id and "+
@@ -611,7 +620,7 @@ public class GestaoCrc {
 		return null;
 		}
 
-	public static void markAsIntegrated(Integer originalCrcId, Integer newCrcId, int receivedDocId, String utilizador,
+	public static void markAsIntegrated(Integer originalCrcId, Integer newCrcId, int receivedDocId, Boolean bDPAccepted, String utilizador,
 			Connection connection) throws SQLException {
 		Connection db = null;
 		PreparedStatement pst = null;
@@ -619,7 +628,10 @@ public class GestaoCrc {
 		try {
 			String query = "update u_gestao set status_id = ?, receivedate=?, receiveuser=?, in_id=?, in_docid=? where out_id = ?";
 			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-			pst.setInt(1, Status.BDP_RECEIVED.getValue());
+			if(bDPAccepted)
+				pst.setInt(1, Status.BDP_RECEIVED.getValue());
+			else
+				pst.setInt(1, Status.BDP_REJECTED.getValue());
 			pst.setTimestamp(2, new Timestamp((new Date()).getTime()));
 			pst.setString(3, utilizador);
 			pst.setInt(4, newCrcId);
@@ -719,7 +731,7 @@ public class GestaoCrc {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
-			String query = "select u_gestao.id, infCompC.dtRef "+
+			String query = "select u_gestao.id, infCompC.dtRef, infCompC.type "+
 				"from u_gestao, crc, conteudo, comInfComp, infCompC "+
 				"where u_gestao.out_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
@@ -742,13 +754,13 @@ public class GestaoCrc {
 			
 			Integer u_gestao_id = rs.getInt(1);
 			Date dtRefInfDiaAux = rs.getDate(2);
+			String type = rs.getString(3);
 			
 			pst.close();
 			rs.close();
 			
-			query = "select fichAce.id, u_gestao.id, infCompC.type "+
+			query = "select fichAce.id, u_gestao.id "+
 				"from u_gestao, crc, conteudo, avisRec, fichAce "+ 
-				"LEFT JOIN infCompC ON (infCompC.comInfComp_id = (SELECT id FROM comInfComp WHERE comInfComp.conteudo_id = (SELECT conteudo.id FROM conteudo WHERE crc_id=u_gestao.out_id)) AND infCompC.idCont=? AND infCompC.idInst=? AND infCompC.dtRef=?)  "+	
 				"where  u_gestao.in_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
 				"	conteudo.id = avisRec.conteudo_id and "+
@@ -761,16 +773,13 @@ public class GestaoCrc {
 				"           and (operOrig='CCI' or operOrig='CCU' or operOrig = 'CCD')); ";
 			
 			pst = connection.prepareStatement(query);
-			pst.setString(1, idCont);
-			pst.setString(2, idInst);
-			pst.setDate(3, new java.sql.Date(dtRefInfDiaAux.getTime()));
-			pst.setInt(4, u_gestao_id);
-			pst.setString(5, idCont);
-			pst.setString(6, idInst);
-			rs = pst.executeQuery();float[]a =new float[0];
+			pst.setInt(1, u_gestao_id);
+			pst.setString(2, idCont);
+			pst.setString(3, idInst);
+			rs = pst.executeQuery();
 			
 			if(rs.next() && dtRefInfDiaAux.getTime()<=dtRef.getTime())
-				if (StringUtils.equalsIgnoreCase(rs.getString("type"),"CCD"))
+				if (StringUtils.equalsIgnoreCase(type,"CCD"))
 					return new ImportAction(ImportActionType.CREATE);
 				else 
 					return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));			

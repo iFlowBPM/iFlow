@@ -188,18 +188,19 @@ public class BlockP17040ValidateCENT extends BlockP17040Validate {
 						"select * from docId where id = {0} ", new Object[] { docIdId });
 				// tpDoc
 				String tpDocCheck = (String) docIdValues.get("tpDoc");
-				if (StringUtils.isBlank(tpDocCheck) && !StringUtils.equalsIgnoreCase("PRT", paisResdCheck))
+				if (StringUtils.isBlank(tpDocCheck))
 					result.add(new ValidationError("EN022", "docId", "tpDoc", idEntValue, (Integer) docIdValues.get("id"), tpDocCheck));
 				if (tpDocCheck != null && !isValidDomainValue(userInfo, connection, "T_TID","" + tpDocCheck))
 					result.add(new ValidationError("EN023", "docId", "tpDoc", idEntValue, (Integer) docIdValues.get("id"), tpDocCheck));
 				// numDoc
 				String numDocCheck = (String) docIdValues.get("numDoc");
-				if (!StringUtils.isBlank(tpDocCheck) && StringUtils.isBlank(numDocCheck))
+				if (StringUtils.isBlank(numDocCheck))
 					result.add(new ValidationError("EN025", "docId", "numDoc", idEntValue, (Integer) docIdValues.get("id"), numDocCheck));
 				// paisEmissao
 				String paisEmissaoCheck = (String) docIdValues.get("paisEmissao");
-				if (!StringUtils.isBlank(tpDocCheck) && paisEmissaoCheck != null
-						&& !isValidDomainValue(userInfo, connection, "T_TER","" + paisEmissaoCheck))
+				if (paisEmissaoCheck != null && !isValidDomainValue(userInfo, connection, "T_TER","" + paisEmissaoCheck))
+					result.add(new ValidationError("EN026", "docId", "paisEmissao", idEntValue, (Integer) docIdValues.get("id"), paisEmissaoCheck));
+				if (StringUtils.isBlank(paisEmissaoCheck))
 					result.add(new ValidationError("EN026", "docId", "paisEmissao", idEntValue, (Integer) docIdValues.get("id"), paisEmissaoCheck));
 				// dtEmissao
 				Date dtEmissaoCheck = (Date) docIdValues.get("dtEmissao");

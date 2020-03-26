@@ -116,14 +116,15 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 				if (actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
 					Integer ccinCrcId = actionOnLine.getU_gestao_id();		
 					infInstValues = fillAtributtes(null, connection, userInfo,
-							"select infInst.id from infInst, comCInst, conteudo "
-							+ "where infInst.comCInst_id=comCInst.id and "
-							+ "comCInst.conteudo_id = conteudo.id and "
-							+ "conteudo.crc_id = {0} and "
-							+ "infInst.dtRefInst = {1} and "
-							+ "infInst.idCont = {2} and "
-							+ "infInst.idInst = {3} ",
-							new Object[] { ccinCrcId, dtRef, idCont, idInst });
+							"select infInst.* from infInst, comCInst, conteudo, crc, u_gestao " + 
+							"where infInst.comCInst_id=comCInst.id and " + 
+							"comCInst.conteudo_id = conteudo.id and " + 
+							"conteudo.crc_id = crc.id and " +
+							"crc.id = u_gestao.out_id and " +
+							"u_gestao.id = {0} and " +
+							"infInst.idCont = ''{1}'' and " + 
+							"infInst.idInst = ''{2}''; " ,
+							new Object[] { ccinCrcId, idCont, idInst });
 					
 					//CC014
 					if(StringUtils.equals("002", (String)infInstValues.get("tpTxJuro")) &&
