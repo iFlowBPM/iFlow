@@ -70,8 +70,8 @@ try {
       continue;
     }
     String value = fdFormData.getParameter(param);
-    if (value != null && param.length() > Const.ATTR_PREFIX.length()) {
-      param = param.substring(Const.ATTR_PREFIX.length());
+    if (StringUtils.isNotBlank(value) && param.length() > Const.ATTR_PREFIX.length()) {
+      param = StringUtils.removeStartIgnoreCase(param, Const.ATTR_PREFIX);
       Logger.debugJsp(login,"inicio_flow","setting initial attribute: " + param + "=" + value);
       procData.parseAndSet(param, value);
     }
