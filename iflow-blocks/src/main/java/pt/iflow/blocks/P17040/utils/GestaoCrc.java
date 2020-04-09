@@ -769,7 +769,7 @@ public class GestaoCrc {
 				"   fichAce.id not in  "+
 				"		( select regMsg.fichAce_id from regMsg, msg "+
 				"			where regMsg.idCont = ? and regMsg.idInst = ? "+
-				"			and (msg.nvCrit=0 or msg.codMsg!='CC003')" +	
+				"			and msg.nvCrit=0 and msg.codMsg!='CC003' " +	
 				"           and (operOrig='CCI' or operOrig='CCU' or operOrig = 'CCD')); ";
 			
 			pst = connection.prepareStatement(query);

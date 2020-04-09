@@ -254,7 +254,7 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 					Date dtOriMat = (Date) infInstValues.get("dtOriMat");
 					if (dtMat == null)
 						result.add(new ValidationError("CI036", "infInst", "dtMat", idCont, infInstId));
-					if (dtMat != null && dtOriMat != null && !dtMat.equals(dtOriMat))
+					if (dtMat != null && dtOriMat != null && (!tpCaractEspAux.contains("007") || !tpCaractEspAux.contains("008")) && !dtMat.equals(dtOriMat))
 						result.add(new ValidationError("CI037", "infInst", "dtMat", idCont, infInstId));
 					if (dtIniInst != null && dtMat != null && dtIniInst.after(dtMat))
 						result.add(new ValidationError("CI094", "infInst", "dtMat", idCont, infInstId));
