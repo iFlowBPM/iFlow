@@ -65,8 +65,13 @@ public class UserInfo
   protected PasswordGuardian password;
   private String connId = null;
   private DBConnectionWrapper connWrapper = null;
+  protected String sAuthToken = null;
   
-  UserInfo()
+  public String getSAuthToken() {
+	return sAuthToken;
+}
+
+UserInfo()
   {
     this._bLogged = false;
     this._sUtilizador = "Guest";
@@ -155,8 +160,10 @@ public class UserInfo
     {
       if(token!=null && !"".equals(token)){
     	  sUsername = AuthenticationToken.getUserByAuthenticationToken(token);
-    	  if(sUsername!=null && !sUsername.equals(""))
+    	  if(sUsername!=null && !sUsername.equals("")){
     		  this._bLogged = true;
+    		  this.sAuthToken = token;
+    	  }
     	  asPassword = "";    	  
       }
       else if (useWindowsDomainAuth && StringUtils.isNotBlank(sUsername)) {

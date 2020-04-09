@@ -122,4 +122,6 @@ public abstract void login(String login, String password, Boolean useWindowsDoma
 public abstract void setApplication(String application);
 
 public abstract String getApplication();
+
+public abstract String getSAuthToken();
 }
