@@ -31,10 +31,11 @@ import pt.iflow.connector.document.Document;
 import pt.iknow.utils.StringUtilities;
 
 public abstract class BlockP17040Validate extends Block {
-	public Port portIn, portSuccess, portEmpty, portError;
+	public Port portIn, portSuccess, portEmpty, portError, portAbort;
 
 	private static final String DATASOURCE = "Datasource";
 	private static final String CRCID = "crc_id";
+	private static final String ABORTLEVEL = "abortLevel";
 	private static final String OUTPUT_ERROR_CODE = "outputErrorCode";
 	private static final String OUTPUT_ERROR_TABLE = "outputErrorTable";
 	private static final String OUTPUT_ERROR_FIELD = "outputErrorField";
@@ -61,10 +62,11 @@ public abstract class BlockP17040Validate extends Block {
 	}
 
 	public Port[] getOutPorts(UserInfoInterface userInfo) {
-		Port[] retObj = new Port[2];
+		Port[] retObj = new Port[3];
 		retObj[0] = portSuccess;
 		retObj[1] = portEmpty;
 		retObj[2] = portError;
+		retObj[3] = portAbort;
 		return retObj;
 	}
 
@@ -92,6 +94,8 @@ public abstract class BlockP17040Validate extends Block {
 		Connection connection=null;
 		DataSource datasource = null;
 		Integer crcId = null;
+		Integer abortLevel = null;
+		boolean mustAbort=false;
 		
 		String outputErrorCodeVar= this.getAttribute(OUTPUT_ERROR_CODE); 
 		String outputErrorTableVar=this.getAttribute(OUTPUT_ERROR_TABLE); 
@@ -120,7 +124,9 @@ public abstract class BlockP17040Validate extends Block {
 			datasource = Utils.getUserDataSource(procData.transform(userInfo, getAttribute(DATASOURCE)));
 			crcId = Integer.parseInt(procData.transform(userInfo, getAttribute(CRCID)));
 			connection = datasource.getConnection();
+			abortLevel = Integer.parseInt(procData.transform(userInfo, getAttribute(ABORTLEVEL)));
 		} catch (Exception e1) {
+			abortLevel = 6;
 			Logger.error(login, this, "after", procData.getSignature() + "error transforming attributes", e1);
 		}
 		try {
@@ -137,8 +143,7 @@ public abstract class BlockP17040Validate extends Block {
 			result = validate(userInfo, procData, connection, crcId);
 						
 			
-			if(result.isEmpty())
-				GestaoCrc.markAsValidated(crcId, userInfo.getUtilizador(), connection);
+			GestaoCrc.markAsValidated(crcId, userInfo.getUtilizador(), connection);
 			
 			procData.getList(outputErrorCodeVar).clear();
 			procData.getList(outputErrorTableVar).clear();
@@ -147,7 +152,8 @@ public abstract class BlockP17040Validate extends Block {
 			procData.getList(outputErrorDescVar).clear();			
 			procData.getList(outputErrorIdBdpVar).clear();
 			procData.getList(outputErrorIdVar).clear();
-//			procData.getList(outputErrorCriticalVar).clear();
+			if(outputErrorCriticalVar!=null && !"".equals(outputErrorCriticalVar))
+				procData.getList(outputErrorCriticalVar).clear();
 			int i=0;
 			for(ValidationError error: result)
 			if(error!=null)
@@ -160,7 +166,12 @@ public abstract class BlockP17040Validate extends Block {
 						procData.getList(outputErrorValueVar).parseAndAddNewItem(error.getValueFormatted());
 						procData.getList(outputErrorDescVar).parseAndAddNewItem(FileValidationUtils.retrieveErrorBDPDescription(error.getCode(), connection, userInfo));
 						procData.getList(outputErrorIdVar).addNewItem(error.getId());
-		//				procData.getList(outputErrorCriticalVar).addNewItem(FileValidationUtils.retrieveCriticalLevelBDP(error.getCode(), connection, userInfo));
+						Integer errorCriticalLevel = FileValidationUtils.retrieveCriticalLevelBDP(error.getCode(), connection, userInfo);
+						if(outputErrorCriticalVar!=null && !"".equals(outputErrorCriticalVar))
+							procData.getList(outputErrorCriticalVar).addNewItem(errorCriticalLevel);
+						
+						if(abortLevel!=null && errorCriticalLevel!=null && errorCriticalLevel>=abortLevel)
+							mustAbort = true;
 					} catch (Exception e){
 						Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + i);
 					}
@@ -182,7 +193,10 @@ public abstract class BlockP17040Validate extends Block {
 			if(doc!=null)
 				procData.getList(sOutputErrorDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));	
 			
-			outPort = portSuccess;
+			if(mustAbort)
+				outPort = portAbort;
+			else
+				outPort = portSuccess;
 		} catch (Exception e) {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
 			outPort = portError;
@@ -203,7 +217,7 @@ public abstract class BlockP17040Validate extends Block {
 		BufferedWriter tmpOutput = new BufferedWriter(new FileWriter(tmpFile, true));
 		for(ValidationError aux: errorList){			
 			if(aux!=null){
-				tmpOutput.write(aux.getIdBdpValue() + ";" + aux.getCode() + ";" + FileValidationUtils.retrieveErrorBDPDescription(aux.getCode(), connection, userInfo));
+				tmpOutput.write(aux.getIdBdpValue() + ";" + aux.getCode() + ";" + FileValidationUtils.retrieveErrorBDPDescription(aux.getCode(), connection, userInfo) + ";" +FileValidationUtils.retrieveCriticalLevelBDP(aux.getCode(), connection, userInfo));
 				tmpOutput.newLine();
 			}
 		}

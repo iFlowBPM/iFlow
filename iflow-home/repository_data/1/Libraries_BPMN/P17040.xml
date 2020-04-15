@@ -82,7 +82,7 @@
 		<description>ImportCICC</description>
 		<i18n>library.dms.block.p17040.import.cicc</i18n>
 	</XmlBlock>
-	
+
 	<XmlBlock>
 		<class>BlockP17040ImportCIND</class>
 		<XmlPort>
@@ -516,7 +516,7 @@
 		<description>ImportCERAEntRelOn</description>
 		<i18n>library.dms.block.p17040.import.cera.entrel.on</i18n>
 	</XmlBlock>
-	
+
 	<XmlBlock>
 		<class>BlockP17040ImportCERAEntRelOff</class>
 		<XmlPort>
@@ -589,7 +589,7 @@
 		<description>ImportCERAEntRelOff</description>
 		<i18n>library.dms.block.p17040.import.cera.entrel.off</i18n>
 	</XmlBlock>
-	
+
 	<XmlBlock>
 		<class>BlockP17040ImportCCIN</class>
 		<XmlPort>
@@ -791,7 +791,7 @@
 		<description>ImportCPRT</description>
 		<i18n>library.dms.block.p17040.import.cprt</i18n>
 	</XmlBlock>
-	
+
 	<XmlBlock>
 		<class>BlockP17040ValidateCICC</class>
 		<XmlPort>
@@ -876,7 +876,11 @@
 			<description>Error document</description>
 			<value />
 		</XmlAttribute>
-
+		<XmlAttribute>
+			<name>abortLevel</name>
+			<description>Abort Level</description>
+			<value />
+		</XmlAttribute>
 		<XmlAttribute>
 			<name>Datasource</name>
 			<description>Datasource</description>
@@ -887,6 +891,15 @@
 			<description>Id of Crc</description>
 			<value />
 		</XmlAttribute>
+		<XmlPort>
+			<name>portAbort</name>
+			<description>Abortado</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>52</y>
+			</position>
+		</XmlPort>
 		<image>bpmn_task.png</image>
 		<description>ValidateCICC</description>
 		<i18n>library.dms.block.p17040.validate.cicc</i18n>
@@ -930,6 +943,15 @@
 				<y>45</y>
 			</position>
 		</XmlPort>
+		<XmlPort>
+			<name>portAbort</name>
+			<description>Abortado</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>52</y>
+			</position>
+		</XmlPort>
 		<XmlAttribute>
 			<name>outputErrorCode</name>
 			<description>Error code</description>
@@ -962,21 +984,25 @@
 			<value />
 		</XmlAttribute>
 		<XmlAttribute>
-	<name>outputErrorDescription</name>
-	<description>Error description</description>
-	<value />
-</XmlAttribute>
-<XmlAttribute>
+			<name>outputErrorDescription</name>
+			<description>Error description</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
 			<name>outputErrorCritical</name>
 			<description>Error critical level</description>
 			<value />
 		</XmlAttribute>
-<XmlAttribute>
-	<name>outputErrorDocument</name>
-	<description>Error document</description>
-	<value />
-</XmlAttribute>
-
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>Error document</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>abortLevel</name>
+			<description>Abort Level</description>
+			<value />
+		</XmlAttribute>
 		<XmlAttribute>
 			<name>Datasource</name>
 			<description>Datasource</description>
@@ -1031,6 +1057,15 @@
 				<y>45</y>
 			</position>
 		</XmlPort>
+		<XmlPort>
+			<name>portAbort</name>
+			<description>Abortado</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>52</y>
+			</position>
+		</XmlPort>
 		<XmlAttribute>
 			<name>outputErrorCode</name>
 			<description>Error code</description>
@@ -1063,21 +1098,25 @@
 			<value />
 		</XmlAttribute>
 		<XmlAttribute>
-	<name>outputErrorDescription</name>
-	<description>Error description</description>
-	<value />
-</XmlAttribute>
-<XmlAttribute>
+			<name>outputErrorDescription</name>
+			<description>Error description</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
 			<name>outputErrorCritical</name>
 			<description>Error critical level</description>
 			<value />
 		</XmlAttribute>
-<XmlAttribute>
-	<name>outputErrorDocument</name>
-	<description>Error document</description>
-	<value />
-</XmlAttribute>
-
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>Error document</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>abortLevel</name>
+			<description>Abort Level</description>
+			<value />
+		</XmlAttribute>
 		<XmlAttribute>
 			<name>Datasource</name>
 			<description>Datasource</description>
@@ -1131,6 +1170,15 @@
 				<y>45</y>
 			</position>
 		</XmlPort>
+		<XmlPort>
+			<name>portAbort</name>
+			<description>Abortado</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>52</y>
+			</position>
+		</XmlPort>
 		<XmlAttribute>
 			<name>outputErrorCode</name>
 			<description>Error code</description>
@@ -1163,21 +1211,25 @@
 			<value />
 		</XmlAttribute>
 		<XmlAttribute>
-	<name>outputErrorDescription</name>
-	<description>Error description</description>
-	<value />
-</XmlAttribute>
-<XmlAttribute>
+			<name>outputErrorDescription</name>
+			<description>Error description</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
 			<name>outputErrorCritical</name>
 			<description>Error critical level</description>
 			<value />
 		</XmlAttribute>
-<XmlAttribute>
-	<name>outputErrorDocument</name>
-	<description>Error document</description>
-	<value />
-</XmlAttribute>
-
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>Error document</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>abortLevel</name>
+			<description>Abort Level</description>
+			<value />
+		</XmlAttribute>
 		<XmlAttribute>
 			<name>Datasource</name>
 			<description>Datasource</description>
@@ -1231,6 +1283,15 @@
 				<y>45</y>
 			</position>
 		</XmlPort>
+		<XmlPort>
+			<name>portAbort</name>
+			<description>Abortado</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>52</y>
+			</position>
+		</XmlPort>
 		<XmlAttribute>
 			<name>outputErrorCode</name>
 			<description>Error code</description>
@@ -1263,20 +1324,25 @@
 			<value />
 		</XmlAttribute>
 		<XmlAttribute>
-	<name>outputErrorDescription</name>
-	<description>Error description</description>
-	<value />
-</XmlAttribute>
-<XmlAttribute>
+			<name>outputErrorDescription</name>
+			<description>Error description</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
 			<name>outputErrorCritical</name>
 			<description>Error critical level</description>
 			<value />
 		</XmlAttribute>
-<XmlAttribute>
-	<name>outputErrorDocument</name>
-	<description>Error document</description>
-	<value />
-</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>Error document</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>abortLevel</name>
+			<description>Abort Level</description>
+			<value />
+		</XmlAttribute>
 		<XmlAttribute>
 			<name>Datasource</name>
 			<description>Datasource</description>
@@ -1330,6 +1396,15 @@
 				<y>45</y>
 			</position>
 		</XmlPort>
+		<XmlPort>
+			<name>portAbort</name>
+			<description>Abortado</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>52</y>
+			</position>
+		</XmlPort>
 		<XmlAttribute>
 			<name>outputErrorCode</name>
 			<description>Error code</description>
@@ -1362,20 +1437,25 @@
 			<value />
 		</XmlAttribute>
 		<XmlAttribute>
-	<name>outputErrorDescription</name>
-	<description>Error description</description>
-	<value />
-</XmlAttribute>
-<XmlAttribute>
+			<name>outputErrorDescription</name>
+			<description>Error description</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
 			<name>outputErrorCritical</name>
 			<description>Error critical level</description>
 			<value />
 		</XmlAttribute>
-<XmlAttribute>
-	<name>outputErrorDocument</name>
-	<description>Error document</description>
-	<value />
-</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>Error document</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>abortLevel</name>
+			<description>Abort Level</description>
+			<value />
+		</XmlAttribute>
 		<XmlAttribute>
 			<name>Datasource</name>
 			<description>Datasource</description>
@@ -1429,6 +1509,15 @@
 				<y>45</y>
 			</position>
 		</XmlPort>
+		<XmlPort>
+			<name>portAbort</name>
+			<description>Abortado</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>52</y>
+			</position>
+		</XmlPort>
 		<XmlAttribute>
 			<name>outputErrorCode</name>
 			<description>Error code</description>
@@ -1461,20 +1550,25 @@
 			<value />
 		</XmlAttribute>
 		<XmlAttribute>
-	<name>outputErrorDescription</name>
-	<description>Error description</description>
-	<value />
-</XmlAttribute>
-<XmlAttribute>
+			<name>outputErrorDescription</name>
+			<description>Error description</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
 			<name>outputErrorCritical</name>
 			<description>Error critical level</description>
 			<value />
 		</XmlAttribute>
-<XmlAttribute>
-	<name>outputErrorDocument</name>
-	<description>Error document</description>
-	<value />
-</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>Error document</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>abortLevel</name>
+			<description>Abort Level</description>
+			<value />
+		</XmlAttribute>
 		<XmlAttribute>
 			<name>Datasource</name>
 			<description>Datasource</description>
@@ -1528,6 +1622,15 @@
 				<y>45</y>
 			</position>
 		</XmlPort>
+		<XmlPort>
+			<name>portAbort</name>
+			<description>Abortado</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>52</y>
+			</position>
+		</XmlPort>
 		<XmlAttribute>
 			<name>outputErrorCode</name>
 			<description>Error code</description>
@@ -1560,21 +1663,25 @@
 			<value />
 		</XmlAttribute>
 		<XmlAttribute>
-	<name>outputErrorDescription</name>
-	<description>Error description</description>
-	<value />
-</XmlAttribute>
-<XmlAttribute>
+			<name>outputErrorDescription</name>
+			<description>Error description</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
 			<name>outputErrorCritical</name>
 			<description>Error critical level</description>
 			<value />
 		</XmlAttribute>
-<XmlAttribute>
-	<name>outputErrorDocument</name>
-	<description>Error document</description>
-	<value />
-</XmlAttribute>
-
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>Error document</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>abortLevel</name>
+			<description>Abort Level</description>
+			<value />
+		</XmlAttribute>
 		<XmlAttribute>
 			<name>Datasource</name>
 			<description>Datasource</description>

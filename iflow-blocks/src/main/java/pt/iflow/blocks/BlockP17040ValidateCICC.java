@@ -109,7 +109,7 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 					result.add(new ValidationError("CC011", "infCompC", "prestOpChoq", idCont, infCompC_id, prestOpChoq));
 				
 				//CC013
-				if (prestOpChoq != null && prestOpChoq.compareTo(prestOp) == -1)
+				if (prestOpChoq != null && prestOp!=null && prestOpChoq.compareTo(prestOp) == -1)
 					result.add(new ValidationError("CC013", "infCompC", "prestOpChoq", idCont, infCompC_id, prestOpChoq));
 
 				HashMap<String, Object> infInstValues = new HashMap<>();
