@@ -885,7 +885,7 @@
 			</xsl:attribute>
 
 			<xsl:attribute name="style">
-				<xsl:text>width: 100%;margin:auto;</xsl:text>
+				<xsl:text>width: 100%;margin:auto;overflow-y: scroll;height: 100%;</xsl:text>
 			</xsl:attribute>
 			<xsl:attribute name="id">
 				<xsl:value-of select="name/text()" />

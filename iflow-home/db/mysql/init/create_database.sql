@@ -1935,3 +1935,16 @@ CREATE TABLE  `iflow`.`sharedobjectrefresh` (
   `flowid` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `application` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(128) NOT NULL,
+  `description` VARCHAR(256) NULL,
+  PRIMARY KEY (`id`));
+  
+INSERT INTO `application` (`name`, `description`) VALUES ('bpm', 'BPM');
+INSERT INTO `application` (`name`, `description`) VALUES ('gdpr', 'GDPR');
+
+ALTER TABLE `iflow`.`application` 
+ADD COLUMN `noregister` INT NULL DEFAULT 0 AFTER `description`;
