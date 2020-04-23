@@ -146,7 +146,7 @@
   <form action="#" onsubmit="return false;">
     <% String theme = BeanFactory.getOrganizationThemeBean().getOrganizationTheme(userInfo).getThemeName(); %>
 		<input class="regular_button_01 btn btn-default"
-			<%if (userInfo.isGuest() || "newflow".equals(theme)) {%>
+			<%if (userInfo.isGuest() || "newflow".equals(theme) || "uniksystem".equals(theme)) {%>
 				type="hidden" 
 			<%}	else {%> 
 				type="button" 

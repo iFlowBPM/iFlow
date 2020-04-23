@@ -170,7 +170,7 @@ public abstract class BlockP17040Validate extends Block {
 						if(outputErrorCriticalVar!=null && !"".equals(outputErrorCriticalVar))
 							procData.getList(outputErrorCriticalVar).addNewItem(errorCriticalLevel);
 						
-						if(abortLevel!=null && errorCriticalLevel!=null && errorCriticalLevel>=abortLevel)
+						if(abortLevel!=null && errorCriticalLevel!=null && errorCriticalLevel<=abortLevel)
 							mustAbort = true;
 					} catch (Exception e){
 						Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + i);
