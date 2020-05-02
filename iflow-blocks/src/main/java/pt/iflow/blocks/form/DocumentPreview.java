@@ -68,9 +68,13 @@ public class DocumentPreview implements FieldInterface {
     	StringBuffer sb = new StringBuffer();
     	sb.append("<field><type>" + FormProps.DOCUMENT_PREVIEW + "</type>");
     	sb.append("<files_available>" + filesAvailable + "</files_available>");
-    	for(int i=0; i< filesAvailable; i++)
+    	for(int i=0; i< filesAvailable; i++){
 		  	//sb.append("<link_url_" + i +">").append(prop.getProperty("link_url_"+i)).append("</link_url_" + i +">");
-    		sb.append("<file><link_url>").append(prop.getProperty("link_url_"+i)).append("</link_url></file>");
+    		sb.append("<file>");
+    		sb.append("<link_url>").append(prop.getProperty("link_url_"+i)).append("</link_url>");
+    		sb.append("<filename>").append(prop.getProperty("filename_"+i)).append("</filename>");
+    		sb.append("</file>");
+    	}
     	sb.append("</field>");
       
       return sb.toString();
@@ -133,8 +137,10 @@ public class DocumentPreview implements FieldInterface {
 	              Document docData = docBean.getDocumentInfo(userInfo, procData, did);
 	              if (docData != null) {
 	                sLinkUrl = FormUtils.generateDocumentURL(userInfo, response, procData, did);
-	                if (sLinkUrl != null) 
-	                	props.setProperty("link_url_"+filesAvailable,sLinkUrl);	               
+	                if (sLinkUrl != null) {
+	                	props.setProperty("link_url_"+filesAvailable,sLinkUrl);
+	                	props.setProperty("filename_"+filesAvailable,docData.getFileName());
+	                }
 	                filesAvailable++;
 	              }
 	            }

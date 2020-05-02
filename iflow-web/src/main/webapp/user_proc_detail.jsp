@@ -2,6 +2,7 @@
 <%@ taglib uri="http://jakarta.apache.org/taglibs/core" prefix="c" %>
 <%@ taglib uri="http://www.iknow.pt/jsp/jstl/iflow" prefix="if" %>
 <%@ include file = "inc/defs.jsp" %>
+<script src="/iFlow/javascript/iflow_main.js" type="text/javascript"></script>
 <%
 String sFlowId = fdFormData.getParameter("flowid");
 String sPid = fdFormData.getParameter("pid");

@@ -1882,11 +1882,19 @@
 									<xsl:with-param name="by" select="'document/preview.pdf'" />
 								</xsl:call-template>
 							</xsl:variable>
+							<xsl:variable name="preview_filename">
+								<xsl:call-template name="string-replace-all">
+									<xsl:with-param name="text" select="filename" />
+									<xsl:with-param name="replace" select="'document'" />
+									<xsl:with-param name="by" select="'document/preview.pdf'" />
+								</xsl:call-template>
+							</xsl:variable>
 							<div class="viewer-responsive">
-								<iframe width='600' height='450' frameborder='0' style='border: 0'
+								<iframe  frameborder='0' style='border: 0'
 									allowfullscreen='allowfullscreen'>
-									<xsl:attribute name="src">../javascript/ViewerJS/#../../..<xsl:value-of
-										select="$preview_link_url" /></xsl:attribute>
+									<xsl:attribute name="src">../javascript/ViewerJS/?title=<xsl:value-of select="$preview_filename" />
+										#../../..<xsl:value-of select="$preview_link_url" />
+									</xsl:attribute>
 								</iframe>
 							</div>
 						</xsl:for-each>
