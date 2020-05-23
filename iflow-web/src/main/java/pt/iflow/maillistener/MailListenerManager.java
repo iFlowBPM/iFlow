@@ -1,14 +1,18 @@
 package pt.iflow.maillistener;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +47,7 @@ import pt.iflow.api.utils.UserInfoManagerInterface;
 import pt.iflow.api.utils.mail.MailChecker;
 import pt.iflow.api.utils.mail.MailClient;
 import pt.iflow.api.utils.mail.MailConfig;
+import pt.iflow.api.utils.mail.MailMessageRaw;
 import pt.iflow.api.utils.mail.imap.IMAPMailPlainClient;
 import pt.iflow.api.utils.mail.imap.IMAPMailSSLClient;
 import pt.iflow.api.utils.mail.parsers.AbstractPropertiesMessageParser;
@@ -178,7 +183,7 @@ public class MailListenerManager extends Thread {
       return;
     }
     MailClient mclient = mconfig.isSecure() ? new IMAPMailSSLClient(mconfig) : new IMAPMailPlainClient(mconfig);
-    MailChecker mchecker = new MailChecker(flowid, mconfig.getCheckIntervalInSeconds(), mclient, getMessageParser(flowid));
+    MailChecker mchecker = new MailChecker(flowid, mconfig.getCheckIntervalInSeconds(), mconfig.getNrMessages(), mclient, getMessageParser(flowid));
 
     checkers.put(flowid, mchecker);
     Logger.adminInfo("MailListenerManager", "prepareChecker", 
@@ -189,7 +194,73 @@ public class MailListenerManager extends Thread {
   private MessageParser getMessageParser(final int flowid) {
     MessageParser parser = new AbstractPropertiesMessageParser() {
 
-      public boolean parse(Message message) throws MessageParseException {
+      public MailMessageRaw storeMessage(Message message) throws MessageParseException {
+
+    	  Logger.adminTrace("MailListenerManager", "storeMessage", "entered for flow " + flowid);
+
+    	  MailMessageRaw mailMessageRaw = new MailMessageRaw();
+    	  
+    	  try {
+			mailMessageRaw.setMessageId(message.getHeader("Message-ID")[0]);
+    	  } catch (MessagingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+    	  }
+          
+          try {
+              if (message.getFrom() != null && message.getFrom().length > 0) {
+                Address a = message.getFrom()[0];
+                if (a instanceof InternetAddress) {
+                  InternetAddress ia = (InternetAddress) (message.getFrom()[0]);
+                  mailMessageRaw.setFromEmail(ia.getAddress());
+                  mailMessageRaw.setFromName(ia.getPersonal());
+                } else {
+                  mailMessageRaw.setFromEmail(a.toString()); // TODO: check...
+                }
+              }
+            } catch (MessagingException e) {
+              Logger.adminWarning("MailListenerManager", "storeMessage", "error parsing from", e);
+            }
+
+            try {
+            	mailMessageRaw.setSubject(message.getSubject());
+            } catch (MessagingException e) {
+              Logger.adminWarning("MailListenerManager", "storeMessage", "error getting subject", e);
+            }
+            try {
+            	mailMessageRaw.setSentDate(message.getSentDate());
+            } catch (MessagingException e) {
+              Logger.adminWarning("MailListenerManager", "storeMessage", "error getting sent date", e);
+            }
+            try {
+          	  if (message.isMimeType("multipart/*")) {
+  	
+  		        Multipart mp = (Multipart)message.getContent();
+  		        for (int i = 0; i < mp.getCount(); i++) {
+  		          Part bp = mp.getBodyPart(i);
+  	
+  		          String disposition = bp.getDisposition();
+  		          if (!StringUtils.equalsIgnoreCase(disposition, Part.ATTACHMENT)) {
+  		        	String text = mailMessageRaw.getText();
+  		        	text += getText(message);
+  		        	mailMessageRaw.setText(text);
+  		          }
+  		        }
+  		      }
+  		      else {
+  		    	mailMessageRaw.setText(getText(message));
+  		      }        	      
+            } catch (Exception e) {
+              Logger.adminWarning("MailListenerManager", "storeMessage", "error getting text", e);
+            }
+            
+            mailMessageRaw.setProps(parseProperties(message));
+            mailMessageRaw.setFileContents(parseFiles(message));
+             
+            return mailMessageRaw;
+      }
+      
+      public boolean parse(MailMessageRaw message) throws MessageParseException {
 
         
         Logger.adminTrace("MailListenerManager", "parse", "entered for flow " + flowid);
@@ -233,60 +304,47 @@ public class MailListenerManager extends Thread {
 
         if (mailsettings != null) {
 
-          String fromEmail = "";
-          String fromName = "";
-          String subject = "";
-          String text = "";
-          Date sentDate = null;
+          String fromEmail = message.getFromEmail();
+          String fromName = message.getFromName();
+          String subject = message.getSubject();
+          String text = message.getText();
+          Date sentDate = message.getSentDate();
 
-          try {
-            if (message.getFrom() != null && message.getFrom().length > 0) {
-              Address a = message.getFrom()[0];
-              if (a instanceof InternetAddress) {
-                InternetAddress ia = (InternetAddress) (message.getFrom()[0]);
-                fromEmail = ia.getAddress();
-                fromName = ia.getPersonal();
-              } else {
-                fromEmail = a.toString(); // TODO: check...
-              }
-            }
-          } catch (MessagingException e) {
-            Logger.adminWarning("MailListenerManager", "parse", "error parsing from", e);
-          }
+          Properties props = message.getProps();
+          Hashtable<String,ByteArrayOutputStream> fileContents = message.getFileContents();
+           
+          Enumeration<String> keys = fileContents.keys();
+          List<File> files = new ArrayList<File>();
+          
+          while(keys.hasMoreElements()) {
 
-          try {
-            subject = message.getSubject();
-          } catch (MessagingException e) {
-            Logger.adminWarning("MailListenerManager", "parse", "error getting subject", e);
-          }
-          try {
-            sentDate = message.getSentDate();
-          } catch (MessagingException e) {
-            Logger.adminWarning("MailListenerManager", "parse", "error getting sent date", e);
-          }
-          try {
-        	  if (message.isMimeType("multipart/*")) {
-	
-		        Multipart mp = (Multipart)message.getContent();
-		        for (int i = 0; i < mp.getCount(); i++) {
-		          Part bp = mp.getBodyPart(i);
-	
-		          String disposition = bp.getDisposition();
-		          if (!StringUtils.equalsIgnoreCase(disposition, Part.ATTACHMENT)) {
-		        	  text += getText(message);
-		          }
-		        }
-		      }
-		      else {
-		        text = getText(message);
-		      }        	      
-          } catch (Exception e) {
-            Logger.adminWarning("MailListenerManager", "parse", "error getting text", e);
-          }
+  			String filename = keys.nextElement();
 
-          Properties props = parseProperties(message);
-          List<File> files = parseFiles(message);
+            String tmpDirName = (new Date()).getTime() + filename;
+            int abshash = Math.abs(tmpDirName.hashCode());
+            tmpDirName = String.valueOf(abshash);
 
+            File tmpDir = new File(Const.fUPLOAD_TEMP_DIR, tmpDirName);
+            tmpDir.mkdirs();
+
+            try {
+				File file = new File(tmpDir, filename);
+				FileOutputStream fos = new FileOutputStream(file);
+				ByteArrayOutputStream baos = fileContents.get(filename);
+				baos.writeTo(fos);
+				
+				baos.close();
+				fos.close();
+				
+	            files.add(file);
+	            
+			} catch (IOException e) {
+		          Logger.adminError("MailListenerManager", "parse", "[" + procData.getFlowId() + "," + procData.getPid()
+                  + "] error saving bytearray to file " + filename, e);
+				e.printStackTrace();
+			}
+  		 }
+          
           setVar(procData, "fromEmail", mailsettings.getFromEmailVar(), fromEmail);
           setVar(procData, "fromName", mailsettings.getFromNameVar(), fromName);
           setVar(procData, "subject", mailsettings.getSubjectVar(), subject);
@@ -300,6 +358,14 @@ public class MailListenerManager extends Thread {
               setVar(procData, mailprop, var, props.getProperty(mailprop));
             }
           }
+          
+          Logger.adminInfo("MailListenerManager", "parse", "email parameters for" 
+        		  + flowid + "(pid: " + procData.getPid() + ") " + "fromEmail = " + fromEmail 
+        		  + ",fromName = " + fromName
+        		  + ",subject = " + subject
+        		  + ",sentDate = " + sentDate
+        		  + ",text = " + ((text!=null)?(text.length()>30)?text.substring(0,30)+"...":text:"")
+        		  );
 
           // now documents
           String docsVarName = mailsettings.getFilesVar();
@@ -342,11 +408,12 @@ public class MailListenerManager extends Thread {
         }
       }
 
-      public File saveFile(String filename, InputStream data) throws IOException {
+      public ByteArrayOutputStream saveFile(InputStream data) throws IOException {
 
     	  //if(filename.contains("iso-8859-1"))
-    		  filename = javax.mail.internet.MimeUtility.decodeText(filename);
+    	//	  filename = javax.mail.internet.MimeUtility.decodeText(filename);
   
+    	  /*
         String tmpDirName = (new Date()).getTime() + filename;
         int abshash = Math.abs(tmpDirName.hashCode());
         tmpDirName = String.valueOf(abshash);
@@ -356,6 +423,8 @@ public class MailListenerManager extends Thread {
 
         File file = new File(tmpDir, filename);
         FileOutputStream fos = new FileOutputStream(file);
+		*/
+    	  ByteArrayOutputStream fos = new ByteArrayOutputStream();
 
         int c;
         while ((c = data.read()) != -1) {
@@ -363,9 +432,9 @@ public class MailListenerManager extends Thread {
         }
 
         data.close();
-        fos.close();
+        //fos.close();
 
-        return file;
+        return fos;
       }
 
       private void setVar(ProcessData procData, String localVar, String procVar, String value) {

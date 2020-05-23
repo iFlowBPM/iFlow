@@ -802,6 +802,8 @@ public class FlowSettingsBean
     altmp.add(new FlowSetting(anFlowId, "EMAIL_START_INBOX", "Inicio por mail: 6.Inbox"));
     altmp.add(new FlowSetting(anFlowId, "EMAIL_START_SUBS_FOLDERS", "Inicio por mail: 7.folders a subscrever"));
     altmp.add(new FlowSetting(anFlowId, "EMAIL_START_INTERVAL", "Inicio por mail: 8.intervalo de busca"));
+    altmp.add(new FlowSetting(anFlowId, "EMAIL_START_ARCHIVE", "Inicio por mail: 9.folder de arquivo"));
+    altmp.add(new FlowSetting(anFlowId, "EMAIL_START_NRMESSAGES", "Inicio por mail: 10.número de mensagens a recolher"));
     
 
     altmp.add(new FlowSetting(anFlowId, "DMS_ACCESS_ONOFF", "Acesso centralizado ao DMS"));

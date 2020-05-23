@@ -20,8 +20,10 @@ public class MailConfig {
   public static final String CONFIG_USER = CONFIG_PREFIX + "USER";
   public static final String CONFIG_PASS = CONFIG_PREFIX + "ENC_PASS";
   public static final String CONFIG_INBOX = CONFIG_PREFIX + "INBOX";
+  public static final String CONFIG_ARCHIVE = CONFIG_PREFIX + "ARCHIVE";
   public static final String CONFIG_SECURE = CONFIG_PREFIX + "SECURE";
   public static final String CONFIG_CHECK_INTERVAL = CONFIG_PREFIX + "INTERVAL";
+  public static final String CONFIG_NRMESSAGES = CONFIG_PREFIX + "NRMESSAGES";
   public static final String CONFIG_SUBSCRIBED_FOLDERS = CONFIG_PREFIX + "SUBS_FOLDERS";
 
   public static final String CONFIG_OPTION_YES = String.valueOf(true);
@@ -54,8 +56,10 @@ public class MailConfig {
   private String user;
   private String encriptedPass;
   private String inbox = "Inbox";
+  private String archive = null;
   private List<String> subsFolders;
   private long checkIntervalInSeconds = 60;
+  private long nrMessages = 1;
   
   private MailConfig() {}
 
@@ -90,6 +94,10 @@ public class MailConfig {
   public String getInbox() {
     return inbox;
   }
+  
+  public String getArchive() {
+	    return archive;
+  }
 
   public List<String> getSubsFolders() {
     return subsFolders;
@@ -109,6 +117,10 @@ public class MailConfig {
   public long getCheckIntervalInSeconds() {
     return checkIntervalInSeconds;
   }
+
+  public long getNrMessages() {
+	    return nrMessages;
+	  }
 
   public static MailConfig parse(FlowSetting[] settings) {  
     MailConfig ret = new MailConfig();
@@ -134,6 +146,9 @@ public class MailConfig {
       else if (StringUtils.equals(setting.getName(), CONFIG_INBOX)) {
         ret.inbox = setting.getValue();
       }
+      else if (StringUtils.equals(setting.getName(), CONFIG_ARCHIVE)) {
+          ret.archive = setting.getValue();
+      }
       else if (StringUtils.equals(setting.getName(), CONFIG_SECURE)) {
         ret.secure = StringUtils.equals(CONFIG_OPTION_YES, setting.getValue());
       }
@@ -143,6 +158,12 @@ public class MailConfig {
           ret.checkIntervalInSeconds = Long.parseLong(interval);
         }
       }
+      else if (StringUtils.equals(setting.getName(), CONFIG_NRMESSAGES)) {
+          String nrMessages = setting.getValue();
+          if (StringUtils.isNotEmpty(nrMessages) && StringUtils.isNumeric(nrMessages)) {
+            ret.nrMessages = Long.parseLong(nrMessages);
+          }
+        }
       else if (StringUtils.equals(setting.getName(), CONFIG_SUBSCRIBED_FOLDERS)) {
         ret.subsFolders = new ArrayList<String>();
         if (StringUtils.isNotEmpty(setting.getValue())) {

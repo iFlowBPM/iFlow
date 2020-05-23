@@ -925,6 +925,22 @@ String sFlowHtml = Utils.genHtmlSelect("flowSelect",
 				value="<%=StringEscapeUtils.escapeHtml(String.valueOf(mailConfig.getCheckIntervalInSeconds()))%>" size="30" maxlength="100">
 			</td>
 		</tr>		
+	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig openMailConfig" <%=hidden %>>
+			<td><%=prefix+messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_NRMESSAGES))%></td>
+			<td>Simple</td>
+			<td width="50%" class="txt" align="left">
+		  		<input type="text" class="form-control" name="<%=MailConfig.CONFIG_NRMESSAGES%>"
+				value="<%=StringEscapeUtils.escapeHtml(String.valueOf(mailConfig.getNrMessages()))%>" size="30" maxlength="100">
+			</td>
+		</tr>		
+	 	<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig openMailConfig" <%=hidden %>>
+			<td><%=prefix+messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_ARCHIVE))%></td>
+			<td>Simple</td>
+			<td width="50%" class="txt" align="left">
+		  		<input type="text" class="form-control" name="<%=MailConfig.CONFIG_ARCHIVE%>"
+				value="<%=StringEscapeUtils.escapeHtml(String.valueOf(mailConfig.getArchive()))%>" size="30" maxlength="100">
+			</td>
+		</tr>		
  		<tr class="<%=(i++ % 2 == 0 ? "tab_row_even" : "tab_row_odd")%> mailconfig openMailConfig" <%=hidden %>>
 			<td><%=prefix+messages.getString(MailConfig.configMessageKey(MailConfig.CONFIG_SECURE))%></td>
 			<td>Simple</td>

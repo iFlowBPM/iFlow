@@ -1046,6 +1046,7 @@ public class DocumentsBean implements Documents {
                       strDocIdUrl.substring(8, 10); 
     if (!docDataInDB) {
       String url = FilenameUtils.concat(docsBaseUrl, docIdUrl);
+      Logger.debug("", this, "DocumentsBean", "getDocumentFilePath: docID = " + docID + ", fileName = " + fileName + ", URL = "+url);
       try {
         File f = new File(url);
         if (!f.isDirectory()) FileUtils.forceMkdir(f);

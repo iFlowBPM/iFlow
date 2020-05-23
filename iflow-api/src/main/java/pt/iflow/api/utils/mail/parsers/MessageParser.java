@@ -1,15 +1,19 @@
 package pt.iflow.api.utils.mail.parsers;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.mail.Message;
 
+import pt.iflow.api.utils.mail.MailMessageRaw;
+
 public interface MessageParser {
 
-  public boolean parse(Message message) throws MessageParseException;
+  public MailMessageRaw storeMessage(Message message) throws MessageParseException;
+  
+  public boolean parse(MailMessageRaw message) throws MessageParseException;
 
-  public File saveFile(String filename, InputStream data) throws IOException;
+  public ByteArrayOutputStream saveFile(InputStream data) throws IOException;
   
 }

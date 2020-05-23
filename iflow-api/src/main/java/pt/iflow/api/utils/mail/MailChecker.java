@@ -10,6 +10,7 @@ public class MailChecker implements Runnable{
 
   private int flowid;
   private long checkInterval;
+  private long nrMessages;
   private MailClient client;
   private MessageParser messageParser;
   private boolean stop = false;
@@ -21,9 +22,10 @@ public class MailChecker implements Runnable{
    * @param client the mail client to use
    * @param messageParser the message parser to parse new mail messages
    */
-  public MailChecker(int flowid, long checkIntervalInSeconds, MailClient client, MessageParser messageParser) {
+  public MailChecker(int flowid, long checkIntervalInSeconds, long nrMessages, MailClient client, MessageParser messageParser) {
     this.flowid = flowid;
     this.checkInterval = checkIntervalInSeconds*1000;
+    this.nrMessages = nrMessages;
     this.client = client;
     this.messageParser = messageParser;   
   }
@@ -67,41 +69,43 @@ public class MailChecker implements Runnable{
 
     Logger.adminInfo("MailChecker", "run", getId() + "starting mail checking");
 
-    try {
-      if (!client.isConnected()) {
-        client.connect();
-      }
-    } 
-    catch (MessagingException e) {
-      Logger.adminError("MailChecker", "run", getId() + "error connecting client", e);    
-    }
-    
     while (!stop) {
-      try {      
-    	if(JobManager.getInstance().isMyBeatValid())  
-	        try {
-	          if (client.checkNewMail()) {
-	            Logger.adminInfo("MailChecker", "run", getId() + "found new mail");
-	            client.readUnreadMessages(messageParser);
-	            Logger.adminInfo("MailChecker", "run", getId() + "new mail processed");
-	          }
-	          else {
-	            Logger.adminDebug("MailChecker", "run", getId() + "no new mail");
-	          }
-	        } catch (MessagingException e) {
-	          // TODO
-	          Logger.adminError("MailChecker", "run", getId() + "caught messaging exception", e);
-	        }
+    	try {      
+    		if(JobManager.getInstance().isMyBeatValid())  
+    			try {
 
-        try {
-          Thread.sleep(checkInterval);
-        }
-        catch (InterruptedException e) {        
-        }
-      }
-      catch (Exception master) {
-        Logger.adminError("MailChecker", "run", getId() + "caught unexpected exception", master);
-      }
+    				if (!client.isConnected()) {
+    					client.connect();
+    				}	
+
+    				Logger.adminDebug("MailChecker", "run", "client connected");
+
+    				if (client.checkNewMail()) {
+    					Logger.adminInfo("MailChecker", "run", getId() + "found new mail");
+    					client.readUnreadMessages(messageParser, nrMessages);
+    					Logger.adminInfo("MailChecker", "run", getId() + "new mail processed");
+    				}
+    				else {
+    					Logger.adminDebug("MailChecker", "run", getId() + "no new mail");
+    				}
+    			} catch (MessagingException e) {
+    				// TODO
+    				Logger.adminError("MailChecker", "run", getId() + "caught messaging exception", e);
+    			}
+
+    		try {
+    			client.disconnect();
+    			Thread.sleep(checkInterval);
+    		} catch (MessagingException e) {
+    			// TODO
+    			Logger.adminError("MailChecker", "run", getId() + "caught messaging exception", e);
+    		}
+    		catch (InterruptedException e) {        
+    		}
+    	}
+    	catch (Exception master) {
+    		Logger.adminError("MailChecker", "run", getId() + "caught unexpected exception", master);
+    	}
     }
     
     

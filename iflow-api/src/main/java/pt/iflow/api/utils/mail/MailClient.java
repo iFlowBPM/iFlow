@@ -18,7 +18,7 @@ public interface MailClient {
   
   public boolean checkNewMail() throws MessagingException;
   
-  public void readUnreadMessages(MessageParser messageParser) throws MessagingException;
+  public void readUnreadMessages(MessageParser messageParser, long nrMessages) throws MessagingException;
   
   public Message[] getFolderUnreadMessages(Folder folder) throws MessagingException;  
   

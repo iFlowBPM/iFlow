@@ -1,19 +1,16 @@
 package pt.iflow.api.utils.mail;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import pt.iflow.api.utils.mail.imap.IMAPMailPlainClient;
@@ -22,83 +19,94 @@ import pt.iflow.api.utils.mail.parsers.MessageParseException;
 import pt.iflow.api.utils.mail.parsers.MessageParser;
 
 
-
 public class MailTester {
 
-  public static void main(String[] args) throws Exception {
-    String host = args[0];
-    String user = args[1];
-    byte[] pass = args[2].getBytes();
-    
-    MailClient client = new IMAPMailPlainClient(host, user, pass);
-    client.setDebug(false);    
-    client.setInboxFolder("Inbox");
+	public static void main(String[] args) throws Exception {
+		String host = args[0];
+		String user = args[1];
+		byte[] pass = args[2].getBytes();
 
-    client.connect();
+		MailClient client = new IMAPMailPlainClient(host, user, pass);
+		client.setDebug(false);    
+		client.setInboxFolder("Inbox");
+		client.setInboxFolder("Archived");
 
-    
-    MessageParser parser = new AbstractPropertiesMessageParser() {
-    
-      public boolean parse(Message message) throws MessageParseException {
-        
-        try {
-          System.out.println("FROM   : " + InternetAddress.toString(message.getFrom()));
-          System.out.println("SUBJECT: " + message.getSubject());
-          System.out.println("SENT   : " + message.getSentDate());
+		client.connect();
 
-          Properties props = parseProperties(message);
-          List<File> files = parseFiles(message);
-          
-          System.out.println("\nPROPS:");
-          System.out.println("\t" + props);
-          System.out.println("\nFILES:");
-          for (File f : files) {
-            System.out.println("\t" + f.getName() + ": size is " + f.length() + " bytes");
-          }
-        }
-        catch (MessagingException me) {
-          throw new MessageParseException(me);
-        }
-        return true;
-      }
-      
-      public File saveFile(String filename, InputStream data) throws IOException {
-        try {
-          File f = new File(FilenameUtils.concat(System.getProperty("user.home"), filename));
-          FileOutputStream fos = new FileOutputStream(f);
+		MessageParser parser = new AbstractPropertiesMessageParser() {
 
-          int c;
-          while ((c = data.read()) != -1) {
-            fos.write((byte)c);
-          }
 
-          data.close();
-          fos.close();
-          
-          return f;
-        }
-        catch (IOException e) {
-          e.printStackTrace();
-          throw e;
-        }
-      }
-    };
-    
-    
-    MailChecker mc = new MailChecker(1, 5, client, parser);
-    mc.start();
- 
-    while (true) {
-      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-      try {
-        String s = br.readLine();
-        if (StringUtils.equals(s, "stop")) {
-          mc.stop();
-          break;
-        }
-      } catch (IOException ioe) {
-        ioe.printStackTrace();
-      }
-    }
-  }
+			public boolean parse(MailMessageRaw message) throws MessageParseException {
+
+
+				System.out.println("FROM   : " + message.getFromEmail());
+				System.out.println("SUBJECT: " + message.getSubject());
+				System.out.println("SENT   : " + message.getSentDate());
+
+
+				Properties props = message.getProps();
+				Hashtable<String,ByteArrayOutputStream> fileContents = message.getFileContents();
+				//List<File> files = parseFiles(message);
+				Enumeration<String> keys = fileContents.keys();
+
+
+				System.out.println("\nPROPS:");
+				System.out.println("\t" + props);
+				System.out.println("\nFILES:");
+				while(keys.hasMoreElements()) {
+
+					String filename = keys.nextElement();
+					ByteArrayOutputStream baos = fileContents.get(filename);
+					System.out.println("\t" + filename + ": size is " + baos.size() + " bytes");
+				}
+
+
+				return true;
+			}
+
+			public ByteArrayOutputStream saveFile(InputStream data) throws IOException {
+				try {
+					ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+					int c;
+					while ((c = data.read()) != -1) {
+						baos.write((byte)c);
+					}
+
+					data.close();
+					baos.close();
+
+					return baos;
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+					throw e;
+				}
+			}
+
+			@Override
+			public MailMessageRaw storeMessage(Message message) throws MessageParseException {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+		};
+
+
+		MailChecker mc = new MailChecker(1, 5, 1, client, parser);
+		mc.start();
+
+		while (true) {
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			try {
+				String s = br.readLine();
+				if (StringUtils.equals(s, "stop")) {
+					mc.stop();
+					break;
+				}
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+		}
+	}
 }

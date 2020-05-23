@@ -3,12 +3,15 @@ package pt.iflow.api.utils.mail.imap;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
 import javax.mail.Folder;
+import javax.mail.FolderClosedException;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
@@ -16,11 +19,14 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
+import javax.mail.search.MessageIDTerm;
+import javax.mail.search.SearchTerm;
 
 import org.apache.commons.lang.StringUtils;
 
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.mail.MailClient;
+import pt.iflow.api.utils.mail.MailMessageRaw;
 import pt.iflow.api.utils.mail.parsers.MessageParseException;
 import pt.iflow.api.utils.mail.parsers.MessageParser;
 import pt.iflow.api.utils.mail.security.TrustedSSLSocketFactory;
@@ -37,6 +43,7 @@ public abstract class IMAPMailClient implements MailClient {
 
   protected HashMap<String,Folder> _hmFolders = new HashMap<String,Folder>();
   protected String _sInboxFolder;
+  protected String _sArchiveFolder;
   protected String _sTopFolder;
   protected ArrayList<String> _alSubsFolders = new ArrayList<String>();
   
@@ -138,57 +145,118 @@ public abstract class IMAPMailClient implements MailClient {
   }
   
 
-  public void readUnreadMessages(MessageParser messageParser) throws MessagingException {
-    
-    // start with inbox folder
-    Folder folder = getFolder(_sInboxFolder);
-    if (folder != null) {
-      folder.open(Folder.READ_WRITE);
-      readFolderUnreadMessages(folder, messageParser);
-      folder.close(false);
-    }
-    
-    // now subscribed folders
-    String folderPath = StringUtils.isNotEmpty(_sTopFolder) ? _sTopFolder + "/" : "";
-    for (String sFolder : _alSubsFolders) {
-      folder = getFolder(folderPath + sFolder);        
-      if (folder != null) {
-        folder.open(Folder.READ_WRITE);
-        readFolderUnreadMessages(folder, messageParser);
-        folder.close(false);
-      }
-    }    
+  public void readUnreadMessages(MessageParser messageParser, long nrMessages) throws MessagingException {
+
+	  // folder to store archived messages
+	  Folder archive = getFolder(_sArchiveFolder);
+
+	  // start with inbox folder
+	  Folder folder = getFolder(_sInboxFolder);
+	  if (folder != null) {
+		  readFolderUnreadMessages(folder, messageParser, nrMessages, archive);
+	  }
+
+	  // now subscribed folders
+	  String folderPath = StringUtils.isNotEmpty(_sTopFolder) ? _sTopFolder + "/" : "";
+	  for (String sFolder : _alSubsFolders) {
+		  folder = getFolder(folderPath + sFolder);        
+		  if (folder != null) {
+			  readFolderUnreadMessages(folder, messageParser, nrMessages, archive);
+		  }
+	  }    
   }
 
-  private void readFolderUnreadMessages(Folder folder, MessageParser messageParser) throws MessagingException {
-    Message[] folderMessages = getFolderUnreadMessages(folder);
-    for (Message msg : folderMessages) {
-      try {
-        if (messageParser.parse(msg)) {
-          Logger.debug(null, this, "readFolderUnreadMessages", "message " + msg.getSubject() + 
-              " parsed");
-          markMessageRead(msg);
-          Logger.debug(null, this, "readFolderUnreadMessages", "message " + msg.getSubject() + 
-              " marked as read");
-        }
-        else {
-          Logger.debug(null, this, "readFolderUnreadMessages", "message " + msg.getSubject() + 
-              " not parsed. Keeping message in unread state");
-        }
-      }
-      catch (MessageParseException pe) {
-        Logger.error(null, this, "readFolderUnreadMessages", "error parsing message", pe);
-      }
-    }    
-  }
-
-  public Message[] getFolderUnreadMessages(Folder folder) throws MessagingException {
-    if (!folder.isOpen()) {
-      folder.open(Folder.READ_WRITE);
-    }
-    return folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
-  }
   
+  
+  
+  public Message[] getFolderUnreadMessages(Folder folder) throws MessagingException {
+	  return folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
+  }
+
+  
+  private void readFolderUnreadMessages(Folder folder, MessageParser messageParser, long nrMessages, Folder archiveFolder) throws MessagingException {
+
+	  List<MailMessageRaw> msgList = new ArrayList<MailMessageRaw>();
+	  int runCount=0;
+	  
+	  folder.open(Folder.READ_WRITE);
+		  
+	  Message[] folderMessages = getFolderUnreadMessages(folder);
+	  
+	  // store messages
+	  for (Message msg : folderMessages) {
+		  if (runCount++<nrMessages) {
+			  try {
+				  MailMessageRaw msgRaw = messageParser.storeMessage(msg);
+				  msgList.add(msgRaw);
+				  Logger.debug(null, this, "readFolderUnreadMessages", "message " + msg.getSubject() + 
+						  " stored");
+
+				  // move message to archive folder
+				  SearchTerm searchTerm = new MessageIDTerm(msgRaw.getMessageId());
+				  Message[] messages = folder.search(searchTerm);
+				  if (messages != null && messages.length == 1
+						  && archiveFolder != null) {
+
+					  folder.copyMessages(messages, archiveFolder);
+					  Logger.debug(null, this, "readFolderUnreadMessages", "message " + msgRaw.getSubject()  + 
+							  " copied to " + archiveFolder.getFullName());
+					  markMessageDeleted(messages[0]);	
+					  Logger.debug(null, this, "readFolderUnreadMessages", "message " + msgRaw.getSubject()  + 
+							  " marked as deleted");			              		                 
+				  }
+
+			  }
+			  catch (FolderClosedException fce) {
+				  Logger.debug(null, this, "readFolderUnreadMessages", "message " + msg.getSubject() + 
+						  " not parsed. Keeping message in unread state");
+				  Logger.error(null, this, "readFolderUnreadMessages", "error parsing message", fce);				  
+			  }
+			  catch (MessageParseException pe) {
+				  Logger.debug(null, this, "readFolderUnreadMessages", "message " + msg.getSubject() + 
+						  " not parsed. Keeping message in unread state");
+				  Logger.error(null, this, "readFolderUnreadMessages", "error parsing message", pe);
+			  }
+		  }
+		  else {
+			  // run only *nrMessages* times
+			  break;
+		  }
+	  }  
+	  // close folder and go process messages
+	  if (folder.isOpen()) folder.close(false);
+	  
+	  // process messages
+	  Iterator<MailMessageRaw> iter = msgList.iterator();
+	  while (iter.hasNext()) {
+		  MailMessageRaw msgData = iter.next();
+		  try {
+			  if (messageParser.parse(msgData)) {
+				  Logger.debug(null, this, "readFolderUnreadMessages", "message " + msgData.getSubject() + 
+						  " parsed");
+				  if (!archiveFolder.isOpen()) archiveFolder.open(Folder.READ_WRITE);
+				  SearchTerm searchTerm = new MessageIDTerm(msgData.getMessageId());
+				  Message[] messages = archiveFolder.search(searchTerm);
+				  if (messages != null && messages.length == 1
+						  && archiveFolder != null) {
+				  markMessageRead(messages[0]);
+				  Logger.debug(null, this, "readFolderUnreadMessages", "message " + msgData.getSubject() + 
+						  " marked as read");
+				  }
+		    	  if (archiveFolder.isOpen()) archiveFolder.close(false);
+			  }
+		  } catch (MessageParseException e) {
+			  // TODO Auto-generated catch block
+			  e.printStackTrace();
+		  }
+	  }
+	  
+	  // move processed messages
+	  
+	  
+  }
+
+
   public boolean check() throws MessagingException {
     
     Folder f = getFolder(_sInboxFolder);
@@ -245,10 +313,18 @@ public abstract class IMAPMailClient implements MailClient {
     message.setFlag(Flag.SEEN, true);
   }
   
+  public void markMessageDeleted(Message message) throws MessagingException {
+	    message.setFlag(Flag.DELETED, true);
+  }
+
   public void setInboxFolder(String asInboxFolder) {
     this._sInboxFolder = asInboxFolder;
   }
   
+  public void setArchiveFolder(String asArchiveFolder) {
+	    this._sArchiveFolder = asArchiveFolder;
+  }
+	  
   public void setTopFolder(String asTopFolder) {
     this._sTopFolder = asTopFolder;
   }
