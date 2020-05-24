@@ -32,6 +32,7 @@ public interface IFlowData {
 
 	public static final String sMAIL_START_INFO_PREFIX = "msinfo_"; //$NON-NLS-1$
 	public static final String sMAIL_START_VARS_PREFIX = "msvars_"; //$NON-NLS-1$
+	public static String MAILSTART_MESSAGEID_PROP = "MS_MESSAGEID"; //$NON-NLS-1$
 	public static String MAILSTART_FROM_EMAIL_PROP = "MS_FROMEMAIL"; //$NON-NLS-1$
 	public static String MAILSTART_FROM_NAME_PROP = "MS_FROMNAME"; //$NON-NLS-1$
 	public static String MAILSTART_SUBJECT_PROP = "MS_SUBJ"; //$NON-NLS-1$

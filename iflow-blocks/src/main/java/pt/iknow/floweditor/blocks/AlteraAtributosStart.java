@@ -88,7 +88,8 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 	private final String[] columnNamesVars;
 
 	// Mail start
-	private static int MAILSTART_INFO_PROP_COUNT = 6;
+	private static int MAILSTART_INFO_PROP_COUNT = 7;
+	private static String MAILSTART_MESSAGEID_PROP = "MS_MESSAGEID"; //$NON-NLS-1$
 	private static String MAILSTART_FROM_EMAIL_PROP = "MS_FROMEMAIL"; //$NON-NLS-1$
 	private static String MAILSTART_FROM_NAME_PROP = "MS_FROMNAME"; //$NON-NLS-1$
 	private static String MAILSTART_SUBJECT_PROP = "MS_SUBJ"; //$NON-NLS-1$
@@ -132,6 +133,7 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 	// mail start
 	private JPanel jPanelMS = new JPanel();
 	private JTextField jtfMSFromName = new JTextField(20);
+	private JTextField jtfMSMessageID = new JTextField(20);
 	private JTextField jtfMSFromEmail = new JTextField(20);
 	private JTextField jtfMSSubject = new JTextField(20);
 	private JTextField jtfMSSentDate = new JTextField(20);
@@ -318,6 +320,10 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 		}
 
 		beginIndex += msvarscount;
+		newAttributes[beginIndex][0] = sMAIL_START_INFO_PREFIX + MAILSTART_MESSAGEID_PROP;
+		newAttributes[beginIndex][1] = jtfMSMessageID.getText();
+		newAttributes[beginIndex][2] = MAILSTART_MESSAGEID_PROP;
+		beginIndex++;
 		newAttributes[beginIndex][0] = sMAIL_START_INFO_PREFIX + MAILSTART_FROM_EMAIL_PROP;
 		newAttributes[beginIndex][1] = jtfMSFromEmail.getText();
 		newAttributes[beginIndex][2] = MAILSTART_FROM_EMAIL_PROP;
@@ -423,6 +429,8 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 			} else if (name.startsWith(sMAIL_START_INFO_PREFIX) && StringUtils.isNotEmpty(value)) {
 				if (StringUtils.equals(name, sMAIL_START_INFO_PREFIX + MAILSTART_FROM_EMAIL_PROP)) {
 					jtfMSFromEmail.setText(value);
+				} else if (StringUtils.equals(name, sMAIL_START_INFO_PREFIX + MAILSTART_MESSAGEID_PROP)) {
+					jtfMSMessageID.setText(value);
 				} else if (StringUtils.equals(name, sMAIL_START_INFO_PREFIX + MAILSTART_FROM_NAME_PROP)) {
 					jtfMSFromName.setText(value);
 				} else if (StringUtils.equals(name, sMAIL_START_INFO_PREFIX + MAILSTART_SUBJECT_PROP)) {
@@ -673,13 +681,28 @@ public class AlteraAtributosStart extends AbstractAlteraAtributos implements Alt
 				sC.fill = GridBagConstraints.HORIZONTAL;
 				sC.gridwidth = 1;
 
+				// messageid
+				JLabel jLabel = new JLabel(adapter.getString("AlteraAtributosStart.mailstart.messageid"));
+				jLabel.setHorizontalAlignment(JLabel.LEFT);
+				jLabel.setLabelFor(jtfMSMessageID);
+				jPanelMSInfo.add(jLabel, sC);
+
+				// separator
+				JPanel sizer = new JPanel();
+				sizer.setSize(5, 1);
+				jPanelMSInfo.add(sizer, sC);
+				sC.gridwidth = GridBagConstraints.REMAINDER;
+				jPanelMSInfo.add(jtfMSMessageID, sC);
+				sC.gridwidth = 1;
+				
 				// from email
-				JLabel jLabel = new JLabel(adapter.getString("AlteraAtributosStart.mailstart.fromemail"));
+				jLabel = new JLabel(adapter.getString("AlteraAtributosStart.mailstart.fromemail"));
 				jLabel.setHorizontalAlignment(JLabel.LEFT);
 				jLabel.setLabelFor(jtfMSFromEmail);
 				jPanelMSInfo.add(jLabel, sC);
+
 				// separator
-				JPanel sizer = new JPanel();
+				sizer = new JPanel();
 				sizer.setSize(5, 1);
 				jPanelMSInfo.add(sizer, sC);
 				sC.gridwidth = GridBagConstraints.REMAINDER;

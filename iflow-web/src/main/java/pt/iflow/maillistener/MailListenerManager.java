@@ -202,9 +202,9 @@ public class MailListenerManager extends Thread {
     	  
     	  try {
 			mailMessageRaw.setMessageId(message.getHeader("Message-ID")[0]);
+	        Logger.adminInfo("MailListenerManager", "parse", "get message ID: "+ mailMessageRaw.getMessageId());
     	  } catch (MessagingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+    		  Logger.adminWarning("MailListenerManager", "storeMessage", "error getting Message-ID", e1);
     	  }
           
           try {
@@ -308,6 +308,7 @@ public class MailListenerManager extends Thread {
           String fromName = message.getFromName();
           String subject = message.getSubject();
           String text = message.getText();
+          String messageId = message.getMessageId();
           Date sentDate = message.getSentDate();
 
           Properties props = message.getProps();
@@ -345,6 +346,7 @@ public class MailListenerManager extends Thread {
 			}
   		 }
           
+          setVar(procData, "messageId", mailsettings.getMessageIdVar(), messageId); 
           setVar(procData, "fromEmail", mailsettings.getFromEmailVar(), fromEmail);
           setVar(procData, "fromName", mailsettings.getFromNameVar(), fromName);
           setVar(procData, "subject", mailsettings.getSubjectVar(), subject);
@@ -360,7 +362,9 @@ public class MailListenerManager extends Thread {
           }
           
           Logger.adminInfo("MailListenerManager", "parse", "email parameters for" 
-        		  + flowid + "(pid: " + procData.getPid() + ") " + "fromEmail = " + fromEmail 
+        		  + flowid + "(pid: " + procData.getPid() + ") "
+        		  + "messageId = " + messageId 
+        		  + ",fromEmail = " + fromEmail 
         		  + ",fromName = " + fromName
         		  + ",subject = " + subject
         		  + ",sentDate = " + sentDate
@@ -439,7 +443,11 @@ public class MailListenerManager extends Thread {
 
       private void setVar(ProcessData procData, String localVar, String procVar, String value) {
         try {
-          if (procData.getCatalogue().hasVar(procVar)) {
+          if (procVar == null) {
+              Logger.adminWarning("MailListenerManager", "setVar", 
+                      "no var" + localVar + " in catalogue.. ignoring " + localVar);
+          }
+          else if (procData.getCatalogue().hasVar(procVar)) {
             procData.parseAndSet(procVar, value);
           } else {
             Logger.adminWarning("MailListenerManager", "setVar", 

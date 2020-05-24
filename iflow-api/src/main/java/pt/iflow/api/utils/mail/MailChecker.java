@@ -69,6 +69,15 @@ public class MailChecker implements Runnable{
 
     Logger.adminInfo("MailChecker", "run", getId() + "starting mail checking");
 
+    try {
+      if (!client.isConnected()) {
+        client.connect();
+      }
+    } 
+    catch (MessagingException e) {
+      Logger.adminError("MailChecker", "run", getId() + "error connecting client", e);    
+    }
+    
     while (!stop) {
     	try {      
     		if(JobManager.getInstance().isMyBeatValid())  
@@ -94,11 +103,7 @@ public class MailChecker implements Runnable{
     			}
 
     		try {
-    			client.disconnect();
     			Thread.sleep(checkInterval);
-    		} catch (MessagingException e) {
-    			// TODO
-    			Logger.adminError("MailChecker", "run", getId() + "caught messaging exception", e);
     		}
     		catch (InterruptedException e) {        
     		}
@@ -108,7 +113,14 @@ public class MailChecker implements Runnable{
     	}
     }
     
-    
-    Logger.adminInfo("MailChecker", "run", getId() + "done checking mail");
+    if (client.isConnected()) {
+		try {
+			client.disconnect();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}	
+    Logger.adminInfo("MailChecker", "run", getId() + " stopped. done checking mail");
   }
 }
