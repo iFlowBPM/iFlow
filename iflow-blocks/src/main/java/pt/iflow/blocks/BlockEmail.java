@@ -128,6 +128,8 @@ public class BlockEmail extends Block {
         
         List<String> tos = null;
         String to = null;
+        tos = new ArrayList<String>();
+        tos.add(to);
         try {
           to = procData.transform(userInfo, aTo);
           tos = Utils.tokenize(to, EmailManager.sSEPARATOR);

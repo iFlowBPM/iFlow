@@ -22,12 +22,12 @@
 			<artifactId>dms-connector</artifactId>
 			<version>${dms-connector.version}</version>
 		</dependency>
-		
+
 		<!-- APP.iKnow -->
 		<dependency>
 			<groupId>pt.iknow</groupId>
 			<artifactId>iutils</artifactId>
-			</dependency>
+		</dependency>
 		<dependency>
 			<groupId>pt.iknow</groupId>
 			<artifactId>jniutils</artifactId>
@@ -70,8 +70,8 @@
 			<artifactId>google-collect</artifactId>
 		</dependency>
 		<dependency>
-			    <groupId>org.beanshell</groupId>
-			    <artifactId>bsh</artifactId>
+			<groupId>org.beanshell</groupId>
+			<artifactId>bsh</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>castor</groupId>
@@ -88,8 +88,8 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
 		<dependency>
-		    <groupId>org.apache.httpcomponents</groupId>
-		    <artifactId>httpclient</artifactId>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -102,15 +102,27 @@
 			<groupId>iknow-local-libs</groupId>
 			<artifactId>swsms</artifactId>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.60</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcmail-jdk15on -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcmail-jdk15on</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk15on -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpkix-jdk15on</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
-			</dependency>
+		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -165,11 +177,11 @@
 			<version>1.4</version>
 		</dependency>
 		<dependency>
-				<!-- jsoup HTML parser library @ https://jsoup.org/ -->
-				<groupId>org.jsoup</groupId>
-				<artifactId>jsoup</artifactId>
-				<version>1.11.3</version>
-			</dependency>
+			<!-- jsoup HTML parser library @ https://jsoup.org/ -->
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.11.3</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -202,22 +214,23 @@
 					<schemaDirectory>${basedir}/src/main/schemas</schemaDirectory>
 				</configuration>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>

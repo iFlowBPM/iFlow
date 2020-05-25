@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Security;
+import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,8 +23,18 @@ import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.StringUtils;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.mail.smime.SMIMESigned;
+import org.bouncycastle.util.Store;
 
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.core.ProcessManager;
@@ -58,6 +70,10 @@ public class MailListenerManager extends Thread {
   private Map<Integer, MailChecker> checkers = Collections.synchronizedMap(new HashMap<Integer, MailChecker>());
   
   private UserInfoInterface userInfo;
+  
+  private static final String BC = BouncyCastleProvider.PROVIDER_NAME;
+  
+  static {Security.addProvider(new BouncyCastleProvider());}
   
   private MailListenerManager() {
     userInfo = BeanFactory.getUserInfoFactory().newClassManager(this.getClass().getName());
@@ -190,9 +206,15 @@ public class MailListenerManager extends Thread {
     MessageParser parser = new AbstractPropertiesMessageParser() {
 
       public boolean parse(Message message) throws MessageParseException {
-
         
         Logger.adminTrace("MailListenerManager", "parse", "entered for flow " + flowid);
+        
+        try {
+			verifiedSignEmail(message);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			Logger.adminError("MailListenerManager", "parse", "unable to verify signed email", e);
+		}
 
         ProcessData procData = null;
 
@@ -387,7 +409,39 @@ public class MailListenerManager extends Thread {
 
     return parser;
   }
+  
+     private static void verifiedSignEmail(Message msg) throws Exception{
+    	 if (msg.isMimeType("multipart/signed")) {
+    		 MimeMultipart multipart = (MimeMultipart) msg.getContent();
+    		 SMIMESigned s = new SMIMESigned(multipart);
+    		 verifyCertificate(s);
+    	 }
+    	 
+     }
 
+	private static void verifyCertificate(SMIMESigned s) throws Exception {
+		Store<X509CertificateHolder> certs = s.getCertificates();
+
+		SignerInformationStore signers = s.getSignerInfos();
+
+		Collection<SignerInformation> c = signers.getSigners();
+		Iterator<SignerInformation> it = c.iterator();
+
+		while (it.hasNext()) {
+			SignerInformation signer = (SignerInformation) it.next();
+			Collection<X509CertificateHolder> certCollection = certs.getMatches(signer.getSID());
+
+			Iterator<X509CertificateHolder> certIt = certCollection.iterator();
+			X509Certificate cert = new JcaX509CertificateConverter().setProvider(BC).getCertificate((X509CertificateHolder) certIt.next());
+
+			if (signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider(BC).build(cert))) {
+				 Logger.adminInfo("MailListenerManager", "verifyCertificate", "signature verified");
+			} else {
+				throw new Exception("Signature failed");
+			}
+		}
+	}
+  
   private void stopChecker(int flowid) {
     synchronized (checkers) {
       MailChecker mc = checkers.get(flowid);

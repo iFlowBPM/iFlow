@@ -63,11 +63,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>			
+			<artifactId>poi</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>			
+			<artifactId>poi-ooxml</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -75,11 +75,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml-schemas</artifactId>		
+			<artifactId>poi-ooxml-schemas</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>
-			<artifactId>xmlbeans</artifactId>			
+			<artifactId>xmlbeans</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.lowagie</groupId>
@@ -99,6 +99,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -113,8 +114,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
-   			<artifactId>axis2</artifactId>
-		    <type>pom</type>
+			<artifactId>axis2</artifactId>
+			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>axis</groupId>
@@ -154,20 +155,17 @@
 			<groupId>org.swinglabs</groupId>
 			<artifactId>swingx</artifactId>
 		</dependency>
-		
+
 		<dependency>
-				<!-- jsoup HTML parser library @ https://jsoup.org/ -->
-				<groupId>org.jsoup</groupId>
-				<artifactId>jsoup</artifactId>
-				<version>1.11.3</version>
-			</dependency>
-			
-		<!-- dependency>
-			<groupId>Infosistema</groupId>
-			<artifactId>oer</artifactId>
-			<version>1</version>
-		</dependency-->
-		
+			<!-- jsoup HTML parser library @ https://jsoup.org/ -->
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.11.3</version>
+		</dependency>
+
+		<!-- dependency> <groupId>Infosistema</groupId> <artifactId>oer</artifactId> 
+			<version>1</version> </dependency -->
+
 		<!-- TESTS -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -221,28 +219,28 @@
 					</execution>
 				</executions>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 		<resources>
-     		<resource>
-  				<targetPath>pt/iflow/blocks</targetPath>
-       			<directory>${basedir}</directory>
+			<resource>
+				<targetPath>pt/iflow/blocks</targetPath>
+				<directory>${basedir}</directory>
 				<includes>
 					<include>RELEASE_NOTES.txt</include>
 				</includes>
-     		</resource>
-   		</resources>
+			</resource>
+		</resources>
 	</build>
 
 	<reporting>

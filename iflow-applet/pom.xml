@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>com.infosistema</groupId>
 			<artifactId>crypto-api</artifactId>
-			
+
 			<!-- exclude xml stuff since we will not sign XML (at least for now) -->
 			<exclusions>
 				<exclusion>
@@ -47,6 +47,18 @@
 					<groupId>org.apache.santuario</groupId>
 					<artifactId>xmlsec</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bcprov-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bcmail-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bctsp-jdk14</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
@@ -66,6 +78,20 @@
 		<dependency>
 			<groupId>com.lowagie</groupId>
 			<artifactId>itext</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bcprov-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bcmail-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bctsp-jdk14</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.swinglabs</groupId>
@@ -76,10 +102,31 @@
 			<artifactId>pdf-renderer-ext</artifactId>
 		</dependency>
 		<dependency>
-		  <groupId>org.apache.pdfbox</groupId>
-		  <artifactId>pdfbox</artifactId>
-		  <version>2.0.15</version>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>2.0.15</version>
 		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>bouncycastle</groupId>
+			<artifactId>bcmail-jdk14</artifactId>
+			<version>142</version> <!-- replicated in iflow-applet -->
+		</dependency>
+		<dependency>
+			<groupId>bouncycastle</groupId>
+			<artifactId>bctsp-jdk14</artifactId>
+			<version>142</version> <!-- replicated in iflow-applet -->
+		</dependency>
+		<dependency>
+			<groupId>bouncycastle</groupId>
+			<artifactId>bcpg-jdk14</artifactId>
+			<version>142</version> <!-- replicated in iflow-applet -->
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
@@ -100,17 +147,17 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
 					<archive>
-					<addMavenDescriptor>true</addMavenDescriptor>
-					<manifest>
-						<addClasspath>true</addClasspath>
-						<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-					</manifest>
-					<manifestEntries>
-						<Trusted-Only>true</Trusted-Only>
-						<Application-Name>infosistema.com</Application-Name>
-						<Permissions>all-permissions</Permissions>
-						<Caller-Allowable-Codebase>*</Caller-Allowable-Codebase>
-					</manifestEntries>
+						<addMavenDescriptor>true</addMavenDescriptor>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+						<manifestEntries>
+							<Trusted-Only>true</Trusted-Only>
+							<Application-Name>infosistema.com</Application-Name>
+							<Permissions>all-permissions</Permissions>
+							<Caller-Allowable-Codebase>*</Caller-Allowable-Codebase>
+						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
@@ -127,17 +174,22 @@
 						</goals>
 						<configuration>
 							<tasks>
-                                <!-- Prepare classpath -->
-                                <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.plugin.classpath"/>
-                                <property name="ant.regexp.regexpimpl" value="org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp"/>
-								<pathconvert property="depends" pathsep="," refid="maven.runtime.classpath">
+								<!-- Prepare classpath -->
+								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
+									classpathref="maven.plugin.classpath" />
+								<property name="ant.regexp.regexpimpl"
+									value="org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp" />
+								<pathconvert property="depends" pathsep=","
+									refid="maven.runtime.classpath">
 									<mapper type="flatten" />
 								</pathconvert>
-								<propertyregex property="fixedClasspath" input="${depends}" regexp="(classes,)" replace="" defaultValue=""/>
-								<property name="artifactClasspath" value="${project.artifactId}-${project.version}.jar"/>
-								<property name="finalClasspath" value="${artifactClasspath},${fixedClasspath}"/>
+								<propertyregex property="fixedClasspath" input="${depends}"
+									regexp="(classes,)" replace="" defaultValue="" />
+								<property name="artifactClasspath"
+									value="${project.artifactId}-${project.version}.jar" />
+								<property name="finalClasspath" value="${artifactClasspath},${fixedClasspath}" />
 								<echo>${finalClasspath}</echo>
-								
+
 								<!-- Transform files -->
 								<delete dir="${project.build.directory}/generated-sources/main/java" />
 								<copy toDir="${project.build.directory}/generated-sources/main/java"
@@ -156,34 +208,35 @@
 						</configuration>
 					</execution>
 				</executions>
-                <dependencies>
-                	<dependency>
-			            <groupId>pt.iknow.iflow</groupId>
-			            <artifactId>iflow-api</artifactId>
-			            <version>${iflow.version}</version>
-		            </dependency>                
-                    <dependency>
-                        <groupId>org.apache.ant</groupId>
-                        <artifactId>ant-nodeps</artifactId>
-                        <version>1.7.1</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>ant-contrib</groupId>
-                        <artifactId>ant-contrib</artifactId>
-                        <version>1.0b3</version>
-                        <exclusions>
-	                        <exclusion>
-		                        <groupId>ant</groupId>
-		                        <artifactId>ant</artifactId>
-	                        </exclusion>
-                        </exclusions>
-                    </dependency>
-               </dependencies>
+				<dependencies>
+					<dependency>
+						<groupId>pt.iknow.iflow</groupId>
+						<artifactId>iflow-api</artifactId>
+						<version>${iflow.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-nodeps</artifactId>
+						<version>1.7.1</version>
+					</dependency>
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>1.0b3</version>
+						<exclusions>
+							<exclusion>
+								<groupId>ant</groupId>
+								<artifactId>ant</artifactId>
+							</exclusion>
+						</exclusions>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>

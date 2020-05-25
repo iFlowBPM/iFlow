@@ -31,6 +31,7 @@ public class Setup {
     private static final String SIGN_PROP_FILE = "signatures.properties";
     private static final String SSO_PROP_FILE = "sso.properties";
     private static final String CRYPTO_PROP_FILE = "crypto.properties";
+    private static final String SMIME_PROP_FILE = "smime.properties";
     
     
     // Hashtable with properties keys,values
@@ -249,6 +250,26 @@ public class Setup {
             propertiesFile = null;
             
         }
+        
+        try {
+            sFile = FilenameUtils.concat(_configHome, SMIME_PROP_FILE);
+            // Open properties file and get contents
+            propertiesFile = new FileInputStream(sFile);
+            newExtraProperties.load(propertiesFile);
+        } catch (Exception e) {
+          Logger.error("", "Setup", "loadProperties", "Setup: unable to load properties file ("+ sFile + ").");
+            e.printStackTrace();
+            System.exit(1);
+        } finally {
+            if (null != propertiesFile) {
+                try {
+                    propertiesFile.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+            propertiesFile = null;
+        
         
         _pMainProperties = newMainProperties;
         _pExtraProperties = newExtraProperties;
