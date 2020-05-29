@@ -1,12 +1,21 @@
 package pt.iflow.maillistener;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
 import java.security.Security;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.spec.KeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -23,17 +32,26 @@ import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMessage.RecipientType;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang.StringUtils;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cms.RecipientId;
+import org.bouncycastle.cms.RecipientInformation;
+import org.bouncycastle.cms.RecipientInformationStore;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
+import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
+import org.bouncycastle.cms.jcajce.JceKeyTransRecipientId;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.mail.smime.SMIMEEnveloped;
 import org.bouncycastle.mail.smime.SMIMESigned;
+import org.bouncycastle.mail.smime.SMIMEUtil;
 import org.bouncycastle.util.Store;
 
 import pt.iflow.api.core.BeanFactory;
@@ -50,6 +68,7 @@ import pt.iflow.api.flows.NewFlowListener;
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
+import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.UserInfoManagerInterface;
 import pt.iflow.api.utils.mail.MailChecker;
@@ -209,11 +228,28 @@ public class MailListenerManager extends Thread {
         
         Logger.adminTrace("MailListenerManager", "parse", "entered for flow " + flowid);
         
+        boolean isEncrypted=false;
+        Object encryptedResult=null;
+        String encryptedMessage="";
+        MimeMultipart multipart=null;
+        
         try {
-			verifiedSignEmail(message);
+        	if(verifyIfIsEncryptedEmail(message)) {
+        		isEncrypted=true;
+        		encryptedResult=decryptEmail(message);
+        		if (encryptedResult instanceof String) {
+        			encryptedMessage=encryptedResult.toString();
+        		}
+        		else if(encryptedResult instanceof Multipart) {
+        			multipart = (MimeMultipart) encryptedResult;
+        			encryptedMessage=multipart.getBodyPart(0).getContent().toString();
+        		}
+        		
+        	}
+			verifiedSignEmail(message,multipart);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			Logger.adminError("MailListenerManager", "parse", "unable to verify signed email", e);
+			Logger.adminError("MailListenerManager", "parse", "unable to verify email", e);
 		}
 
         ProcessData procData = null;
@@ -299,6 +335,9 @@ public class MailListenerManager extends Thread {
 		          }
 		        }
 		      }
+        	  else if (isEncrypted) {
+        		 text = encryptedMessage;
+        	  }
 		      else {
 		        text = getText(message);
 		      }        	      
@@ -410,12 +449,15 @@ public class MailListenerManager extends Thread {
     return parser;
   }
   
-     private static void verifiedSignEmail(Message msg) throws Exception{
+     private static void verifiedSignEmail(Message msg, MimeMultipart multiPart) throws Exception{
+    	 SMIMESigned s = null;
     	 if (msg.isMimeType("multipart/signed")) {
     		 MimeMultipart multipart = (MimeMultipart) msg.getContent();
-    		 SMIMESigned s = new SMIMESigned(multipart);
-    		 verifyCertificate(s);
-    	 }
+    		 s = new SMIMESigned(multipart);
+    	 }else if((msg.isMimeType("application/pkcs7-mime") || msg.isMimeType("application/x-pkcs7-mime")) && multiPart!=null) {
+    		 s = new SMIMESigned((MimeMultipart)multiPart);
+    	 } 
+    	 verifyCertificate(s);
     	 
      }
 
@@ -437,9 +479,61 @@ public class MailListenerManager extends Thread {
 			if (signer.verify(new JcaSimpleSignerInfoVerifierBuilder().setProvider(BC).build(cert))) {
 				 Logger.adminInfo("MailListenerManager", "verifyCertificate", "signature verified");
 			} else {
-				throw new Exception("Signature failed");
+				throw new Exception("Signature not verified");
 			}
 		}
+	}
+	
+	private boolean verifyIfIsEncryptedEmail (Message msg) throws Exception {
+		if (msg.isMimeType("application/pkcs7-mime") || msg.isMimeType("application/x-pkcs7-mime")) {
+            return true;
+		}
+		return false;
+	}
+	
+	private Object decryptEmail(Message msg) throws Exception {
+		String[] emailList = Setup.getProperty("EMAIL_ENCRYPTED_LIST").split(",");
+		ArrayList<String> signEmail = new ArrayList<>(Arrays.asList(emailList));
+
+		SMIMEEnveloped m = new SMIMEEnveloped((MimeMessage) msg);
+
+		CertificateFactory factory = CertificateFactory.getInstance("X.509");
+
+		int certificateID = signEmail.indexOf((msg.getFrom()[0]).toString());
+
+		String certificateData = Setup.getProperty("SMIME_ENCRYPTED_CERTIFICATE_" + certificateID);
+		X509Certificate certificate = (X509Certificate) factory
+				.generateCertificate(new ByteArrayInputStream(certificateData.getBytes()));
+		RecipientId recId = new JceKeyTransRecipientId(certificate);
+
+		String privateKeyString = Setup.getProperty("SMIME_ENCRYPTED_PRIVATE_KEY_" + certificateID);
+		KeyFactory kf = KeyFactory.getInstance("RSA");
+		byte[] data = Base64.getDecoder().decode((privateKeyString.getBytes()));
+		PrivateKey privateKey = kf.generatePrivate((KeySpec) new PKCS8EncodedKeySpec(data));
+
+		RecipientInformationStore recipients = m.getRecipientInfos();
+		RecipientInformation recipient = recipients.get(recId);
+
+		// Veririficar se tem o certificado correcto
+		if (null == recipient) {
+			StringBuilder errorMessage = new StringBuilder();
+			errorMessage.append("This email wasn't encrypted with \"" + recId.toString() + "\".\n");
+			errorMessage.append("The encryption recId is: ");
+
+			for (Object rec : recipients.getRecipients()) {
+				if (rec instanceof RecipientInformation) {
+					RecipientId recipientId = ((RecipientInformation) rec).getRID();
+					errorMessage.append("\"" + recipientId.toString() + "\"\n");
+				}
+			}
+			throw new Exception(errorMessage.toString());
+		}
+
+		MimeBodyPart res = SMIMEUtil
+				.toMimeBodyPart(recipient.getContent(new JceKeyTransEnvelopedRecipient(privateKey).setProvider("BC")));
+
+		return res.getContent();
+		
 	}
   
   private void stopChecker(int flowid) {
