@@ -12,6 +12,7 @@ import java.io.StringReader;
 import java.text.Format;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -68,6 +69,7 @@ import pt.iflow.api.utils.DataSetVariables;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.NameValuePair;
 import pt.iflow.api.utils.ServletUtils;
+import pt.iflow.api.utils.Translator;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
 import pt.iflow.api.utils.XslTransformerFactory;
@@ -335,6 +337,7 @@ public class BlockFormulario extends Block implements FormOperations {
 		final int pid = procData.getPid();
 		final int subpid = procData.getSubPid();
 		int level = 0;
+		Translator translator= new Translator(BeanFactory.getSettingsBean().getOrganizationLocale(userInfo));
 
 		final String sLogin = userInfo.getUtilizador();
 		try {
@@ -1043,6 +1046,11 @@ public class BlockFormulario extends Block implements FormOperations {
 							ahmHiddenFields.get("_tabholder_selected" + props.getProperty("fieldid")));
 
 				// now get xml from field object
+				
+				// Translate
+				List<String> elementsToTranslate = Arrays.asList("text", FormProps.sMACROTITLE, FormProps.sTITLE);
+				props=translator.translateMultipleElements(props,elementsToTranslate);
+
 				stmp = fi.getXML(props);
 				if (stmp != null) {
 					sbXml.append(stmp);
@@ -1079,6 +1087,8 @@ public class BlockFormulario extends Block implements FormOperations {
 					String text = formButton.getText(userInfo);
 					String operation = "";
 					String buttonFormName = BlockFormulario.getButtonFormId(formButton);
+					
+					if(text!=null) {text=translator.getString(text);}
 
 					String showCond = formButton.getAttribute(FormButton.ATTR_SHOW_COND);
 					if (StringUtils.isNotEmpty(showCond)) {
