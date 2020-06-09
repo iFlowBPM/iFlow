@@ -7,6 +7,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
+import javax.mail.Message;
+
 public class MailMessageRaw {
 	
 	String messageId = "";
@@ -17,6 +19,7 @@ public class MailMessageRaw {
     Date sentDate = null;
 	Properties props = null;
 	Hashtable<String,ByteArrayOutputStream> fileContents = null;
+	Message message;
 	
     
     public Hashtable<String,ByteArrayOutputStream> getFileContents() {
@@ -68,6 +71,12 @@ public class MailMessageRaw {
 	}
 	public void setSentDate(Date sentDate) {
 		this.sentDate = sentDate;
+	}
+	public Message getMessage() {
+		return message;
+	}
+	public void setMessage(Message message) {
+		this.message = message;
 	}
 
 }

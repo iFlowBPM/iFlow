@@ -1,6 +1,7 @@
 package pt.iflow.maillistener;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -231,7 +232,7 @@ public class MailListenerManager extends Thread {
     	  Logger.adminTrace("MailListenerManager", "storeMessage", "entered for flow " + flowid);
 
     	  MailMessageRaw mailMessageRaw = new MailMessageRaw();
-    	  
+    	  mailMessageRaw.setMessage(message);
     	  try {
 			mailMessageRaw.setMessageId(message.getHeader("Message-ID")[0]);
     	  } catch (MessagingException e1) {
@@ -303,9 +304,9 @@ public class MailListenerManager extends Thread {
         MimeMultipart multipart=null;
         
         try {
-        	if(verifyIfIsEncryptedEmail(message)) {
+        	if(verifyIfIsEncryptedEmail(message.getMessage())) {
         		isEncrypted=true;
-        		encryptedResult=decryptEmail(message);
+        		encryptedResult=decryptEmail(message.getMessage());
         		if (encryptedResult instanceof String) {
         			encryptedMessage=encryptedResult.toString();
         		}
@@ -315,7 +316,7 @@ public class MailListenerManager extends Thread {
         		}
         		
         	}
-			verifiedSignEmail(message,multipart);
+			verifiedSignEmail(message.getMessage(),multipart);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			Logger.adminError("MailListenerManager", "parse", "unable to verify email", e);
@@ -376,24 +377,24 @@ public class MailListenerManager extends Thread {
 
           try {
             subject = message.getSubject();
-          } catch (MessagingException e) {
+          } catch (Exception e) {
             Logger.adminWarning("MailListenerManager", "parse", "error getting subject", e);
           }
           try {
             sentDate = message.getSentDate();
-          } catch (MessagingException e) {
+          } catch (Exception e) {
             Logger.adminWarning("MailListenerManager", "parse", "error getting sent date", e);
           }
           try {
-        	  if (message.isMimeType("multipart/*")) {
+        	  if (message.getMessage().isMimeType("multipart/*")) {
 	
-		        Multipart mp = (Multipart)message.getContent();
+		        Multipart mp = (Multipart)message.getMessage().getContent();
 		        for (int i = 0; i < mp.getCount(); i++) {
 		          Part bp = mp.getBodyPart(i);
 	
 		          String disposition = bp.getDisposition();
 		          if (!StringUtils.equalsIgnoreCase(disposition, Part.ATTACHMENT)) {
-		        	  text += getText(message);
+		        	  text += getText(message.getMessage());
 		          }
 		        }
 		      }
@@ -401,7 +402,7 @@ public class MailListenerManager extends Thread {
         		 text = encryptedMessage;
         	  }
 		      else {
-		        text = getText(message);
+		        text = getText(message.getMessage());
 		      }        	      
           } catch (Exception e) {
             Logger.adminWarning("MailListenerManager", "parse", "error getting text", e);
