@@ -22,6 +22,7 @@ public class IMAPMailSSLClient extends IMAPMailClient {
         config.getUser(), config.getPass());
 
     setInboxFolder(config.getInbox());
+    setArchiveFolder(config.getArchive());
     if (config.getSubsFolders() != null) {
       String[] subsFolders = new String[config.getSubsFolders().size()];
       subsFolders = config.getSubsFolders().toArray(subsFolders);

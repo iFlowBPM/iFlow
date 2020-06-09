@@ -1,11 +1,10 @@
 package pt.iflow.api.utils.mail.parsers;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Hashtable;
 import java.util.regex.Pattern;
 
 import javax.mail.Message;
@@ -18,13 +17,10 @@ import org.apache.commons.lang.StringUtils;
 
 public abstract class AbstractMessageParser implements MessageParser {
 
+  public abstract ByteArrayOutputStream saveFile(InputStream data) throws IOException;
 
-  public abstract boolean parse(Message message) throws MessageParseException;
-
-  public abstract File saveFile(String filename, InputStream data) throws IOException;
-
-  public List<File> parseFiles(Message message) throws MessageParseException {
-    List<File> files = new ArrayList<File>();
+  public Hashtable<String,ByteArrayOutputStream> parseFiles(Message message) throws MessageParseException {
+	  Hashtable<String,ByteArrayOutputStream> files = new Hashtable<String,ByteArrayOutputStream>();
 
     try {
       if (message.isMimeType("multipart/*")) {
@@ -33,7 +29,8 @@ public abstract class AbstractMessageParser implements MessageParser {
           Part bp = mp.getBodyPart(i);
           String disposition = bp.getDisposition();
           if (StringUtils.equalsIgnoreCase(disposition, Part.ATTACHMENT)) {
-            files.add(saveFile(bp.getFileName(), bp.getInputStream()));          
+        	  String filename = javax.mail.internet.MimeUtility.decodeText(bp.getFileName());
+            files.put(filename, saveFile(bp.getInputStream()));          
           }
         }
       }  
