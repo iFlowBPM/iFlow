@@ -275,20 +275,20 @@ public class GestaoCrc {
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
-			String query = "select u_gestao.id, infProt.dtRefProt "+
+			String query = "select u_gestao.id, infProt.dtRefProt, infProt.type "+
 				"from u_gestao, crc, conteudo, comProt, infProt "+
 				"where u_gestao.out_id = crc.id and "+
 				"	crc.id = conteudo.crc_id and "+
 				"    conteudo.id = comProt.conteudo_id and "+
 				"    comProt.id = infProt.comProt_id and "+
 				"    infProt.idProt = ? and "+
-				"    infProt.dtRefProt <= ? and "+
+//				"    infProt.dtRefProt <= ? and "+
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
 			pst = connection.prepareStatement(query);
 			pst.setString(1, idProt);
-			pst.setDate(2, new java.sql.Date(dtRefProt.getTime()));
+//			pst.setDate(2, new java.sql.Date(dtRefProt.getTime()));
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
@@ -296,33 +296,61 @@ public class GestaoCrc {
 			
 			Integer u_gestao_id = rs.getInt(1);
 			Date dtRefProtAux = rs.getDate(2);
+			String type = rs.getString(3);
 			
 			pst.close();
 			rs.close();
 			
-			query = "select fichAce.id, u_gestao.id "+
-				"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
-				"where  u_gestao.in_id = crc.id and "+
-				"	crc.id = conteudo.crc_id and "+
-				"	conteudo.id = avisRec.conteudo_id and "+
-				"	avisRec.id = fichAce.avisRec_id and "+
-				"   u_gestao.id = ? and "+
-				"   fichAce.id not in  "+
-				"		( select regMsg.fichAce_id from regMsg, msg "+
-				"			where regMsg.id=msg.regMsg_id "+
-				"			and  msg.codMsg!='PT003' " +
-				"			and  msg.nvCrit=0 " +
-				"			and regMsg.idProt = ?); ";
-			
-			pst = connection.prepareStatement(query);
-			pst.setInt(1, u_gestao_id);
-			pst.setString(2, idProt);
-			rs = pst.executeQuery();
-			
-			if(rs.next() && dtRefProtAux.getTime()<=dtRefProt.getTime())
-				return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));		
-			else 
-				return new ImportAction(ImportActionType.CREATE);
+			if(StringUtils.equalsIgnoreCase(type,"PTD")){
+				query = "select fichAce.id, u_gestao.id "+
+						"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
+						"where  u_gestao.in_id = crc.id and "+
+						"	crc.id = conteudo.crc_id and "+
+						"	conteudo.id = avisRec.conteudo_id and "+
+						"	avisRec.id = fichAce.avisRec_id and "+
+						"   u_gestao.id = ? and "+
+						"   fichAce.id in  "+
+						"		( select regMsg.fichAce_id from regMsg, msg "+
+						"			where regMsg.id=msg.regMsg_id "+
+						"			and  msg.codMsg='PT054' " +
+						"			and  msg.nvCrit=0 " +
+						"			and regMsg.idProt = ?); ";
+					
+				pst = connection.prepareStatement(query);
+				pst.setInt(1, u_gestao_id);
+				pst.setString(2, idProt);
+				rs = pst.executeQuery();
+				
+				if(rs.next())
+					return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));				
+				else 
+					return new ImportAction(ImportActionType.CREATE);
+				
+			} else {
+				query = "select fichAce.id, u_gestao.id "+
+						"from u_gestao, crc, conteudo, avisRec, fichAce, regMsg "+ 
+						"where  u_gestao.in_id = crc.id and "+
+						"	crc.id = conteudo.crc_id and "+
+						"	conteudo.id = avisRec.conteudo_id and "+
+						"	avisRec.id = fichAce.avisRec_id and "+
+						"   u_gestao.id = ? and "+
+						"   fichAce.id not in  "+
+						"		( select regMsg.fichAce_id from regMsg, msg "+
+						"			where regMsg.id=msg.regMsg_id "+
+						"			and  msg.codMsg!='PT003' " +
+						"			and  msg.nvCrit=0 " +
+						"			and regMsg.idProt = ?); ";
+					
+				pst = connection.prepareStatement(query);
+				pst.setInt(1, u_gestao_id);
+				pst.setString(2, idProt);
+				rs = pst.executeQuery();
+				
+				if(rs.next())
+					return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));				
+				else 
+					return new ImportAction(ImportActionType.CREATE);
+			}						
 			
 		} catch (Exception e) {
 			Logger.error(utilizador, "GestaoCrc", "checkInfProtType", e.getMessage(), e);
@@ -756,6 +784,8 @@ public class GestaoCrc {
 			Date dtRefInfDiaAux = rs.getDate(2);
 			String type = rs.getString(3);
 			
+			Logger.debug(utilizador, "GestaoCrc", "checkinfCompC", "idCont: " + idCont + ", idInst: " + idInst + ", dtRef: "+ dtRef);
+			Logger.debug(utilizador, "GestaoCrc", "checkinfCompC", "u_gestao_id: " + u_gestao_id + ", dtRefInfDiaAux: " + dtRefInfDiaAux + ", type: "+ type);
 			pst.close();
 			rs.close();
 			
@@ -769,6 +799,7 @@ public class GestaoCrc {
 				"   fichAce.id not in  "+
 				"		( select regMsg.fichAce_id from regMsg, msg "+
 				"			where regMsg.idCont = ? and regMsg.idInst = ? "+
+				"			and msg.regMsg_id = regMsg.id " +
 				"			and msg.nvCrit=0 and msg.codMsg!='CC003' " +	
 				"           and (operOrig='CCI' or operOrig='CCU' or operOrig = 'CCD')); ";
 			
@@ -778,13 +809,20 @@ public class GestaoCrc {
 			pst.setString(3, idInst);
 			rs = pst.executeQuery();
 			
-			if(rs.next() && dtRefInfDiaAux.getTime()<=dtRef.getTime())
-				if (StringUtils.equalsIgnoreCase(type,"CCD"))
+			if(rs.next() /*&& dtRefInfDiaAux.getTime()<=dtRef.getTime()*/){
+				if (StringUtils.equalsIgnoreCase(type,"CCD")){
+					Logger.debug(utilizador, "GestaoCrc", "checkinfCompC", "CREATE, after delete " );				
 					return new ImportAction(ImportActionType.CREATE);
-				else 
-					return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));			
-			else 
-				return new ImportAction(ImportActionType.CREATE);
+				}
+				else {
+					Logger.debug(utilizador, "GestaoCrc", "checkinfCompC", "UPDATE" );
+					return new ImportAction(ImportActionType.UPDATE, rs.getInt(2));
+				}
+			}
+			else {
+				Logger.debug(utilizador, "GestaoCrc", "checkinfCompC", "CREATE, no next " );
+				return new ImportAction(ImportActionType.CREATE);				
+			}
 			
 		} catch (Exception e) {
 

@@ -40,15 +40,20 @@ public class BlockP17040GenerateCPRT extends BlockP17040Generate {
 				new Object[] { crcId });
 		for (Integer infProtId : infProtIdList) {
 			writer.writeStartElement("infProt");
-			HashMap<String, Object> infProtValues = fillAtributtes(writer, connection, userInfo,
-					"select * from infProt where id = {0} ", new Object[] { infProtId });
-
-			// idEnt
-			HashMap idEntValue = FileGeneratorUtils.fillAtributtesIdEnt(null, connection, userInfo, infProtValues.get("idEnt_id") );
-			if(!idEntValue.isEmpty()){
-				writer.writeStartElement("idEnt");
-				FileGeneratorUtils.fillAtributtesIdEnt(writer, connection, userInfo, infProtValues.get("idEnt_id") );
-				writer.writeEndElement();
+			if(retrieveSimpleField(connection, userInfo,"select infProt.id from infProt where type=''PTD'' and id = {0} ",new Object[] { infProtId }).size()>0){
+				fillAtributtes(writer, connection, userInfo,
+						"select type,idProt from infProt where id = {0} ", new Object[] { infProtId });;
+			} else {
+				HashMap<String, Object> infProtValues = fillAtributtes(writer, connection, userInfo,
+						"select * from infProt where id = {0} ", new Object[] { infProtId });
+	
+				// idEnt
+				HashMap idEntValue = FileGeneratorUtils.fillAtributtesIdEnt(null, connection, userInfo, infProtValues.get("idEnt_id") );
+				if(!idEntValue.isEmpty()){
+					writer.writeStartElement("idEnt");
+					FileGeneratorUtils.fillAtributtesIdEnt(writer, connection, userInfo, infProtValues.get("idEnt_id") );
+					writer.writeEndElement();
+				}
 			}
 			writer.writeEndElement();
 		}

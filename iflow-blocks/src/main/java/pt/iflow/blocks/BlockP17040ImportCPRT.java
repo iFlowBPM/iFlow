@@ -24,6 +24,7 @@ import pt.iflow.blocks.P17040.utils.FileImportUtils;
 import pt.iflow.blocks.P17040.utils.GestaoCrc;
 import pt.iflow.blocks.P17040.utils.ImportAction;
 import pt.iflow.blocks.P17040.utils.ValidationError;
+import pt.iflow.blocks.P17040.utils.ImportAction.ImportActionType;
 
 public class BlockP17040ImportCPRT extends BlockP17040Import {
 
@@ -63,12 +64,17 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 				}
 				// validar data de referencia
 				Date dtRefProt = (Date) lineValues.get("dtRefProt");
-				if (dtRefProt==null) {
+				if (!getIsDelete() && dtRefProt==null) {
 					errorList.add(new ValidationError("Data de referência dos dados em falta", "", "", lineNumber));
 					continue;
 				}	
-				// determinar se é insert ou update
-				ImportAction actionOnLine = GestaoCrc.checkInfProtType(idProt, dtRefProt, userInfo.getUtilizador(), connection);
+				// determinar se é insert ou update ou delete
+				ImportAction actionOnLine = null;
+				if(getIsDelete())
+					actionOnLine = new ImportAction(ImportActionType.DELETE);
+				else
+					actionOnLine = GestaoCrc.checkInfProtType(idProt, dtRefProt, userInfo.getUtilizador(), connection);
+				
 				if(actionOnLine==null)
 					continue;
 				
@@ -83,7 +89,14 @@ public class BlockP17040ImportCPRT extends BlockP17040Import {
 				}
 				
 				// adicionar acçao
-				String type = actionOnLine.getAction().equals(ImportAction.ImportActionType.CREATE) ? "PTI" : "PTU";
+				String type = null;
+				if(actionOnLine.getAction()==ImportActionType.CREATE )				
+					type = "PTI"; 
+				else if(actionOnLine.getAction()==ImportActionType.UPDATE )
+					type = "PTU";
+				else if(actionOnLine.getAction()==ImportActionType.DELETE )
+					type = "PTD";
+				
 				actionList.add(new ImportAction(actionOnLine.getAction(), idProt));				
 				try {
 					// inserir na bd

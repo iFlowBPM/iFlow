@@ -108,12 +108,17 @@ public abstract class BlockP17040Import extends Block {
 		String sInputDocumentVar3 = this.getAttribute(INPUT_DOCUMENT3);
 		String sOutputErrorDocumentVar = this.getAttribute(OUTPUT_ERROR_DOCUMENT);
 		String sOutputActionDocumentVar = this.getAttribute(OUTPUT_ACTION_DOCUMENT);
-		setIsDelete((StringUtils.equalsIgnoreCase("true", this.getAttribute(IS_DELETE)) || StringUtils.equalsIgnoreCase("1", this.getAttribute(IS_DELETE)) || StringUtils.equalsIgnoreCase("yes", this.getAttribute(IS_DELETE)) || StringUtils.equalsIgnoreCase("sim", this.getAttribute(IS_DELETE))));
+		
 		DataSource datasource = null;
 		Connection connection = null;
 
 		try {
 			datasource = Utils.getUserDataSource(procData.transform(userInfo, getAttribute(DATASOURCE)));
+			String isDeleteAux= procData.transform(userInfo, getAttribute(IS_DELETE));
+			setIsDelete((StringUtils.equalsIgnoreCase("true", isDeleteAux) || 
+					StringUtils.equalsIgnoreCase("1", isDeleteAux) || 
+					StringUtils.equalsIgnoreCase("yes", isDeleteAux) || 
+					StringUtils.equalsIgnoreCase("sim", isDeleteAux)));
 
 		} catch (Exception e1) {
 			Logger.error(login, this, "after", procData.getSignature() + "error transforming attributes", e1);

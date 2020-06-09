@@ -787,6 +787,11 @@
 			<description>Id of created Crc</description>
 			<value />
 		</XmlAttribute>
+		<XmlAttribute>
+			<name>isDelete</name>
+			<description>delete action?</description>
+			<value />
+		</XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>ImportCPRT</description>
 		<i18n>library.dms.block.p17040.import.cprt</i18n>
