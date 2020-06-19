@@ -509,6 +509,10 @@ Disabled. Use servlet container defaults
 	  <servlet-name>CheckRequestForApplet</servlet-name>
 	  <servlet-class>pt.iflow.servlets.CheckRequestForApplet</servlet-class>
   </servlet>
+  <servlet>
+	  <servlet-name>InicioFlow</servlet-name>
+	  <servlet-class>pt.iflow.servlets.InicioFlowServlet</servlet-class>
+  </servlet>
 
    <!-- end of axis -->
 
@@ -827,6 +831,10 @@ Disabled. Use servlet container defaults
    <servlet-mapping>
       <servlet-name>CheckRequestForApplet</servlet-name>
       <url-pattern>/CheckRequestForApplet</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>InicioFlow</servlet-name>
+      <url-pattern>/startProcess</url-pattern>
    </servlet-mapping>
    
   <!-- servlet-mapping>
