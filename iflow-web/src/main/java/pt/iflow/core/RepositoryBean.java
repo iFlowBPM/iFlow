@@ -344,6 +344,10 @@ public class RepositoryBean implements Repository {
   public boolean setWebService(UserInfoInterface userInfo, String file, byte [] data) {
     return setResourceData(sWEBSERVICES_DIR_TEMPLATE, userInfo, file, data, null);
   }
+  
+  public boolean setMessagesFile(UserInfoInterface userInfo, String file, byte [] data) {
+    return setResourceData(sMESSAGES_DIR_TEMPLATE, userInfo, file, data, null);
+  }
 
   // file listing
   private synchronized RepositoryFile[] listResources(String nameTpl, String org) {

@@ -33,6 +33,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -46,6 +47,7 @@ import pt.iflow.api.blocks.Port;
 import pt.iflow.api.core.Activity;
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.core.ProcessManager;
+import pt.iflow.api.core.RepositoryFile;
 import pt.iflow.api.datatypes.ArrayTableProcessingCapable;
 import pt.iflow.api.datatypes.DataTypeInterface;
 import pt.iflow.api.datatypes.Link;
@@ -71,6 +73,7 @@ import pt.iflow.api.utils.NameValuePair;
 import pt.iflow.api.utils.ServletUtils;
 import pt.iflow.api.utils.Translator;
 import pt.iflow.api.utils.UserInfoInterface;
+import pt.iflow.api.utils.UserSettings;
 import pt.iflow.api.utils.Utils;
 import pt.iflow.api.utils.XslTransformerFactory;
 import pt.iflow.blocks.form.ConSelection;
@@ -337,8 +340,9 @@ public class BlockFormulario extends Block implements FormOperations {
 		final int pid = procData.getPid();
 		final int subpid = procData.getSubPid();
 		int level = 0;
-		Translator translator= new Translator(BeanFactory.getSettingsBean().getOrganizationLocale(userInfo));
-
+		UserSettings us = userInfo.getUserSettings();
+		Translator translator= new Translator(us.getLocale(), userInfo);
+		
 		final String sLogin = userInfo.getUtilizador();
 		try {
 
@@ -1048,7 +1052,10 @@ public class BlockFormulario extends Block implements FormOperations {
 				// now get xml from field object
 				
 				// Translate
-				List<String> elementsToTranslate = Arrays.asList("text", FormProps.sMACROTITLE, FormProps.sTITLE);
+				List<String> elementsToTranslate = new ArrayList<String>();
+				elementsToTranslate.add("text");
+				elementsToTranslate.add(FormProps.sMACROTITLE);
+				elementsToTranslate.add(FormProps.sTITLE);
 				props=translator.translateMultipleElements(props,elementsToTranslate);
 
 				stmp = fi.getXML(props);
@@ -1282,6 +1289,7 @@ public class BlockFormulario extends Block implements FormOperations {
 			// Logger.debug(sLogin,abBlock,"generateForm","[" + flowid + "," +
 			// pid + "," + subpid + "] " +"xml=" + sbXml.toString());
 
+			translator.addMissingKeys(userInfo);
 			if (anService == FormService.EXPORT) {
 				// return xml
 				retObj = sbXml.toString();

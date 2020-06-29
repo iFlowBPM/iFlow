@@ -431,4 +431,6 @@ public interface Repository {
    * @return
    */
   public RepositoryFile getMessagesFile(UserInfoInterface userInfo, String fileName);
+  
+  public boolean setMessagesFile(UserInfoInterface userInfo, String file, byte [] data);
 }
