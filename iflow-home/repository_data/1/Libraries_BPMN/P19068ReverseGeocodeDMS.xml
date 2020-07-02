@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by jmv (.) -->
+
+<XmlLibrary xmlns="http://www.iknow.pt/XmlLibrary" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.iknow.pt/XmlLibrary ../schemas/xmllibrary.xsd">
+	<name>ReverseGeocodeDMS</name>
+	<version>1.0</version>
+	<author>Uniksystem</author>
+	<description>ReverseGeocodeDMS</description>
+	<i18nName>library.reversegeocodedms.name</i18nName>
+	<i18nDescription>library.reversegeocodedms.description</i18nDescription>
+
+	<XmlBlock>
+		<class>BlockReverseGeocodeDMS</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>inputLatitudeDMS</name>
+			<description>Input latitude</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputLongitudeDMS</name>
+			<description>Input longitude</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputMoradas</name>
+			<description>Output lista de moradas</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>BlockReverseGeocodeDMS</description>
+		<i18n>BlockReverseGeocodeDMS</i18n>
+	</XmlBlock>
+	
+	
+</XmlLibrary>
