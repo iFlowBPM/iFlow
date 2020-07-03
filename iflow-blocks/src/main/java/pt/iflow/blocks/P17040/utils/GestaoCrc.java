@@ -767,14 +767,14 @@ public class GestaoCrc {
 				"	comInfComp.id = infCompC.comInfComp_id and"+
 				"    infCompC.idCont = ? and "+
 				"    infCompC.idInst = ? and "+
-				"    infCompC.dtRef <= ? and "+
+				//"    infCompC.dtRef <= ? and "+
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
 			pst = connection.prepareStatement(query);
 			pst.setString(1, idCont);
 			pst.setString(2, idInst);
-			pst.setDate(3, new java.sql.Date(dtRef.getTime()));
+			//pst.setDate(3, new java.sql.Date(dtRef.getTime()));
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
