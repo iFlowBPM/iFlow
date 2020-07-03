@@ -54,4 +54,48 @@
 		<i18n>ImportIndicioFile</i18n>
 	</XmlBlock>
 	
+	<XmlBlock>
+		<class>BlockP19068ImportXlsRelatorioAvaliacao</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>inputDocument</name>
+			<description>Input file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputErrorDocument</name>
+			<description>Output error file</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>ImportXlsRelatorioAvaliacao</description>
+		<i18n>ImportXlsRelatorioAvaliacao</i18n>
+	</XmlBlock>	
+	
 </XmlLibrary>
