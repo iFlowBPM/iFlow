@@ -6,18 +6,29 @@ import org.apache.commons.lang.StringUtils;
 import pt.iflow.api.blocks.Block;
 
 public class MailStartSettings {
+  private String messageIdVar;
+
   private String fromEmailVar;
   private String fromNameVar;
   private String subjectVar;
   private String sentDateVar;
   private String filesVar;
   private String textVar;
+  
 
   private LinkedMap<String, String> customProps;
   
   private MailStartSettings() {    
   }
   
+  public String getMessageIdVar() {
+	return messageIdVar;
+  }
+
+  public void setMessageIdVar(String messageIdVar) {
+	this.messageIdVar = messageIdVar;
+  }
+
   public String getFromEmailVar() {
     return fromEmailVar;
   }
@@ -53,6 +64,7 @@ public class MailStartSettings {
     
     MailStartSettings ret = new MailStartSettings();
     
+    ret.messageIdVar = startBlock.getAttribute(IFlowData.sMAIL_START_INFO_PREFIX + IFlowData.MAILSTART_MESSAGEID_PROP); 
     ret.fromEmailVar = startBlock.getAttribute(IFlowData.sMAIL_START_INFO_PREFIX + IFlowData.MAILSTART_FROM_EMAIL_PROP); 
     ret.fromNameVar = startBlock.getAttribute(IFlowData.sMAIL_START_INFO_PREFIX + IFlowData.MAILSTART_FROM_NAME_PROP);     
     ret.subjectVar = startBlock.getAttribute(IFlowData.sMAIL_START_INFO_PREFIX + IFlowData.MAILSTART_SUBJECT_PROP); 
@@ -82,7 +94,8 @@ public class MailStartSettings {
   }
   
   private boolean isSet() {
-    return StringUtils.isNotEmpty(fromEmailVar) ||
+    return StringUtils.isNotEmpty(messageIdVar) ||
+    		StringUtils.isNotEmpty(fromEmailVar) ||
       StringUtils.isNotEmpty(fromNameVar) ||
       StringUtils.isNotEmpty(subjectVar) ||
       StringUtils.isNotEmpty(sentDateVar) ||

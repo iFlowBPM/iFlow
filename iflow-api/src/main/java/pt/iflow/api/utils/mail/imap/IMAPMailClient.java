@@ -235,6 +235,8 @@ public abstract class IMAPMailClient implements MailClient {
 				  Logger.debug(null, this, "readFolderUnreadMessages", "message " + msgData.getSubject() + 
 						  " parsed");
 				  if (!archiveFolder.isOpen()) archiveFolder.open(Folder.READ_WRITE);
+				  Logger.debug(null, this, "readFolderUnreadMessages", "message ID is " + msgData.getMessageId() + 
+						  " parsed");
 				  SearchTerm searchTerm = new MessageIDTerm(msgData.getMessageId());
 				  Message[] messages = archiveFolder.search(searchTerm);
 				  if (messages != null && messages.length == 1

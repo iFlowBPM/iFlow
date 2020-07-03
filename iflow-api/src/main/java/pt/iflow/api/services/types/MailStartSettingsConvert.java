@@ -12,6 +12,7 @@ import java.util.HashMap;
  in the wsdl file.*/
 
 public class MailStartSettingsConvert {
+	private String messageIdVar;
 	private String fromEmailVar;
 	private String fromNameVar;
 	private String subjectVar;
@@ -22,6 +23,14 @@ public class MailStartSettingsConvert {
 
 	public MailStartSettingsConvert() {
 		super();
+	}
+
+	public String getMessageIdVar() {
+		return messageIdVar;
+	}
+
+	public void setMessageIdVar(String messageIdVar) {
+		this.messageIdVar = messageIdVar;
 	}
 
 	public String getFromEmailVar() {
