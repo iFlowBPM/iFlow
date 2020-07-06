@@ -149,7 +149,7 @@ public class InicioFlowServlet extends HttpServlet {
 					}
 			} else {
 				try {
-					if (procData.parseAndSet(chave, valor) == null)
+					if (!StringUtils.equals("[]", valor) && procData.parseAndSet(chave, valor) == null)
 						throw new Exception("variable not found in procdata");
 				} catch (Exception e) {
 					Logger.error("", this, "doPost",
