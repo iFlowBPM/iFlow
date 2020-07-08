@@ -256,14 +256,14 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 					Date dtOriMat = (Date) infInstValues.get("dtOriMat");
 					if (dtMat == null)
 						result.add(new ValidationError("CI036", "infInst", "dtMat", idCont, infInstId));
-					if (dtMat != null && dtOriMat != null && 
-							(
-								(dtRefInst.after(inicioCovid19.getTime()) && dtMat.equals(dtOriMat) && (tpCaractEspAux.contains("007") || tpCaractEspAux.contains("008"))) 
-								||
-								(!dtMat.equals(dtOriMat) && !tpCaractEspAux.contains("007") && !tpCaractEspAux.contains("008"))
-							)
-						)
-						result.add(new ValidationError("CI037", "infInst", "dtMat", idCont, infInstId));
+//					if (dtMat != null && dtOriMat != null && 
+//							(
+//								(dtRefInst.after(inicioCovid19.getTime()) && dtMat.equals(dtOriMat) && (tpCaractEspAux.contains("007") || tpCaractEspAux.contains("008"))) 
+//								||
+//								(!dtMat.equals(dtOriMat) && !tpCaractEspAux.contains("007") && !tpCaractEspAux.contains("008"))
+//							)
+//						)
+//						result.add(new ValidationError("CI037", "infInst", "dtMat", idCont, infInstId));
 					if (dtIniInst != null && dtMat != null && dtIniInst.after(dtMat))
 						result.add(new ValidationError("CI094", "infInst", "dtMat", idCont, infInstId));
 	
@@ -425,9 +425,9 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 					// dtReneg
 					String tpNeg = (String) infInstValues.get("tpNeg");
 					if (dtReneg != null && dtReneg.before(dtIniInst))
-						result.add(new ValidationError("CI070", "infInst", "tpNeg", idCont, infInstId, tpNeg));
+						result.add(new ValidationError("CI070", "infInst", "dtReneg", idCont, infInstId, dtReneg));
 					if (dtReneg != null && dtReneg.after(new Date()))
-						result.add(new ValidationError("CI071", "infInst", "tpNeg", idCont, infInstId, tpNeg));
+						result.add(new ValidationError("CI071", "infInst", "dtReneg", idCont, infInstId, dtReneg));
 					if (dtReneg == null && !StringUtils.equals(tpNeg, "001"))
 						result.add(new ValidationError("CI107", "infInst", "tpNeg", idCont, infInstId, tpNeg));
 	
