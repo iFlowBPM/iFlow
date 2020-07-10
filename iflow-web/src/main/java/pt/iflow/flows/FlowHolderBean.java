@@ -2437,7 +2437,8 @@ public class FlowHolderBean implements FlowHolder {
                 
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
-                nProcs = pst.executeUpdate(query);
+                pst = db.prepareStatement(query);
+                nProcs = pst.executeUpdate();
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Finished reindexing " + nProcs + " processes");
                 
@@ -2456,7 +2457,8 @@ public class FlowHolderBean implements FlowHolder {
                         "FlowHolder.REINDEX_HISTORY", queryInfo);
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Executing query: " + query);
-                nProcs = pst.executeUpdate(query);
+                pst = db.prepareStatement(query);
+                nProcs = pst.executeUpdate();
                 Logger.debug(userInfo.getUtilizador(), this, "reindexFlow",
                         "Finished reindexing " + nProcs + " processes");
                 
