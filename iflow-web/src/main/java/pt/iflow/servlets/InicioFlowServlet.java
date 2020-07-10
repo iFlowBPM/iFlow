@@ -101,20 +101,26 @@ public class InicioFlowServlet extends HttpServlet {
 		for (String chave : chaves) {
 			if (StringUtils.equalsIgnoreCase("flowid", chave))
 				continue;
+			if (StringUtils.endsWith(chave, "].content"))
+				continue;
 			String valor = flattenJson.get(chave).toString();
 			// is array
 			if (StringUtils.contains(chave, "]")) {
 				String chaveAux = StringUtils.substringBefore(chave, "[");
 				ProcessListVariable listVar = procData.getList(chaveAux);
 
-				if (StringUtils.endsWith(chave, "].content"))
-					continue;
-				else if (listVar != null && listVar.getType() instanceof DocumentDataType
+				
+				if (listVar != null && listVar.getType() instanceof DocumentDataType
 						&& StringUtils.endsWith(chave, "].filename")) {
 					String filename = valor;
-					String contentBase64 = flattenJson.get(StringUtils.replace(chave, "].filename", "].content"))
-							.toString();
-					Document doc = new DocumentData(filename, Base64.getDecoder().decode(contentBase64));
+					Object contentBase64Pre = flattenJson.get(StringUtils.replace(chave, "].filename", "].content"));
+					Document doc = null;
+					if(contentBase64Pre!=null){
+						doc = new DocumentData(filename, Base64.getDecoder().decode(flattenJson.get(StringUtils.replace(chave, "].filename", "].content")).toString()));
+					} else if(contentBase64Pre==null && !(contentBase64Pre instanceof String)){
+						doc = new DocumentData(filename, new byte[0]);
+					}
+					
 					try {
 						doc = docBean.addDocument(userInfo, procData, doc);
 						listVar.parseAndAddNewItem(String.valueOf(doc.getDocId()));
