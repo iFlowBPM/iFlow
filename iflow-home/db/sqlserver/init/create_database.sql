@@ -2167,4 +2167,11 @@ SET NOCOUNT ON;
 END;
 GO
 
+create table flow_calendar (
+	flowid int,
+	calendar_id int,
+	PRIMARY KEY CLUSTERED (flowid, calendar_id)
+);
+GO
+
 
