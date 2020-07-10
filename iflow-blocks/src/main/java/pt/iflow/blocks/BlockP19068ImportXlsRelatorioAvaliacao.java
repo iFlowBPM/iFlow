@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -32,6 +33,7 @@ public class BlockP19068ImportXlsRelatorioAvaliacao extends Block {
 	public Port portIn, portSuccess, portEmpty, portError;
 
 	private static final String INPUT_DOCUMENT = "inputDocument";
+	private static final String INPUT_CONFIG = "inputConfig";
 	private static final String OUTPUT_ERROR_DOCUMENT = "outputErrorDocument";	
 
 	public BlockP19068ImportXlsRelatorioAvaliacao(int anFlowId, int id, int subflowblockid, String filename) {
@@ -80,19 +82,23 @@ public class BlockP19068ImportXlsRelatorioAvaliacao extends Block {
 		UserManager userManager = BeanFactory.getUserManagerBean();
 
 		String sInputDocumentVar = this.getAttribute(INPUT_DOCUMENT);
+		String sConfigDocumentVar = this.getAttribute(INPUT_CONFIG);
 		String sOutputErrorDocumentVar = this.getAttribute(OUTPUT_ERROR_DOCUMENT);
 
-		if (StringUtilities.isEmpty(sInputDocumentVar) || StringUtilities.isEmpty(sOutputErrorDocumentVar)) {
+		if (StringUtilities.isEmpty(sInputDocumentVar) || StringUtilities.isEmpty(sConfigDocumentVar) || StringUtilities.isEmpty(sOutputErrorDocumentVar)) {
 			Logger.error(login, this, "after", procData.getSignature() + "empty value for attributes");
 			outPort = portError;
 		}
 
 		try {
-			ProcessListVariable docsVar = procData.getList(sInputDocumentVar);
-			Document inputDoc = null;
+			ProcessListVariable docsVar = procData.getList(sInputDocumentVar), configsVar=procData.getList(sConfigDocumentVar) ;
+			Document inputDoc = null,configDoc=null;
 			InputStream inputDocStream = null;
 			String originalNameInputDoc = "";			
-
+			
+			Properties properties = new Properties();
+			properties.load(new ByteArrayInputStream(docBean.getDocument(userInfo, procData, new Integer(configsVar.getItem(0).getValue().toString())).getContent()));
+			
 			docsVar = procData.getList(sInputDocumentVar);
 			inputDoc = docBean.getDocument(userInfo, procData, new Integer(docsVar.getItem(0).getValue().toString()));
 			inputDocStream = new ByteArrayInputStream(inputDoc.getContent());
@@ -100,16 +106,39 @@ public class BlockP19068ImportXlsRelatorioAvaliacao extends Block {
 
 			ArrayList<String> errorList = new ArrayList<>();
 			/**/
-			XSSFWorkbook wb = new XSSFWorkbook(inputDocStream); 
-			XSSFSheet sheet = wb.getSheet("Relatório");
-			Row row = sheet.getRow(4);
-			Cell cell = row.getCell(CellReference.convertColStringToIndex("AA"));
-			
-			System.out.println(cell.getNumericCellValue());
+			XSSFWorkbook wb = new XSSFWorkbook(inputDocStream);
+			XSSFSheet sheet = wb.getSheet(properties.getProperty("sheet"));
+			Integer fields = Integer.valueOf(properties.getProperty("value.total"));
+			for(int i=1; i<=fields; i++){
+				try{
+					Row row = sheet.getRow(Integer.valueOf(properties.getProperty("value."+i+".row")) - 1);
+					Cell cell = row.getCell(CellReference.convertColStringToIndex(properties.getProperty("value."+i+".collumn")));
+					String chave = properties.getProperty("value."+i+".var");
+					switch (cell.getCellTypeEnum()) {
+					case STRING: // field that represents string cell type
+						try {
+							procData.parseAndSet(chave, cell.getStringCellValue());
+						} catch(Exception e){
+							errorList.add("Could not set flow var '" + chave + "' with value '" + cell.getStringCellValue() + "' check if flow var exists or types are compatible");
+						}
+						break;
+					case NUMERIC: // field that represents number cell type
+						try {
+							procData.set(chave, cell.getNumericCellValue());
+						} catch(Exception e){
+							errorList.add("Could not set flow var '" + chave + "' with value '" + cell.getNumericCellValue() + "' check if flow var exists or types are compatible");
+						}
+						break;
+					default:
+					}
+				} catch(Exception e){
+					errorList.add("Could not get data in number: " + i + " , check if property is well defined or document is missing field ");
+				}
+			}
 			/**/
 			// set errors file
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
-			Document doc = saveFileAsDocument("E" + originalNameInputDoc , errorList, userInfo, procData);
+			Document doc = saveFileAsDocument("E" + originalNameInputDoc + ".log", errorList, userInfo, procData);
 			if (doc != null)
 				procData.getList(sOutputErrorDocumentVar).parseAndAddNewItem(String.valueOf(doc.getDocId()));
 
