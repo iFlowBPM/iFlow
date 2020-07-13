@@ -94,6 +94,11 @@
 			<value />
 		</XmlAttribute>
 		<XmlAttribute>
+			<name>inputDatasource</name>
+			<description>Input data source</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
 			<name>outputErrorDocument</name>
 			<description>Output error file</description>
 			<value />
