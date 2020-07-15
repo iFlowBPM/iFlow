@@ -819,7 +819,7 @@ CREATE TABLE user_notifications (
   userid varchar(100) not null,
   notificationid int not null,
   isread INT not null default 0,
-  suspend DATETIME NULL
+  suspend DATETIME NULL,
   picktask smallint,
   showdetail smallint,
   externallink varchar(512),
@@ -1318,6 +1318,77 @@ BEGIN
 END
 GO
 
+
+-- gets next available mid for a given process AND updates modification table.
+CREATE PROCEDURE get_next_mid 
+  @retmid INT OUT,
+  @auserid VARCHAR(256),
+  @aflowid INT,
+  @apid INT,
+  @asubpid INT
+AS
+BEGIN
+  DECLARE @tmp INT
+  SET @retmid = 1
+  SELECT @tmp = count(mid) FROM modification WHERE subpid=@asubpid AND pid=@apid AND flowid=@aflowid
+  IF @tmp > 0
+    SELECT @retmid = max(mid)+1 FROM modification WHERE subpid=@asubpid AND pid=@apid AND flowid=@aflowid
+  INSERT INTO modification (flowid,pid,subpid,mid,mdate,muser) VALUES (@aflowid,@apid,@asubpid,@retmid,GETDATE(),@auserid)
+END
+GO
+
+-- move a process to archive tables
+CREATE PROCEDURE archiveProc
+  @archiveResult INT OUT,
+  @aflowid INT,
+  @apid INT,
+  @aarchivedate DATETIME
+AS
+BEGIN
+  DECLARE @open INT
+ 
+  SET @archiveResult = 0
+
+  BEGIN TRY
+    BEGIN TRANSACTION
+
+    -- check IF process (or any of its subprocesses) is still open
+    SELECT @open = count(1) FROM process WHERE flowid=@aflowid AND pid=@apid AND closed=0
+    
+    IF @open = 0
+	BEGIN
+
+      -- so far so nice, copy to archive
+      INSERT INTO process_archive (flowid,pid,subpid,pnumber,mid,creator,created,currentuser,lastupdate,procdata,closed,archived,idx0,idx1,idx2,idx3,idx4,idx5,idx6,idx7,idx8,idx9,idx10,idx11,idx12,idx13,idx14,idx15,idx16,idx17,idx18,idx19) 
+        SELECT flowid,pid,subpid,pnumber,mid,creator,created,currentuser,lastupdate,procdata,closed,@aarchivedate,idx0,idx1,idx2,idx3,idx4,idx5,idx6,idx7,idx8,idx9,idx10,idx11,idx12,idx13,idx14,idx15,idx16,idx17,idx18,idx19
+                FROM process_history WHERE flowid=@aflowid AND pid=@apid
+
+      INSERT INTO activity_archive (userid,flowid,pid,subpid,type,priority,created,started,archived,description,url,status,notify,delegated,delegateduserid,profilename)
+        SELECT userid,flowid,pid,subpid,type,priority,created,started,archived,description,url,status,notify,delegated,delegateduserid,profilename 
+        FROM activity_history WHERE flowid=@aflowid AND pid=@apid
+  
+      INSERT INTO modification_archive (flowid,pid,subpid,mid,mdate,muser)
+        SELECT flowid,pid,subpid,mid,mdate,muser FROM modification WHERE flowid=@aflowid AND pid=@apid
+
+      -- finally, DELETE FROM history
+      DELETE FROM modification WHERE flowid=@aflowid AND pid=@apid
+      DELETE FROM activity_history WHERE flowid=@aflowid AND pid=@apid
+      DELETE FROM process_history WHERE flowid=@aflowid AND pid=@apid
+      DELETE FROM process WHERE flowid=@aflowid AND pid=@apid
+
+      SET @archiveResult = 1
+    END
+  
+    COMMIT
+  END TRY
+  BEGIN CATCH
+    ROLLBACK
+    SET @archiveResult = -1
+  END CATCH
+END
+GO
+
+
 CREATE PROCEDURE deleteFlow
   @auserid VARCHAR(256),
   @aflowid INT,
@@ -1528,24 +1599,6 @@ BEGIN
 END
 GO
 
--- gets next available mid for a given process AND updates modification table.
-CREATE PROCEDURE get_next_mid 
-  @retmid INT OUT,
-  @auserid VARCHAR(256),
-  @aflowid INT,
-  @apid INT,
-  @asubpid INT
-AS
-BEGIN
-  DECLARE @tmp INT
-  SET @retmid = 1
-  SELECT @tmp = count(mid) FROM modification WHERE subpid=@asubpid AND pid=@apid AND flowid=@aflowid
-  IF @tmp > 0
-    SELECT @retmid = max(mid)+1 FROM modification WHERE subpid=@asubpid AND pid=@apid AND flowid=@aflowid
-  INSERT INTO modification (flowid,pid,subpid,mid,mdate,muser) VALUES (@aflowid,@apid,@asubpid,@retmid,GETDATE(),@auserid)
-END
-GO
-
 --CREATE FUNCTION seq_flow_settings_nextval()
 CREATE PROCEDURE seq_flow_settings_nextval
 AS
@@ -1584,56 +1637,6 @@ BEGIN
 END
 GO
 
--- move a process to archive tables
-CREATE PROCEDURE archiveProc
-  @archiveResult INT OUT,
-  @aflowid INT,
-  @apid INT,
-  @aarchivedate DATETIME
-AS
-BEGIN
-  DECLARE @open INT
- 
-  SET @archiveResult = 0
-
-  BEGIN TRY
-    BEGIN TRANSACTION
-
-    -- check IF process (or any of its subprocesses) is still open
-    SELECT @open = count(1) FROM process WHERE flowid=@aflowid AND pid=@apid AND closed=0
-    
-    IF @open = 0
-	BEGIN
-
-      -- so far so nice, copy to archive
-      INSERT INTO process_archive (flowid,pid,subpid,pnumber,mid,creator,created,currentuser,lastupdate,procdata,closed,archived,idx0,idx1,idx2,idx3,idx4,idx5,idx6,idx7,idx8,idx9,idx10,idx11,idx12,idx13,idx14,idx15,idx16,idx17,idx18,idx19) 
-        SELECT flowid,pid,subpid,pnumber,mid,creator,created,currentuser,lastupdate,procdata,closed,@aarchivedate,idx0,idx1,idx2,idx3,idx4,idx5,idx6,idx7,idx8,idx9,idx10,idx11,idx12,idx13,idx14,idx15,idx16,idx17,idx18,idx19
-                FROM process_history WHERE flowid=@aflowid AND pid=@apid
-
-      INSERT INTO activity_archive (userid,flowid,pid,subpid,type,priority,created,started,archived,description,url,status,notify,delegated,delegateduserid,profilename)
-        SELECT userid,flowid,pid,subpid,type,priority,created,started,archived,description,url,status,notify,delegated,delegateduserid,profilename 
-        FROM activity_history WHERE flowid=@aflowid AND pid=@apid
-  
-      INSERT INTO modification_archive (flowid,pid,subpid,mid,mdate,muser)
-        SELECT flowid,pid,subpid,mid,mdate,muser FROM modification WHERE flowid=@aflowid AND pid=@apid
-
-      -- finally, DELETE FROM history
-      DELETE FROM modification WHERE flowid=@aflowid AND pid=@apid
-      DELETE FROM activity_history WHERE flowid=@aflowid AND pid=@apid
-      DELETE FROM process_history WHERE flowid=@aflowid AND pid=@apid
-      DELETE FROM process WHERE flowid=@aflowid AND pid=@apid
-
-      SET @archiveResult = 1
-    END
-  
-    COMMIT
-  END TRY
-  BEGIN CATCH
-    ROLLBACK
-    SET @archiveResult = -1
-  END CATCH
-END
-GO
 
 INSERT INTO counter VALUES ('pid',0,GETDATE())
 INSERT INTO counter VALUES ('docid',1,GETDATE())
@@ -2011,7 +2014,7 @@ GO
 CREATE INDEX IDX_REPORTING ON dbo.reporting(flowid , pid ,subpid );
 GO
 
-INSERT INTO counter VALUES ('nodekey',0,GETDATE());
+-- INSERT INTO counter VALUES ('nodekey',0,GETDATE());
 
 CREATE TABLE  dbo.active_node (
   nodekey varchar(50) NOT NULL,
@@ -2090,7 +2093,7 @@ begin
 END
 GO
 
-CREATE TABLE  iflow.dbo.calendar (
+CREATE TABLE  calendar (
   [id] int NOT NULL IDENTITY,
   [version] int NOT NULL,
   [name] varchar(256) NOT NULL,
@@ -2111,7 +2114,7 @@ CREATE TABLE  iflow.dbo.calendar (
 GO
 
 
-CREATE TABLE   iflow.dbo.calendar_history (
+CREATE TABLE   calendar_history (
   [flowid] int NOT NULL,
   [pid] int NOT NULL,
   [subpid] int NOT NULL DEFAULT '1',
@@ -2123,7 +2126,7 @@ CREATE TABLE   iflow.dbo.calendar_history (
 GO
 
 
-CREATE TABLE iflow.dbo.serial_code_templates (
+CREATE TABLE serial_code_templates (
   [template] VARCHAR(50) NOT NULL,
   [name] VARCHAR(50) NOT NULL,
   [description] VARCHAR(500),
