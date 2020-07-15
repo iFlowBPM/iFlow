@@ -89,6 +89,21 @@
 			<value />
 		</XmlAttribute>
 		<XmlAttribute>
+			<name>inputConfig</name>
+			<description>Input config</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputDatasource</name>
+			<description>Input data source</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputId</name>
+			<description>Output id</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
 			<name>outputErrorDocument</name>
 			<description>Output error file</description>
 			<value />
