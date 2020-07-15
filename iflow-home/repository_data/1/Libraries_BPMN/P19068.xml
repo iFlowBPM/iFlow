@@ -99,6 +99,11 @@
 			<value />
 		</XmlAttribute>
 		<XmlAttribute>
+			<name>outputId</name>
+			<description>Output id</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
 			<name>outputErrorDocument</name>
 			<description>Output error file</description>
 			<value />

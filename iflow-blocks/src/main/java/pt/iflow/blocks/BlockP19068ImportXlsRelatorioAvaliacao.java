@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -41,6 +43,7 @@ public class BlockP19068ImportXlsRelatorioAvaliacao extends Block {
 	private static final String INPUT_DOCUMENT = "inputDocument";
 	private static final String INPUT_CONFIG = "inputConfig";
 	private static final String INPUT_DATASOURCE = "inputDatasource";
+	private static final String OUTPUT_ID = "outputId";
 	private static final String OUTPUT_ERROR_DOCUMENT = "outputErrorDocument";	
 
 	public BlockP19068ImportXlsRelatorioAvaliacao(int anFlowId, int id, int subflowblockid, String filename) {
@@ -90,10 +93,12 @@ public class BlockP19068ImportXlsRelatorioAvaliacao extends Block {
 
 		String sInputDocumentVar = this.getAttribute(INPUT_DOCUMENT);
 		String sConfigDocumentVar = this.getAttribute(INPUT_CONFIG);
+		String sOutputIdVar = this.getAttribute(OUTPUT_ID);
 		String sOutputErrorDocumentVar = this.getAttribute(OUTPUT_ERROR_DOCUMENT);
 		
 
-		if (StringUtilities.isEmpty(sInputDocumentVar) || StringUtilities.isEmpty(sConfigDocumentVar) || StringUtilities.isEmpty(sOutputErrorDocumentVar)) {
+		if (StringUtilities.isEmpty(sInputDocumentVar) || StringUtilities.isEmpty(sConfigDocumentVar) 
+				|| StringUtilities.isEmpty(sOutputErrorDocumentVar) || StringUtilities.isEmpty(sOutputIdVar)) {
 			Logger.error(login, this, "after", procData.getSignature() + "empty value for attributes");
 			outPort = portError;
 		}
@@ -139,7 +144,7 @@ public class BlockP19068ImportXlsRelatorioAvaliacao extends Block {
 				}
 			}
 			String insertQuery3 = insertQuery1 + ")  " + insertQuery2 + ")";
-			PreparedStatement pst = connection.prepareStatement(insertQuery3);
+			PreparedStatement pst = connection.prepareStatement(insertQuery3, Statement.RETURN_GENERATED_KEYS);
 			pst.setString(1,originalNameInputDoc);
 			pst.setTimestamp(2, new java.sql.Timestamp(new java.util.Date().getTime()));
 			for(int i=1; i<=fields; i++){
@@ -185,6 +190,11 @@ public class BlockP19068ImportXlsRelatorioAvaliacao extends Block {
 			createQuery +=  " PRIMARY KEY (id)) \n";
 			Logger.info(login, this, "after", procData.getSignature() + "create Query: " + createQuery);
 			Logger.info(login, this, "after", procData.getSignature() + "insert Query: " + pst);
+			pst.execute();
+			ResultSet rs = pst.getGeneratedKeys();
+			if (rs.next())
+				procData.set(sOutputIdVar, rs.getInt(1));
+			
 			/**/
 			// set errors file
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss");
