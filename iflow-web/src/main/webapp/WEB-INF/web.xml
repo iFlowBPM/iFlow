@@ -513,6 +513,10 @@ Disabled. Use servlet container defaults
 	  <servlet-name>InicioFlow</servlet-name>
 	  <servlet-class>pt.iflow.servlets.InicioFlowServlet</servlet-class>
   </servlet>
+  <servlet>
+	  <servlet-name>Process</servlet-name>
+	  <servlet-class>pt.iflow.servlets.ProcessServlet</servlet-class>
+  </servlet>
 
    <!-- end of axis -->
 
@@ -835,6 +839,10 @@ Disabled. Use servlet container defaults
    <servlet-mapping>
       <servlet-name>InicioFlow</servlet-name>
       <url-pattern>/startProcess</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>Process</servlet-name>
+      <url-pattern>/processData</url-pattern>
    </servlet-mapping>
    
   <!-- servlet-mapping>
