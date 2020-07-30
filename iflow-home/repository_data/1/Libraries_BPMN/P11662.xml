@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by jmv (.) -->
+
+<XmlLibrary xmlns="http://www.iknow.pt/XmlLibrary" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.iknow.pt/XmlLibrary ../schemas/xmllibrary.xsd">
+	<name>ImportTxtPedidoAvaliacao</name>
+	<version>1.0</version>
+	<author>Uniksystem</author>
+	<description>ImportTxtPedidoAvaliacao</description>
+	<i18nName>library.ImportTxtPedidoAvaliacao.name</i18nName>
+	<i18nDescription>library.ImportTxtPedidoAvaliacao.description</i18nDescription>
+	<XmlBlock>
+		<class>BlockP11662ImportTxtPedidoAvaliacao</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+            <name>portEmpty</name>
+            <description>portEmpty</description>
+            <in_out>out</in_out>
+            <position>
+                <x>48</x>
+                <y>60</y>
+            </position>
+        </XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>inputDocument</name>
+			<description>Input file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputConfigDocument</name>
+			<description>Input config document</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>P11662ImportTxtPedidoAvaliacao</description>
+		<i18n>P11662ImportTxtPedidoAvaliacao</i18n>
+	</XmlBlock>	
+</XmlLibrary>
