@@ -477,6 +477,8 @@ public class Const {
 	public static Boolean AUTHENTICATION_TOKEN = false;	
 	public static String AUTHENTICATION_TOKEN_PARAM_NAME = "";
 	public static String AUTHENTICATION_TOKEN_ENDPOINT = "";
+	public static String NOTIFICATION_ENDPOINT = "";
+	
 
 	static {
 		ALLOWED_LOCALES.add(sDEFAULT_LOCALE_PT_PT);
@@ -969,6 +971,11 @@ public class Const {
 			AUTHENTICATION_TOKEN_ENDPOINT = Setup.getProperty("AUTHENTICATION_TOKEN_ENDPOINT");
 		} catch (Exception e) {
 			AUTHENTICATION_TOKEN_ENDPOINT="";
+		}
+		try {
+			NOTIFICATION_ENDPOINT = Setup.getProperty("NOTIFICATION_ENDPOINT");
+		} catch (Exception e) {
+			NOTIFICATION_ENDPOINT="";
 		}
 		
 	}

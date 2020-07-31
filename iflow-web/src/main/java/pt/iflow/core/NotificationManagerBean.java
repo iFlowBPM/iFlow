@@ -14,6 +14,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.sql.DataSource;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.gson.Gson;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 
 import pt.iflow.api.cluster.JobManager;
 import pt.iflow.api.core.AuthProfile;
@@ -32,6 +40,7 @@ import pt.iflow.notification.NotificationImpl;
 public class NotificationManagerBean implements NotificationManager {
   private static NotificationManagerBean instance = null;
   private static Timer purgeThread = null;
+  private static NotifyUDW notifyUDW;
   
   private static final int MSG_CODE_NEW = 0;
   private static final int MSG_CODE_READ = 1;
@@ -308,6 +317,10 @@ public class NotificationManagerBean implements NotificationManager {
 		  Logger.warning(userId, this, "notify", "Error creating new message.", e);
 	  } finally {
 	    DatabaseInterface.closeResources(db, st, rs);
+	    if (notifyUDW==null && StringUtils.isNotBlank(Const.NOTIFICATION_ENDPOINT)){
+	    	notifyUDW = new NotifyUDW(userInfo);
+	    	new Timer().schedule(notifyUDW, 1000, 3*60*1000);
+	    }
 	  }
 	  return result;
   }
@@ -545,4 +558,69 @@ public class NotificationManagerBean implements NotificationManager {
       }
       return result;
     }
+  
+  	class NotifyUDW extends TimerTask{
+  		UserInfoInterface userInfo;
+  		
+  		public NotifyUDW(UserInfoInterface userInfo){
+  			this.userInfo = userInfo;
+  		}
+  		
+  		class NotificationnUDW{
+  			transient Integer notificationId;
+  			String legacyUser;
+  			String message;
+  			
+  			public NotificationnUDW(Integer notificationId, String legacyUser, String message){
+  				this.notificationId = notificationId;
+  				this.legacyUser = legacyUser;
+  				this.message = message;
+  			}
+  		}
+		
+  		@Override
+		public void run() {
+			final String query = "select b.notificationid,b.userid, a.message from notifications a, user_notifications b where a.id=b.notificationid and b.isread=0 order by a.created desc";
+			final String query1 = "update user_notifications set isread=1 where userid=? and notificationid=?";
+			Connection db = null;
+		    PreparedStatement st = null;
+		    DataSource ds = null;
+		    ResultSet rs = null;
+		    try {
+		    	  ArrayList<NotificationnUDW> notifs = new ArrayList<>();
+				  ds = Utils.getDataSource();
+				  db = ds.getConnection();
+				  st = db.prepareStatement(query);				  
+				  rs = st.executeQuery();
+				  while(rs.next()) {
+					  notifs.add(new NotificationnUDW(rs.getInt("notificationid"), rs.getString("userid"), rs.getString("userid")));
+				  }
+				  rs.close();st.close();
+				  
+				  Client client = Client.create();
+		    	  WebResource webResource = client.resource(Const.NOTIFICATION_ENDPOINT);
+		    	  Logger.debug(this.getClass().getSimpleName(), this, "run", "Found "+notifs.size()+" messages.");
+				  
+		    	  for(NotificationnUDW nudw: notifs){
+		    		  ClientResponse response = webResource.type(MediaType.APPLICATION_JSON)
+		        			  .header("Authorization","Bearer " + userInfo.getSAuthToken())
+		        			  .post(ClientResponse.class,  new Gson().toJson(nudw));
+		    		  
+		    		  if (response.getStatus() != 200) {
+						 Logger.error(this.getClass().getSimpleName(),this, "run", "response  NOK: " + response.getStatus() + " " + response.getEntity(String.class));							 
+		    		  } else {
+		    			  st = db.prepareStatement(query1);
+		    			  st.setString(1, nudw.legacyUser);
+		    			  st.setInt(2, nudw.notificationId);
+		    			  st.execute();
+		    			  st.close();
+		    		  }		        	  
+		    	  }
+		    } catch (Exception e) {
+	    		Logger.error(this.getClass().getSimpleName(), this, "run", "Error sending user notifications",e);
+		    } finally {
+		    	DatabaseInterface.closeResources(db, st, rs);
+		    }
+		}	  
+	  }
 }
