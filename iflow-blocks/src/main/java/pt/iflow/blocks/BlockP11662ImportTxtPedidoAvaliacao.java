@@ -66,9 +66,6 @@ public class BlockP11662ImportTxtPedidoAvaliacao extends Block {
 
 	/**
 	 * Executes the block main action
-	 * 
-	 * @param dataSet
-	 *            a value of type 'DataSet'
 	 * @return the port to go to the next block
 	 */
 	public Port after(UserInfoInterface userInfo, ProcessData procData) {
@@ -204,29 +201,6 @@ public class BlockP11662ImportTxtPedidoAvaliacao extends Block {
 		return outPort;
 	}
 
-	private Document saveFileAsDocument(String filename, ArrayList<?> errorList, UserInfoInterface userInfo,
-			ProcessData procData) throws Exception {
-		if (errorList.isEmpty())
-			return null;
-
-		File tmpFile = File.createTempFile(this.getClass().getName(), ".tmp");
-		BufferedWriter tmpOutput = new BufferedWriter(new FileWriter(tmpFile, true));
-		for (Object aux : errorList) {
-			tmpOutput.write(aux.toString());
-			tmpOutput.newLine();
-		}
-		tmpOutput.close();
-
-		Documents docBean = BeanFactory.getDocumentsBean();
-		Document doc = new DocumentDataStream(0, null, null, null, 0, 0, 0);
-		doc.setFileName(filename);
-		FileInputStream fis = new FileInputStream(tmpFile);
-		((DocumentDataStream) doc).setContentStream(fis);
-		doc = docBean.addDocument(userInfo, procData, doc);
-		tmpFile.delete();
-		return doc;
-	}
-	
 	@Override
 	public String getDescription(UserInfoInterface userInfo, ProcessData procData) {
 		// TODO Auto-generated method stub
