@@ -1,24 +1,18 @@
 package pt.iflow.blocks;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
 
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
 import pt.iflow.api.core.BeanFactory;
-import pt.iflow.api.documents.DocumentDataStream;
 import pt.iflow.api.documents.Documents;
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.processdata.ProcessListVariable;
@@ -27,13 +21,13 @@ import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.connector.document.Document;
 import pt.iknow.utils.StringUtilities;
 
-public class BlockP11662ImportTxtPedidoAvaliacao extends Block {
+public class BlockP19068ImportTxtPedidoAvaliacao extends Block {
 	public Port portIn, portSuccess, portEmpty, portError;
 	
 	private static final String INPUT_DOCUMENT = "inputDocument";
 	private static final String INPUT_CONFIG_DOCUMENT = "inputConfigDocument";
 
-	public BlockP11662ImportTxtPedidoAvaliacao(int anFlowId, int id, int subflowblockid, String filename) {
+	public BlockP19068ImportTxtPedidoAvaliacao(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
 		hasInteraction = false;
 	}
