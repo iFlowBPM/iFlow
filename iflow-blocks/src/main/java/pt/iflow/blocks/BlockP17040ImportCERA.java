@@ -264,6 +264,8 @@ public class BlockP17040ImportCERA extends BlockP17040Import {
 				String[] lineValuesAux = StringUtils.splitPreserveAllTokens(line, "|");
 				String idEnt = StringUtils.defaultIfEmpty(lineValuesAux[0], null);
 				String idEntRel = StringUtils.defaultIfEmpty(lineValuesAux[1], null);
+				if(StringUtils.isBlank(idEntRel))
+					continue;
 				String motivoRel = StringUtils.defaultIfEmpty(lineValuesAux[2], null);
 				String tpEnt = StringUtils.defaultIfEmpty(lineValuesAux[3], null);
 				String LEI = StringUtils.defaultIfEmpty(lineValuesAux[4], null);
