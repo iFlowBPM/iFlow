@@ -7,8 +7,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
@@ -21,13 +25,13 @@ import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.connector.document.Document;
 import pt.iknow.utils.StringUtilities;
 
-public class BlockP19068ImportTxtPedidoAvaliacao extends Block {
+public class BlockP19068ImportCampoUnicoTxtPedidoAvaliacao extends Block {
 	public Port portIn, portSuccess, portEmpty, portError;
 	
 	private static final String INPUT_DOCUMENT = "inputDocument";
 	private static final String INPUT_CONFIG_DOCUMENT = "inputConfigDocument";
 
-	public BlockP19068ImportTxtPedidoAvaliacao(int anFlowId, int id, int subflowblockid, String filename) {
+	public BlockP19068ImportCampoUnicoTxtPedidoAvaliacao(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
 		hasInteraction = false;
 	}
@@ -80,103 +84,113 @@ public class BlockP19068ImportTxtPedidoAvaliacao extends Block {
 		try {
 			ProcessListVariable docsVar = procData.getList(sInputDocumentVar),
 					configsVar = procData.getList(sInputConfigDocumentVar), outVar;
-			
+
 			Document inputDoc = docBean.getDocument(userInfo, procData,	new Integer(docsVar.getItem(0).getValue().toString()));
 			InputStream inputDocStream = new ByteArrayInputStream(inputDoc.getContent());
 			Properties properties = new Properties();
-			properties.load(new ByteArrayInputStream(docBean.getDocument(userInfo, procData, new Integer(configsVar.getItem(0).getValue().toString())).getContent()));
-			
-			String eventCode = properties.getProperty("event.code").trim();
-			Integer fields = Integer.valueOf(properties.getProperty("total"));
+			properties.load(new ByteArrayInputStream(
+					docBean.getDocument(userInfo, procData, new Integer(configsVar.getItem(0).getValue().toString()))
+							.getContent()));
+
+			List<String> fieldValueList = new ArrayList<>();
+			String eventCodes = properties.getProperty("event.codes");
+			String name = properties.getProperty("single.field.name");
+			String dataType = properties.getProperty("single.field.datatype");
+
+			Integer fields = Integer.valueOf(properties.getProperty("single.field.total"));
 			reader = new BufferedReader(new InputStreamReader(inputDocStream));
-			int count = 1;
+			int count = 0;
 
 			while (reader.ready()) {
+				count++;
 				String line = reader.readLine();
 				String lineEventCode = line.substring(117, 121);
-				count++;
 
-				if (!eventCode.equals(lineEventCode)) {
+				if (!eventCodes.contains(lineEventCode)) {
+					Logger.error(login, this, "after", "Line " + count + " does not contain event code (CDEA). ");
 					continue;
 
 				}
 
 				for (int i = 1; i <= fields; i++) {
-					String name = properties.getProperty("name" + i);
-					String dataType = properties.getProperty("datatype" + i);
-					Integer beginPosition = Integer.valueOf(properties.getProperty("begin" + i));
-					Integer endPosition = Integer.valueOf(properties.getProperty("end" + i));
+					String fieldEventCode = properties.getProperty("single.field.event.code" + i);
 
-					String fieldValue = line.substring(beginPosition - 1, endPosition - 1);
+					if (lineEventCode.equals(fieldEventCode)) {
+						Integer beginPosition = Integer.valueOf(properties.getProperty("single.field.begin" + i));
+						Integer endPosition = Integer.valueOf(properties.getProperty("single.field.end" + i));
+						String fieldValue = line.substring(beginPosition - 1, endPosition - 1);
 
-					if (fieldValue == null) {
-						Logger.error(login, this, "after", "Could not get data in number: " + i
-								+ " , check if property is well defined or document is missing/NULL field ");
-						continue;
+						if (fieldValue == null || fieldValue.trim().isEmpty()) {
+							Logger.error(login, this, "after", "Could not get data in number: " + i
+									+ " , check if property is well defined or document is missing/NULL field ");
 
-					} else {
-						switch (dataType) {
+						} else {
+							fieldValueList.add(fieldValue);
 
-						case "TextArray":
-							try {
-								outVar = procData.getList(name);
-								outVar.parseAndAddNewItem(fieldValue);
-							} catch (Exception e) {
-								Logger.error(login, this, "after", "Could not set flow var '" + name + "' with value '"
-										+ fieldValue + "' check if flow var exists or types are compatible", e);
-							}
-							break;
-
-						case "IntegerArray":
-							try {
-								Integer integerValue = Integer.valueOf(fieldValue);
-								outVar = procData.getList(name);
-								outVar.addNewItem(integerValue);
-							} catch (Exception e) {
-								Logger.error(login, this, "after", "Could not set flow var '" + name + "' with value '"
-										+ fieldValue + "' check if flow var exists or types are compatible", e);
-							}
-							break;
-
-						case "FloatArray":
-							try {
-								fieldValue = fieldValue.substring(0, fieldValue.length() - 2) + "."
-										+ fieldValue.substring(fieldValue.length() - 2);
-								outVar = procData.getList(name);
-								outVar.addNewItem(new BigDecimal(fieldValue));
-							} catch (Exception e) {
-								Logger.error(login, this, "after", "Could not set flow var '" + name + "' with value '"
-										+ fieldValue + "' check if flow var exists or types are compatible", e);
-							}
-							break;
-
-						case "DateArray":
-							try {
-								SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-								Date date = formatter.parse(fieldValue);
-								outVar = procData.getList(name);
-								outVar.addNewItem(date);
-							} catch (Exception e) {
-								Logger.error(login, this, "after", "Could not set flow var '" + name + "' with value '"
-										+ fieldValue + "' check if flow var exists or types are compatible", e);
-							}
-							break;
-
-						default:
-							try {
-								outVar = procData.getList(name);
-								outVar.addNewItem(fieldValue);
-							} catch (Exception e) {
-								Logger.error(login, this, "after", "Could not set flow var '" + name + "' with value '"
-										+ fieldValue + "' check if flow var exists or types are compatible", e);
-							}
-							break;
 						}
 					}
 				}
 			}
 			Logger.info(login, this, "after", "Number of readed lines: " + count);
 
+			Set<String> fieldValueSetWithoutDuplicates = new LinkedHashSet<>(fieldValueList);
+			for (String value : fieldValueSetWithoutDuplicates) {
+				switch (dataType) {
+					
+					case "TextArray":
+						try {
+							outVar = procData.getList(name);
+							outVar.parseAndAddNewItem(value);
+						} catch (Exception e) {
+							Logger.error(login, this, "after", "Could not set flow var '" + name + "' with value '" + value
+									+ "' check if flow var exists or types are compatible", e);
+						}
+						break;
+	
+					case "IntegerArray":
+						try {
+							Integer integerValue = Integer.valueOf(value);
+							outVar = procData.getList(name);
+							outVar.addNewItem(integerValue);
+						} catch (Exception e) {
+							Logger.error(login, this, "after", "Could not set flow var '" + name + "' with value '" + value
+									+ "' check if flow var exists or types are compatible", e);
+						}
+						break;
+	
+					case "FloatArray":
+						try {
+							outVar = procData.getList(name);
+							outVar.addNewItem(new BigDecimal(value));
+						} catch (Exception e) {
+							Logger.error(login, this, "after", "Could not set flow var '" + name + "' with value '" + value
+									+ "' check if flow var exists or types are compatible", e);
+						}
+						break;
+	
+					case "DateArray":
+						try {
+							SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+							Date date = formatter.parse(value);
+							outVar = procData.getList(name);
+							outVar.addNewItem(date);
+						} catch (Exception e) {
+							Logger.error(login, this, "after", "Could not set flow var '" + name + "' with value '" + value
+									+ "' check if flow var exists or types are compatible", e);
+						}
+						break;
+	
+					default:
+						try {
+							outVar = procData.getList(name);
+							outVar.addNewItem(value);
+						} catch (Exception e) {
+							Logger.error(login, this, "after", "Could not set flow var '" + name + "' with value '" + value
+									+ "' check if flow var exists or types are compatible", e);
+						}
+						break;
+				}
+			}
 		} catch (Exception e) {
 			Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
 			outPort = portError;
