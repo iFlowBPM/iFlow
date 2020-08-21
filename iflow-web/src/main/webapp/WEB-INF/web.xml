@@ -517,6 +517,14 @@ Disabled. Use servlet container defaults
 	  <servlet-name>Process</servlet-name>
 	  <servlet-class>pt.iflow.servlets.ProcessServlet</servlet-class>
   </servlet>
+  <servlet>
+	  <servlet-name>SetProcess</servlet-name>
+	  <servlet-class>pt.iflow.servlets.SetProcessServlet</servlet-class>
+  </servlet>
+  <servlet>
+	  <servlet-name>DiffProcdata</servlet-name>
+	  <servlet-class>pt.iflow.servlets.DiffProcdataServlet</servlet-class>
+  </servlet>
 
    <!-- end of axis -->
 
@@ -843,6 +851,14 @@ Disabled. Use servlet container defaults
    <servlet-mapping>
       <servlet-name>Process</servlet-name>
       <url-pattern>/processData</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>SetProcess</servlet-name>
+      <url-pattern>/setProcess</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>DiffProcdata</servlet-name>
+      <url-pattern>/diffProcdata</url-pattern>
    </servlet-mapping>
    
   <!-- servlet-mapping>

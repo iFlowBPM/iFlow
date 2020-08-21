@@ -717,7 +717,8 @@ public class Const {
 
 		stmp = Setup.getProperty("SAVE_PROCESSHISTORY_WHEN");
 		if (stmp != null && (stmp.equalsIgnoreCase(SAVE_PROCESSHISTORY_WHEN_ONCHANGE)
-				|| stmp.equalsIgnoreCase(SAVE_PROCESSHISTORY_WHEN_NEVER)))
+				|| stmp.equalsIgnoreCase(SAVE_PROCESSHISTORY_WHEN_NEVER)
+				|| stmp.equalsIgnoreCase(SAVE_PROCESSHISTORY_WHEN_ALLWAYS)))
 			SAVE_PROCESSHISTORY_WHEN = stmp.toUpperCase();
 
 		// interval in setup is in minutes

@@ -79,7 +79,7 @@ public class UnikUserDetailDTO implements Serializable {
     private String email;
 
     
-    private LocalDate birthday;
+    private transient LocalDate birthday;
 
     private String mobilePhone;
 
