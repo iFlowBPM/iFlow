@@ -701,6 +701,12 @@ public class DocumentsBean implements Documents {
         int pid = rs.getInt("pid");
         int subpid = rs.getInt("subpid");
         int length = rs.getInt("length");
+        
+    	if(procData.getFlowId() == -1) {
+			procData.setFlowId(flowid);
+			procData.setPid(pid);
+			procData.setSubPid(subpid);
+		}
 
         String filePath = rs.getString("docurl");
         if (StringUtils.isNotEmpty(filePath)) {
