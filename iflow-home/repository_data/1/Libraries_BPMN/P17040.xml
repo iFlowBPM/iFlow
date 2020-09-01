@@ -7,8 +7,8 @@
 	<version>1.0</version>
 	<author>Uniksystem</author>
 	<description>P17040</description>
-	<i18nName>library.p17040.name</i18nName>
-	<i18nDescription>library.p17040.description</i18nDescription>
+	<i18nName>library.dms.p17040.name</i18nName>
+	<i18nDescription>library.dms.p17040.description</i18nDescription>
 
 	<XmlBlock>
 		<class>BlockP17040ImportCICC</class>

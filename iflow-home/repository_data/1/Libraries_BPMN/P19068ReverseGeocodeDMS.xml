@@ -56,7 +56,7 @@
 		</XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>BlockReverseGeocodeDMS</description>
-		<i18n>BlockReverseGeocodeDMS</i18n>
+		<i18n>library.reversegeocodedms.block.reverseGeocodeDMS</i18n>
 	</XmlBlock>
 	
 	

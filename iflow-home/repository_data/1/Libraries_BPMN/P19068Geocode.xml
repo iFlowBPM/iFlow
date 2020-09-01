@@ -51,7 +51,7 @@
 		</XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>BlockGeocode</description>
-		<i18n>BlockGeocode</i18n>
+		<i18n>library.geocode.block.geocode</i18n>
 	</XmlBlock>
 	
 	
