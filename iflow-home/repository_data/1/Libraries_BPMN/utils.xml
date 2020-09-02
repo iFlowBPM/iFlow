@@ -835,7 +835,7 @@
         </XmlAttribute>
      	<image>bpmn_task.png</image>
         <description>Add element to array</description>
-        <i18n>library.dms.block.add_to_array</i18n>
+        <i18n>library.utils.block.add_to_array</i18n>
     </XmlBlock>
     <XmlBlock>
         <class>BlockRemoveFromArray</class>
@@ -878,7 +878,7 @@
         </XmlAttribute>
      	<image>bpmn_task.png</image>
         <description>Remove element from array</description>
-        <i18n>library.dms.block.remove_from_array</i18n>
+        <i18n>library.utils.block.remove_from_array</i18n>
     </XmlBlock>
     
 </XmlLibrary>

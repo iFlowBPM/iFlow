@@ -65,7 +65,7 @@
         </XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>BlockGetMapsSnapshot</description>
-		<i18n>BlockGetMapsSnapshot</i18n>
+		<i18n>library.getmapssnapshot.block.getmapssnapshot</i18n>
 	</XmlBlock>
 	
 	

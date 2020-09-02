@@ -85,7 +85,7 @@
 		</XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>ImportIndicioFile</description>
-		<i18n>ImportIndicioFile</i18n>
+		<i18n>library.P17080.block.importIndicioFile</i18n>
 	</XmlBlock>
 	
 </XmlLibrary>

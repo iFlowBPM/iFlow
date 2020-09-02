@@ -110,7 +110,7 @@
 		</XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>ImportXlsRelatorioAvaliacao</description>
-		<i18n>ImportXlsRelatorioAvaliacao</i18n>
+		<i18n>library.P19068.block.ImportXlsRelatorioAvaliacao</i18n>
 	</XmlBlock>	
 	
 	<XmlBlock>
@@ -149,7 +149,7 @@
 		</XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>MergeGeDoc</description>
-		<i18n>MergeGeDoc</i18n>
+		<i18n>library.P19068.block.MergeGeDoc</i18n>
 	</XmlBlock>
 	
 	<XmlBlock>
@@ -212,7 +212,7 @@
 		</XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>ImportTxtParamsPedidoAvaliacao</description>
-		<i18n>ImportTxtParamsPedidoAvaliacao</i18n>
+		<i18n>library.P19068.block.ImportTxtParamsPedidoAvaliacao</i18n>
 	</XmlBlock>	
 	
 	<XmlBlock>
@@ -265,7 +265,7 @@
 		</XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>ImportCampoUnicoTxtPedidoAvaliacao</description>
-		<i18n>ImportCampoUnicoTxtPedidoAvaliacao</i18n>
+		<i18n>library.P19068.block.ImportCampoUnicoTxtPedidoAvaliacao</i18n>
 	</XmlBlock>	
 	
 </XmlLibrary>
