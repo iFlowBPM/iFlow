@@ -177,8 +177,8 @@
             <description>portEmpty</description>
             <in_out>out</in_out>
             <position>
-                <x>48</x>
-                <y>60</y>
+                <x>102</x>
+                <y>30</y>
             </position>
         </XmlPort>
 		<XmlPort>
@@ -240,8 +240,8 @@
             <description>portEmpty</description>
             <in_out>out</in_out>
             <position>
-                <x>48</x>
-                <y>60</y>
+                <x>102</x>
+                <y>30</y>
             </position>
         </XmlPort>
 		<XmlPort>
