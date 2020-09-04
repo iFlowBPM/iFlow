@@ -10,6 +10,7 @@ public abstract class AdminNavConsts {
   public static final int LOGS = 6;
   public static final int DATASOURCES = 7;
   public static final int FLOW_SCHEDULE = 8;
+  public static final int FLOW_SUBFLOW = 9;
 
   public static final int SYSTEM_PROPERTIES = 10;
   public static final int SYSTEM_INTERFACE = 11;

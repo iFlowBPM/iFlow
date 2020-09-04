@@ -29,6 +29,8 @@ String flowDesc = xmlFlow.getDescription();
 
 Logger.debugJsp(userInfo.getUtilizador(), "doupload_flow.jsp", "flowName: " + flowName);
 Logger.debugJsp(userInfo.getUtilizador(), "doupload_flow.jsp", "flowDesc: " + flowDesc);
+//Logger.debugJsp(userInfo.getUtilizador(), "doupload_flow.jsp", "isSubflow: " + isSubflow);
+
 
 // write flow to DB
 FlowHolder holder = BeanFactory.getFlowHolderBean();
