@@ -259,6 +259,55 @@ public class FlowHolderBean implements FlowHolder {
     }
     
     /**
+     * Return the subflow file name
+     * 
+     * @param userInfo
+     * @param subflowId
+     * @return SubFlow file name or null if not found
+     */
+    public synchronized String getSubFlowFileName(UserInfoInterface userInfo,
+            int flowId) {
+        // check if this flow is cached
+        if (hasCachedFlow(userInfo, flowId)) {
+            IFlowData theFlow = getCachedFlow(userInfo, flowId); // only if the
+            // user is the
+            // same user
+            return theFlow.getFileName();
+        }
+        
+        Connection db = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        String result = null;
+        
+        // check if flow exists in db and is disabled
+        try {
+            db = Utils.getDataSource().getConnection();
+            
+            // check if flow exists in db and is disabled
+            
+            String stmp = "select flowfile from sub_flow where flowid=? and organizationid=?";
+            pst = db.prepareStatement(stmp);
+            pst.setInt(1, flowId);
+            pst.setString(2, userInfo.getOrganization());
+            rs = pst.executeQuery();
+            
+            if (rs.next()) {
+                result = rs.getString("flowfile");
+            }
+            rs.close();
+            pst.close();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseInterface.closeResources(db, pst, rs);
+        }
+        
+        return result;
+    }
+    
+    /**
      * Return a list of all flows available to the user organization. <br>
      * <em>Do not return template flows!</em>
      * 
@@ -456,6 +505,135 @@ public class FlowHolderBean implements FlowHolder {
             retObj = altmp.toArray(new FlowData[altmp.size()]);
         } catch (Exception e) {
             Logger.error(userInfo.getUtilizador(), this, "listFlows",
+                    "exception (" + e.getClass().getName() + ") caught: "
+                            + e.getMessage(), e);
+        } finally {
+            DatabaseInterface.closeResources(db, pst, rs);
+        }
+        
+        return retObj;
+    }
+    
+    /**
+     * Return a list of all flows available to the user organization. <br>
+     * <em>Do not return template flows!</em>
+     * 
+     * @param userInfo
+     * @return
+     */
+    public IFlowData[] listAllSubFlows(UserInfoInterface userInfo) {
+        return listAllSubFlows(userInfo, nLIST_ALL, null, null, false);
+    }
+    
+    public IFlowData[] listAllSubFlows(UserInfoInterface userInfo, FlowType type) {
+        return listAllSubFlows(userInfo, nLIST_ALL, type, null, false);
+    }
+    
+    private synchronized FlowData[] listAllSubFlows(UserInfoInterface userInfo,
+            int anSelection, FlowType type, FlowType[] typeExcluded, boolean showOnlyFlowsToBePresentInMenu) {
+        FlowData[] retObj = new FlowData[] {};
+
+        ArrayList<FlowScheduleDataInterface> listOfFlowJobs =  new ArrayList<FlowScheduleDataInterface>();
+        try {
+          AdministrationFlowScheduleInterface adminFlowScheduleBean = BeanFactory.getAdministrationFlowScheduleBean();
+          listOfFlowJobs = adminFlowScheduleBean.getScheduledFlowsJobs(userInfo, null); // o segundo parametro ao ser null devolve os agendamentos de todos os utilizadores
+        } catch (Exception e) {
+          Logger.error(userInfo.getUtilizador(), this, "listAllSubFlows", "Unhindered error", e);
+        }
+
+        DataSource ds = null;
+        Connection db = null;
+        ResultSet rs = null;
+        PreparedStatement pst=null;
+        
+        FlowData fd = null;
+        
+        try {
+            
+            ds = Utils.getDataSource();
+            db = ds.getConnection();
+            rs = null;
+
+            StringBuffer sQuery = new StringBuffer();
+
+            sQuery.append("select ");
+            if (showOnlyFlowsToBePresentInMenu){
+              sQuery.append("Distinct ");
+            }
+            sQuery.append("F.flowid, F.flowname, F.flowfile, F.organizationid, F.created, F.modified ");
+            sQuery.append("from sub_flow F");
+            if (showOnlyFlowsToBePresentInMenu){
+              sQuery.append(", flow_settings FS");
+            }
+            sQuery.append(" where organizationid=? ");
+           
+            if (showOnlyFlowsToBePresentInMenu){
+              sQuery.append(" and F.flowid = FS.flowid");
+              sQuery.append(" and FS.name like ? ");
+              sQuery.append(" and (");
+              sQuery.append(" FS.value is null ");
+              sQuery.append(" or ");
+              sQuery.append(" FS.value like ? ");
+              sQuery.append(" )");
+            }
+            sQuery.append(" order by F.flowid");
+            
+            pst = db.prepareStatement(sQuery.toString());
+            int counter = 1;
+            pst.setString(counter++, userInfo.getOrganization());
+            if (anSelection != nLIST_ALL)
+            	pst.setInt(counter++, (anSelection == nLIST_ONLINE ? 1 : 0));
+            if(null != type)
+            	pst.setString(counter++,type.getCode());
+            if(null != typeExcluded)
+                for (int i=0; i<typeExcluded.length;i++)
+                	pst.setString(counter++, typeExcluded[i].getCode());
+            if (showOnlyFlowsToBePresentInMenu){
+            	pst.setString(counter++, Const.sFLOW_MENU_ACCESSIBLE);
+            	pst.setString(counter++, Const.sFLOW_MENU_ACCESSIBLE_YES);
+            }
+            rs = pst.executeQuery();
+
+            ArrayList<FlowData> altmp = new ArrayList<FlowData>();
+            while (rs.next()) {
+                int flowId = rs.getInt("flowid");
+                FlowSetting fs = BeanFactory.getFlowSettingsBean().getFlowSetting(flowId, Const.sAPPLICATION_SETTING);
+  	          	if(!userInfo.isOrgAdmin() && fs!=null && !StringUtils.isBlank(fs.getValue()) && !StringUtils.equals(userInfo.getApplication(), fs.getValue()))
+  	          		continue;
+                if (hasCachedFlow(userInfo, flowId)) {
+                    fd = getCachedFlow(userInfo, flowId);
+                } else {
+                    fd = new FlowData(flowId, 
+                        rs.getString("flowname"), 
+                        rs.getString("flowfile"), 
+                        true,
+                        rs.getString("organizationid"), 
+                        rs.getTimestamp("created").getTime(), 
+                        rs.getTimestamp("modified").getTime(),
+                        0,
+                        ""                       
+                    );
+                }
+
+                try{
+                  if (listOfFlowJobs !=null && listOfFlowJobs.size() > 0) {
+                    for (FlowScheduleDataInterface flowJob:listOfFlowJobs){
+                      if (flowJob.getFlowId() == flowId){
+                        fd.setHasSchedules(true);
+                        break;
+                      }
+                    }
+                  }
+                } catch (Exception e) {
+                  Logger.error(userInfo.getUtilizador(), this, "listAllSubFlows", "Unhindered error", e);
+                }
+
+                altmp.add(fd);
+            } // while
+            
+            retObj = altmp.toArray(new FlowData[altmp.size()]);
+        } catch (Exception e) {
+            Logger.error(userInfo.getUtilizador(), this, "listAllSubFlows",
                     "exception (" + e.getClass().getName() + ") caught: "
                             + e.getMessage(), e);
         } finally {
@@ -1748,6 +1926,102 @@ public class FlowHolderBean implements FlowHolder {
             } catch (Exception e1) {
             }
             Logger.error(userid, this, "deleteFlow", "exception caught: "
+                    + e.getMessage());
+            retObj = false;
+        } finally {
+            DatabaseInterface.closeResources(db, pst, rs);
+        }
+        
+        return retObj;
+    }
+    
+    /**
+     * Remove a subflow from database
+     * 
+     * @param userInfo
+     * @param asFile
+     * @param abProcs
+     *            If true, remove processes
+     * @return
+     */
+    public boolean deleteSubFlow(UserInfoInterface userInfo, String asFile,
+            boolean abProcs) {
+        if (!userInfo.isOrgAdmin()) {
+            Logger.debug(userInfo.getUtilizador(), this, "updateFlowData",
+                    "No Adm privilege!!");
+            // return "No Adm privilege!!";
+            return false;
+        }
+        
+        boolean retObj = false;
+        
+        String userid = userInfo.getUtilizador();
+        
+        Logger.trace(this, "deleteFlow", userid + " call with asFile=" + asFile
+                + ",abProcs=" + abProcs);
+        
+        // se abProcs, apagar flow e estruturas e processos associados;
+        // se !abProcs, mover processos abertos para historico e fazer disable
+        // do flow
+        // mover flow (xml file) do repositorio de offline para deleted
+        // verificar se e preciso apagar o flow da cache do flowholder ou de
+        // outra cache qualquer.
+        
+        DataSource ds = null;
+        Connection db = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        
+        int nFlowId = -1;
+        
+        try {
+            
+            ds = Utils.getDataSource();
+            db = ds.getConnection();
+            db.setAutoCommit(false);
+            
+            pst = db.prepareStatement("select flowid from sub_flow where flowfile=? and organizationid=?");
+            pst.setString(1, asFile);
+            pst.setString(2, userInfo.getOrganization());
+            
+            rs = pst.executeQuery();
+            
+            boolean exists = false;
+            
+            if (rs.next()) {
+                exists = true;
+                // flow already exists
+                nFlowId = rs.getInt("flowid");
+            }
+            rs.close();
+            pst.close();
+            rs = null;
+            pst = null;
+            
+            if (!exists) {
+                throw new Exception("No Subflow for FlowFile=" + asFile);
+            }
+            //DBQueryManager.getQuery("Flow.delete")
+            pst = db.prepareStatement("delete from sub_flow where flowid=? and flowfile=? and organizationid=? ");            
+            pst.setInt(1, nFlowId);
+            pst.setString(2, asFile);
+            pst.setString(3, userInfo.getOrganization());
+          
+            
+            pst.executeUpdate();
+            
+            pst.close();
+            
+            // db handled.. now handle repository
+            db.commit();
+            retObj = true;
+        } catch (Exception e) {
+            try {
+                if (db != null)
+                    db.rollback();
+            } catch (Exception e1) {
+            }
+            Logger.error(userid, this, "deleteSubflow", "exception caught: "
                     + e.getMessage());
             retObj = false;
         } finally {

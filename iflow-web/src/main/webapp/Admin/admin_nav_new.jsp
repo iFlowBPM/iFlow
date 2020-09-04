@@ -136,6 +136,13 @@
 				</a>
 			</li>
 			<li>
+				<a id="li_a_admin_<%=AdminNavConsts.FLOW_SUBFLOW%>" 
+				class="toolTipItemLink li_link"
+				title="<%=messages.getString("admin_nav.section.flows.tooltip.sub_flow")%>" href="javascript:selectedItem('admin', <%=AdminNavConsts.FLOW_SUBFLOW%>);tabber_save(4, '', '', 'Admin/flow_subflow.jsp');">
+					<%=messages.getString("admin_nav.section.flows.link.sub_flow")%>
+				</a>
+			</li>
+			<li>
 				<a id="li_a_admin_<%=AdminNavConsts.FLOW_MENUS%>" 
 				class="toolTipItemLink li_link"
 				title="<%=messages.getString("admin_nav.section.flows.tooltip.menus")%>" href="javascript:selectedItem('admin', <%=AdminNavConsts.FLOW_MENUS%>);tabber_save(4, '', '', 'Admin/flow_menu_edit');">

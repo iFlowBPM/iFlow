@@ -23,6 +23,15 @@ public interface FlowHolder {
    * @return Flow file name or null if not found
    */
   public abstract String getFlowFileName(UserInfoInterface userInfo, int flowId);
+  
+  /**
+   * Return the subflow file name
+   * 
+   * @param userInfo
+   * @param subflowId
+   * @return SubFlow file name or null if not found
+   */
+  public abstract String getSubFlowFileName(UserInfoInterface userInfo, int flowId);
 
   /**
    * Return a list of all flows available to the user organization.
@@ -147,6 +156,17 @@ public interface FlowHolder {
    * @return
    */
   public abstract String[] listSubFlows(UserInfoInterface userInfo);
+  
+  /**
+   * Return a list of all subflows available to the user organization.
+   * <br>
+   * <em>Do not return template flows!</em>
+   * 
+   * @param userInfo
+   * @return
+   */
+  public abstract IFlowData[] listAllSubFlows(UserInfoInterface userInfo);
+  public abstract IFlowData[] listAllSubFlows(UserInfoInterface userInfo, FlowType type);
 
   /**
    * Return a list of flow templates available to the user.
@@ -333,6 +353,16 @@ public interface FlowHolder {
 //
 //  public abstract void removeFlow(UserInfo userInfo, int anFlowId);
 //
+  
+  /**
+   * Remove a subflow from database
+   * 
+   * @param userInfo
+   * @param asFile
+   * @param abProcs If true, remove processes
+   * @return
+   */
+  public abstract boolean deleteSubFlow(UserInfoInterface userInfo, String asFile, boolean abProcs);
   
   /**
    * Remove a flow template from database
