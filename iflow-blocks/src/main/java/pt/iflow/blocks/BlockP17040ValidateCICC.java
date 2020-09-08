@@ -270,7 +270,7 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 					"select justComp.id from justComp where infCompC_id = {0} ",
 					new Object[] { infCompC_id });	
 			
-			int CC039Aux=0, CC040Aux=0;
+			int CC039Aux=0, CC040AuxErro=0, CC040AuxOk=0;
 			for(Integer justComp_id: justCompIdList){
 				
 				HashMap<String, Object> justCompValues = fillAtributtes(null, connection, userInfo,
@@ -294,10 +294,10 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 					else if(!StringUtils.equals("1000", tpJustif) && LTV!=null)
 						CC039Aux += 1;					
 					//CC040
-					if (StringUtils.equals("2000", tpJustif) && DSTIChoq != null && DSTIChoq.compareTo(new BigDecimal("50")) == 1)
-						CC040Aux *=0;
-					else if(!StringUtils.equals("2000", tpJustif) && DSTIChoq != null && DSTIChoq.compareTo(new BigDecimal("50")) != 1)
-						CC040Aux +=1;						
+					if (DSTIChoq != null && DSTIChoq.compareTo(new BigDecimal("50")) == 1 && !StringUtils.equals("2000", tpJustif))
+						CC040AuxErro += 1;
+					else if (DSTIChoq != null && DSTIChoq.compareTo(new BigDecimal("50")) == 1 && StringUtils.equals("2000", tpJustif))
+						CC040AuxOk += 1;						
 					
 					String tpInst = (String) infInstValues.get("tpInst");
 					if(justif != null) {
@@ -319,7 +319,7 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 			
 			if(CC039Aux>0)
 				result.add(new ValidationError("CC039", "justComp", "tpJustif", idCont, -1, "1000"));
-			if(CC040Aux>0)
+			if(CC040AuxErro>0 /*&& CC040AuxOk==0*/)
 				result.add(new ValidationError("CC040", "justComp", "tpJustif", idCont, -1, "2000"));
 		
 		for(ValidationError ve: result)
