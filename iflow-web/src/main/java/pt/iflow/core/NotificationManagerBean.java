@@ -317,7 +317,7 @@ public class NotificationManagerBean implements NotificationManager {
 		  Logger.warning(userId, this, "notify", "Error creating new message.", e);
 	  } finally {
 	    DatabaseInterface.closeResources(db, st, rs);
-	    if (notifyUDW==null && StringUtils.isNotBlank(Const.NOTIFICATION_ENDPOINT)){
+	    if (StringUtils.isNotBlank(Const.NOTIFICATION_ENDPOINT)){
 	    	notifyUDW = new NotifyUDW(userInfo);
 	    	new Timer().schedule(notifyUDW, 1000, 3*60*1000);
 	    }

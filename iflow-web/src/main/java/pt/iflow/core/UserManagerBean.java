@@ -46,6 +46,7 @@ import pt.iflow.api.utils.UserInfoFactory;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
 import pt.iflow.errors.ErrorHandler;
+import pt.iflow.udw.LegacyUserSync;
 import pt.iflow.userdata.views.OrganizationView;
 import pt.iflow.userdata.views.OrganizationalUnitView;
 import pt.iflow.userdata.views.UserView;
@@ -212,6 +213,7 @@ public class UserManagerBean
       }
       rs.close();
       result = true;
+      LegacyUserSync.create(userInfo, userId);
       if ((Const.bUSE_EMAIL) && (invite))
       {
         pst = db.prepareStatement("insert into user_activation (USERID,ORGANIZATIONID,UNITID,CODE) values (?,?,?,?)");
