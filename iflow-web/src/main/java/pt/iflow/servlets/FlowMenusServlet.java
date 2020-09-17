@@ -31,6 +31,7 @@ import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
 
+
 /**
  * Servlet implementation class for Servlet: FlowMenusServlet
  *
@@ -41,6 +42,10 @@ import pt.iflow.api.utils.Utils;
  *  url-pattern="/Admin/flow_menu_add"
  *@web.servlet-mapping
  *  url-pattern="/Admin/flow_menu_del"
+ *@web.servlet-mapping
+ *  url-pattern="/Admin/flow_menu_up"
+ *@web.servlet-mapping
+ *  url-pattern="/Admin/flow_menu_down"
  */
 public class FlowMenusServlet  extends HttpServlet implements Servlet {
   static final long serialVersionUID = 1L;
@@ -176,10 +181,10 @@ public class FlowMenusServlet  extends HttpServlet implements Servlet {
 
       // limpa o HTML do unserInfo
       userInfo.setFlowPageHTML("");
-    }
-
+    }   
+   
   }
-  
+    
   
   private boolean addMenuItemAction(HttpServletRequest request, UserInfoInterface userInfo) {
     boolean bAdminUser = userInfo.isOrgAdmin();
@@ -360,6 +365,119 @@ public class FlowMenusServlet  extends HttpServlet implements Servlet {
   }
   
   
+  private void moveItemUpMenusAction(HttpServletRequest request, UserInfoInterface userInfo) {
+      if (!userInfo.isOrgAdmin()) {
+        return;
+      }
+
+      DataSource ds = null;
+      Connection db = null;
+      PreparedStatement st = null;
+      ResultSet rs = null;
+      
+      //String aux = null;
+      String stmp = request.getParameter("toMoveUp");
+      String parent = request.getParameter("toParent");
+      
+      if (stmp != null && !stmp.equals("")) {
+        int id = Integer.parseInt(stmp);
+        int parentId = Integer.parseInt(parent);
+        try {
+          ds = Utils.getDataSource();
+          db = ds.getConnection();
+          
+          int previous = 0;
+                    
+          st = db.prepareStatement("select linkid from links_flows where parentid = ? and organizationid=?");
+          st.setInt(1, parentId);
+          st.setString(2, userInfo.getCompanyID());
+          rs = st.executeQuery();
+          
+          while (rs.next()) {
+              int linkid = rs.getInt("linkid");
+              if (linkid == id) {
+            	  break;
+              }else {
+            	  previous = linkid;  
+              }
+          }
+          
+          if(previous != 0) {
+        	  st = db.prepareStatement("update links_flows as l1, links_flows as l2 set l1.flowid = l2.flowid, l1.name = l2.name, l1.url = l2.url, l2.flowid = l1.flowid, l2.name = l1.name, l2.url = l1.url where l1.linkid = ? and l2.linkid = ? ");  
+              st.setInt(1, id);
+              st.setInt(2, previous);
+              st.executeUpdate();
+          }
+
+        } catch (SQLException sqle) {
+          sqle.printStackTrace();
+        } finally {
+          Utils.closeDB(db,st,rs);
+        }
+
+        // limpa o HTML do unserInfo
+        userInfo.setFlowPageHTML("");
+      }
+  }
+  
+  
+  private void moveItemDownMenusAction(HttpServletRequest request, UserInfoInterface userInfo) {
+      if (!userInfo.isOrgAdmin()) {
+        return;
+      }
+
+      DataSource ds = null;
+      Connection db = null;
+      PreparedStatement st = null;
+      ResultSet rs = null;
+      
+      //String aux = null;
+      String stmp = request.getParameter("toMoveDown");
+      String parent = request.getParameter("toParent");
+      
+      if (stmp != null && !stmp.equals("")) {
+        int id = Integer.parseInt(stmp);
+        int parentId = Integer.parseInt(parent);
+        try {
+          ds = Utils.getDataSource();
+          db = ds.getConnection();
+          
+          int next = 0;
+                    
+          st = db.prepareStatement("select linkid from links_flows where parentid = ? and organizationid=?");
+          st.setInt(1, parentId);
+          st.setString(2, userInfo.getCompanyID());
+          rs = st.executeQuery();
+          boolean teste = false;
+          while (rs.next()) {
+              int linkid = rs.getInt("linkid");
+              next = linkid; //corrente
+              if(teste == true) {
+            	  break;
+              }else if (linkid == id) {
+            	  teste = true;
+              }
+          }
+          
+          if(next != 0) {
+        	  st = db.prepareStatement("update links_flows as l1, links_flows as l2 set l1.flowid = l2.flowid, l1.name = l2.name, l1.url = l2.url, l2.flowid = l1.flowid, l2.name = l1.name, l2.url = l1.url where l1.linkid = ? and l2.linkid = ? ");  
+              st.setInt(1, id);
+              st.setInt(2, next);
+              st.executeUpdate();
+          }
+
+        } catch (SQLException sqle) {
+          sqle.printStackTrace();
+        } finally {
+          Utils.closeDB(db,st,rs);
+        }
+
+        // limpa o HTML do unserInfo
+        userInfo.setFlowPageHTML("");
+      }
+  }
+  
+  
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String name = request.getServletPath();
@@ -377,9 +495,17 @@ public class FlowMenusServlet  extends HttpServlet implements Servlet {
           gotoPage = "/Admin/flow_menu_add.jsp";
         }
       } else {
-        removeMenusAction(request, userInfo);
-        editMenusAction(request, userInfo);
-        gotoPage = "/Admin/flow_menu_edit.jsp";
+		  String up = request.getParameter("toMoveUp");
+		  String down = request.getParameter("toMoveDown");
+		  if(up != null && !up.equals("")) {
+			  moveItemUpMenusAction(request, userInfo);
+		  }else if(down != null && !down.equals("")) {
+			  moveItemDownMenusAction(request, userInfo);
+		  }
+		  
+		removeMenusAction(request, userInfo);
+		editMenusAction(request, userInfo);
+		gotoPage = "/Admin/flow_menu_edit.jsp";
       }
     }
     forward(request, response, gotoPage);
