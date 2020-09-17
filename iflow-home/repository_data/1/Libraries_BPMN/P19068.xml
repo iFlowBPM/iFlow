@@ -177,8 +177,8 @@
             <description>portEmpty</description>
             <in_out>out</in_out>
             <position>
-                <x>48</x>
-                <y>60</y>
+                <x>102</x>
+                <y>30</y>
             </position>
         </XmlPort>
 		<XmlPort>
@@ -240,8 +240,8 @@
             <description>portEmpty</description>
             <in_out>out</in_out>
             <position>
-                <x>48</x>
-                <y>60</y>
+                <x>102</x>
+                <y>30</y>
             </position>
         </XmlPort>
 		<XmlPort>
@@ -267,5 +267,54 @@
 		<description>ImportCampoUnicoTxtPedidoAvaliacao</description>
 		<i18n>library.P19068.block.ImportCampoUnicoTxtPedidoAvaliacao</i18n>
 	</XmlBlock>	
+	
+	<XmlBlock>
+		<class>BlockP19068ExportFixedWidthTxt</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>inputDocument</name>
+			<description>Export properties</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputDocument</name>
+			<description>Output file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputDocumentName</name>
+			<description>Output file name</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>ExportFixedWidthTxt</description>
+		<i18n>ExportFixedWidthTxt</i18n>
+	</XmlBlock>
 	
 </XmlLibrary>

@@ -903,6 +903,8 @@ public class FlowHolderBean implements FlowHolder {
             String query = "select flowid,flowversion from flow where flowfile=? and organizationid=?";
             
             Logger.debug(userInfo.getUtilizador(), this, "insertOrUpdateFlow",
+                    "Flow byte length: " + data.length);
+            Logger.debug(userInfo.getUtilizador(), this, "insertOrUpdateFlow",
                     "Query1: " + query);
             pst = db.prepareStatement(query);
             pst.setString(1, file);
@@ -959,13 +961,18 @@ public class FlowHolderBean implements FlowHolder {
                 pst.setBinaryStream(5, new ByteArrayInputStream(data),
                         data.length);
                 pst.setTimestamp(6, now);
-                pst.executeUpdate();
+                int insertedRows = pst.executeUpdate();
+                Logger.debug(userInfo.getUtilizador(), this,
+                        "insertOrUpdateFlow", "insertedRows: " + insertedRows);
                 rs = pst.getGeneratedKeys();
                 if (rs.next()) {
                     result.version = 1;
                     result.created = true;
                     flowid = rs.getInt(1);
                     copyToHistory = true;
+                    
+                    Logger.debug(userInfo.getUtilizador(), this,
+                            "insertOrUpdateFlow", "generated flowid: " + flowid);
                 }
                 rs.close();
                 pst.close();
@@ -994,9 +1001,13 @@ public class FlowHolderBean implements FlowHolder {
             db.commit();
             result.success = true;
         } catch (Exception e) {
+        	Logger.error(userInfo.getUtilizador(), this,
+                    "insertOrUpdateFlow", " exception caught: ", e);
             try {
                 db.rollback();
             } catch (SQLException e1) {
+            	Logger.error(userInfo.getUtilizador(), this,
+                        "insertOrUpdateFlow", " exception att rollback caught: ", e1);
                 e1.printStackTrace();
             }
             e.printStackTrace();
