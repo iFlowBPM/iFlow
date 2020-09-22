@@ -525,6 +525,14 @@ Disabled. Use servlet container defaults
 	  <servlet-name>DiffProcdata</servlet-name>
 	  <servlet-class>pt.iflow.servlets.DiffProcdataServlet</servlet-class>
   </servlet>
+  <servlet>
+	  <servlet-name>User</servlet-name>
+	  <servlet-class>pt.iflow.servlets.UserServlet</servlet-class>
+  </servlet>
+  <servlet>
+	  <servlet-name>Metadata</servlet-name>
+	  <servlet-class>pt.iflow.servlets.MetadataServlet</servlet-class>
+  </servlet>
 
    <!-- end of axis -->
 
@@ -859,6 +867,14 @@ Disabled. Use servlet container defaults
    <servlet-mapping>
       <servlet-name>DiffProcdata</servlet-name>
       <url-pattern>/diffProcdata</url-pattern>
+   </servlet-mapping>
+   <servlet-mapping>
+      <servlet-name>User</servlet-name>
+      <url-pattern>/user</url-pattern>
+   </servlet-mapping>Metadata
+   <servlet-mapping>
+      <servlet-name>Metadata</servlet-name>
+      <url-pattern>/metadata</url-pattern>
    </servlet-mapping>
    
   <!-- servlet-mapping>
