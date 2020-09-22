@@ -147,6 +147,16 @@
 			<description>Input file</description>
 			<value />
 		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputKeysList</name>
+			<description>Input keys list</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputValuesList</name>
+			<description>Input values list</description>
+			<value />
+		</XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>MergeGeDoc</description>
 		<i18n>library.P19068.block.MergeGeDoc</i18n>
