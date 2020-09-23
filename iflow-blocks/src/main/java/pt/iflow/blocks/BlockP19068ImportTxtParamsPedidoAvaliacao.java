@@ -234,7 +234,7 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 
 							}
 							createInstanceFieldsMap(totalFieldsFromConfigFile, valorInputIdPedidoAvaliacao, name);
-							setProcDataValues(procData, login, name, fieldDataType, fieldValueFromTxt);
+							setProcDataValues(procData, login, name, fieldDataType, fieldValueFromTxt.trim());
 						}
 					}
 				}
