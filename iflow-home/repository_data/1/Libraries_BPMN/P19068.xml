@@ -157,6 +157,11 @@
 			<description>Input values list</description>
 			<value />
 		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputDocumentaryArea</name>
+			<description>Input documentary area</description>
+			<value />
+		</XmlAttribute>
 		<image>bpmn_task.png</image>
 		<description>MergeGeDoc</description>
 		<i18n>library.P19068.block.MergeGeDoc</i18n>
