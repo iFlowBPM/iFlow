@@ -606,7 +606,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 					 * 
 					 */
 
-					List<ArrayList<Document>> listOfList = new ArrayList<ArrayList<Document>>();
+					
 					ArrayList<Document> documentToIntegrateList = new ArrayList<>();
 					List<String> indexKeyList = new ArrayList<>();
 					List<String> indexValuesList = new ArrayList<>();
@@ -636,9 +636,14 @@ public class DocumentsP19068Bean extends DocumentsBean {
 									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
 											"Document data for docid number: " + rst.getInt("docid")
 													+ " was successfully obtained.");
-									totalFilesSize = checkSizeAndNumberOfFiles(listOfList, documentToIntegrateList,
-											indexKeyList, indexValuesList, largeFileList, documentaryAreaCodesList,
-											megabyte, maxFileSizeMegabyte, totalFilesSize, rst, doc);
+									documentToIntegrateList.add(doc);
+									
+									// Por ficheiro, adiciona uma entrada(composta por CSV) em cada uma das listas
+									// indexKeyList e indexValuesList
+									indexKeyList.add(rst.getString("index_keys_list"));
+									indexValuesList.add(rst.getString("index_values_list"));
+									documentaryAreaCodesList.add(rst.getString("documentary_area"));
+
 								} else {
 									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
 											"Document data for docid number: " + rst.getInt("docid")
@@ -654,10 +659,14 @@ public class DocumentsP19068Bean extends DocumentsBean {
 									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
 											"Document data for docid number: " + rst.getInt("docid")
 													+ " was successfully obtained.");
+									documentToIntegrateList.add(doc);
+									
+									// Por ficheiro, adiciona uma entrada(composta por CSV) em cada uma das listas
+									// indexKeyList e indexValuesList
+									indexKeyList.add(rst.getString("index_keys_list"));
+									indexValuesList.add(rst.getString("index_values_list"));
+									documentaryAreaCodesList.add(rst.getString("documentary_area"));
 
-									totalFilesSize = checkSizeAndNumberOfFiles(listOfList, documentToIntegrateList,
-											indexKeyList, indexValuesList, largeFileList, documentaryAreaCodesList,
-											megabyte, maxFileSizeMegabyte, totalFilesSize, rst, doc);
 								} else {
 									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
 											"Document data for docid number: " + rst.getInt("docid")
@@ -674,12 +683,33 @@ public class DocumentsP19068Bean extends DocumentsBean {
 					} finally {
 						DatabaseInterface.closeResources(connection, psmt, rst);
 					}
-					// Caso lista não atinja limites de dimensao especificados (100mb, 500
-					// ficheiros)
-					if (documentToIntegrateList != null && !documentToIntegrateList.isEmpty()) {
-						listOfList.add(documentToIntegrateList);
+					
+					List<ArrayList<Document>> listOfList = new ArrayList<>();
+					listOfList.add(0, new ArrayList<Document>());
+					
+					ArrayList<Document> supportList = new ArrayList<>();
+					ArrayList<Document> insideList = new ArrayList<>();
+					
+					int position = 0;
+					for(int i = 0; i < documentToIntegrateList.size(); i++) {
+						long currentFileSize = documentToIntegrateList.get(i).getContent().length;     
+						if (currentFileSize >= maxFileSizeMegabyte) {    // para registar erro na BD
+							largeFileList.add(documentToIntegrateList.get(i));
+	
+						} else {
+							if (((totalFilesSize + currentFileSize) < maxFileSizeMegabyte)
+									&& documentToIntegrateList.size() < 500) {
+								totalFilesSize += currentFileSize;
+								listOfList.get(position).add(documentToIntegrateList.get(i));
 
-					}
+							} else {
+								position++;
+								listOfList.add(position, new ArrayList<Document>());
+								listOfList.get(position).add(documentToIntegrateList.get(i));
+								totalFilesSize = currentFileSize;
+							}	
+						}
+					}	
 
 					// Validar: se o tamanho do ficheiro sozinho for maior que 100mb, registar erro
 					// individual na bd
@@ -697,6 +727,11 @@ public class DocumentsP19068Bean extends DocumentsBean {
 
 					/**
 					 * documentaryAreaCodesList tem lista de areas documentais
+					 * 
+					 * Para já: Está a ir buscar valor do .properties. documentaryAreaCodesList trás os valores, mas ainda não estão a ser usados
+					 * Falta definir
+					 * 
+					 * 
 					 */
 
 					// Criar zip. Atencao limite 100Mb, 500 docs, num sequencia diferente
@@ -761,7 +796,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 								FileWriter fileWriter = new FileWriter(fileIndex.getAbsolutePath());
 								PrintWriter printWriter = new PrintWriter(fileWriter);
 								printWriter.println("CODEPAGE:850");
-
+								
 								for (int n = 0; n < listOfList.get(m).size(); n++) { // Por cada Document do batch
 																						// listOfList[i]
 //								indexKeyList = USR1,USR2,USR3,USR4,USR5,USR6
@@ -875,37 +910,6 @@ public class DocumentsP19068Bean extends DocumentsBean {
 				Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
 						"Exception. Unable to delete the EE18 file", e);
 			}
-		}
-
-		private long checkSizeAndNumberOfFiles(List<ArrayList<Document>> listOfList,
-				ArrayList<Document> documentToIntegrateList, List<String> indexKeyList, List<String> indexValuesList,
-				List<Document> largeFileList, List<String> documentaryAreaCodesList, long megabyte, long maxFileSizeMegabyte, long totalFilesSize,
-				ResultSet rst, Document doc) throws SQLException {
-
-			long currentFileSize = doc.getContent().length;     
-			if (currentFileSize >= maxFileSizeMegabyte) {    // regista erro na BD
-				largeFileList.add(doc);
-
-			} else {
-				if (((totalFilesSize + currentFileSize) < maxFileSizeMegabyte)
-						&& documentToIntegrateList.size() < 500) {
-					totalFilesSize += currentFileSize;
-					documentToIntegrateList.add(doc);
-
-				} else {
-					listOfList.add(documentToIntegrateList);
-					documentToIntegrateList.clear();
-					documentToIntegrateList.add(doc);
-					totalFilesSize = currentFileSize;
-
-				}
-				// Por ficheiro, adiciona uma entrada(composta por CSV) em cada uma das listas
-				// indexKeyList e indexValuesList
-				indexKeyList.add(rst.getString("index_keys_list"));
-				indexValuesList.add(rst.getString("index_values_list"));
-				documentaryAreaCodesList.add(rst.getString("documentary_area"));
-			}
-			return totalFilesSize;
 		}
 
 		private boolean isFileSequenceCorrect(List<String> sequentialNamesListEventFile,
