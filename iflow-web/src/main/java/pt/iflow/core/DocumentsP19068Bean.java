@@ -606,7 +606,6 @@ public class DocumentsP19068Bean extends DocumentsBean {
 					 * 
 					 */
 
-					
 					ArrayList<Document> documentToIntegrateList = new ArrayList<>();
 					List<String> indexKeyList = new ArrayList<>();
 					List<String> indexValuesList = new ArrayList<>();
@@ -614,7 +613,8 @@ public class DocumentsP19068Bean extends DocumentsBean {
 					List<Document> largeFileList = new ArrayList<>();
 
 					long megabyte = 1024L * 1024L;
-					long maxFileSizeMegabyte = 104857600; // / megabyte; // 100 Megabyte is equal to 104857600 bytes
+					long maxFileSizeMegabyte = 94371840; // 100 Megabyte is equal to 104857600 bytes 
+					                                     // 90 Megabyte is 94371840 bytes
 					long totalFilesSize = 0;
 
 					Connection connection = DatabaseInterface.getConnection(userInfo);
@@ -637,7 +637,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 											"Document data for docid number: " + rst.getInt("docid")
 													+ " was successfully obtained.");
 									documentToIntegrateList.add(doc);
-									
+
 									// Por ficheiro, adiciona uma entrada(composta por CSV) em cada uma das listas
 									// indexKeyList e indexValuesList
 									indexKeyList.add(rst.getString("index_keys_list"));
@@ -660,7 +660,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 											"Document data for docid number: " + rst.getInt("docid")
 													+ " was successfully obtained.");
 									documentToIntegrateList.add(doc);
-									
+
 									// Por ficheiro, adiciona uma entrada(composta por CSV) em cada uma das listas
 									// indexKeyList e indexValuesList
 									indexKeyList.add(rst.getString("index_keys_list"));
@@ -683,198 +683,205 @@ public class DocumentsP19068Bean extends DocumentsBean {
 					} finally {
 						DatabaseInterface.closeResources(connection, psmt, rst);
 					}
-					
-					List<ArrayList<Document>> listOfList = new ArrayList<>();
-					listOfList.add(0, new ArrayList<Document>());
-					
-					ArrayList<Document> supportList = new ArrayList<>();
-					ArrayList<Document> insideList = new ArrayList<>();
-					
-					int position = 0;
-					for(int i = 0; i < documentToIntegrateList.size(); i++) {
-						long currentFileSize = documentToIntegrateList.get(i).getContent().length;     
-						if (currentFileSize >= maxFileSizeMegabyte) {    // para registar erro na BD
-							largeFileList.add(documentToIntegrateList.get(i));
-	
-						} else {
-							if (((totalFilesSize + currentFileSize) < maxFileSizeMegabyte)
-									&& documentToIntegrateList.size() < 500) {
-								totalFilesSize += currentFileSize;
-								listOfList.get(position).add(documentToIntegrateList.get(i));
+
+					if (documentToIntegrateList != null && !documentToIntegrateList.isEmpty()) {
+						List<ArrayList<Document>> listOfList = new ArrayList<>();
+						listOfList.add(0, new ArrayList<Document>());
+
+						int position = 0;
+						for (int i = 0; i < documentToIntegrateList.size(); i++) {
+							long currentFileSize = documentToIntegrateList.get(i).getContent().length;
+							if (currentFileSize >= maxFileSizeMegabyte) { // para registar erro na BD
+								largeFileList.add(documentToIntegrateList.get(i));
 
 							} else {
-								position++;
-								listOfList.add(position, new ArrayList<Document>());
-								listOfList.get(position).add(documentToIntegrateList.get(i));
-								totalFilesSize = currentFileSize;
-							}	
-						}
-					}	
-
-					// Validar: se o tamanho do ficheiro sozinho for maior que 100mb, registar erro
-					// individual na bd
-					if (largeFileList != null && !largeFileList.isEmpty()) {
-						for (Document doc : largeFileList) {
-							Connection cnt = DatabaseInterface.getConnection(userInfo);
-							updateDbState(userInfo, cnt,
-									"UPDATE documents_p19068 SET state=?, status_desc=?, lastupdated=? WHERE docid=?;",
-									new Object[] { DocumentState.REJECTED_INDIVIDUALLY.value,
-											"Document with size bigger than 100MB",
-											new Timestamp(System.currentTimeMillis()), doc.getDocId() },
-									new Integer[] { Types.INTEGER, Types.VARCHAR, Types.TIMESTAMP, Types.INTEGER });
-						}
-					}
-
-					/**
-					 * documentaryAreaCodesList tem lista de areas documentais
-					 * 
-					 * Para já: Está a ir buscar valor do .properties. documentaryAreaCodesList trás os valores, mas ainda não estão a ser usados
-					 * Falta definir
-					 * 
-					 * 
-					 */
-
-					// Criar zip. Atencao limite 100Mb, 500 docs, num sequencia diferente
-					String outputFolderPath = properties.getProperty("OUTPUT_FOLDER_PATH");
-
-					if (outputFolderPath != null && !outputFolderPath.trim().isEmpty()) {
-
-						if (listOfList != null && !listOfList.isEmpty()) {
-							int number = 0;
-							int zipCounter = 0;
-
-							for (int m = 0; m < listOfList.size(); m++) { // Por cada batch da listOfList
-
-								String origin = properties.getProperty("ORIGEM");
-								String applicationCode = properties.getProperty("CODIGO_APLICACAO");
-								String group = properties.getProperty("GRUPO");
-								String docArea = properties.getProperty("AREA_DOCUMENTAL");
-								String groupFilenameValue = properties.getProperty("GROUP_FILENAME_VALUE");
-
-								if (origin == null || applicationCode == null || group == null || docArea == null
-										|| groupFilenameValue == null) {
-									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-											"ORIGEM, CODIGO_APLICACAO, GRUPO, AREA_DOCUMENTAL or GROUP_FILENAME_VALUE not properly defined. Please check .properties file or flow variable ");
-									break;
-								}
-
-								Date today = new Date();
-								SimpleDateFormat formatterDate = new SimpleDateFormat("yyyyMMdd");
-								String date = formatterDate.format(today);
-
-								SimpleDateFormat formatterHour = new SimpleDateFormat("HHmmss");
-								String hour = formatterHour.format(today);
-								String sequenceNumber = "";
-
-								if (m == 0) {
-									sequenceNumber = String.format("%05d", number);
+								if (((totalFilesSize + currentFileSize) < maxFileSizeMegabyte)
+										&& documentToIntegrateList.size() < 500) {
+									totalFilesSize += currentFileSize;
+									listOfList.get(position).add(documentToIntegrateList.get(i));
 
 								} else {
-									number += 1;
-									sequenceNumber = String.format("%05d", number);
+									position++;
+									listOfList.add(position, new ArrayList<Document>());
+									listOfList.get(position).add(documentToIntegrateList.get(i));
+									totalFilesSize = currentFileSize;
 								}
+							}
+						}
 
-								// 1.1: Criar extensao comum
-								String filesAndFoldersPattern = origin + "." + applicationCode + "." + group + "."
-										+ docArea + "." + date + "." + hour + "." + sequenceNumber;
+						// Validar: se o tamanho do ficheiro sozinho for maior que 100mb, registar erro
+						// individual na bd
+						if (largeFileList != null && !largeFileList.isEmpty()) {
+							for (Document doc : largeFileList) {
+								Connection cnt = DatabaseInterface.getConnection(userInfo);
+								updateDbState(userInfo, cnt,
+										"UPDATE documents_p19068 SET state=?, status_desc=?, lastupdated=? WHERE docid=?;",
+										new Object[] { DocumentState.REJECTED_INDIVIDUALLY.value,
+												"Document with size bigger than 100MB",
+												new Timestamp(System.currentTimeMillis()), doc.getDocId() },
+										new Integer[] { Types.INTEGER, Types.VARCHAR, Types.TIMESTAMP, Types.INTEGER });
+							}
+						}
 
-								// 2: Criar pastas
-								Path pathFolder = Paths.get(outputFolderPath + File.separator + filesAndFoldersPattern);
-								Path pathSubFolder = Paths.get(outputFolderPath + File.separator
-										+ filesAndFoldersPattern + File.separator + filesAndFoldersPattern + ".OUT");
+						/**
+						 * documentaryAreaCodesList tem lista de areas documentais
+						 * 
+						 * Para já: Está a ir buscar valor do .properties. documentaryAreaCodesList trás
+						 * os valores, mas ainda não estão a ser usados Falta definir
+						 * 
+						 * 
+						 */
 
-								Files.createDirectories(pathFolder);
-								Files.createDirectories(pathSubFolder);
+						// Criar zip. Atencao limite 100Mb, 500 docs, num sequencia diferente
+						String outputFolderPath = properties.getProperty("OUTPUT_FOLDER_PATH");
 
-								// 3: Criar ficheiro de indice IND
-								Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-										"Building .IND file...");
-								String unsescapedPath = StringEscapeUtils.unescapeHtml(pathFolder.toString());
-								String unsescapedSubPath = StringEscapeUtils.unescapeHtml(pathSubFolder.toString());
-								File fileIndex = new File(
-										unsescapedPath + File.separator + filesAndFoldersPattern + ".ARD.IND");
-								FileWriter fileWriter = new FileWriter(fileIndex.getAbsolutePath());
-								PrintWriter printWriter = new PrintWriter(fileWriter);
-								printWriter.println("CODEPAGE:850");
-								
-								for (int n = 0; n < listOfList.get(m).size(); n++) { // Por cada Document do batch
-																						// listOfList[i]
+						if (outputFolderPath != null && !outputFolderPath.trim().isEmpty()) {
+
+							if (listOfList != null && !listOfList.isEmpty()) {
+								int number = 0;
+								int zipCounter = 0;
+
+								for (int m = 0; m < listOfList.size(); m++) { // Por cada batch da listOfList
+									String origin = properties.getProperty("ORIGEM");
+									String applicationCode = properties.getProperty("CODIGO_APLICACAO");
+									String group = properties.getProperty("GRUPO");
+									String docArea = properties.getProperty("AREA_DOCUMENTAL");
+									String groupFilenameValue = properties.getProperty("GROUP_FILENAME_VALUE");
+
+									if (origin == null || applicationCode == null || group == null || docArea == null
+											|| groupFilenameValue == null) {
+										Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+												"ORIGEM, CODIGO_APLICACAO, GRUPO, AREA_DOCUMENTAL or GROUP_FILENAME_VALUE not properly defined. Please check .properties file or flow variable ");
+										break;
+									}
+
+									Date today = new Date();
+									SimpleDateFormat formatterDate = new SimpleDateFormat("yyyyMMdd");
+									String date = formatterDate.format(today);
+
+									SimpleDateFormat formatterHour = new SimpleDateFormat("HHmmss");
+									String hour = formatterHour.format(today);
+									String sequenceNumber = "";
+
+									if (m == 0) {
+										sequenceNumber = String.format("%05d", number);
+
+									} else {
+										number += 1;
+										sequenceNumber = String.format("%05d", number);
+									}
+
+									// 1.1: Criar extensao comum
+									String filesAndFoldersPattern = origin + "." + applicationCode + "." + group + "."
+											+ docArea + "." + date + "." + hour + "." + sequenceNumber;
+
+									// 2: Criar pastas
+									Path pathFolder = Paths
+											.get(outputFolderPath + File.separator + filesAndFoldersPattern);
+									Path pathSubFolder = Paths
+											.get(outputFolderPath + File.separator + filesAndFoldersPattern
+													+ File.separator + filesAndFoldersPattern + ".OUT");
+
+									Files.createDirectories(pathFolder);
+									Files.createDirectories(pathSubFolder);
+
+									// 3: Criar ficheiro de indice IND
+									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"Building .IND file...");
+									String unsescapedPath = StringEscapeUtils.unescapeHtml(pathFolder.toString());
+									String unsescapedSubPath = StringEscapeUtils.unescapeHtml(pathSubFolder.toString());
+									File fileIndex = new File(
+											unsescapedPath + File.separator + filesAndFoldersPattern + ".ARD.IND");
+									FileWriter fileWriter = new FileWriter(fileIndex.getAbsolutePath());
+									PrintWriter printWriter = new PrintWriter(fileWriter);
+									printWriter.println("CODEPAGE:850");
+
+									for (int n = 0; n < listOfList.get(m).size(); n++) { // Por cada Document do batch
+																							// listOfList[i]
 //								indexKeyList = USR1,USR2,USR3,USR4,USR5,USR6
 //							    indexValuesList = Referência do Relatório de avaliação,Data Relatório de avaliação,Tipo de Documento,NIF,Referência WF,Referência Crédito
 
-									List<String> convertedKeysList = Arrays.asList(indexKeyList.get(m).split(",", -1));
-									List<String> convertedValuesList = Arrays
-											.asList(indexValuesList.get(m).split(",", -1));
-									for (int p = 0; p < convertedKeysList.size(); p++) {
+										List<String> convertedKeysList = Arrays
+												.asList(indexKeyList.get(m).split(",", -1));
+										List<String> convertedValuesList = Arrays
+												.asList(indexValuesList.get(m).split(",", -1));
+										for (int p = 0; p < convertedKeysList.size(); p++) {
 
-										printWriter.println("GROUP_FIELD_NAME:" + convertedKeysList.get(p));
-										printWriter.println("GROUP_FIELD_VALUE:" + convertedValuesList.get(p));
+											printWriter.println("GROUP_FIELD_NAME:" + convertedKeysList.get(p));
+											printWriter.println("GROUP_FIELD_VALUE:" + convertedValuesList.get(p));
+										}
+										printWriter.println("GROUP_OFFSET:0");
+										printWriter.println("GROUP_LENGTH:0");
+										printWriter
+												.println("GROUP_FILENAME:" + groupFilenameValue + filesAndFoldersPattern
+														+ ".ARD.OUT/" + listOfList.get(m).get(n).getFileName());
+
+										// Armazena documento
+										File documentToStore = new File(unsescapedSubPath + File.separator
+												+ listOfList.get(m).get(n).getFileName());
+										FileUtils.writeByteArrayToFile(documentToStore,
+												listOfList.get(m).get(n).getContent());
+
+										// Apos colocar o zip na pasta, marcar estado lido para integracao
+										// (FILE_READ_AND_READY_TO_SEND)
+										Connection cnt = DatabaseInterface.getConnection(userInfo);
+										updateDbState(userInfo, cnt,
+												"UPDATE documents_p19068 SET state=?, lastupdated=? WHERE docid=?;",
+												new Object[] { DocumentState.FILE_READ_AND_READY_TO_SEND.value,
+														new Timestamp(System.currentTimeMillis()),
+														listOfList.get(m).get(n).getDocId() },
+												new Integer[] { Types.INTEGER, Types.TIMESTAMP, Types.INTEGER });
+
 									}
-									printWriter.println("GROUP_OFFSET:0");
-									printWriter.println("GROUP_LENGTH:0");
-									printWriter.println("GROUP_FILENAME:" + groupFilenameValue + filesAndFoldersPattern
-											+ ".ARD.OUT/" + listOfList.get(m).get(n).getFileName());
+									printWriter.close();
 
-									// Armazena documento
-									File documentToStore = new File(unsescapedSubPath + File.separator
-											+ listOfList.get(m).get(n).getFileName());
-									FileUtils.writeByteArrayToFile(documentToStore,
-											listOfList.get(m).get(n).getContent());
+									// Criar ficheiro ARD
+									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"Building .ARD file...");
+									File fileArd = new File(
+											unsescapedPath + File.separator + filesAndFoldersPattern + ".ARD");
+									FileUtils.touch(fileArd);
 
-									// Apos colocar o zip na pasta, marcar estado lido para integracao
-									// (FILE_READ_AND_READY_TO_SEND)
-									Connection cnt = DatabaseInterface.getConnection(userInfo);
-									updateDbState(userInfo, cnt,
-											"UPDATE documents_p19068 SET state=?, lastupdated=? WHERE docid=?;",
-											new Object[] { DocumentState.FILE_READ_AND_READY_TO_SEND.value,
-													new Timestamp(System.currentTimeMillis()),
-													listOfList.get(m).get(n).getDocId() },
-											new Integer[] { Types.INTEGER, Types.TIMESTAMP, Types.INTEGER });
+									// Zipar
+									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"Building zipped folder...");
+									FileOutputStream fos = new FileOutputStream(unsescapedPath + ".zip");
+									ZipOutputStream zipOut = new ZipOutputStream(fos);
+									File fileToZip = new File(unsescapedPath);
 
+									zipFile(fileToZip, fileToZip.getName(), zipOut);
+									zipOut.close();
+									fos.close();
+
+									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"Deleting source files and folders...");
+									deleteDirectory(fileToZip);
+									zipCounter += 1;
 								}
-								printWriter.close();
 
-								// Criar ficheiro ARD
-								Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-										"Building .ARD file...");
-								File fileArd = new File(
-										unsescapedPath + File.separator + filesAndFoldersPattern + ".ARD");
-								FileUtils.touch(fileArd);
+								if (reader != null) {
+									reader.close();
+								}
 
-								// Zipar
-								Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-										"Building zipped folder...");
-								FileOutputStream fos = new FileOutputStream(unsescapedPath + ".zip");
-								ZipOutputStream zipOut = new ZipOutputStream(fos);
-								File fileToZip = new File(unsescapedPath);
+								if (eventFileName != null && !eventFileName.isEmpty()
+										&& zipCounter == listOfList.size()) {
+									deleteEventFile(login, eventFileName);
+								}
 
-								zipFile(fileToZip, fileToZip.getName(), zipOut);
-								zipOut.close();
-								fos.close();
-
-								Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-										"Deleting source files and folders...");
-								deleteDirectory(fileToZip);
-								zipCounter += 1;
-							}
-
-							if (reader != null) {
-								reader.close();
-							}
-
-							if (eventFileName != null && !eventFileName.isEmpty() && zipCounter == listOfList.size()) {
-								deleteEventFile(login, eventFileName);
+							} else {
+								Logger.error(userInfo.getUtilizador(), this,
+										"DocumentsP19068Bean.sendToGeDocTask.this.run()",
+										"No documents with state to read were found in database ");
 							}
 
 						} else {
-							Logger.error(userInfo.getUtilizador(), this,
-									"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-									"No documents with state to read were found in database ");
+							Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+									"OUTPUT_FOLDER_PATH not properly defined. Please check .properties file ");
 						}
-
 					} else {
 						Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-								"OUTPUT_FOLDER_PATH not properly defined. Please check .properties file ");
+								"No documents were found in the database to create the zip file ");
+
 					}
 
 //				if(stream != null) {
