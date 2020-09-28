@@ -30,6 +30,7 @@ public class BlockP19068MarkToMergeGeDoc extends Block {
 	private static final String INPUT_DOCUMENT = "inputDocument";
 	private static final String INPUT_KEYS = "inputKeysList";
 	private static final String INPUT_VALUES = "inputValuesList";
+	private static final String INPUT_DOC_AREA   = "inputDocumentaryArea";
 	
 	public BlockP19068MarkToMergeGeDoc(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
@@ -79,8 +80,10 @@ public class BlockP19068MarkToMergeGeDoc extends Block {
 		String sInputDocumentVar = this.getAttribute(INPUT_DOCUMENT);
 		String sInputKeysVar = this.getAttribute(INPUT_KEYS);
 		String sInputValuesVar = this.getAttribute(INPUT_VALUES);
+		String sInputDocAreaVar = this.getAttribute(INPUT_DOC_AREA);
 		
-		if (StringUtilities.isEmpty(sInputDocumentVar) || StringUtilities.isEmpty(sInputKeysVar) || StringUtilities.isEmpty(sInputValuesVar)) {
+		
+		if (StringUtilities.isEmpty(sInputDocumentVar) || StringUtilities.isEmpty(sInputKeysVar) || StringUtilities.isEmpty(sInputValuesVar) || StringUtilities.isEmpty(sInputDocAreaVar)) {
 			Logger.error(login, this, "after", procData.getSignature() + "empty value for attributes");
 			outPort = portError;
 		}
@@ -92,6 +95,12 @@ public class BlockP19068MarkToMergeGeDoc extends Block {
 			ProcessListVariable docsVar = procData.getList(sInputDocumentVar);
 			ProcessListVariable keysVar = procData.getList(sInputKeysVar);
 			ProcessListVariable valuesVar = procData.getList(sInputValuesVar);
+			String docAreaVar = procData.transform(userInfo, sInputDocAreaVar);
+			
+			if(docAreaVar == null || docAreaVar.trim().isEmpty()) {
+				Logger.error(login, this, "after", procData.getSignature() + "Documentary Area field is null or empty.");
+				outPort = portError;
+			}
 			
 			if (keysVar.size() != valuesVar.size()) {
 				Logger.error(login, this, "after", procData.getSignature() + "Key and values lists must be the same size.");
@@ -119,8 +128,8 @@ public class BlockP19068MarkToMergeGeDoc extends Block {
 				
 				if(documentsP19068List==null || documentsP19068List.isEmpty())
 					FileImportUtils.insertSimpleLine(connection, userInfo,
-							"INSERT INTO documents_p19068 (docid, state, index_keys_list, index_values_list, lastupdated) VALUES (?, ?, ?, ?, ?);",
-							new Object[] {inputDoc.getDocId(), 1, sbKeys, sbValues, new Timestamp(System.currentTimeMillis())});
+							"INSERT INTO documents_p19068 (docid, state, index_keys_list, index_values_list, documentary_area, lastupdated) VALUES (?, ?, ?, ?, ?, ?);",
+							new Object[] {inputDoc.getDocId(), 1, sbKeys, sbValues, docAreaVar, new Timestamp(System.currentTimeMillis())});
 				else if(documentsP19068List.get(0)==0)
 					FileImportUtils.insertSimpleLine(connection, userInfo,
 							"UPDATE documents_p19068 SET state=1, lastupdated=? WHERE docid=?;",
