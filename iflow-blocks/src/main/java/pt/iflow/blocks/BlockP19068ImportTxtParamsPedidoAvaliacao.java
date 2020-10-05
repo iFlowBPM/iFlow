@@ -187,6 +187,7 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 					break;
 
 				} else {
+					boolean isRequestTypeEqualsEdition = false;
 					for (int q = 1; q <= totalFieldsFromConfigFile; q++) {
 						String fieldEventCode = properties.getProperty("event.code" + q);
 						String name = properties.getProperty("name" + q);
@@ -224,11 +225,16 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 							if (fieldValueFromTxt == null
 									|| (!("Text".equals(fieldDataType) || "TextArray".equals(fieldDataType))
 											&& fieldValueFromTxt.trim().isEmpty())) {
-								String errorMessage = fieldValueFromTxt == null ? "Could not get data: " + name
-										+ " in field number: " + q
-										+ " , check if property is well defined or document is missing/NULL field "
-										: "Could not parse empty data for: " + name + " of " + fieldDataType
-												+ " data type. Skipping...";
+								String errorMessage = "";
+
+								if (fieldValueFromTxt == null) {
+									errorMessage = "Could not get data: " + name + " in field number: " + q
+											+ " , check if property is well defined or document is missing/NULL field ";
+								} else {
+									errorMessage = "Could not parse empty data for: " + name + " of " + fieldDataType
+											+ " data type. Skipping...";
+									cleanSelectedField(procData, name);
+								}
 								Logger.error(login, this, "after", errorMessage);
 								continue;
 
@@ -236,6 +242,22 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 							// Remove zeros à esquerda do numero
 							if("montanteCredito".equals(name)) {
 								fieldValueFromTxt = fieldValueFromTxt.replaceFirst("^0+(?!$)", "");
+							}
+							
+							// 2 - Edição Relatório 
+							if("tipoPedido".equals(name) && "2".equals(fieldValueFromTxt)) {
+								isRequestTypeEqualsEdition = true;
+								
+							}
+							
+							// So le se tipoPedido for 2 (Edição Relatório) 
+							if ("motivo".equals(name) || "observacoes".equals(name)) {
+								if (!isRequestTypeEqualsEdition) {
+									cleanSelectedField(procData, name);
+									continue;
+								} else {
+									fieldValueFromTxt = fieldValueFromTxt.replaceFirst("^0+(?!$)", "");
+								}
 							}
 							
 							createInstanceFieldsMap(totalFieldsFromConfigFile, valorInputIdPedidoAvaliacao, name);
