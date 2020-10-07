@@ -742,10 +742,9 @@ public class DocumentsP19068Bean extends DocumentsBean {
 						}
 
 						/**
-						 * documentaryAreaCodesList tem lista de areas documentais
+						 * documentaryAreaCodesList tem lista de banco para se corresponder a areas documentais: NB: PGESAVAL, NBA: YGESAVAL
 						 * 
-						 * Para já: Está a ir buscar valor do .properties. documentaryAreaCodesList trás
-						 * os valores, mas ainda não estão a ser usados Falta definir
+						 * Para já: Está a ir buscar o primeiro valor do documentaryAreaCodesList para o nome do ficheiro. Falta definir se é para ser assim.
 						 * 
 						 * 
 						 */
@@ -762,8 +761,27 @@ public class DocumentsP19068Bean extends DocumentsBean {
 								for (int m = 0; m < byNumberOfDocslistOfList.size(); m++) { // Por cada batch da listOfList
 									String origin = properties.getProperty("ORIGEM");
 									String applicationCode = properties.getProperty("CODIGO_APLICACAO");
-									String group = properties.getProperty("GRUPO");
-									String docArea = properties.getProperty("AREA_DOCUMENTAL");
+									
+									String docArea = null;
+									if (documentaryAreaCodesList.get(0) != null
+											&& !documentaryAreaCodesList.get(0).isEmpty()) {
+										if ("NB".equalsIgnoreCase(documentaryAreaCodesList.get(0))) {
+											docArea = "PGESAVAL";
+
+										} else if ("NBA".equalsIgnoreCase(documentaryAreaCodesList.get(0))) {
+											docArea = "YGESAVAL";
+										}
+									}
+									
+									String group = null;
+									if (docArea != null) {
+										if ("PGESAVAL".equals(docArea)) {
+											group = "BES00WD1";
+
+										} else if ("YGESAVAL".equals(docArea)) {
+											group = "BAC00WD1";
+										}
+									}
 									String groupFilenameValue = properties.getProperty("GROUP_FILENAME_VALUE");
 
 									if (origin == null || applicationCode == null || group == null || docArea == null
