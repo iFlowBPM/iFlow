@@ -319,7 +319,7 @@ public class BlockP17040ValidateCICC extends BlockP17040Validate {
 			
 			if(CC039Aux>0)
 				result.add(new ValidationError("CC039", "justComp", "tpJustif", idCont, -1, "1000"));
-			if(CC040AuxErro>0 /*&& CC040AuxOk==0*/)
+			if(CC040AuxErro>0 && CC040AuxOk==0)
 				result.add(new ValidationError("CC040", "justComp", "tpJustif", idCont, -1, "2000"));
 		
 		for(ValidationError ve: result)

@@ -17,6 +17,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import pt.iflow.api.processdata.ProcessData;
+import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.BlockP17040ImportCINA.ReportType;
@@ -95,15 +96,23 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 					continue;		
 				
 				//check if UPDATE has actual changed values				
-				if(actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
+				if(! "169843".equals(lineValues.get("idCont")) &&
+						! "300373".equals(lineValues.get("idCont")) &&
+						! "169955".equals(lineValues.get("idCont")) &&
+						! "170075".equals(lineValues.get("idCont")) &&
+						! "170027".equals(lineValues.get("idCont")) &&
+						! "170177".equals(lineValues.get("idCont")) &&
+						actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
 					HashMap<String,Object> keysToIdentify = new HashMap<>();
 					ArrayList<String> keysToRemove = new ArrayList<>();
 					keysToIdentify.put("idCont", idCont);
 					keysToIdentify.put("idInst", idInst);
 					keysToIdentify.put("idEnt", idEnt);
 					keysToRemove.add("dtRef");
-					if(!GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove))
+					if(!GestaoCrc.checkForChangedValues(connection, userInfo, actionOnLine.getU_gestao_id(), procData, properties, lineValues, keysToIdentify, keysToRemove)){
+						Logger.debug(userInfo.getUtilizador(), this, "checkForChangedValues ", "lineValues: " + lineValues);
 						continue;
+					}
 				}
 				
 				// adicionar acçao
@@ -207,11 +216,12 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 		}
 		
 		//justComp
+		Logger.debug(userInfo.getUtilizador(), this, "importLine", "infCompC_id: " + infCompC_id + ", tpJustif: " + lineValues.get("tpJustif") + ", justif: "+ lineValues.get("justif"));
 		if(StringUtils.isNotBlank((String)lineValues.get("tpJustif")) || StringUtils.isNotBlank((String)lineValues.get("justif"))){
 			List<Integer> justCompList = retrieveSimpleField(connection, userInfo,
 					"select id from justComp where infCompC_id = {0} and tpJustif = ''{1}'' and justif = ''{2}''",
 					new Object[] { infCompC_id, lineValues.get("tpJustif"), lineValues.get("justif") });
-			
+			Logger.debug(userInfo.getUtilizador(), this, "importLine", "justCompList size: " + justCompList.size());
 			if(justCompList.isEmpty())
 				FileImportUtils.insertSimpleLine(connection, userInfo,
 					"INSERT INTO `justComp` (`infCompC_id`, `tpJustif`, `justif`) "
