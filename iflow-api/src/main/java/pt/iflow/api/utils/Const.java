@@ -4,6 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ArrayUtils;
@@ -567,6 +571,21 @@ public class Const {
 		}
 		sMAIL_USERNAME = Setup.getProperty("MAIL_USERNAME");
 		sMAIL_PASSWORD = Setup.getProperty("MAIL_PASSWORD");
+		try{
+			String secretKey = System.getProperty("encrypt.secret");
+			if(StringUtils.isNotBlank(secretKey)){
+				SecretKey key = new SecretKeySpec(secretKey.getBytes(), "AES");
+				// Decode base64 to get bytes
+		        Cipher dcipher = Cipher.getInstance("AES");
+		        dcipher.init(Cipher.DECRYPT_MODE, key);
+		        byte[] dec = new sun.misc.BASE64Decoder().decodeBuffer(sMAIL_PASSWORD);
+		        byte[] utf8 = dcipher.doFinal(dec);
+				
+		        sMAIL_PASSWORD = new String(utf8, "UTF8");
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 		sAPP_EMAIL = Setup.getProperty("APP_EMAIL");
 		sTEST_EMAIL = Setup.getProperty("TEST_EMAIL");
 		sTEST_SMS = Setup.getProperty("TEST_SMS");

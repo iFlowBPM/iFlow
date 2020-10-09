@@ -1113,6 +1113,7 @@ public class UserManagerBean
     finally
     {
       DatabaseInterface.closeResources(new Object[] { db, pst });
+      LegacyUserSync.changeProfile(userInfo, Integer.parseInt(userId));
     }
     return result;
   }
@@ -1443,6 +1444,7 @@ public class UserManagerBean
     finally
     {
       DatabaseInterface.closeResources(new Object[] { db, pst });
+      LegacyUserSync.changeProfile(userInfo, Integer.parseInt(userId));
     }
     return result;
   }

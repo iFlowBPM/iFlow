@@ -31,7 +31,7 @@ import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.connector.document.Document;
 import pt.iknow.utils.StringUtilities;
 
-public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
+public class BlockP19068ImportTxtParamsWfchServicing extends Block {
 	public Port portIn, portSuccess, portEmpty, portError;
 
 	private static final String INPUT_DOCUMENT = "inputDocument";
@@ -41,7 +41,7 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 	private static Map<String, Object> performedFieldsMap;
 	private static MultiValuedMap<String, String> idPedidoToIgnoreMap; //Key-IDPEDIDO Value-Name, Line
 
-	public BlockP19068ImportTxtParamsPedidoAvaliacao(int anFlowId, int id, int subflowblockid, String filename) {
+	public BlockP19068ImportTxtParamsWfchServicing(int anFlowId, int id, int subflowblockid, String filename) {
 		super(anFlowId, id, subflowblockid, filename);
 		hasInteraction = false;
 	}
@@ -104,12 +104,16 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 					new Integer(docsVar.getItem(0).getValue().toString()));
 			InputStream inputDocStream = new ByteArrayInputStream(inputDoc.getContent());
 			Properties properties = new Properties();
-			properties.load(new ByteArrayInputStream(docBean.getDocument(userInfo, procData, new Integer(configsVar.getItem(0).getValue().toString())).getContent()));
+			properties.load(new ByteArrayInputStream(
+					docBean.getDocument(userInfo, procData, new Integer(configsVar.getItem(0).getValue().toString()))
+							.getContent()));
 			reader = new BufferedReader(new InputStreamReader(inputDocStream));
 
 			String outputIdPedidos = "outputIdPedidos";
-			String eventCodes = properties.getProperty("event.codes");
-			Integer totalEventCodesFromConfigFile = Integer.valueOf(properties.getProperty("single.field.total"));
+			String registryTypeNames = properties.getProperty("registry.type.names");
+			String headerFooterNames = properties.getProperty("header.footer.names");
+			Integer headerFooterBeginPosition = Integer.valueOf(properties.getProperty("header.footer.begin"));
+			Integer headerFooterEndPosition = Integer.valueOf(properties.getProperty("header.footer.end"));
 			Integer totalFieldsFromConfigFile = Integer.valueOf(properties.getProperty("total"));
 
 			List<String> linesList = new ArrayList<>();
@@ -118,8 +122,9 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 				linesList.add(fileLine);
 			}
 
-			checkTxtForMissingMandatoryFields(procData, sOutputErrorVar, valorInputIdPedidoAvaliacao, properties,
-					outputIdPedidos, eventCodes, totalEventCodesFromConfigFile, totalFieldsFromConfigFile, linesList);
+			checkTxtForMissingMandatoryFields(procData, registryTypeNames, sOutputErrorVar, valorInputIdPedidoAvaliacao,
+					properties, outputIdPedidos, totalFieldsFromConfigFile, linesList, headerFooterNames,
+					headerFooterBeginPosition, headerFooterEndPosition);
 
 			if (!idPedidoToIgnoreMap.isEmpty()) {
 				for (int m = 1; m <= totalFieldsFromConfigFile; m++) {
@@ -128,14 +133,89 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 				}
 			}
 
-			for (String line : linesList) {
-				String currentLineEventCode = line.substring(117, 121);
-				if (!eventCodes.contains(currentLineEventCode)) {
+			for (int i = 0; i < linesList.size(); i++) {
+				String lineEventualHeaderFooter = linesList.get(i).substring(headerFooterBeginPosition - 1,
+						headerFooterEndPosition - 1);
+
+				if (headerFooterNames.contains(lineEventualHeaderFooter)) {
 					continue;
 
 				}
-				obtainAndSetConfigFileFields(procData, login, valorInputIdPedidoAvaliacao, properties,
-						totalEventCodesFromConfigFile, totalFieldsFromConfigFile, line, currentLineEventCode);
+
+				Integer beginPosition = Integer.valueOf(properties.getProperty("single.field.begin"));
+				Integer endPosition = Integer.valueOf(properties.getProperty("single.field.end"));
+				String lineIdPedido = linesList.get(i).substring(beginPosition - 1, endPosition - 1);
+				boolean isIdPedidoMatch = lineIdPedido.equals(valorInputIdPedidoAvaliacao);
+
+				if (lineIdPedido == null || (lineIdPedido != null && lineIdPedido.trim().isEmpty())
+						|| !isIdPedidoMatch) {
+					String errorMessage = lineIdPedido == null
+							|| (lineIdPedido != null && lineIdPedido.trim().isEmpty())
+									? "Could not get data in number: " + i
+											+ " , check if property is well defined or document is missing/NULL field "
+									: "Information: Input value IDPEDIDO does not match line number: " + i
+											+ " IDPEDIDO value. Skipping...";
+					Logger.debug(login, this, "after", errorMessage);
+					continue;
+
+				}
+
+				// Check if IDPEDIDO was not rejected
+				if (idPedidoToIgnoreMap.containsKey(lineIdPedido)) {
+					continue;
+
+				} else {
+					for (int q = 1; q <= totalFieldsFromConfigFile; q++) {
+						String name = properties.getProperty("name" + q);
+						String hardcodedFieldValue = "";
+						hardcodedFieldValue = properties.getProperty("value" + q);
+						hardcodedFieldValue = "_".equals(hardcodedFieldValue) ? " " : hardcodedFieldValue;
+
+						String fieldDataType = properties.getProperty("datatype" + q);
+
+						if (hardcodedFieldValue != null && !hardcodedFieldValue.isEmpty()) {
+							createInstanceFieldsMap(totalFieldsFromConfigFile, valorInputIdPedidoAvaliacao, name);
+							setProcDataValues(procData, login, name, fieldDataType, hardcodedFieldValue);
+
+						} else {
+							Integer fieldBegin = Integer.valueOf(properties.getProperty("begin" + q));
+							Integer fieldEnd = Integer.valueOf(properties.getProperty("end" + q));
+							String fieldValueFromTxt = linesList.get(i).substring(fieldBegin - 1, fieldEnd - 1);
+
+							if (fieldValueFromTxt == null
+									|| (!("Text".equals(fieldDataType) || "TextArray".equals(fieldDataType))
+											&& fieldValueFromTxt.trim().isEmpty())) {
+								String errorMessage = "";
+
+								if (fieldValueFromTxt == null) {
+									errorMessage = "Could not get data: " + name + " in field number: " + q
+											+ " , check if property is well defined or document is missing/NULL field ";
+								} else {
+									errorMessage = "Could not parse empty data for: " + name + " of " + fieldDataType
+											+ " data type. Skipping...";
+									cleanSelectedField(procData, name);
+								}
+								Logger.error(login, this, "after", errorMessage);
+								continue;
+							}
+							// Remove zeros à esquerda do numero
+							if ("montanteCredito".equals(name)) {
+								fieldValueFromTxt = fieldValueFromTxt.replaceFirst("^0+(?!$)", "");
+							}
+
+							// Mapping: 1 - avalicao, 2-vistoria (a->1, v->2)
+							if (registryTypeNames.contains(name)) {
+								if (fieldValueFromTxt.equalsIgnoreCase("A")) {
+									fieldValueFromTxt = "1";
+								} else if (fieldValueFromTxt.equalsIgnoreCase("V")) {
+									fieldValueFromTxt = "2";
+								}
+							}
+							createInstanceFieldsMap(totalFieldsFromConfigFile, valorInputIdPedidoAvaliacao, name);
+							setProcDataValues(procData, login, name, fieldDataType, fieldValueFromTxt.trim());
+						}
+					}
+				}
 			}
 
 		} catch (Exception e) {
@@ -156,129 +236,20 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 		return outPort;
 	}
 
-	private void obtainAndSetConfigFileFields(ProcessData procData, String login, String valorInputIdPedidoAvaliacao,
-			Properties properties, Integer totalEventCodesFromConfigFile, Integer totalFieldsFromConfigFile,
-			String line, String currentLineEventCode) {
+	private static void checkTxtForMissingMandatoryFields(ProcessData procData, String registryTypeNames, String sOutputErrorVar,
+			String valorInputIdPedidoAvaliacao, Properties properties, String outputIdPedidos,
+			Integer totalFieldsFromConfigFile, List<String> linesList, String headerFooterNames,
+			Integer headerFooterBeginPosition, Integer headerFooterEndPosition) {
 
-		for (int p = 1; p <= totalEventCodesFromConfigFile; p++) {
-			String eventCodeFromConfigFile = properties.getProperty("single.field.event.code" + p);
-
-			if (currentLineEventCode.equals(eventCodeFromConfigFile)) {
-				Integer beginPosition = Integer.valueOf(properties.getProperty("single.field.begin" + p));
-				Integer endPosition = Integer.valueOf(properties.getProperty("single.field.end" + p));
-				String lineIdPedido = line.substring(beginPosition - 1, endPosition - 1);
-				boolean isIdPedidoMatch = lineIdPedido.equals(valorInputIdPedidoAvaliacao);
-
-				if (lineIdPedido == null || (lineIdPedido != null && lineIdPedido.trim().isEmpty())
-						|| !isIdPedidoMatch) {
-					String errorMessage = lineIdPedido == null
-							|| (lineIdPedido != null && lineIdPedido.trim().isEmpty())
-									? "Could not get data in number: " + p
-											+ " , check if property is well defined or document is missing/NULL field "
-									: "Information: Input value IDPEDIDO does not match line number: " + p
-											+ " IDPEDIDO value. Skipping...";
-					Logger.debug(login, this, "after", errorMessage);
-					continue;
-
-				}
-
-				// Check if IDPEDIDO was not rejected
-				if (idPedidoToIgnoreMap.containsKey(lineIdPedido)) {
-					break;
-
-				} else {
-					boolean isRequestTypeEqualsEdition = false;
-					for (int q = 1; q <= totalFieldsFromConfigFile; q++) {
-						String fieldEventCode = properties.getProperty("event.code" + q);
-						String name = properties.getProperty("name" + q);
-						String hardcodedFieldValue = "";
-
-						// Check if it is an hardcoded field
-						if (fieldEventCode == null || (fieldEventCode != null && fieldEventCode.trim().isEmpty())) {
-							hardcodedFieldValue = properties.getProperty("value" + q);
-
-							// Hardcoded field can take the value " "
-							if (hardcodedFieldValue == null
-									|| (hardcodedFieldValue != null && hardcodedFieldValue.isEmpty())) {
-								continue;
-
-							}
-
-						} else if (fieldEventCode != null && !fieldEventCode.trim().isEmpty()
-								&& !fieldEventCode.equals(currentLineEventCode)) {
-							Logger.debug(login, this, "after", "Information: property field " + name
-									+ " does not belong to the current line. Skipping... ");
-							continue;
-
-						}
-						String fieldDataType = properties.getProperty("datatype" + q);
-
-						if (!hardcodedFieldValue.isEmpty()) {
-							createInstanceFieldsMap(totalFieldsFromConfigFile, valorInputIdPedidoAvaliacao, name);
-							setProcDataValues(procData, login, name, fieldDataType, hardcodedFieldValue);
-
-						} else {
-							Integer fieldBegin = Integer.valueOf(properties.getProperty("begin" + q));
-							Integer fieldEnd = Integer.valueOf(properties.getProperty("end" + q));
-							String fieldValueFromTxt = line.substring(fieldBegin - 1, fieldEnd - 1);
-
-							if (fieldValueFromTxt == null
-									|| (!("Text".equals(fieldDataType) || "TextArray".equals(fieldDataType))
-											&& fieldValueFromTxt.trim().isEmpty())) {
-								String errorMessage = "";
-
-								if (fieldValueFromTxt == null) {
-									errorMessage = "Could not get data: " + name + " in field number: " + q
-											+ " , check if property is well defined or document is missing/NULL field ";
-								} else {
-									errorMessage = "Could not parse empty data for: " + name + " of " + fieldDataType
-											+ " data type. Skipping...";
-									cleanSelectedField(procData, name);
-								}
-								Logger.error(login, this, "after", errorMessage);
-								continue;
-
-							}
-							// Remove zeros à esquerda do numero
-							if("montanteCredito".equals(name)) {
-								fieldValueFromTxt = fieldValueFromTxt.replaceFirst("^0+(?!$)", "");
-							}
-							
-							// 2 - Edição Relatório 
-							if("tipoPedido".equals(name) && "2".equals(fieldValueFromTxt)) {
-								isRequestTypeEqualsEdition = true;
-								
-							}
-							
-							// So le se tipoPedido for 2 (Edição Relatório) 
-							if ("motivo".equals(name) || "observacoes".equals(name)) {
-								if (!isRequestTypeEqualsEdition) {
-									cleanSelectedField(procData, name);
-									continue;
-								} else {
-									fieldValueFromTxt = fieldValueFromTxt.replaceFirst("^0+(?!$)", "");
-								}
-							}
-							
-							createInstanceFieldsMap(totalFieldsFromConfigFile, valorInputIdPedidoAvaliacao, name);
-							setProcDataValues(procData, login, name, fieldDataType, fieldValueFromTxt.trim());
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private static void checkTxtForMissingMandatoryFields(ProcessData procData, String sOutputErrorVar,
-			String valorInputIdPedidoAvaliacao, Properties properties, String outputIdPedidos, String eventCodes,
-			Integer totalEventCodesFromConfigFile, Integer totalFieldsFromConfigFile, List<String> linesList) {
-
-		if (procData.getList(outputIdPedidos).getItems().get(0).getValue().toString().equals(valorInputIdPedidoAvaliacao)) {
+		if (procData.getList(outputIdPedidos).getItems().get(0).getValue().toString()
+				.equals(valorInputIdPedidoAvaliacao)) {
 			idPedidoToIgnoreMap = new ArrayListValuedHashMap<>();
 
 			for (int lineIndex = 0; lineIndex < linesList.size(); lineIndex++) {
-				String currentLineEventCode = linesList.get(lineIndex).substring(117, 121);
-				if (!eventCodes.contains(currentLineEventCode)) {
+				String lineEventualHeaderFooter = linesList.get(lineIndex).substring(headerFooterBeginPosition - 1,
+						headerFooterEndPosition - 1);
+
+				if (headerFooterNames.contains(lineEventualHeaderFooter)) {
 					continue;
 
 				}
@@ -286,56 +257,63 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 				for (int i = 1; i <= totalFieldsFromConfigFile; i++) {
 					Boolean isMandatory = Boolean.valueOf(properties.getProperty("mandatory" + i));
 
+					// If it is mandatory, check if it is to read from .prop (hardcoded) or from .txt line
 					if (isMandatory) {
-						String mandatoryFieldEventCode = properties.getProperty("event.code" + i);
-						if (currentLineEventCode.equals(mandatoryFieldEventCode)) {
-							String fieldName = properties.getProperty("name" + i);
-							String beginPositionString = properties.getProperty("begin" + i);
-							String endPositionString = properties.getProperty("end" + i);
+						String fieldName = properties.getProperty("name" + i);
+						String beginPositionString = properties.getProperty("begin" + i);
+						String endPositionString = properties.getProperty("end" + i);
 
-							if (beginPositionString != null && !beginPositionString.trim().isEmpty()
-									&& endPositionString != null && !endPositionString.trim().isEmpty()) {
-								Integer beginPositionMandatoryField = Integer.valueOf(beginPositionString);
-								Integer endPositionMandatoryField = Integer.valueOf(properties.getProperty("end" + i));
-								String mandatoryFieldValue = linesList.get(lineIndex).substring(beginPositionMandatoryField - 1, endPositionMandatoryField - 1);
+						if (beginPositionString != null && !beginPositionString.trim().isEmpty()
+								&& endPositionString != null && !endPositionString.trim().isEmpty()) { // le da linha
+							Integer beginPositionMandatoryField = Integer.valueOf(beginPositionString);
+							Integer endPositionMandatoryField = Integer.valueOf(endPositionString);
+							String mandatoryFieldValue = linesList.get(lineIndex)
+									.substring(beginPositionMandatoryField - 1, endPositionMandatoryField - 1);
 
-								if (mandatoryFieldValue != null && !mandatoryFieldValue.trim().isEmpty()) {
-									continue;
+							// Se campo obrigatorio foi encontrado na linha significa existe e podemos
+							// continuar para o proximo campo
+							// SE: campo obrigatorio for idservico ou tipoPedido e se os seus valores forem
+							// X, vai para o else para registar erros
 
-								} else {
-									for (int j = 1; j <= totalEventCodesFromConfigFile; j++) {
-										String eventCodeFromConfigFile = properties
-												.getProperty("single.field.event.code" + j);
-
-										if (currentLineEventCode.equals(eventCodeFromConfigFile)) {
-											Integer beginPosition = Integer.valueOf(properties.getProperty("single.field.begin" + j));
-											Integer endPosition = Integer.valueOf(properties.getProperty("single.field.end" + j));
-											String lineIdPedido = linesList.get(lineIndex).substring(beginPosition - 1,	endPosition - 1);
-
-											idPedidoToIgnoreMap.putAll(lineIdPedido, Arrays.asList(fieldName, String.valueOf(lineIndex + 1)));
-
-										}
-									}
-								}
+							if (mandatoryFieldValue != null && !mandatoryFieldValue.trim().isEmpty()
+									&& !isRegistryTypeToReject(fieldName, mandatoryFieldValue, registryTypeNames,
+											properties)) {
+								continue;
 
 							} else {
-								String hardcodedFieldValue = properties.getProperty("value" + i);
-								if (hardcodedFieldValue != null && !hardcodedFieldValue.trim().isEmpty()) {
-									continue;
+								// Registar quando erro e do tipo "Se tipo registo for X"
+								fieldName = isRegistryTypeToReject(fieldName, mandatoryFieldValue, registryTypeNames,
+										properties) ? fieldName + "-X" : fieldName;
 
-								} else {
-									for (int k = 1; k <= totalEventCodesFromConfigFile; k++) {
-										String eventCodeFromConfigFile = properties.getProperty("single.field.event.code" + k);
+								// Obter Posicao e valor idpedido para colocar mapa erros
+								Integer beginPosition = Integer.valueOf(properties.getProperty("single.field.begin"));
+								Integer endPosition = Integer.valueOf(properties.getProperty("single.field.end"));
+								String lineIdPedido = linesList.get(lineIndex).substring(beginPosition - 1,
+										endPosition - 1);
 
-										if (currentLineEventCode.equals(eventCodeFromConfigFile)) {
-											Integer beginPosition = Integer.valueOf(properties.getProperty("single.field.begin" + k));
-											Integer endPosition = Integer.valueOf(properties.getProperty("single.field.end" + k));
-											String lineIdPedido = linesList.get(lineIndex).substring(beginPosition - 1,	endPosition - 1);
+								idPedidoToIgnoreMap.putAll(lineIdPedido,
+										Arrays.asList(fieldName, String.valueOf(lineIndex + 1)));
+							}
 
-											idPedidoToIgnoreMap.putAll(lineIdPedido, Arrays.asList(fieldName, String.valueOf(lineIndex + 1)));
-										}
-									}
-								}
+						} else { // le do valor martelado
+							String hardcodedFieldValue = properties.getProperty("value" + i);
+							if (hardcodedFieldValue != null && !hardcodedFieldValue.trim().isEmpty()
+									&& !isRegistryTypeToReject(fieldName, hardcodedFieldValue, registryTypeNames,
+											properties)) {
+								continue;
+
+							} else {
+								// Registar quando erro e do tipo "Se tipo registo for X"
+								fieldName = isRegistryTypeToReject(fieldName, hardcodedFieldValue, registryTypeNames,
+										properties) ? fieldName + "-X" : fieldName;
+
+								Integer beginPosition = Integer.valueOf(properties.getProperty("single.field.begin"));
+								Integer endPosition = Integer.valueOf(properties.getProperty("single.field.end"));
+								String lineIdPedido = linesList.get(lineIndex).substring(beginPosition - 1,
+										endPosition - 1);
+
+								idPedidoToIgnoreMap.putAll(lineIdPedido,
+										Arrays.asList(fieldName, String.valueOf(lineIndex + 1)));
 							}
 						}
 					}
@@ -350,17 +328,35 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 					String firstValue = valuesList.get(r);
 					String secondValue = null;
 					if (valuesList.size() > r + 1) {
-						secondValue = valuesList.get(++r); 
+						secondValue = valuesList.get(++r);
 					}
-					procData.getList(sOutputErrorVar)
-							.addNewItem("Cannot not set flow var '" + firstValue + "' from line '" + secondValue
-									+ "' with null or empty value since it is a mandatory field. IDPEDIDO data number '"
-									+ key + "' from the list "
-									+ procData.getList(outputIdPedidos).getItems().toString().replaceAll("@(.*?)=", "")
-									+ " was not integrated.");
+					if (!firstValue.endsWith("-X")) {
+						procData.getList(sOutputErrorVar).addNewItem("Cannot not set flow var '" + firstValue
+								+ "' from line '" + secondValue
+								+ "' with null or empty value since it is a mandatory field. IDPEDIDO data number '"
+								+ key + "' from the list "
+								+ procData.getList(outputIdPedidos).getItems().toString().replaceAll("@(.*?)=", "")
+								+ " was not integrated.");
+					} else {
+						procData.getList(sOutputErrorVar).addNewItem("Flow var '"
+								+ firstValue.substring(0, firstValue.length() - 2) + "' from line '" + secondValue
+								+ "' has a not integrable line type (X = Contabilidade). IDPEDIDO data number '" + key
+								+ "' from the list "
+								+ procData.getList(outputIdPedidos).getItems().toString().replaceAll("@(.*?)=", "")
+								+ " was not integrated.");
+					}
 				}
 			}
 		}
+	}
+	
+	private static boolean isRegistryTypeToReject(String fieldName, String mandatoryFieldValue,
+			String registryTypeNames, Properties properties) {
+		// Variables mapped to "Tipo registo". If the read value is "X", reject IDPEDIDO(Xref)
+		if (registryTypeNames.contains(fieldName) && "X".equalsIgnoreCase(mandatoryFieldValue)) {
+			return true;
+		}
+		return false;
 	}
 	
 	private static void createInstanceFieldsMap(Integer totalFields, String valorInputIdPedidoAvaliacao, String fieldName) {

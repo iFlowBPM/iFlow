@@ -685,8 +685,10 @@ public class DocumentsP19068Bean extends DocumentsBean {
 					}
 
 					if (documentToIntegrateList != null && !documentToIntegrateList.isEmpty()) {
-						List<ArrayList<Document>> listOfList = new ArrayList<>();
-						listOfList.add(0, new ArrayList<Document>());
+						
+						// Check max file size
+						List<ArrayList<Document>> bySizelistOfList = new ArrayList<>();
+						bySizelistOfList.add(0, new ArrayList<Document>());
 
 						int position = 0;
 						for (int i = 0; i < documentToIntegrateList.size(); i++) {
@@ -695,20 +697,36 @@ public class DocumentsP19068Bean extends DocumentsBean {
 								largeFileList.add(documentToIntegrateList.get(i));
 
 							} else {
-								if (((totalFilesSize + currentFileSize) < maxFileSizeMegabyte)
-										&& documentToIntegrateList.size() < 500) {
+								if ((totalFilesSize + currentFileSize) < maxFileSizeMegabyte) {
 									totalFilesSize += currentFileSize;
-									listOfList.get(position).add(documentToIntegrateList.get(i));
+									bySizelistOfList.get(position).add(documentToIntegrateList.get(i));
 
 								} else {
 									position++;
-									listOfList.add(position, new ArrayList<Document>());
-									listOfList.get(position).add(documentToIntegrateList.get(i));
+									bySizelistOfList.add(position, new ArrayList<Document>());
+									bySizelistOfList.get(position).add(documentToIntegrateList.get(i));
 									totalFilesSize = currentFileSize;
 								}
 							}
 						}
 
+			            // Check max number of files
+						List<ArrayList<Document>> byNumberOfDocslistOfList = new ArrayList<>();
+						
+						for (int r = 0; r < bySizelistOfList.size(); r++) {
+							int numberDocs = bySizelistOfList.get(r).size();
+							final int subListsize = 500;
+
+							if (numberDocs >= 500) {
+								for (int q = 0; q < numberDocs; q += subListsize) {
+									byNumberOfDocslistOfList.add(new ArrayList<Document>(
+											bySizelistOfList.get(r).subList(q, Math.min(numberDocs, q + subListsize))));
+								}
+							} else {
+								byNumberOfDocslistOfList.add(new ArrayList<Document>(bySizelistOfList.get(r)));
+							}
+						}
+						
 						// Validar: se o tamanho do ficheiro sozinho for maior que 100mb, registar erro
 						// individual na bd
 						if (largeFileList != null && !largeFileList.isEmpty()) {
@@ -724,10 +742,9 @@ public class DocumentsP19068Bean extends DocumentsBean {
 						}
 
 						/**
-						 * documentaryAreaCodesList tem lista de areas documentais
+						 * documentaryAreaCodesList tem lista de banco para se corresponder a areas documentais: NB: PGESAVAL, NBA: YGESAVAL
 						 * 
-						 * Para já: Está a ir buscar valor do .properties. documentaryAreaCodesList trás
-						 * os valores, mas ainda não estão a ser usados Falta definir
+						 * Para já: Está a ir buscar o primeiro valor do documentaryAreaCodesList para o nome do ficheiro. Falta definir se é para ser assim.
 						 * 
 						 * 
 						 */
@@ -737,15 +754,34 @@ public class DocumentsP19068Bean extends DocumentsBean {
 
 						if (outputFolderPath != null && !outputFolderPath.trim().isEmpty()) {
 
-							if (listOfList != null && !listOfList.isEmpty()) {
+							if (byNumberOfDocslistOfList != null && !byNumberOfDocslistOfList.isEmpty()) {
 								int number = 0;
 								int zipCounter = 0;
 
-								for (int m = 0; m < listOfList.size(); m++) { // Por cada batch da listOfList
+								for (int m = 0; m < byNumberOfDocslistOfList.size(); m++) { // Por cada batch da listOfList
 									String origin = properties.getProperty("ORIGEM");
 									String applicationCode = properties.getProperty("CODIGO_APLICACAO");
-									String group = properties.getProperty("GRUPO");
-									String docArea = properties.getProperty("AREA_DOCUMENTAL");
+									
+									String docArea = null;
+									if (documentaryAreaCodesList.get(0) != null
+											&& !documentaryAreaCodesList.get(0).isEmpty()) {
+										if ("NB".equalsIgnoreCase(documentaryAreaCodesList.get(0))) {
+											docArea = "PGESAVAL";
+
+										} else if ("NBA".equalsIgnoreCase(documentaryAreaCodesList.get(0))) {
+											docArea = "YGESAVAL";
+										}
+									}
+									
+									String group = null;
+									if (docArea != null) {
+										if ("PGESAVAL".equals(docArea)) {
+											group = "BES00WD1";
+
+										} else if ("YGESAVAL".equals(docArea)) {
+											group = "BAC00WD1";
+										}
+									}
 									String groupFilenameValue = properties.getProperty("GROUP_FILENAME_VALUE");
 
 									if (origin == null || applicationCode == null || group == null || docArea == null
@@ -796,7 +832,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 									PrintWriter printWriter = new PrintWriter(fileWriter);
 									printWriter.println("CODEPAGE:850");
 
-									for (int n = 0; n < listOfList.get(m).size(); n++) { // Por cada Document do batch
+									for (int n = 0; n < byNumberOfDocslistOfList.get(m).size(); n++) { // Por cada Document do batch
 																							// listOfList[i]
 //								indexKeyList = USR1,USR2,USR3,USR4,USR5,USR6
 //							    indexValuesList = Referência do Relatório de avaliação,Data Relatório de avaliação,Tipo de Documento,NIF,Referência WF,Referência Crédito
@@ -814,13 +850,13 @@ public class DocumentsP19068Bean extends DocumentsBean {
 										printWriter.println("GROUP_LENGTH:0");
 										printWriter
 												.println("GROUP_FILENAME:" + groupFilenameValue + filesAndFoldersPattern
-														+ ".ARD.OUT/" + listOfList.get(m).get(n).getFileName());
+														+ ".ARD.OUT/" + byNumberOfDocslistOfList.get(m).get(n).getFileName());
 
 										// Armazena documento
 										File documentToStore = new File(unsescapedSubPath + File.separator
-												+ listOfList.get(m).get(n).getFileName());
+												+ byNumberOfDocslistOfList.get(m).get(n).getFileName());
 										FileUtils.writeByteArrayToFile(documentToStore,
-												listOfList.get(m).get(n).getContent());
+												byNumberOfDocslistOfList.get(m).get(n).getContent());
 
 										// Apos colocar o zip na pasta, marcar estado lido para integracao
 										// (FILE_READ_AND_READY_TO_SEND)
@@ -829,7 +865,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 												"UPDATE documents_p19068 SET state=?, lastupdated=? WHERE docid=?;",
 												new Object[] { DocumentState.FILE_READ_AND_READY_TO_SEND.value,
 														new Timestamp(System.currentTimeMillis()),
-														listOfList.get(m).get(n).getDocId() },
+														byNumberOfDocslistOfList.get(m).get(n).getDocId() },
 												new Integer[] { Types.INTEGER, Types.TIMESTAMP, Types.INTEGER });
 
 									}
@@ -864,7 +900,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 								}
 
 								if (eventFileName != null && !eventFileName.isEmpty()
-										&& zipCounter == listOfList.size()) {
+										&& zipCounter == byNumberOfDocslistOfList.size()) {
 									deleteEventFile(login, eventFileName);
 								}
 
