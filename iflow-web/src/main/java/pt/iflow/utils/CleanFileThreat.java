@@ -46,8 +46,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.core.ProcessCatalogueImpl;
 import pt.iflow.api.db.DatabaseInterface;
-import pt.iflow.api.processdata.ProcessData;
-import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
@@ -64,7 +62,7 @@ public class CleanFileThreat {
 	public CleanFileThreat() {
 		Timer timer = new Timer("Timer");
 		Calendar cal = Calendar.getInstance();
-		timer.schedule(new CallCheckPointApi(), cal.getTime(), 1 * 90 * 1000); // agora esta de 90-90 seg
+		timer.schedule(new CallCheckPointApi(), cal.getTime(), 1 * 90 * 1000L); // agora esta de 90-90 seg
 	}
 
 	private enum CheckPointState {
@@ -135,7 +133,6 @@ public class CleanFileThreat {
 			try {
 				userInfo = BeanFactory.getUserInfoFactory().newClassManager(this.getClass().getName());
 				ProcessCatalogueImpl catalogue = new ProcessCatalogueImpl();
-				ProcessData procData = new ProcessData(catalogue, -1, Const.nSESSION_PID, Const.nSESSION_SUBPID);
 				login = userInfo.getUtilizador();
 				Properties properties = Setup.readPropertiesFile("P19068.properties");
 				String apiKey = properties.getProperty("TE_API_KEY");
@@ -192,8 +189,7 @@ public class CleanFileThreat {
 				// Obter dois mapas de filename/datadoc para as duas listas de docid: ready to
 				// process. Processing
 				// Key - docid; Values - filename, datadoc
-				MultiValuedMap<Integer, List<Object>> documentsReadyToProcessMap = new ArrayListValuedHashMap<>(); // DOCUMENT_READY_TO_PROCESS
-				// 0
+				MultiValuedMap<Integer, List<Object>> documentsReadyToProcessMap = new ArrayListValuedHashMap<>(); // DOCUMENT_READY_TO_PROCESS 0
 				MultiValuedMap<Integer, List<Object>> documentProcessingStateMap = new ArrayListValuedHashMap<>();
 
 				if (!docIdReadyToProcessList.isEmpty()) { // DOCUMENT_READY_TO_PROCESS 0
@@ -420,7 +416,6 @@ public class CleanFileThreat {
 									Connection cn = null;
 									try {
 										cn = DatabaseInterface.getConnection(userInfo);
-										Date date = new Date();
 
 										List<Integer> documentsCheckPointList = retrieveSimpleField(cn, userInfo,
 												"select state from documents_checkpoint where docid = {0};",
@@ -581,7 +576,7 @@ public class CleanFileThreat {
 	 * 
 	 * 
 	 */
-	private int retrieveFileState(int docId) {
+	public int retrieveFileState(int docId) {
 		UserInfoInterface userInfo = BeanFactory.getUserInfoFactory().newClassManager(this.getClass().getName());
 		try {
 			Connection connection = DatabaseInterface.getConnection(userInfo);
