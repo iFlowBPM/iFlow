@@ -961,7 +961,7 @@ public class CleanFileThreat {
 									}
 								}
 
-								if (extractResult != null && !extractResult.isEmpty()) {
+								if (extractResult != null && !extractResult.trim().isEmpty()) {
 									if ("CP_EXTRACT_RESULT_SUCCESS".equals(extractResult.trim())
 											|| (downloadId != null && !downloadId.trim().isEmpty())) {
 										if (downloadId != null && !downloadId.trim().isEmpty()) {
@@ -977,7 +977,7 @@ public class CleanFileThreat {
 											}
 
 											// Registo tabela documents_checkpoint
-											insertFieldsDb(userInfo, docId, CheckPointState.QUERY_SUCCESS.value, reason,
+											insertFieldsDb(userInfo, docId, CheckPointState.QUERY_SUCCESS.value, reason + " " + extractResult,
 													sha256hex, cookieString, downloadId, queryRetries, login);
 											return true;
 
@@ -985,7 +985,7 @@ public class CleanFileThreat {
 											Logger.error(login, this, "CleanFileThreat.callQueryApi()",
 													"extracted_file_download_id response field is null or empty ");
 
-											insertFieldsDb(userInfo, docId, CheckPointState.QUERY_FAILURE.value, reason,
+											insertFieldsDb(userInfo, docId, CheckPointState.QUERY_FAILURE.value, reason + " " + extractResult,
 													sha256hex, cookieString, "", queryRetries, login);
 											return false;
 										}
