@@ -21,6 +21,7 @@ import java.util.TimerTask;
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -60,6 +61,7 @@ import pt.iflow.blocks.P17040.utils.FileImportUtils;
  */
 
 public class CleanFileThreat {
+	Properties properties = Setup.readPropertiesFile("P19068.properties");	
 	
 	public CleanFileThreat() {
 		Timer timer = new Timer("Timer");
@@ -137,7 +139,6 @@ public class CleanFileThreat {
 				ProcessCatalogueImpl catalogue = new ProcessCatalogueImpl();
 				ProcessData procData = new ProcessData(catalogue, -1, Const.nSESSION_PID, Const.nSESSION_SUBPID);
 				login = userInfo.getUtilizador();
-				Properties properties = Setup.readPropertiesFile("P19068.properties");
 				String apiKey = properties.getProperty("TE_API_KEY");
 
 				// DOCUMENT_READY_TO_PROCESS docid list
@@ -577,11 +578,15 @@ public class CleanFileThreat {
 	 * Value 2 if documents are cleaned (DOWNLOAD_SUCCESS_DOCUMENT_CLEANED(6))
 	 * Value 3 if documents are not cleaned (DOCUMENT_NOT_CLEANED(7) - "combined_verdict": "benign")
 	 * Value 4 if documents are potentially infected (DOCUMENT_NOT_CLEANED_POTENTIALLY_INFECTED(8) - "combined_verdict": "malicious")
+	 * Value 5 if Threat Extraction is deactivated
 	 * Value -1 if file is not found
 	 * 
 	 * 
 	 */
-	private int retrieveFileState(int docId) {
+	public int retrieveFileState(int docId) {
+		if(StringUtils.isBlank(properties.getProperty("TE_API_KEY")))
+			return 5;
+			
 		UserInfoInterface userInfo = BeanFactory.getUserInfoFactory().newClassManager(this.getClass().getName());
 		try {
 			Connection connection = DatabaseInterface.getConnection(userInfo);

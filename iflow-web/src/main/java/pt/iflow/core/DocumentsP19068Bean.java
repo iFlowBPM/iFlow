@@ -56,8 +56,11 @@ import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.connector.document.DMSDocument;
 import pt.iflow.connector.document.Document;
+import pt.iflow.utils.CleanFileThreat;
 
 public class DocumentsP19068Bean extends DocumentsBean {	
+	CleanFileThreat cleanFileThreat;
+	
 	private DocumentsP19068Bean() {
 		
 		Properties properties = Setup.readPropertiesFile("P19068.properties");
@@ -86,6 +89,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 		Timer timer = new Timer();    	
     	timer.schedule(new sendToGeDocTask(), cal.getTime(), (long)period);
     	
+    	cleanFileThreat = new CleanFileThreat();
 	}
 
 	public static DocumentsBean getInstance() {
@@ -235,7 +239,20 @@ public class DocumentsP19068Bean extends DocumentsBean {
 				Logger.warning(login, this, "getDocument",
 						procData.getSignature() + "Document not found.");
 			}
-
+			
+			Integer cleanState = cleanFileThreat.retrieveFileState(retObj.getDocId());
+			if(cleanState == 0 || cleanState == 1){
+				retObj.setContent(new byte[0]);
+				retObj.setFileName("(SECURITY_VALIDATION_IN_PROGRESS)_" + retObj.getFileName());
+			} else if(cleanState == 2 || cleanState == 5){
+				;
+			} else if(cleanState == 3 || cleanState == 4){
+				retObj.setContent(new byte[0]);
+				retObj.setFileName("(SECURITY_VALIDATION_INFECTED)_" + retObj.getFileName());
+			} else {
+				retObj.setContent(new byte[0]);
+				retObj.setFileName("(SECURITY_VALIDATION_ERROR)_" + retObj.getFileName());			
+			}
 		} catch (SQLException sqle) {
 			Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",	"SQL state: " + sqle.getSQLState() + " and message: " + sqle.getMessage(), sqle);
 		} catch (Exception e) {
@@ -246,6 +263,12 @@ public class DocumentsP19068Bean extends DocumentsBean {
 		}
 		return retObj;
 	}	
+	
+	Document addDocument(UserInfoInterface userInfo, ProcessData procData, Document adoc, Connection db) throws Exception {
+		Document result = super.addDocument(userInfo, procData, adoc, db);
+		cleanFileThreat.uploadFile(result.getDocId());
+		return result;
+	}
 	
 	class sendToGeDocTask extends TimerTask {
 		public void run() {
