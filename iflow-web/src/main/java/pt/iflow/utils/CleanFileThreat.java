@@ -111,7 +111,7 @@ public class CleanFileThreat {
 						new Object[] { documentId, CheckPointState.DOCUMENT_READY_TO_PROCESS.value,
 								new java.sql.Timestamp(date.getTime()) });
 			} else {
-				if (documentsCheckPointList.get(0) == CheckPointState.DOWNLOAD_SUCCESS_DOCUMENT_CLEANED.value) {
+				if (documentsCheckPointList.get(0) != CheckPointState.DOWNLOAD_SUCCESS_DOCUMENT_CLEANED.value) {
 					FileImportUtils.insertSimpleLine(connection, userInfo,
 							"UPDATE documents_checkpoint SET state=?, updated=? WHERE docid=?;",
 							new Object[] { CheckPointState.DOCUMENT_READY_TO_PROCESS.value,
