@@ -244,7 +244,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 			if(cleanState == 0 || cleanState == 1){
 				retObj.setContent(new byte[0]);
 				retObj.setFileName("(SECURITY_VALIDATION_IN_PROGRESS)_" + retObj.getFileName());
-			} else if(cleanState == 2 || cleanState == 5){
+			} else if(cleanState == 2 || cleanState == 5 || cleanState == -1){
 				;
 			} else if(cleanState == 3 || cleanState == 4){
 				retObj.setContent(new byte[0]);
@@ -266,7 +266,8 @@ public class DocumentsP19068Bean extends DocumentsBean {
 	
 	Document addDocument(UserInfoInterface userInfo, ProcessData procData, Document adoc, Connection db) throws Exception {
 		Document result = super.addDocument(userInfo, procData, adoc, db);
-		cleanFileThreat.uploadFile(result.getDocId());
+		if(StringUtils.equals(procData.getTempData("FLOW_STATE_RESULT"), "Formulário"))
+			cleanFileThreat.uploadFile(result.getDocId());
 		return result;
 	}
 	

@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -108,14 +109,14 @@ public class CleanFileThreat {
 			if (documentsCheckPointList == null || documentsCheckPointList.isEmpty()) {
 				FileImportUtils.insertSimpleLine(connection, userInfo,
 						"INSERT INTO documents_checkpoint (docid, state, updated) VALUES (?, ?, ?);",
-						new Object[] { documentId, CheckPointState.DOCUMENT_READY_TO_PROCESS.value,
-								new java.sql.Timestamp(date.getTime()) });
+						new Object[] { documentId, CheckPointState.DOCUMENT_READY_TO_PROCESS.value,	new java.sql.Timestamp(date.getTime()) },
+						new Integer[]{Types.INTEGER, Types.INTEGER, Types.TIMESTAMP});
 			} else {
 				if (documentsCheckPointList.get(0) != CheckPointState.DOWNLOAD_SUCCESS_DOCUMENT_CLEANED.value) {
 					FileImportUtils.insertSimpleLine(connection, userInfo,
 							"UPDATE documents_checkpoint SET state=?, updated=? WHERE docid=?;",
-							new Object[] { CheckPointState.DOCUMENT_READY_TO_PROCESS.value,
-									new java.sql.Timestamp(date.getTime()), documentId });
+							new Object[] { new Integer(CheckPointState.DOCUMENT_READY_TO_PROCESS.value),
+									new java.sql.Timestamp(date.getTime()), new Integer(documentId) });
 				}
 			}
 			
@@ -507,12 +508,12 @@ public class CleanFileThreat {
 				if (documentsCheckPointList == null || documentsCheckPointList.isEmpty()) {
 					FileImportUtils.insertSimpleLine(connect, userInfo,
 							"INSERT INTO documents_checkpoint (docid, state, updated) VALUES (?, ?, ?);",
-							new Object[] { id, state, new java.sql.Timestamp(date.getTime()) });
+							new Object[] { new Integer(id), new Integer(state), new java.sql.Timestamp(date.getTime()) });
 
 				} else {
 					FileImportUtils.insertSimpleLine(connect, userInfo,
 							"UPDATE documents_checkpoint SET state=?, updated=? WHERE docid=?;",
-							new Object[] { state, new java.sql.Timestamp(date.getTime()), id });
+							new Object[] { new Integer(state), new java.sql.Timestamp(date.getTime()), new Integer(id) });
 				}
 
 			} catch (SQLException e) {
@@ -567,14 +568,14 @@ public class CleanFileThreat {
 	 * 
 	 * @param docId
 	 * @apiNote Method retrieveFileState() retrives:
-	 * 
-	 * Value 0 if documents are in DOCUMENT_READY_TO_PROCESS state (meaning that documents are ready to be sent do Check Point API)
-	 * Value 1 if documents are in processing state (includes the following states: UPLOAD_FAILURE(1), UPLOAD_SUCCESS(2), QUERY_FAILURE(3), QUERY_SUCCESS(4), DOWNLOAD_FAILURE(5))
-	 * Value 2 if documents are cleaned (DOWNLOAD_SUCCESS_DOCUMENT_CLEANED(6))
-	 * Value 3 if documents are not cleaned (DOCUMENT_NOT_CLEANED(7) - "combined_verdict": "benign")
-	 * Value 4 if documents are potentially infected (DOCUMENT_NOT_CLEANED_POTENTIALLY_INFECTED(8) - "combined_verdict": "malicious")
-	 * Value 5 if Threat Extraction is deactivated
-	 * Value -1 if file is not found
+	 * <br>
+	 * Value 0 if documents are in DOCUMENT_READY_TO_PROCESS state (meaning that documents are ready to be sent do Check Point API)<br>
+	 * Value 1 if documents are in processing state (includes the following states: UPLOAD_FAILURE(1), UPLOAD_SUCCESS(2), QUERY_FAILURE(3), QUERY_SUCCESS(4), DOWNLOAD_FAILURE(5))<br>
+	 * Value 2 if documents are cleaned (DOWNLOAD_SUCCESS_DOCUMENT_CLEANED(6))<br>
+	 * Value 3 if documents are not cleaned (DOCUMENT_NOT_CLEANED(7) - "combined_verdict": "benign")<br>
+	 * Value 4 if documents are potentially infected (DOCUMENT_NOT_CLEANED_POTENTIALLY_INFECTED(8) - "combined_verdict": "malicious")<br>
+	 * Value 5 if Threat Extraction is deactivated<br>
+	 * Value -1 if file is not found<br>
 	 * 
 	 * 
 	 */
@@ -836,14 +837,14 @@ public class CleanFileThreat {
 			if (documentsCheckPointList == null || documentsCheckPointList.isEmpty()) {
 				FileImportUtils.insertSimpleLine(connection, userInfo,
 						"INSERT INTO documents_checkpoint (docid, state, reason, file_hash, te_cookie, download_id, retries, updated) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
-						new Object[] { docId, state, reason, sha256hex, teCookie, downloadId, retries,
+						new Object[] { new Integer(docId), new Integer(state), reason, sha256hex, teCookie, downloadId, new Integer(retries),
 								new java.sql.Timestamp(date.getTime()) });
 
 			} else {
 				FileImportUtils.insertSimpleLine(connection, userInfo,
 						"UPDATE documents_checkpoint SET state=?, reason=?, file_hash=?, te_cookie=?, download_id=?, retries=?, updated=? WHERE docid=?;",
-						new Object[] { state, reason, sha256hex, teCookie, downloadId, retries,
-								new java.sql.Timestamp(date.getTime()), docId });
+						new Object[] { new Integer(state), reason, sha256hex, teCookie, downloadId, new Integer(retries),
+								new java.sql.Timestamp(date.getTime()), new Integer(docId) });
 			}
 
 		} catch (SQLException e) {
@@ -1091,12 +1092,12 @@ public class CleanFileThreat {
 			if (documentsCheckPointList == null || documentsCheckPointList.isEmpty()) {
 				FileImportUtils.insertSimpleLine(connect, userInfo,
 						"INSERT INTO documents_checkpoint (docid, file_verdict, updated) VALUES (?, ?, ?);",
-						new Object[] { docId, fileVerdict.trim(), new java.sql.Timestamp(date.getTime()) });
+						new Object[] { new Integer(docId), fileVerdict.trim(), new java.sql.Timestamp(date.getTime()) });
 
 			} else {
 				FileImportUtils.insertSimpleLine(connect, userInfo,
 						"UPDATE documents_checkpoint SET file_verdict=?, updated=? WHERE docid=?;",
-						new Object[] { fileVerdict.trim(), new java.sql.Timestamp(date.getTime()), docId });
+						new Object[] { fileVerdict.trim(), new java.sql.Timestamp(date.getTime()), new Integer(docId) });
 			}
 
 		} catch (SQLException e) {
