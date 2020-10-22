@@ -513,6 +513,60 @@
         <description>Create Excel Document in Sheet</description>
         <i18n>library.utils.block.gen_xls_sheet</i18n>
     </XmlBlock>
+        <XmlBlock>
+       <class>BlockCriarCSV</class>
+       <XmlPort>
+           <name>portIn</name>
+           <description>portIn</description>
+           <in_out>in</in_out>
+           <position>
+               <x>-5</x>
+               <y>30</y>
+           </position>
+       </XmlPort>
+       <XmlPort>
+           <name>portOutOk</name>
+           <description>portOutOk</description>
+           <in_out>out</in_out>
+           <position>
+               <x>102</x>
+               <y>20</y>
+           </position>
+       </XmlPort>
+       <XmlPort>
+           <name>portOutError</name>
+           <description>portOutError</description>
+           <in_out>out</in_out>
+           <position>
+               <x>102</x>
+               <y>45</y>
+           </position>
+       </XmlPort>
+       <XmlAttribute>
+           <name>filename</name>
+           <description>File Name</description>
+           <value />
+       </XmlAttribute>
+       <XmlAttribute>
+           <name>variable</name>
+           <description>Variable</description>
+           <value />
+       </XmlAttribute>
+       <XmlAttribute>
+           <name>separator</name>
+           <description>Separator</description>
+           <value />
+       </XmlAttribute>
+       <XmlAttribute>
+           <name>columnValues</name>
+           <description>Column Values</description>
+           <value />
+       </XmlAttribute>
+       <image>bpmn_data_import.png</image>
+       <className>pt.iknow.floweditor.blocks.AlteraAtributosCriarDocumento</className>
+       <description>Create CSV Document</description>
+       <i18n>library.utils.block.gen_csv</i18n>
+    </XmlBlock>
     
     <XmlBlock>
         <class>BlockFormTemplate</class>
@@ -880,5 +934,4 @@
         <description>Remove element from array</description>
         <i18n>library.utils.block.remove_from_array</i18n>
     </XmlBlock>
-    
 </XmlLibrary>
