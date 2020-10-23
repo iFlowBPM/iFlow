@@ -164,7 +164,9 @@ public class CleanFileThreat {
 							docIdReadyToProcessList.add(rst.getInt("docid"));
 
 						} else if (rst.getInt("state") != CheckPointState.DOCUMENT_READY_TO_PROCESS.value
-								&& rst.getInt("state") != CheckPointState.DOWNLOAD_SUCCESS_DOCUMENT_CLEANED.value) {
+								&& rst.getInt("state") != CheckPointState.DOWNLOAD_SUCCESS_DOCUMENT_CLEANED.value 
+								&& rst.getInt("state") != CheckPointState.DOCUMENT_NOT_CLEANED.value
+								&& rst.getInt("state") != CheckPointState.DOCUMENT_NOT_CLEANED_POTENTIALLY_INFECTED.value) {
 							Logger.error(login, this, "CleanFileThreat.CallCheckPointApi.this.run()",
 									"Obtaining values for docid number: " + rst.getInt("docid"));
 							List<Object> values = new ArrayList<>();
@@ -351,8 +353,6 @@ public class CleanFileThreat {
 
 									// Se estado UPLOAD_FAILURE 1, chama 3 APIs
 									if (CheckPointState.UPLOAD_FAILURE.value == firstValueState) {
-										// callQueryApi(apiKey, userInfo, id, firstValueFilename, thirdValueFileHash,
-										// json, login, secondValueRetries);
 										boolean isFileUploaded = callUploadApi(apiKey, userInfo, id, firstValueFilename,
 												secondValueDataDoc, thirdValueFileHash, json, login,
 												secondValueRetries);
