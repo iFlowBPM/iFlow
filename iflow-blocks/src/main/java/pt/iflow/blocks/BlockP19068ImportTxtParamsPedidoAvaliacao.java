@@ -127,7 +127,10 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 					cleanSelectedField(procData, fieldName);
 				}
 			}
-
+			
+			List<Integer> sequenceCounterList = new ArrayList<>();
+			sequenceCounterList.add(0);
+			
 			for (String line : linesList) {
 				String currentLineEventCode = line.substring(117, 121);
 				if (!eventCodes.contains(currentLineEventCode)) {
@@ -135,7 +138,7 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 
 				}
 				obtainAndSetConfigFileFields(procData, login, valorInputIdPedidoAvaliacao, properties,
-						totalEventCodesFromConfigFile, totalFieldsFromConfigFile, line, currentLineEventCode);
+						totalEventCodesFromConfigFile, totalFieldsFromConfigFile, line, currentLineEventCode, sequenceCounterList);
 			}
 
 		} catch (Exception e) {
@@ -158,7 +161,7 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 
 	private void obtainAndSetConfigFileFields(ProcessData procData, String login, String valorInputIdPedidoAvaliacao,
 			Properties properties, Integer totalEventCodesFromConfigFile, Integer totalFieldsFromConfigFile,
-			String line, String currentLineEventCode) {
+			String line, String currentLineEventCode, List<Integer> sequenceCounterList) {
 
 		for (int p = 1; p <= totalEventCodesFromConfigFile; p++) {
 			String eventCodeFromConfigFile = properties.getProperty("single.field.event.code" + p);
@@ -239,6 +242,24 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 								continue;
 
 							}
+							
+							// Para cada linha do tipo B053, criar num array um id de fração com o ID do pedido concatenado (sem zeros à esq.)
+							// com um sequenciador 001, 002, etc
+							if("lista_intIdFracao".equals(name)) {
+								int sequenceCounter = (int)sequenceCounterList.get(0);
+								int length = String.valueOf(sequenceCounter).length();
+								String sequenceNumber = "";
+                                
+								if (length < 4) {
+							        sequenceNumber = String.format("%03d", sequenceCounter);
+								} else {
+									sequenceNumber = String.format("%0" + length + "d", sequenceCounter);
+							    }
+								
+								fieldValueFromTxt = valorInputIdPedidoAvaliacao.replaceFirst("^0+(?!$)", "") + "." + sequenceNumber;
+								sequenceCounterList.set(0, sequenceCounter+=1);
+							}
+							
 							// Remove zeros à esquerda do numero
 							if("montanteCredito".equals(name)) {
 								fieldValueFromTxt = fieldValueFromTxt.replaceFirst("^0+(?!$)", "");
