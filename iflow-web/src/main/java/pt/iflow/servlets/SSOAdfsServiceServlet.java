@@ -2,7 +2,7 @@ package pt.iflow.servlets;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URLEncoder;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -14,6 +14,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.opensaml.Configuration;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.saml2.core.Assertion;
@@ -59,7 +60,7 @@ public class SSOAdfsServiceServlet extends javax.servlet.http.HttpServlet implem
         
         if(samlResponseHeader == null) { 
         	samlResponseHeader = req.getParameter("SAMLResponse");
-        	base64DecodedResponse = Base64.decodeBase64(URLEncoder.encode(samlResponseHeader, StandardCharsets.UTF_8.toString()).getBytes());
+        	base64DecodedResponse = Base64.decodeBase64(StringEscapeUtils.unescapeHtml(samlResponseHeader).getBytes());
         	String decodedString = new String(base64DecodedResponse);
         	base64DecodedResponse = decodedString.substring(decodedString.indexOf("<"), decodedString.lastIndexOf(">") + 1).getBytes("UTF-8");
         	
