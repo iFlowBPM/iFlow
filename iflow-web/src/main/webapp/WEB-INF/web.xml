@@ -471,6 +471,10 @@ Disabled. Use servlet container defaults
     <servlet-name>SSOService</servlet-name>
     <servlet-class>pt.iflow.servlets.SSOServiceServlet</servlet-class>
   </servlet>  
+   <servlet>
+    <servlet-name>SSOAdfsService</servlet-name>
+    <servlet-class>pt.iflow.servlets.SSOAdfsServiceServlet</servlet-class>
+  </servlet> 
   <servlet>
     <description>Proxy timestamping service</description>
     <display-name>TSAService</display-name>
@@ -826,6 +830,10 @@ Disabled. Use servlet container defaults
    <servlet-mapping>
       <servlet-name>SSOService</servlet-name>
       <url-pattern>/saml2/SSOService</url-pattern>
+   </servlet-mapping>
+     <servlet-mapping>
+      <servlet-name>SSOService</servlet-name>
+      <url-pattern>/adfs/SSOService</url-pattern>
    </servlet-mapping>
    
    <!-- REST Servlet 

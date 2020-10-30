@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -25,6 +26,7 @@ import pt.iflow.api.transition.ProfilesTO;
 import pt.iflow.api.userdata.UserData;
 import pt.iflow.api.userdata.views.UserViewInterface;
 import pt.iflow.api.utils.Logger;
+import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.connector.document.Document;
 import pt.iknow.utils.StringUtilities;
@@ -79,6 +81,7 @@ public class BlockP19068SyncUsersAndProfiles extends Block {
 		StringBuffer logMsg = new StringBuffer();
 		Documents docBean = BeanFactory.getDocumentsBean();
 		UserManager userManager = BeanFactory.getUserManagerBean();
+		Properties properties = Setup.readPropertiesFile("P19068.properties");
 
 		String sInputDocumentVar = this.getAttribute(INPUT_DOCUMENT);
 		String sOutputErrorDocumentVar = this.getAttribute(OUTPUT_ERROR_DOCUMENT);
@@ -105,13 +108,13 @@ public class BlockP19068SyncUsersAndProfiles extends Block {
 				//tratar input
 				if(StringUtils.isBlank(line))
 					continue;
-				String username,name,profile,email;
+				String username,name,profileAGP,email;
 				
 				try{
-					String[] tokens = line.split(",");
+					String[] tokens = line.split(";");
 					username = tokens[1];
 					name = tokens[2];
-					profile = tokens[4];
+					profileAGP = tokens[6];
 					email = tokens[7];
 				} catch(Exception e){
 					Logger.error(login, this, "after", procData.getSignature() + "error parsing line: " + line, e);
@@ -131,28 +134,34 @@ public class BlockP19068SyncUsersAndProfiles extends Block {
 					}
 				}
 				
-				ProfilesTO[] profileTOList = userManager.getAllProfiles(userInfo);
-				ProfilesTO profileTO = null;
-				for(ProfilesTO p: profileTOList)
-					if(StringUtils.equalsIgnoreCase(p.getName(), profile))
-						profileTO = p;
-				if(profileTO == null){
-					ProfilesTO newProfile = new ProfilesTO(profile, profile, userInfo.getOrganization());
-					Boolean sucess = userManager.createProfile(userInfo, newProfile);
-					if(!sucess){
-						Logger.error(login, this, "after", procData.getSignature() + "error creating profile: "+ profile+ " at line : " + line);
-						errorList.add("error creating profile: "+ profile+ " at line : " + line);
-						continue;
+				String mappedProfile = (String) properties.get("agp." + profileAGP);
+				String profiles[] = mappedProfile.split(";");
+				for(String profile: profiles){
+					ProfilesTO[] profileTOList = userManager.getAllProfiles(userInfo);
+					ProfilesTO profileTO = null;
+					for(ProfilesTO p: profileTOList)
+						if(StringUtils.equalsIgnoreCase(p.getName(), profile))
+							profileTO = p;
+					if(profileTO == null){
+						ProfilesTO newProfile = new ProfilesTO(profile, profile, userInfo.getOrganization());
+						Boolean sucess = userManager.createProfile(userInfo, newProfile);
+						if(!sucess){
+							Logger.error(login, this, "after", procData.getSignature() + "error creating profile: "+ profile+ " at line : " + line);
+							errorList.add("error creating profile: "+ profile+ " at line : " + line);
+							continue;
+						}
 					}
+					profileTOList = userManager.getAllProfiles(userInfo);
+					profileTO = null;
+					for(ProfilesTO p: profileTOList)
+						if(StringUtils.equalsIgnoreCase(p.getName(), profile))
+							profileTO = p;
+					
+					uvi = userManager.findUser(userInfo, username);
+					userManager.addUserProfile(userInfo, uvi.getUserId(), "" + profileTO.getProfileId());
 				}
-				profileTOList = userManager.getAllProfiles(userInfo);
-				profileTO = null;
-				for(ProfilesTO p: profileTOList)
-					if(StringUtils.equalsIgnoreCase(p.getName(), profile))
-						profileTO = p;
 				
-				uvi = userManager.findUser(userInfo, username);
-				userManager.addUserProfile(userInfo, uvi.getUserId(), "" + profileTO.getProfileId());
+
 //				Boolean sucess = userManager.addUserProfile(userInfo, uvi.getUserId(), "" + profileTO.getProfileId());
 //				if(!sucess){
 //					Logger.error(login, this, "after", procData.getSignature() + "error associating user/profile: "+ username + " , " + profile+ " at line : " + line);

@@ -983,12 +983,21 @@ public class BlockData extends Block {
     List<List<String>>[] aaValues = new List[1];
     aaValues[0] = aalValues;
 
-    return BlockData.exportToSpreadSheet(abBlock, userInfo, saSheets, aaValues, psOut);    
-
+    return BlockData.exportToSpreadSheet(abBlock, userInfo, saSheets, aaValues, psOut); 
   }    
 
-  public static String exportToSpreadSheet(Block abBlock, UserInfoInterface userInfo, String[] asaSheetName, List<List<String>>[] aalaValues, OutputStream psOut) {
+  @SuppressWarnings("unchecked")
+  public static String exportToSpreadSheet(Block abBlock, UserInfoInterface userInfo, String asSheetName, String separator, List<List<String>> aalValues, OutputStream psOut) {
+    String[] saSheets = new String[1];
+    saSheets[0] = asSheetName;
+    List<List<String>>[] aaValues = new List[1];
+    aaValues[0] = aalValues;
 
+    return BlockData.exportToSpreadSheet(abBlock, userInfo, saSheets, separator, aaValues, psOut);    
+
+  } 
+  
+  public static String exportToSpreadSheet(Block abBlock, UserInfoInterface userInfo, String[] asaSheetName, List<List<String>>[] aalaValues, OutputStream psOut) {
 
     if (Const.nEXPORT_MODE == Const.nEXPORT_MODE_CSV) {
       return exportToCSV(abBlock, userInfo, asaSheetName, aalaValues, psOut);
@@ -1002,6 +1011,10 @@ public class BlockData extends Block {
       }
     }
     return null;
+  }
+  
+  public static String exportToSpreadSheet(Block abBlock, UserInfoInterface userInfo, String[] asaSheetName, String separator, List<List<String>>[] aalaValues, OutputStream psOut) {
+      return exportToCSV(abBlock, userInfo, asaSheetName, separator, aalaValues, psOut);
   }
 
   private static String exportToCSV(Block abBlock, UserInfoInterface userInfo, String[] asaSheetName, List<List<String>>[] aalaValues, OutputStream psOut) {
@@ -1052,6 +1065,55 @@ public class BlockData extends Block {
 
     return retObj;
   }
+  
+  private static String exportToCSV(Block abBlock, UserInfoInterface userInfo, String[] asaSheetName, String separator, List<List<String>>[] aalaValues, OutputStream psOut) {
+	    String retObj = null;
+
+	    PrintWriter aWriter = new PrintWriter(psOut);
+	    try {
+	      List<List<String>> alValues = null;
+	      List<String> altmp = null;
+	      String stmp = null;
+	      StringBuffer sbtmp = null;
+
+	      for (int sheet=0; sheet < aalaValues.length; sheet++) {
+
+	        alValues = aalaValues[sheet];
+
+	        // rows
+	        for (int row=0; row < alValues.size(); row++) {
+	          altmp = alValues.get(row);
+	          sbtmp = new StringBuffer();
+	          for (int col=0; altmp != null && col < altmp.size(); col++) {
+	            stmp = (String)altmp.get(col);
+	            if (stmp == null) stmp = "";
+
+	            if (stmp.indexOf(separator) > -1 ||
+	                stmp.indexOf("\"") > -1) {
+
+	              // replace " by ""
+	              Utils.replaceString(stmp, "\"", "\"\"");
+
+	              // append " at start and end
+	              stmp = "\"" + stmp + "\"";
+	            }
+
+	            sbtmp.append(stmp).append(separator);
+	          }
+	          aWriter.println(sbtmp.toString());
+	        }      
+	      }
+
+	      aWriter.close();
+
+	    }
+	    catch (Exception e) {
+	      Logger.error(userInfo.getUtilizador(), abBlock, "exportToCSV", "caught exception: ", e);
+	      retObj = "Ocorreu um erro ao exportar: " + e.getMessage();
+	    }
+
+	    return retObj;
+	  }
 
   private static String exportToSpreadSheetJXL(Block abBlock, UserInfoInterface userInfo, String[] asaSheetName, List<List<String>>[] aalaValues, OutputStream psOut) {
 

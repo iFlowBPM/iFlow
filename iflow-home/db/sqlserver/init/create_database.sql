@@ -364,11 +364,8 @@ CREATE TABLE activity_history (
   mid INT NULL DEFAULT 0,
   worker INT NULL DEFAULT 0,
   undoflag INT NULL DEFAULT 0,
-  previoususerid [varchar](100) NULL,
-  FOREIGN KEY (flowid, pid, subpid, mid)
-    REFERENCES process_history (flowid, pid, subpid, mid)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+  previoususerid [varchar](100) NULL
+  )
 GO
 
 CREATE TABLE profiles_tabs (

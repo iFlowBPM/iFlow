@@ -1,18 +1,18 @@
 package pt.iflow.api.notification;
 
-import java.io.ByteArrayInputStream;
+//import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.Security;
-import java.security.cert.CertStore;
-import java.security.cert.CertificateFactory;
-import java.security.cert.CollectionCertStoreParameters;
-import java.security.spec.KeySpec;
-import java.security.spec.PKCS8EncodedKeySpec;
+//import java.security.KeyFactory;
+//import java.security.PrivateKey;
+//import java.security.Security;
+//import java.security.cert.CertStore;
+//import java.security.cert.CertificateFactory;
+//import java.security.cert.CollectionCertStoreParameters;
+//import java.security.spec.KeySpec;
+//import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
+//import java.util.Arrays;
+//import java.util.Base64;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -38,22 +38,22 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
-import java.security.cert.X509Certificate;
+//import java.security.cert.X509Certificate;
 
 import org.apache.commons.lang.StringUtils;
-import org.bouncycastle.asn1.ASN1EncodableVector;
-import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.cms.IssuerAndSerialNumber;
-import org.bouncycastle.asn1.smime.SMIMECapabilitiesAttribute;
-import org.bouncycastle.asn1.smime.SMIMECapability;
-import org.bouncycastle.asn1.smime.SMIMECapabilityVector;
-import org.bouncycastle.asn1.smime.SMIMEEncryptionKeyPreferenceAttribute;
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.cert.jcajce.JcaCertStore;
-import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.mail.smime.SMIMESignedGenerator;
-import org.bouncycastle.util.Store;
+//import org.bouncycastle.asn1.ASN1EncodableVector;
+//import org.bouncycastle.asn1.cms.AttributeTable;
+//import org.bouncycastle.asn1.cms.IssuerAndSerialNumber;
+//import org.bouncycastle.asn1.smime.SMIMECapabilitiesAttribute;
+//import org.bouncycastle.asn1.smime.SMIMECapability;
+//import org.bouncycastle.asn1.smime.SMIMECapabilityVector;
+//import org.bouncycastle.asn1.smime.SMIMEEncryptionKeyPreferenceAttribute;
+//import org.bouncycastle.asn1.x500.X500Name;
+//import org.bouncycastle.cert.jcajce.JcaCertStore;
+//import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoGeneratorBuilder;
+//import org.bouncycastle.jce.provider.BouncyCastleProvider;
+//import org.bouncycastle.mail.smime.SMIMESignedGenerator;
+//import org.bouncycastle.util.Store;
 
 import pt.iflow.api.processdata.ProcessHeader;
 import pt.iflow.api.utils.Const;
@@ -527,9 +527,9 @@ public class Email implements Cloneable {
         
         msg.setContent(multipart);                             
 
-        if(verifySignEmailList()) {
-        	signMessage(msg);
-        }
+//        if(verifySignEmailList()) {
+//        	signMessage(msg);
+//        }
         
         //Transport.send(msg);
         Thread th=new Thread(new Runnable() {
@@ -597,66 +597,66 @@ public class Email implements Cloneable {
 
     return retObj;
   }
-
-public void signMessage(MimeMessage message) throws Exception {
-	  
-	 CertificateFactory factory = CertificateFactory.getInstance("X.509");
-	 
-	 int certificateID = signEmail.indexOf(from);
-
-	 String certificateData = Setup.getProperty("SMIME_CERTIFICATE_"+certificateID);
-	 X509Certificate certificate = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certificateData.getBytes()));
-	 
-	 String privateKeyString = Setup.getProperty("SMIME_PRIVATE_KEY_"+certificateID);
-	 KeyFactory kf = KeyFactory.getInstance("RSA");
-	 byte[] data = Base64.getDecoder().decode((privateKeyString.getBytes()));
-	 PrivateKey privateKey = kf.generatePrivate((KeySpec) new PKCS8EncodedKeySpec(data));
-	 
-	 
-	 Security.addProvider(new BouncyCastleProvider());
-	 
-	//SMIMESignedGenerator
-	SMIMECapabilityVector capabilities = new SMIMECapabilityVector();
-	capabilities.addCapability(SMIMECapability.dES_EDE3_CBC);
-	capabilities.addCapability(SMIMECapability.rC2_CBC, 128);
-	capabilities.addCapability(SMIMECapability.dES_CBC);
-	capabilities.addCapability(SMIMECapability.aES256_CBC);
-		
-	ASN1EncodableVector attributes = new ASN1EncodableVector();
-	attributes.add(new SMIMECapabilitiesAttribute(capabilities));
-	
-	IssuerAndSerialNumber issAndSer = new IssuerAndSerialNumber(new X500Name(certificate.getIssuerDN().getName()),certificate.getSerialNumber());
-	attributes.add(new SMIMEEncryptionKeyPreferenceAttribute(issAndSer));
-	
-	SMIMESignedGenerator signer = new SMIMESignedGenerator();
-	
-	signer.addSignerInfoGenerator(new JcaSimpleSignerInfoGeneratorBuilder().setProvider("BC").setSignedAttributeGenerator(new AttributeTable(attributes)).build("SHA1withRSA", privateKey, certificate));
-	
-	// Add the list of certs to the generator
-	List<X509Certificate> certList = new ArrayList<X509Certificate>();
-	certList.add(certificate);
-	
-	JcaCertStore bcerts = new JcaCertStore(certList);
-	signer.addCertificates(bcerts);
-	
-	// Sign the message
-	MimeMultipart mm = signer.generate(message);
-
-	// Set the content of the signed message
-	message.setContent(mm, mm.getContentType());
-	message.saveChanges();
-	
-	Logger.info("", this, "signMessage", "Message signed");
-	
-	  
-  }
-  
-  private boolean verifySignEmailList() {
-	  String [] emailList = Setup.getProperty("EMAIL_LIST").split(",");
-	  signEmail = new ArrayList<>(Arrays.asList(emailList));
-	  if(signEmail.contains(from)) {return true;}else {return false;}
-  }
-  
+// TODO Signed Mail - desabilitado pq a versao de bouncycastle estava instavel e nao era compativel com a UDW
+//public void signMessage(MimeMessage message) throws Exception {
+//	  
+//	 CertificateFactory factory = CertificateFactory.getInstance("X.509");
+//	 
+//	 int certificateID = signEmail.indexOf(from);
+//
+//	 String certificateData = Setup.getProperty("SMIME_CERTIFICATE_"+certificateID);
+//	 X509Certificate certificate = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certificateData.getBytes()));
+//	 
+//	 String privateKeyString = Setup.getProperty("SMIME_PRIVATE_KEY_"+certificateID);
+//	 KeyFactory kf = KeyFactory.getInstance("RSA");
+//	 byte[] data = Base64.getDecoder().decode((privateKeyString.getBytes()));
+//	 PrivateKey privateKey = kf.generatePrivate((KeySpec) new PKCS8EncodedKeySpec(data));
+//	 
+//	 
+//	 Security.addProvider(new BouncyCastleProvider());
+//	 
+//	//SMIMESignedGenerator
+//	SMIMECapabilityVector capabilities = new SMIMECapabilityVector();
+//	capabilities.addCapability(SMIMECapability.dES_EDE3_CBC);
+//	capabilities.addCapability(SMIMECapability.rC2_CBC, 128);
+//	capabilities.addCapability(SMIMECapability.dES_CBC);
+//	capabilities.addCapability(SMIMECapability.aES256_CBC);
+//		
+//	ASN1EncodableVector attributes = new ASN1EncodableVector();
+//	attributes.add(new SMIMECapabilitiesAttribute(capabilities));
+//	
+//	IssuerAndSerialNumber issAndSer = new IssuerAndSerialNumber(new X500Name(certificate.getIssuerDN().getName()),certificate.getSerialNumber());
+//	attributes.add(new SMIMEEncryptionKeyPreferenceAttribute(issAndSer));
+//	
+//	SMIMESignedGenerator signer = new SMIMESignedGenerator();
+//	
+//	signer.addSignerInfoGenerator(new JcaSimpleSignerInfoGeneratorBuilder().setProvider("BC").setSignedAttributeGenerator(new AttributeTable(attributes)).build("SHA1withRSA", privateKey, certificate));
+//	
+//	// Add the list of certs to the generator
+//	List<X509Certificate> certList = new ArrayList<X509Certificate>();
+//	certList.add(certificate);
+//	
+//	JcaCertStore bcerts = new JcaCertStore(certList);
+//	signer.addCertificates(bcerts);
+//	
+//	// Sign the message
+//	MimeMultipart mm = signer.generate(message);
+//
+//	// Set the content of the signed message
+//	message.setContent(mm, mm.getContentType());
+//	message.saveChanges();
+//	
+//	Logger.info("", this, "signMessage", "Message signed");
+//	
+//	  
+//  }
+//  
+//  private boolean verifySignEmailList() {
+//	  String [] emailList = Setup.getProperty("EMAIL_LIST").split(",");
+//	  signEmail = new ArrayList<>(Arrays.asList(emailList));
+//	  if(signEmail.contains(from)) {return true;}else {return false;}
+//  }
+//  
   protected String getPass() {
     return pass;
   }
