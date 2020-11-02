@@ -95,13 +95,15 @@ public class BlockP17040ImportCICC extends BlockP17040Import {
 				if (actionOnLine == null)
 					continue;		
 				
-				//check if UPDATE has actual changed values				
-				if(! "169843".equals(lineValues.get("idCont")) &&
-						! "300373".equals(lineValues.get("idCont")) &&
-						! "169955".equals(lineValues.get("idCont")) &&
-						! "170075".equals(lineValues.get("idCont")) &&
-						! "170027".equals(lineValues.get("idCont")) &&
-						! "170177".equals(lineValues.get("idCont")) &&
+				//check if UPDATE has actual changed values	
+				//DISABLED - will be done in xml generation
+				if(false &&
+//						! "169843".equals(lineValues.get("idCont")) &&
+//						! "300373".equals(lineValues.get("idCont")) &&
+//						! "169955".equals(lineValues.get("idCont")) &&
+//						! "170075".equals(lineValues.get("idCont")) &&
+//						! "170027".equals(lineValues.get("idCont")) &&
+//						! "170177".equals(lineValues.get("idCont")) &&
 						actionOnLine.getAction().equals(ImportAction.ImportActionType.UPDATE)){
 					HashMap<String,Object> keysToIdentify = new HashMap<>();
 					ArrayList<String> keysToRemove = new ArrayList<>();

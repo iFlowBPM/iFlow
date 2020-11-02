@@ -4,7 +4,10 @@ import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
 import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.retrieveSimpleField;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,9 +16,12 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
 
+import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.blocks.P17040.utils.FileGeneratorUtils;
+import pt.iflow.blocks.P17040.utils.GestaoCrc;
+import pt.iflow.blocks.P17040.utils.ImportAction;
 
 public class BlockP17040GenerateCICC extends BlockP17040Generate {
 
@@ -59,6 +65,20 @@ public class BlockP17040GenerateCICC extends BlockP17040Generate {
 					i++;
 					if (i%LOGCYCLE == 0) Logger.debug(userInfo.getUserId(), "BlockP17040GenerateCICC", "createFileContent", null, null);
 					Logger.debug("admin", this, "createFileContent", "infCompC free memory:" + Runtime.getRuntime().freeMemory());
+					
+					//if UPDATE validate values actually changed, if not goto next
+					if(StringUtils.equalsIgnoreCase("CCU", (String) infCompCValues.get("type"))){
+						ImportAction actionOnLine = GestaoCrc.checkinfCompC((Date)infCompCValues.get("dtRef"), (String)infCompCValues.get("idCont"), (String)infCompCValues.get("idInst"),
+								userInfo.getUtilizador(), connection);
+						
+						Integer uGestaoId = actionOnLine.getU_gestao_id();
+						if(!changedValues(crcId , uGestaoId, (String)infCompCValues.get("idCont"), (String)infCompCValues.get("idInst"), userInfo, connection)){
+							Logger.info(userInfo.getUtilizador(), this, "createFileContent", "Skipping on unchangedvalues, currentCrcId: " + crcId + ", uGestaoId: " + uGestaoId + ", idCont: " + (String)infCompCValues.get("idCont") + ", idInst: "+ (String)infCompCValues.get("idInst"));
+							continue;
+						}
+							
+					}
+					
 					writer.writeStartElement("infCompC");
 					
 					if(StringUtils.equalsIgnoreCase((String) infCompCValues.get("type"),"CCD")){
@@ -128,4 +148,80 @@ public class BlockP17040GenerateCICC extends BlockP17040Generate {
 		
 		return "CICC";
 		}
+
+	private boolean changedValues(Integer currentCrcId, Integer uGestaoId, String idCont, String idInst,
+			UserInfoInterface userInfo, Connection connection) {
+		
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		final String query = 
+				"SELECT LTV, prestOp, prestOpChoq, DSTIChoq, " +
+				"	idEnt_id, rendLiq, rendLiqChoq, " +
+				"	tpJustif, justif, " +
+				"	idProt, imoInst, dtAq " + 
+				"FROM infCompC  " +
+				"	LEFT JOIN entComp ON infCompC.id = entComp.infCompC_id " +
+				"    LEFT JOIN  justComp ON infCompC.id = justComp.infCompC_id " +
+				"    LEFT JOIN protComp ON infCompC.id = protComp.infCompC_id  " +
+				"    LEFT JOIN comInfComp ON infCompC.comInfComp_id = comInfComp.id " +
+				"    LEFT JOIN conteudo ON comInfComp.conteudo_id = conteudo.id " +
+				"    LEFT JOIN crc ON conteudo.crc_id = crc.id " +
+				"WHERE infCompC.idCont=?  " +
+				"    AND infCompC.idInst=? " +
+				"	AND crc.id = ? " +
+				"ORDER BY LTV, prestOp, prestOpChoq, DSTIChoq, " +
+				"	idEnt_id, rendLiq, rendLiqChoq, " +
+				"	tpJustif, justif, " +
+				"	idProt, imoInst, dtAq";
+		
+		try {
+			Integer previousCrcIdResults=0;
+			Integer previousCrcId = retrieveSimpleField(connection, userInfo,
+					"select out_id from u_gestao where id = {0} ",	
+					new Object[] { uGestaoId }).get(0);
+			
+			pst = connection.prepareStatement(query);
+			pst.setInt(1, Integer.valueOf(idCont));
+			pst.setString(2, idInst);
+			pst.setInt(3, previousCrcId);
+			rs = pst.executeQuery();
+			while(rs.next()) previousCrcIdResults++;
+			rs.close();pst.close();
+			
+			Integer currentCrcIdResults=0;
+			pst = connection.prepareStatement(query);
+			pst.setInt(1, Integer.valueOf(idCont));
+			pst.setString(2, idInst);
+			pst.setInt(3, currentCrcId);
+			rs = pst.executeQuery();
+			while(rs.next()) currentCrcIdResults++;
+			rs.close();pst.close();
+			
+			Integer unionResults=0;
+			pst = connection.prepareStatement("(" + query + ") UNION (" + query + ")");
+			pst.setInt(1, Integer.valueOf(idCont));
+			pst.setString(2, idInst);
+			pst.setInt(3, currentCrcId);
+			pst.setInt(4, Integer.valueOf(idCont));
+			pst.setString(5, idInst);
+			pst.setInt(6, previousCrcId);
+			rs = pst.executeQuery();
+			while(rs.next()) unionResults++;
+			rs.close();pst.close();
+			
+			if(previousCrcIdResults.equals(currentCrcIdResults) && currentCrcIdResults.equals(unionResults))
+				return false;
+			else 
+				return true;
+			
+			
+		} catch (Exception e) {
+			Logger.error(userInfo.getUtilizador(), this, "insertSimpleLine", "currentCrcId: " + currentCrcId + ", uGestaoId: " + uGestaoId + ", idCont: " + idCont + ", idInst: "+ idInst 
+					+ e.getMessage(),e);
+			return true;
+		} finally {
+			DatabaseInterface.closeResources(pst, rs);
+		}
+		
+	}
 }
