@@ -16,6 +16,7 @@ import pt.iflow.api.core.UserManager;
 import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.documents.Documents;
 import pt.iflow.api.processdata.ProcessData;
+import pt.iflow.api.processdata.ProcessListItem;
 import pt.iflow.api.processdata.ProcessListVariable;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
@@ -110,8 +111,10 @@ public class BlockP19068MarkToMergeGeDoc extends Block {
 			String sbKeys = "";
 			String sbValues = "";
 			for(int i = 0; i < keysVar.size(); i++) {
-				sbKeys += keysVar.getItem(i).getValue().toString();
-				sbValues += valuesVar.getItem(i).getValue().toString();
+				ProcessListItem key = keysVar.getItem(i);
+				sbKeys += (key==null)?"":key.getValue().toString();
+				ProcessListItem value = valuesVar.getItem(i);				
+				sbValues += (value==null)?"":value.getValue().toString();
 				if (i < keysVar.size() - 1) {
 					sbKeys += ",";
 					sbValues += ",";
