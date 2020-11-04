@@ -635,7 +635,7 @@ try {
                 Set<String> metanomes = taskProcessDetail.keySet();
                 String tituloMetadados = "";
                 String valorMetadados = "";
-                Integer contadorColuna = 7;
+                Integer contadorColuna = 6;
                 
                 for(String metanome : metanomes){
                   if(!StringUtils.contains(Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA"), taskProcessDetailVarNames.get(metanome)))

@@ -483,7 +483,7 @@ public class ProcessData {
     setListOrigRawValue(variable);
     ProcessListVariable ret = _listVars.put(variable.getName(), variable);
     
-    if(variable.getType().toString() == "Document"){
+    if(variable.getType()!=null && variable.getType().toString() == "Document"){
     	for (int i = 0; i < variable.size(); i++){
 	    	try{
 	    		int teste = Integer.parseInt(variable.getFormattedItem(i));

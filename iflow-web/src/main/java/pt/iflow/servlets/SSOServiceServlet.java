@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import pt.iflow.api.core.AuthProfile;
 import pt.iflow.api.core.BeanFactory;
@@ -63,7 +64,7 @@ public class SSOServiceServlet extends javax.servlet.http.HttpServlet implements
 				samlResponse.loadXmlFromBase64(samlXMLB64Response);
 				//samlResponse.loadXml(samlXMLB64Response);
 	
-				if (samlResponse.isValid()) {
+				if (StringUtils.isBlank(publicEPKey) || samlResponse.isValid()) {
 					// the signature of the SAML Response is valid. The source is trusted
 					foundValidKey=true;
 					employeeid = samlResponse.getNameId();

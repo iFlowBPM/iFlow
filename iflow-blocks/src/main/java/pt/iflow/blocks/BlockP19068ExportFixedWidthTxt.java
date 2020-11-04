@@ -115,7 +115,7 @@ public class BlockP19068ExportFixedWidthTxt extends Block {
 				String padding = properties.getProperty("padding"+n);
 				
 				ProcessListVariable varList = procData.getList(varname);
-				for(int m=0; m<varList.size(); m++){
+				for(int m=0; m<varList.size() || m < resultList.size(); m++){
 					String currentLine="";
 					try{
 						currentLine = resultList.get(m);
@@ -123,7 +123,31 @@ public class BlockP19068ExportFixedWidthTxt extends Block {
 						resultList.add(currentLine);
 					}
 					
-					String currentCollumn = StringUtils.leftPad(varList.getFormattedItem(m), Integer.valueOf(lenght), padding);
+					String currentCollumn = StringUtils.leftPad((varList.getFormattedItem(m)==null?"":varList.getFormattedItem(m)), Integer.valueOf(lenght), padding);
+					currentCollumn = StringUtils.substring(currentCollumn, 0, lenght);
+					Integer charsEmFalta = start+lenght-currentLine.length();
+					currentLine = StringUtils.rightPad(currentLine, charsEmFalta);
+					currentLine = StringUtils.overlay(currentLine, currentCollumn, start, start+lenght);
+					resultList.set(m, currentLine);
+				}
+			}
+			for(int n=1; n<=total; n++){
+				String varname = properties.getProperty("varname"+n);
+				Integer start = Integer.valueOf(properties.getProperty("start"+n));
+				Integer lenght = Integer.valueOf(properties.getProperty("lenght"+n));
+				String padding = properties.getProperty("padding"+n);
+				
+				ProcessListVariable varList = procData.getList(varname);
+				for(int m=0; m<varList.size() || m < resultList.size(); m++){
+					String currentLine="";
+					try{
+						currentLine = resultList.get(m);
+					} catch (IndexOutOfBoundsException e){
+						resultList.add(currentLine);
+					}
+					
+					String currentCollumn = StringUtils.leftPad((varList.getFormattedItem(m)==null?"":varList.getFormattedItem(m)), Integer.valueOf(lenght), padding);
+					currentCollumn = StringUtils.substring(currentCollumn, 0, lenght);
 					Integer charsEmFalta = start+lenght-currentLine.length();
 					currentLine = StringUtils.rightPad(currentLine, charsEmFalta);
 					currentLine = StringUtils.overlay(currentLine, currentCollumn, start, start+lenght);
