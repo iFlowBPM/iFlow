@@ -53,7 +53,7 @@ public class SSOServiceServlet extends javax.servlet.http.HttpServlet implements
 		try {			
 			Integer ePId = Integer.parseInt(Setup.getProperty("ENTITY_PROVIDERS_NUMBER"));		
 			String employeeid=null;
-			for(int i=1; i<ePId; i++){
+			for(int i=1; i<=ePId; i++){
 				String publicEPKey = Setup.getProperty("ENTITY_PROVIDER_PUBLIC_KEY_" + i);
 				// user account specific settings. Import the certificate here
 				AccountSettings accountSettings = new AccountSettings();
@@ -112,6 +112,7 @@ public class SSOServiceServlet extends javax.servlet.http.HttpServlet implements
 //		      }
 
 		      session.setAttribute("SessionHelperToken", new SimpleSessionHelper());
+		      session.setAttribute("login_error", null);
 
 		    } else {
 		      session.setAttribute("login_error", ui.getError());

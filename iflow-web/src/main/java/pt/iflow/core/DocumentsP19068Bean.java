@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,13 +18,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -32,6 +34,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.collections4.MultiValuedMap;
@@ -39,7 +42,6 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.core.ProcessCatalogueImpl;
@@ -52,25 +54,42 @@ import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
-import pt.iflow.blocks.P17040.utils.FileImportUtils;
 import pt.iflow.connector.document.DMSDocument;
 import pt.iflow.connector.document.Document;
+import pt.iflow.utils.CleanFileThreat;
 
 public class DocumentsP19068Bean extends DocumentsBean {	
+	CleanFileThreat cleanFileThreat;
 	
 	private DocumentsP19068Bean() {
 		
+		Properties properties = Setup.readPropertiesFile("P19068.properties");
+		Long period = Long.valueOf(properties.getProperty("TASK_PERIOD"));
+		
 		Calendar cal=Calendar.getInstance();
-//		cal.add(Calendar.DAY_OF_YEAR, 1);
-//		cal.set(Calendar.HOUR_OF_DAY, 1);
 		
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		System.out.println(formatter.format(cal.getTime()));
+		String fieldAdd = properties.getProperty("FIELD_TO_ADD");
+		String amountAdd = properties.getProperty("AMOUNT_TO_ADD");
+		if(fieldAdd != null && amountAdd != null && !fieldAdd.isEmpty() && !amountAdd.isEmpty()) {
+			Integer fieldToAdd = Integer.valueOf(fieldAdd);
+			Integer amountToAdd = Integer.valueOf(amountAdd);
+			if(fieldToAdd != null && amountToAdd != null) {
+				cal.add(Calendar.DAY_OF_YEAR + fieldToAdd, amountToAdd);
+			}
+		}
 		
-		
+		String amountSet = properties.getProperty("AMOUNT_TO_SET");
+		if(amountSet != null && !amountSet.isEmpty()) {
+			Integer amountToSet = Integer.valueOf(properties.getProperty("AMOUNT_TO_SET"));
+			if(amountToSet != null) {
+				cal.set(Calendar.HOUR_OF_DAY, amountToSet);
+			}
+		}
 		
 		Timer timer = new Timer();    	
-    	timer.schedule(new sendToGeDocTask(), cal.getTime(), 2*60*1000);
+    	timer.schedule(new sendToGeDocTask(), cal.getTime(), (long)period);
+    	
+    	cleanFileThreat = new CleanFileThreat();
 	}
 
 	public static DocumentsBean getInstance() {
@@ -79,6 +98,23 @@ public class DocumentsP19068Bean extends DocumentsBean {
 			instance = new DocumentsP19068Bean();
 		}
 		return instance;
+	}
+	
+	private enum DocumentState {
+		MARK_TO_INTEGRATE(0), // Estado que pode ser usado pelo bloco MergeGedoc (em aberto)
+		READY_TO_INTEGRATE(1), // Estado que ocorre quando se adiciona um ficheiro novo à BD através do bloco MergeGedoc
+		FILE_READ_AND_READY_TO_SEND(2),  // Quando o ficheiro é lido da BD e está prestes a constituir um ficheiro zip
+		REJECTED_INDIVIDUALLY(3),  // Quando o erro esta associado a um ficheiro individual
+		REJECTED_BY_GROUP_QUANTITY_DOESNT_MATCH(4),  // Quando o numero de ficheiros no zip e no EE18 nao correspondem, rejeita-se lote
+		REJECTED_BY_GROUP_EMPTY_FILENAMES(5), // Quando nome de ficheiros estão vazios, rejeita-se o lote
+		REJECTED_BY_GROUP_SEQUENCE_DOESNT_MATCH(6), // Quando a ordem dos ficheiros submetidos não é a mesma do ficheiro EE18, rejeita-se o lote
+		CORRECTED_AFTER_RECEIPT(7), // Quando após ocorrer um erro, há uma correção do mesmo e fica novamente pronto para constar num zip
+		PROCESS_CONCLUDED_OK(8);  // Quando a leitura do ficheiro EE18 retorna OK e as validações no codigo estão corretas, significa que o ficheiro foi corretamente integrado
+		
+		private final int value;
+		private DocumentState(int value) {
+			this.value = value;
+		}
 	}
 
 	Document getDocumentData(UserInfoInterface userInfo,
@@ -133,14 +169,6 @@ public class DocumentsP19068Bean extends DocumentsBean {
 				int pid = rs.getInt("pid");
 				int subpid = rs.getInt("subpid");
 				int length = rs.getInt("length");
-				
-			//	procData = new ProcessData(new ProcessCatalogue, flowid, pid, subpid)
-				
-//				if(procData.getFlowId() == -1) {
-//					procData.setFlowId(flowid);
-//					procData.setPid(pid);
-//					procData.setSubPid(subpid);
-//				}
 
 				String filePath = rs.getString("docurl");
 				if (StringUtils.isNotEmpty(filePath)) {
@@ -211,7 +239,22 @@ public class DocumentsP19068Bean extends DocumentsBean {
 				Logger.warning(login, this, "getDocument",
 						procData.getSignature() + "Document not found.");
 			}
-
+			
+			Integer cleanState = cleanFileThreat.retrieveFileState(retObj.getDocId());
+			if(cleanState == 0 || cleanState == 1){
+				retObj.setContent(new byte[0]);
+				retObj.setFileName("(SECURITY_VALIDATION_IN_PROGRESS)_" + retObj.getFileName());
+			} else if(cleanState == 2 || cleanState == 5 || cleanState == -1){
+				;
+			} else if(cleanState == 3 || cleanState == 4){
+				retObj.setContent(new byte[0]);
+				retObj.setFileName("(SECURITY_VALIDATION_INFECTED)_" + retObj.getFileName());
+			} else {
+				retObj.setContent(new byte[0]);
+				retObj.setFileName("(SECURITY_VALIDATION_ERROR)_" + retObj.getFileName());			
+			}
+		} catch (SQLException sqle) {
+			Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",	"SQL state: " + sqle.getSQLState() + " and message: " + sqle.getMessage(), sqle);
 		} catch (Exception e) {
 			Logger.error(login, this, "getDocument", procData.getSignature()
 					+ "Error retrieving document from database.", e);
@@ -221,370 +264,576 @@ public class DocumentsP19068Bean extends DocumentsBean {
 		return retObj;
 	}	
 	
-	  class sendToGeDocTask extends TimerTask{
-			public void run() {
+	Document addDocument(UserInfoInterface userInfo, ProcessData procData, Document adoc, Connection db) throws Exception {
+		Document result = super.addDocument(userInfo, procData, adoc, db);
+		if(StringUtils.equals(procData.getTempData("FLOW_STATE_RESULT"), "Formulário"))
+			cleanFileThreat.uploadFile(result.getDocId());
+		return result;
+	}
+	
+	class sendToGeDocTask extends TimerTask {
+		public void run() {
 
-				// metodo run() : integracao gedoc
-				// Ir à tabela documents_p19068 e obter ficheiros marcados como integrados
-				// (state = 1).
-
-				UserInfoInterface userInfo = BeanFactory.getUserInfoFactory()
-						.newClassManager(this.getClass().getName());
+			UserInfoInterface userInfo = BeanFactory.getUserInfoFactory().newClassManager(this.getClass().getName());
+			try {
 				String login = userInfo.getUtilizador();
 				ProcessCatalogueImpl catalogue = new ProcessCatalogueImpl();
 				ProcessData procData = new ProcessData(catalogue, -1, Const.nSESSION_PID, Const.nSESSION_SUBPID);
-
 				Properties properties = Setup.readPropertiesFile("P19068.properties");
-				Integer totalFieldsFromConfigFile = Integer.valueOf(properties.getProperty("total"));
+				String inputFolderPath = properties.getProperty("INPUT_FOLDER_PATH");
 
-				BufferedReader reader = null;
-				PreparedStatement pst = null;
-				DocumentData dbDoc = null;
-				ResultSet rs = null;
-				try {
-					// Primeiro: ir ver se na tabela documents_p19068 tem estado integrado
-					List<String> urlList = new ArrayList<>();
-					List<Document> documentToMergeList = new ArrayList<>();
+				if (inputFolderPath != null && !inputFolderPath.trim().isEmpty()) {
+					File inputFolder = new File(inputFolderPath.trim());
+					BufferedReader reader = null;
 
-					Connection db = DatabaseInterface.getConnection(userInfo);
-					pst = db.prepareStatement("SELECT * FROM documents_p19068");
-					rs = pst.executeQuery();
-					while (rs.next()) {
-						if (rs.getInt("state") == 0) {
-							// TODO: perguntar este caso. Estado 0 => ficheiro ja integrado/ já teve
-							// tentativa integracao
+					TreeMap<String, Date> fileMap = new TreeMap<>();
+					searchFilesInFolder(inputFolder, ".txt", fileMap);
 
-						} else if (rs.getInt("state") == 1) {
-							dbDoc = new DocumentData(rs.getInt("docid"));
+					List<String> sequentialNamesListEventFile = new ArrayList<>();
+
+					// Key - line number (1-based), Value - NOME_OBJ, LINK
+					MultiValuedMap<Integer, String> statusOkFileMap = new ArrayListValuedHashMap<>();
+
+					// Key - line number (1-based), Value - NOME_OBJ, STATUS_DESC, CODERRO, DESCERRO
+					MultiValuedMap<Integer, String> statusNotOkFileMap = new ArrayListValuedHashMap<>();
+
+					String eventFileName = "";
+
+					/**
+					 * Se tem .txt
+					 */
+					if (fileMap != null && !fileMap.isEmpty()) {
+
+						// obter o txt mais recente para fazer leitura dos campos
+						eventFileName = fileMap.firstKey();
+
+						reader = new BufferedReader(new FileReader(eventFileName));
+						extractLinesContent(properties, sequentialNamesListEventFile, statusOkFileMap,
+								statusNotOkFileMap, reader);
+
+					} else {
+						/**
+						 * Se tem .zip
+						 */
+						Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+								"EE18 file folder does not contain .txt files or cannot be read. Checking for .zip files...");
+						searchFilesInFolder(inputFolder, ".zip", fileMap);
+
+						if (fileMap != null && !fileMap.isEmpty()) {
+							// Obter zip com data mais recente
+							eventFileName = fileMap.firstKey();
+
+							getZipContent(properties, login, eventFileName, sequentialNamesListEventFile,
+									statusOkFileMap, statusNotOkFileMap);
+
+						} else {
 							Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-									"Entering getDocumentData() for docid number: " + rs.getInt("docid"));
-							Document doc = DocumentsP19068Bean.super.getDocumentData(userInfo, procData, dbDoc, db,
-									true);
-							Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-									"Document data for docid number: " + rs.getInt("docid")
-											+ " was successfully obtained.");
-							documentToMergeList.add(doc);
+									"EE18 file folder does not contain .zip files or cannot be read. Proceding to check if table contains documents ready to integrate...");
 						}
+
 					}
 
-					if (documentToMergeList != null && !documentToMergeList.isEmpty()) {
+					if ((sequentialNamesListEventFile != null && !sequentialNamesListEventFile.isEmpty())
+							&& (statusOkFileMap != null && statusNotOkFileMap != null)) {
+						Connection conn = DatabaseInterface.getConnection(userInfo);
+						PreparedStatement pst = null;
+						ResultSet rs = null;
+						String query = null;
+						int stateCount = 0;
 
-						String inputFolderPath = Setup.getProperty("INPUT_FOLDER_PATH"); // pasta onde esta localizada o
-																							// EE18.txt
-						final File inputFolder = new File(inputFolderPath);
+						try {
+							query = "SELECT COUNT(*) AS StateCount FROM documents_p19068 WHERE state=?;";
+							pst = conn.prepareStatement(query);
+							pst.setInt(1, DocumentState.FILE_READ_AND_READY_TO_SEND.value); // 2)
+							rs = pst.executeQuery();
+							if (rs.next()) {
+								stateCount = rs.getInt("StateCount");
 
-						TreeMap<String, Date> textFileMap = new TreeMap<>();
-						searchEventTxtFilesInFolder(inputFolder, textFileMap);
-
-						if (textFileMap != null && !textFileMap.isEmpty()) {
-
-							// Obter file com data mais recente
-							// TODO: Validar se basta assim
-							String eventTxtFileName = textFileMap.firstKey();
-
-							List<String> linesList = new ArrayList<>();
-							reader = new BufferedReader(new FileReader(eventTxtFileName));
-
-							List<String> documentaryAreaCodesList = new ArrayList<>();
-							int count = 0;
-
-							// key - numero linha (1-based), Value-lineDocumentName,OTHER_ERR-line does not
-							// contain field ,CODERRO-,DESCERRO-,STATUS_DESC- (pode nao ter todos)
-							MultiValuedMap<Integer, String> documentWithErrorMap = new ArrayListValuedHashMap<>();
-							Integer preliminaryFieldsTotal = Integer
-									.valueOf(properties.getProperty("preliminary.field.total"));
-							Integer fieldsTotal = Integer.valueOf(properties.getProperty("total"));
-							Integer headerAndFooterLength = Integer
-									.valueOf(properties.getProperty("header.footer.length"));
-							String fieldsNotAllowedEmpty = properties
-									.getProperty("preliminary.field.not.allowed.empty");
-
-							String headerSequenceNumber = "";
-							String previousRegistrySequenceNumber = "";
-							boolean isSequenceNumberDefined = false;
-							boolean isRegistrySequenceNumberDefined = false;
-							boolean isHeaderSequenceNumberEmpty = false;
-
-							String fileLine;
-							String headerFileSequenceNumber = "";
-
-							while ((fileLine = reader.readLine()) != null) {
-								count++;
-								linesList.add(fileLine);
-								String currentLineSequenceNumber = fileLine.substring(42, 49);
-
-								String lineFileName = "";
-								boolean isStatusDescOk = false;
-								boolean isCodErroEmpty = false;
-								boolean isDescErroEmpty = false;
-								boolean isCodigoFormularioEmpty = false;
-								String fieldValue = "";
-
-								// Por cada linha, iterar sobre preliminary fields (footer nao precisa de
-								// validacao)
-								for (int field = 1; field <= preliminaryFieldsTotal; field++) {
-									String fieldName = properties.getProperty("preliminary.field.name" + field);
-									Integer fieldBeginPosition = Integer
-											.valueOf(properties.getProperty("preliminary.field.begin" + field));
-									Integer fieldEndPosition = Integer
-											.valueOf(properties.getProperty("preliminary.field.end" + field));
-
-									if (!isHeaderSequenceNumberEmpty) { // entra so na primeira linha txt.
-										headerFileSequenceNumber = currentLineSequenceNumber != null
-												&& !currentLineSequenceNumber.trim().isEmpty()
-														? currentLineSequenceNumber
-														: "Could not obtain header sequence number";
-										isHeaderSequenceNumberEmpty = true;
-										break;
-									}
-
-									if (fieldEndPosition < fileLine.length()) {
-										fieldValue = fileLine.substring(fieldBeginPosition - 1, fieldEndPosition - 1);
-
-										// field.not.allowed.empty=NOME_OBJ,AREA_DOCUMENTAL,STATUS_DESC
-										if (fieldsNotAllowedEmpty.contains(fieldName)) {
-
-											// NOME_OBJ global logo à cabeça do loop pelo .prop
-											if ("NOME_OBJ".equals(fieldName)) {
-												lineFileName = fieldValue != null && !fieldValue.trim().isEmpty()
-														? fieldValue
-														: "Could not obtain line document name";
-											}
-
-											if (fieldValue == null || fieldValue.trim().isEmpty()) {
-												Logger.error(login, this,
-														"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-														"EE18 Line " + count + " does not contain " + fieldName);
-
-												// key - numero linha (1-based), Value-lineDocumentName,OTHER_ERR-line
-												// does not contain field ,CODERRO-,DESCERRO-,STATUS_DESC- (pode nao ter
-												// todos)
-												documentWithErrorMap.put(count, lineFileName);
-												documentWithErrorMap.put(count, "OTHER_ERR: EE18 Line " + count
-														+ " does not contain " + fieldName);
-												break;
-											}
-										}
-										if (!headerFileSequenceNumber.equals(currentLineSequenceNumber)) {
-											documentWithErrorMap.put(count, lineFileName);
-											documentWithErrorMap.put(count, "OTHER_ERR: EE18 Line " + count
-													+ " does not match header File Sequence Number ");
-											break;
-										}
-									} else {
-										Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-												"EE18 Line number " + count + " has length less than field " + fieldName
-														+ " location. Skipping line...");
-										break;
-									}
-
-									switch (fieldName) {
-									case "AREA_DOCUMENTAL": // tudo menos header e footer. Se chega aqui campo tem dados
-										documentaryAreaCodesList.add(fieldValue);
-										break;
-
-									case "STATUS_DESC":
-										if (fieldValue.contains("OK")) {
-											isStatusDescOk = true;
-
-										} else { // NOT_OK
-											documentWithErrorMap.put(count, lineFileName);
-											documentWithErrorMap.put(count, "STATUS_DESC:" + fieldValue);
-										}
-										break;
-
-									case "CODERRO":
-										if (fieldValue != null) {
-											if (isStatusDescOk && fieldValue.trim().isEmpty()) {
-												isCodErroEmpty = true;
-
-											} else { // validar que CODERRO esta vazio. Se nao estiver, adicionar a
-														// documentWithErrorMap
-												documentWithErrorMap.put(count, "CODERRO:" + fieldValue);
-											}
-										}
-										break;
-
-									case "DESCERRO":
-										if (fieldValue != null) {
-											if (isStatusDescOk && isCodErroEmpty && fieldValue.trim().isEmpty()) {
-												isDescErroEmpty = true;
-												break;
-
-											} else { // validar que DESCERRO esta vazio. Se nao estiver, adicionar a
-														// documentWithErrorMap
-												documentWithErrorMap.put(count, "DESCERRO:" + fieldValue);
-											}
-										}
-										break;
-
-									case "CODIGO_FORMULARIO":
-										// Validar primeiro se STATUS_DESC da linha deu OK
-										// Se deu NOK, nem sequer validar o presente campo pq ja foi adicionado a
-										// documentWithErrorMap antes
-										if ((isStatusDescOk && (isCodErroEmpty && isDescErroEmpty))) {
-											if (fieldValue != null && fieldValue.trim().isEmpty()) {
-												isCodigoFormularioEmpty = true;
-											}
-										}
-										break;
-
-									case "IDENTIFICADOR_DOCUMENTO":
-										// Validar primeiro se STATUS_DESC da linha deu OK
-										// Se deu NOK, nem sequer validar o presente campo pq ja foi adicionado a
-										// documentWithErrorMap antes
-										// Validar se CODIGO_FORMULARIO deu vazio
-										if ((isStatusDescOk && (isCodErroEmpty && isDescErroEmpty))) { // se nao teve
-																										// erros
-											if (fieldValue != null && ((isCodigoFormularioEmpty
-													&& !fieldValue.trim().isEmpty())
-													|| (!isCodigoFormularioEmpty && fieldValue.trim().isEmpty())
-													|| (!isCodigoFormularioEmpty && !fieldValue.trim().isEmpty()))) { // CODIGO_FORMULARIO
-																														// e/
-																														// ou
-																														// IDENTIFICADOR_DOCUMENTO
-																														// nao
-																														// podem
-																														// ser
-																														// vazios
-												break; // tudo OK
-											} else {
-												// adicionar erro a mapa a indicar o seguinte: CODIGO_FORMULARIO e/ ou
-												// IDENTIFICADOR_DOCUMENTO vazios
-												// este case regista o erro deste e do anterior
-
-												documentWithErrorMap.put(count, lineFileName);
-												documentWithErrorMap.put(count, "OTHER_ERR: EE18 Line " + count
-														+ " does not contain CODIGO_FORMULARIO AND/ OR IDENTIFICADOR_DOCUMENTO");
-											}
-										}
-										break;
-
-									default: // deixar vazio, para já
-										break;
-
-									}
-
-								}
-
+							} else {
+								Logger.error(userInfo.getUtilizador(), this,
+										"DocumentsP19068Bean.sendToGeDocTask.this.run()",
+										"Could not get the document counts");
 							}
 
-							// ate aqui tenho documentToMergeList, documentWithErrorMap, linesList,
-							// documentaryAreaCodesList
+						} catch (SQLException sqle) {
+							Logger.error(userInfo.getUtilizador(), this,
+									"DocumentsP19068Bean.sendToGeDocTask.this.run()",
+									"SQL state: " + sqle.getSQLState() + " and message: " + sqle.getMessage(), sqle);
+						} catch (Exception e) {
+							Logger.error(userInfo.getUtilizador(), this,
+									"DocumentsP19068Bean.sendToGeDocTask.this.run()", query + e.getMessage(), e);
+						} finally {
+							DatabaseInterface.closeResources(conn, pst, rs);
+						}
 
-							// Por area documental e por linha EE18.txt e se linha nao estiver na lista de
-							// erros:
-							// Obter lista de linhas por area documental
+						int eventFileTotalCount = statusOkFileMap.keySet().size() + statusNotOkFileMap.keySet().size();
 
-							for (int i = 0; i < documentaryAreaCodesList.size(); i++) { // Por area documental criar zip
-								String origem = "";
-								String codAplicacao = "";
-								String grupo = "";
-								String areaDocumental = documentaryAreaCodesList.get(i).trim();
-								String data = "";
-								String hora = "";
-								String sequencia = RandomStringUtils.randomNumeric(5);
+						if (stateCount != eventFileTotalCount) { // Primeiro: Contagens erradas
+							Connection connection = DatabaseInterface.getConnection(userInfo);
+							updateDbState(userInfo, connection,
+									"UPDATE documents_p19068 SET state=?, lastupdated=? WHERE state=?;",
+									new Object[] { DocumentState.REJECTED_BY_GROUP_QUANTITY_DOESNT_MATCH.value,
+											new Timestamp(System.currentTimeMillis()),
+											DocumentState.FILE_READ_AND_READY_TO_SEND.value },
+									new Integer[] { Types.INTEGER, Types.TIMESTAMP, Types.INTEGER });
 
-								Map<String, String> groupFieldNameValueMap = new LinkedHashMap<String, String>();
+						} else { // Segundo: Nome ficheiros vazios.
+							if (hasValue(statusOkFileMap, "Empty_file_name")
+									|| hasValue(statusNotOkFileMap, "Empty_file_name")) {
+								Connection connection = DatabaseInterface.getConnection(userInfo);
+								updateDbState(userInfo, connection,
+										"UPDATE documents_p19068 SET state=?, lastupdated=? WHERE state=?;",
+										new Object[] { DocumentState.REJECTED_BY_GROUP_EMPTY_FILENAMES.value,
+												new Timestamp(System.currentTimeMillis()),
+												DocumentState.FILE_READ_AND_READY_TO_SEND.value },
+										new Integer[] { Types.INTEGER, Types.TIMESTAMP, Types.INTEGER });
 
-//							  [origem].[código aplicação].[grupo].[área documental].[data].[hora][sequencia]
-//							  [origem]: Conteudo - EMPRESA EMISSORA. 
-//				    	      [código da aplicação]: Conteudo - APLICAÇÃO EMISSORA. (Se vazio, "27")
-//							  [grupo]: Conteudo - PROGRAMA EMISSOR. (Se vazio, "PRODOC")
-//							  [área documental]: Representará a área documental dos documentos que contem neste lote.
-//							  [data]: Conteudo - DATA DE SISTEMA. No formato AAAAMMDD
-//							  [hora]: Conteudo - HORA DE SISTEMA HH24MMSS
-//							  [sequencia]: Um numero de sequencia vosso que garanta a unicidade do nome dos ficheiros
+							} else { // se chega aqui, nao tem nomes ficheiros vazios. Contagens sao corretas
+								List<Document> awaitingEventFileFeedbackDbDocumentsList = new ArrayList<>();
 
-								for (int j = 0; j < linesList.size(); j++) { // por linha EE18.txt usar so linha que
-																				// interessa
-
-									// Obter da primeira linha
-									if (j == 0) {
-										for (int fieldIndex = 1; fieldIndex <= fieldsTotal; fieldIndex++) {
-											String name = properties.getProperty("name" + fieldIndex);
-											Integer beginPosition = Integer
-													.valueOf(properties.getProperty("begin" + fieldIndex));
-											Integer endPosition = Integer
-													.valueOf(properties.getProperty("end" + fieldIndex));
-											String value = linesList.get(j).substring(beginPosition - 1,
-													endPosition - 1);
-
-											switch (name) {
-											case "EMPRESA_EMISSORA":
-												origem = value != null && !value.trim().isEmpty() ? value.trim()
-														: "ORIGEM";
-												break;
-
-											case "APLICACAO_EMISSORA":
-												codAplicacao = value != null && !value.trim().isEmpty() ? value.trim()
-														: "27";
-												break;
-
-											case "PROGRAMA_EMISSOR":
-												grupo = value != null && !value.trim().isEmpty() ? value.trim()
-														: "PRODOC";
-												break;
-
-											case "DATA_DE_SISTEMA":
-												Date date = new Date();
-												SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-
-												data = value != null && !value.trim().isEmpty() ? value.trim()
-														: formatter.format(date);
-												break;
-
-											case "HORA_DE_SISTEMA":
-												Date time = new Date();
-												SimpleDateFormat formattr = new SimpleDateFormat("HHmmss");
-
-												hora = value != null && !value.trim().isEmpty() ? value.trim()
-														: formattr.format(time);
-												break;
-
-											default:
-												break;
+								Connection connection = DatabaseInterface.getConnection(userInfo);
+								PreparedStatement psmt = null;
+								ResultSet rst = null;
+								String selectQuery = null;
+								try {
+									selectQuery = "SELECT * FROM documents_p19068 ORDER BY docid ASC;";
+									psmt = connection.prepareStatement(selectQuery);
+									rst = psmt.executeQuery();
+									while (rst.next()) {
+										if (rst.getInt("state") == DocumentState.FILE_READ_AND_READY_TO_SEND.value) { // 2)
+											DocumentData dbDoc = new DocumentData(rst.getInt("docid"));
+											Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+													"Entering getDocumentData() for docid number: "
+															+ rst.getInt("docid"));
+											Document doc = DocumentsP19068Bean.super.getDocumentData(userInfo, procData,
+													dbDoc, connection, true);
+											if (doc != null) {
+												Logger.error(login, this,
+														"DocumentsP19068Bean.sendToGeDocTask.this.run()",
+														"Document data for docid number: " + rst.getInt("docid")
+																+ " was successfully obtained.");
+												awaitingEventFileFeedbackDbDocumentsList.add(doc);
+											} else {
+												Logger.error(login, this,
+														"DocumentsP19068Bean.sendToGeDocTask.this.run()",
+														"Document data for docid number: " + rst.getInt("docid")
+																+ " was NOT obtained.");
 											}
 										}
 									}
+								} catch (SQLException sqle) {
+									Logger.error(userInfo.getUtilizador(), this,
+											"DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"SQL state: " + sqle.getSQLState() + " and message: " + sqle.getMessage(),
+											sqle);
+								} catch (Exception e) {
+									Logger.error(userInfo.getUtilizador(), this,
+											"DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											selectQuery + e.getMessage(), e);
+								} finally {
+									DatabaseInterface.closeResources(connection, psmt, rst);
+								}
+								List<Document> controlDocumentsList = new ArrayList<>();
+								controlDocumentsList.addAll(awaitingEventFileFeedbackDbDocumentsList);
 
-									String lineDocumentaryAreaCode = "";
-									if ((j != 0 && j < (linesList.size() - 1))) {
-										lineDocumentaryAreaCode = linesList.get(j).substring(377, 391);
+								if (awaitingEventFileFeedbackDbDocumentsList != null
+										&& !awaitingEventFileFeedbackDbDocumentsList.isEmpty()) {
 
+									if (!isFileSequenceCorrect(sequentialNamesListEventFile,
+											awaitingEventFileFeedbackDbDocumentsList)) { // Verifica se ficheiros da BD
+																							// e do
+																							// EE18 tem a mesma
+																							// sequencia.
+																							// Se nao,
+																							// REJECTED_BY_GROUP_SEQUENCE_DOESNT_MATCH
+										Connection connect = DatabaseInterface.getConnection(userInfo);
+										updateDbState(userInfo, connect,
+												"UPDATE documents_p19068 SET state=?, lastupdated=? WHERE state=?;",
+												new Object[] {
+														DocumentState.REJECTED_BY_GROUP_SEQUENCE_DOESNT_MATCH.value,
+														new Timestamp(System.currentTimeMillis()),
+														DocumentState.FILE_READ_AND_READY_TO_SEND.value },
+												new Integer[] { Types.INTEGER, Types.TIMESTAMP, Types.INTEGER });
+
+									} else { // se chega aqui, nao tem nomes ficheiros vazios. Contagens sao corretas e
+												// a
+												// mesma sequencia
+										Set<Integer> keysOk = statusOkFileMap.keySet();
+										Set<Integer> keysNotOk = statusNotOkFileMap.keySet();
+
+										if (awaitingEventFileFeedbackDbDocumentsList != null
+												&& !awaitingEventFileFeedbackDbDocumentsList.isEmpty()) {
+											for (Document document : awaitingEventFileFeedbackDbDocumentsList) {
+
+												// Por lista OK
+
+												boolean isMatchFound = false;
+
+												for (Integer key : keysOk) { // Por cada elemento do Multivaluedmap,
+																				// obter
+																				// nome ficheiro da lista ok
+													if (!statusOkFileMap.get(key).isEmpty()) {
+														List<String> valuesList = (List<String>) statusOkFileMap
+																.get(key);
+														String firstValueObjName = "";
+														String secondValueLink = "";
+														for (int i = 0; i < valuesList.size(); i++) {
+															firstValueObjName = valuesList.get(i);
+															if (valuesList.size() > i + 1) {
+																secondValueLink = valuesList.get(++i);
+															}
+														}
+														if (document.getFileName().equals(firstValueObjName)) {
+															isMatchFound = true;
+															Connection cnt = DatabaseInterface.getConnection(userInfo);
+															updateDbState(userInfo, cnt,
+																	"UPDATE documents_p19068 SET state=?, docurl=?, lastupdated=? WHERE docid=?;",
+																	new Object[] {
+																			DocumentState.PROCESS_CONCLUDED_OK.value,
+																			secondValueLink,
+																			new Timestamp(System.currentTimeMillis()),
+																			document.getDocId() },
+																	new Integer[] { Types.INTEGER, Types.VARCHAR,
+																			Types.TIMESTAMP, Types.INTEGER });
+
+															controlDocumentsList.remove(document);
+
+															// Se estado PROCESS_CONCLUDED_OK, apaga documento da tabela
+															// documents
+//										Connection connect = DatabaseInterface.getConnection(userInfo);
+//										PreparedStatement ps = null;
+//										String deleteQuery = null;
+//										try {
+//											deleteQuery = "DELETE FROM documents WHERE docid=?;";
+//											ps = connect.prepareStatement(deleteQuery);
+//											ps.setInt(1, document.getDocId());
+//											int row = ps.executeUpdate();
+//											
+//											Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",	row + " rows affected while executing query: " + deleteQuery + " for docid " + document.getDocId());
+//										
+//										} catch (SQLException sqle) {
+//											Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",	"SQL state: " + sqle.getSQLState() + " and message: " + sqle.getMessage(), sqle);
+//										} catch (Exception e) {
+//											Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",	query + e.getMessage(), e);
+//										} finally {
+//											DatabaseInterface.closeResources(conn, pst, rs);
+//										}
+														}
+													} else {
+														Logger.error(login, this,
+																"DocumentsP19068Bean.sendToGeDocTask.this.run()",
+																"Values for key " + key
+																		+ " are empty for docid number: "
+																		+ document.getDocId());
+													}
+												}
+												// Por lista NOK. Se n esta na lista OK, procurar na lista erros
+
+												if (!isMatchFound) {
+													boolean isNokMatchFound = false;
+
+													for (Integer keyNok : keysNotOk) {
+														if (!statusNotOkFileMap.get(keyNok).isEmpty()) {
+															List<String> valuesNotOkList = (List<String>) statusNotOkFileMap
+																	.get(keyNok);
+															String firstValueObjName = "";
+															String secondValueStatus = "";
+															String thirdValueCodErr = "";
+															String fourthValueDescErr = "";
+
+															// Key - line number (1-based), Value - NOME_OBJ,
+															// STATUS_DESC,
+															// CODERRO, DESCERRO
+															for (int j = 0; j < valuesNotOkList.size(); j++) {
+																firstValueObjName = valuesNotOkList.get(j);
+																if (valuesNotOkList.size() > j + 3) {
+																	secondValueStatus = valuesNotOkList.get(++j);
+																	thirdValueCodErr = valuesNotOkList.get(++j);
+																	fourthValueDescErr = valuesNotOkList.get(++j);
+																}
+															}
+															if (document.getFileName().equals(firstValueObjName)) {
+																isNokMatchFound = true;
+																Connection cnt = DatabaseInterface
+																		.getConnection(userInfo);
+																updateDbState(userInfo, cnt,
+																		"UPDATE documents_p19068 SET state=?, status_desc=?, errorcode=?, errordesc=?, lastupdated=? WHERE docid=?;",
+																		new Object[] {
+																				DocumentState.REJECTED_INDIVIDUALLY.value,
+																				secondValueStatus, thirdValueCodErr,
+																				fourthValueDescErr,
+																				new Timestamp(
+																						System.currentTimeMillis()),
+																				document.getDocId() },
+																		new Integer[] { Types.INTEGER, Types.VARCHAR,
+																				Types.VARCHAR, Types.VARCHAR,
+																				Types.TIMESTAMP, Types.INTEGER });
+
+																controlDocumentsList.remove(document);
+															}
+														} else {
+															Logger.error(login, this,
+																	"DocumentsP19068Bean.sendToGeDocTask.this.run()",
+																	"Values for key " + keyNok
+																			+ " are empty for docid number: "
+																			+ document.getDocId());
+														}
+													}
+													// b) Se tb nao encontra match - marcar estado rejeitado
+													// individualmente
+													if (!isNokMatchFound) {
+														Connection cnt = DatabaseInterface.getConnection(userInfo);
+														updateDbState(userInfo, cnt,
+																"UPDATE documents_p19068 SET state=?, status_desc=?, lastupdated=? WHERE docid=?;",
+																new Object[] {
+																		DocumentState.REJECTED_INDIVIDUALLY.value,
+																		"Document not found in EE18 file",
+																		new Timestamp(System.currentTimeMillis()),
+																		document.getDocId() },
+																new Integer[] { Types.INTEGER, Types.VARCHAR,
+																		Types.TIMESTAMP, Types.INTEGER });
+													}
+												}
+											}
+										}
+
+										if (!controlDocumentsList.isEmpty()) {
+											for (Document doc : awaitingEventFileFeedbackDbDocumentsList) {
+												Connection cnt = DatabaseInterface.getConnection(userInfo);
+												updateDbState(userInfo, cnt,
+														"UPDATE documents_p19068 SET state=?, status_desc=?, lastupdated=? WHERE docid=?;",
+														new Object[] { DocumentState.REJECTED_INDIVIDUALLY.value,
+																"Document not found in EE18 file",
+																new Timestamp(System.currentTimeMillis()),
+																doc.getDocId() },
+														new Integer[] { Types.INTEGER, Types.VARCHAR, Types.TIMESTAMP,
+																Types.INTEGER });
+											}
+										}
 									}
-									if (lineDocumentaryAreaCode == null || lineDocumentaryAreaCode.trim().isEmpty()) {
+								} else {
+									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"No entries found in table documents_p19068 for state SENT_AWAITING_RESPONSE ");
+								}
+							}
+						}
+
+					} else {
+						Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+								"No fields found in EE18 event file ");
+					}
+
+					/**
+					 * 
+					 * Início processo para criacao ficheiro ZIP
+					 * 
+					 * 
+					 */
+
+					ArrayList<Document> documentToIntegrateList = new ArrayList<>();
+					List<String> indexKeyList = new ArrayList<>();
+					List<String> indexValuesList = new ArrayList<>();
+					List<String> documentaryAreaCodesList = new ArrayList<>();
+					List<Document> largeFileList = new ArrayList<>();
+
+					long megabyte = 1024L * 1024L;
+					long maxFileSizeMegabyte = 94371840; // 100 Megabyte is equal to 104857600 bytes 
+					                                     // 90 Megabyte is 94371840 bytes
+					long totalFilesSize = 0;
+
+					Connection connection = DatabaseInterface.getConnection(userInfo);
+					PreparedStatement psmt = null;
+					ResultSet rst = null;
+					String selectQuery = null;
+					try {
+						selectQuery = "SELECT * FROM documents_p19068 ORDER BY docid ASC;";
+						psmt = connection.prepareStatement(selectQuery);
+						rst = psmt.executeQuery();
+						while (rst.next()) {
+							if (rst.getInt("state") == DocumentState.READY_TO_INTEGRATE.value) {
+								DocumentData dbDoc = new DocumentData(rst.getInt("docid"));
+								Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+										"Entering getDocumentData() for docid number: " + rst.getInt("docid"));
+								Document doc = DocumentsP19068Bean.super.getDocumentData(userInfo, procData, dbDoc,
+										connection, true);
+								if (doc != null) {
+									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"Document data for docid number: " + rst.getInt("docid")
+													+ " was successfully obtained.");
+									documentToIntegrateList.add(doc);
+
+									// Por ficheiro, adiciona uma entrada(composta por CSV) em cada uma das listas
+									// indexKeyList e indexValuesList
+									indexKeyList.add(rst.getString("index_keys_list"));
+									indexValuesList.add(rst.getString("index_values_list"));
+									documentaryAreaCodesList.add(rst.getString("documentary_area"));
+
+								} else {
+									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"Document data for docid number: " + rst.getInt("docid")
+													+ " was NOT obtained.");
+								}
+							} else if (rst.getInt("state") == DocumentState.CORRECTED_AFTER_RECEIPT.value) {
+								DocumentData dbDoc = new DocumentData(rst.getInt("docid"));
+								Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+										"Entering getDocumentData() for docid number: " + rst.getInt("docid"));
+								Document doc = DocumentsP19068Bean.super.getDocumentData(userInfo, procData, dbDoc,
+										connection, true);
+								if (doc != null) {
+									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"Document data for docid number: " + rst.getInt("docid")
+													+ " was successfully obtained.");
+									documentToIntegrateList.add(doc);
+
+									// Por ficheiro, adiciona uma entrada(composta por CSV) em cada uma das listas
+									// indexKeyList e indexValuesList
+									indexKeyList.add(rst.getString("index_keys_list"));
+									indexValuesList.add(rst.getString("index_values_list"));
+									documentaryAreaCodesList.add(rst.getString("documentary_area"));
+
+								} else {
+									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"Document data for docid number: " + rst.getInt("docid")
+													+ " was NOT obtained.");
+								}
+							}
+						}
+					} catch (SQLException sqle) {
+						Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+								"SQL state: " + sqle.getSQLState() + " and message: " + sqle.getMessage(), sqle);
+					} catch (Exception e) {
+						Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+								selectQuery + e.getMessage(), e);
+					} finally {
+						DatabaseInterface.closeResources(connection, psmt, rst);
+					}
+
+					if (documentToIntegrateList != null && !documentToIntegrateList.isEmpty()) {
+						
+						// Check max file size
+						List<ArrayList<Document>> bySizelistOfList = new ArrayList<>();
+						bySizelistOfList.add(0, new ArrayList<Document>());
+
+						int position = 0;
+						for (int i = 0; i < documentToIntegrateList.size(); i++) {
+							long currentFileSize = documentToIntegrateList.get(i).getContent().length;
+							if (currentFileSize >= maxFileSizeMegabyte) { // para registar erro na BD
+								largeFileList.add(documentToIntegrateList.get(i));
+
+							} else {
+								if ((totalFilesSize + currentFileSize) < maxFileSizeMegabyte) {
+									totalFilesSize += currentFileSize;
+									bySizelistOfList.get(position).add(documentToIntegrateList.get(i));
+
+								} else {
+									position++;
+									bySizelistOfList.add(position, new ArrayList<Document>());
+									bySizelistOfList.get(position).add(documentToIntegrateList.get(i));
+									totalFilesSize = currentFileSize;
+								}
+							}
+						}
+
+			            // Check max number of files
+						List<ArrayList<Document>> byNumberOfDocslistOfList = new ArrayList<>();
+						
+						for (int r = 0; r < bySizelistOfList.size(); r++) {
+							int numberDocs = bySizelistOfList.get(r).size();
+							final int subListsize = 500;
+
+							if (numberDocs >= 500) {
+								for (int q = 0; q < numberDocs; q += subListsize) {
+									byNumberOfDocslistOfList.add(new ArrayList<Document>(
+											bySizelistOfList.get(r).subList(q, Math.min(numberDocs, q + subListsize))));
+								}
+							} else {
+								byNumberOfDocslistOfList.add(new ArrayList<Document>(bySizelistOfList.get(r)));
+							}
+						}
+						
+						// Validar: se o tamanho do ficheiro sozinho for maior que 100mb, registar erro
+						// individual na bd
+						if (largeFileList != null && !largeFileList.isEmpty()) {
+							for (Document doc : largeFileList) {
+								Connection cnt = DatabaseInterface.getConnection(userInfo);
+								updateDbState(userInfo, cnt,
+										"UPDATE documents_p19068 SET state=?, status_desc=?, lastupdated=? WHERE docid=?;",
+										new Object[] { DocumentState.REJECTED_INDIVIDUALLY.value,
+												"Document with size bigger than 100MB",
+												new Timestamp(System.currentTimeMillis()), doc.getDocId() },
+										new Integer[] { Types.INTEGER, Types.VARCHAR, Types.TIMESTAMP, Types.INTEGER });
+							}
+						}
+
+						/**
+						 * documentaryAreaCodesList tem lista de banco para se corresponder a areas documentais: NB: PGESAVAL, NBA: YGESAVAL
+						 * 
+						 * Para já: Está a ir buscar o primeiro valor do documentaryAreaCodesList para o nome do ficheiro. Falta definir se é para ser assim.
+						 * 
+						 * 
+						 */
+
+						// Criar zip. Atencao limite 100Mb, 500 docs, num sequencia diferente
+						String outputFolderPath = properties.getProperty("OUTPUT_FOLDER_PATH");
+
+						if (outputFolderPath != null && !outputFolderPath.trim().isEmpty()) {
+
+							if (byNumberOfDocslistOfList != null && !byNumberOfDocslistOfList.isEmpty()) {
+								int number = 0;
+								int zipCounter = 0;
+
+								for (int m = 0; m < byNumberOfDocslistOfList.size(); m++) { // Por cada batch da listOfList
+									String origin = properties.getProperty("ORIGEM");
+									String applicationCode = properties.getProperty("CODIGO_APLICACAO");
+									
+									String docArea = null;
+									if (documentaryAreaCodesList.get(0) != null
+											&& !documentaryAreaCodesList.get(0).isEmpty()) {
+										if ("NB".equalsIgnoreCase(documentaryAreaCodesList.get(0))) {
+											docArea = "PGESAVAL";
+
+										} else if ("NBA".equalsIgnoreCase(documentaryAreaCodesList.get(0))) {
+											docArea = "YGESAVAL";
+										}
+									}
+									
+									String group = null;
+									if (docArea != null) {
+										if ("PGESAVAL".equals(docArea)) {
+											group = "BES00WD1";
+
+										} else if ("YGESAVAL".equals(docArea)) {
+											group = "BAC00WD1";
+										}
+									}
+									String groupFilenameValue = properties.getProperty("GROUP_FILENAME_VALUE");
+
+									if (origin == null || applicationCode == null || group == null || docArea == null
+											|| groupFilenameValue == null) {
 										Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-												"Line " + (j + 1) + " does not contain documentary area code. ");
-										continue;
-
-									}
-									// aqui tem codigo AREA DOCUMENTAL da linha
-									if (!documentaryAreaCodesList.get(i).equals(lineDocumentaryAreaCode)) {
-										Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-												"Information: Input AREA DOCUMENTAL code does not match line number: "
-														+ (j + 1) + " AREA DOCUMENTAL code. Skipping...");
-										continue;
-
-									}
-									// Aqui obteve linha do EE18.txt com codigo AREA DOCUMENTAL correto (fez match):
-									// lineDocumentaryAreaCode
-
-									if (documentWithErrorMap.containsKey((j + 1))) { // se linha nao estiver na lista de
-																						// erros
-										Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-												"Information: Line number: " + (j + 1)
-														+ " has a previous identified error. Skipping...");
-										continue;
+												"ORIGEM, CODIGO_APLICACAO, GRUPO, AREA_DOCUMENTAL or GROUP_FILENAME_VALUE not properly defined. Please check .properties file or flow variable ");
+										break;
 									}
 
-									// Aqui tenho linha com codigo AREA DOCUMENTAL correto e sem erros
+									Date today = new Date();
+									SimpleDateFormat formatterDate = new SimpleDateFormat("yyyyMMdd");
+									String date = formatterDate.format(today);
 
-									String outputFolderPath = Setup.getProperty("OUTPUT_FOLDER_PATH");
+									SimpleDateFormat formatterHour = new SimpleDateFormat("HHmmss");
+									String hour = formatterHour.format(today);
+									String sequenceNumber = "";
+
+									if (m == 0) {
+										sequenceNumber = String.format("%05d", number);
+
+									} else {
+										number += 1;
+										sequenceNumber = String.format("%05d", number);
+									}
 
 									// 1.1: Criar extensao comum
-									String filesAndFoldersPattern = origem + "." + codAplicacao + "." + grupo + "."
-											+ areaDocumental + "." + data + "." + hora + "." + sequencia;
+									String filesAndFoldersPattern = origin + "." + applicationCode + "." + group + "."
+											+ docArea + "." + date + "." + hour + "." + sequenceNumber;
 
 									// 2: Criar pastas
 									Path pathFolder = Paths
@@ -599,7 +848,6 @@ public class DocumentsP19068Bean extends DocumentsBean {
 									// 3: Criar ficheiro de indice IND
 									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
 											"Building .IND file...");
-
 									String unsescapedPath = StringEscapeUtils.unescapeHtml(pathFolder.toString());
 									String unsescapedSubPath = StringEscapeUtils.unescapeHtml(pathSubFolder.toString());
 									File fileIndex = new File(
@@ -608,179 +856,287 @@ public class DocumentsP19068Bean extends DocumentsBean {
 									PrintWriter printWriter = new PrintWriter(fileWriter);
 									printWriter.println("CODEPAGE:850");
 
-									// Obter NOME_OBJ da linha
-									String lineFileName = linesList.get(j).substring(11862, 12118);
-									lineFileName = lineFileName != null && !lineFileName.trim().isEmpty() ? lineFileName
-											: "Could not obtain line document name";
+									for (int n = 0; n < byNumberOfDocslistOfList.get(m).size(); n++) { // Por cada Document do batch
+																							// listOfList[i]
+//								indexKeyList = USR1,USR2,USR3,USR4,USR5,USR6
+//							    indexValuesList = Referência do Relatório de avaliação,Data Relatório de avaliação,Tipo de Documento,NIF,Referência WF,Referência Crédito
 
-									// Por cada NOME_OBJ da lista ordenada, obter Document da lista
-									// documentToMergeList
-									for (int k = 0; k < documentToMergeList.size(); k++) {
-										if (documentToMergeList.get(k).getFileName().contains(lineFileName.trim())) {
+										List<String> convertedKeysList = Arrays
+												.asList(indexKeyList.get(m).split(",", -1));
+										List<String> convertedValuesList = Arrays
+												.asList(indexValuesList.get(m).split(",", -1));
+										for (int p = 0; p < convertedKeysList.size(); p++) {
 
-											// Se entra aqui, nome ficheiro presente na linha EE18.txt tem match na
-											// lista documentos da BD
-
-											String tipoAccao = linesList.get(j).substring(425, 440);
-											String conteudo = linesList.get(j).substring(440, 10439);
-											if (tipoAccao == null || tipoAccao.trim().isEmpty()) {
-												Logger.error(login, this,
-														"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-														"Information: Line number: " + (j + 1)
-																+ " does not have TIPO ACCAO field. Not added to error list");
-
-											} else { // Justificacao: ver documentacao o atributo "CONTEUDO"
-												if ("ARSLOAD".equals(tipoAccao.trim())
-														|| "ICMLOAD".equals(tipoAccao.trim())) {
-													if (conteudo != null || !conteudo.trim().isEmpty()) {
-														// se campo estiver preenchido no txt, obter valor para por no
-														// mapa. Se nao estiver, saltar linha e colocar log só
-
-														Integer contentAndOtherFieldsTotal = Integer
-																.valueOf(properties.getProperty("content.field.total"));
-														String documentLink = "";
-														String documentLocal = "";
-
-														for (int propIndex = 1; propIndex <= contentAndOtherFieldsTotal; propIndex++) {
-															String propName = properties
-																	.getProperty("content.field.name" + propIndex);
-															Integer propBeginPosition = Integer.valueOf(properties
-																	.getProperty("content.field.begin" + propIndex));
-															Integer propEndPosition = Integer.valueOf(properties
-																	.getProperty("content.field.end" + propIndex));
-
-															String value = linesList.get(j).substring(
-																	propBeginPosition - 1, propEndPosition - 1);
-															if (value == null || value.trim().isEmpty()) {
-																Logger.error(login, this,
-																		"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-																		"Information: Line number: " + (j + 1)
-																				+ " does not have value for property "
-																				+ propName + ". Skiping...");
-																continue;
-															}
-
-															if ("LINK".equals(propName)
-																	|| "LOCAL_DESC".equals(propName)) {
-																documentLink = value.trim();
-															} else {
-																groupFieldNameValueMap.put(propName, value);
-															}
-														}
-
-													} else {
-														Logger.error(login, this,
-																"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-																"Information: Line number: " + (j + 1)
-																		+ " does not have CONTEUDO field. Not added to error list");
-													}
-
-												} else {
-													Logger.error(login, this,
-															"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-															"Information: Line number: " + (j + 1)
-																	+ " does not have ARSLOAD or ICMLOAD field. Not added to error list");
-												}
-											}
-
-											for (Map.Entry<String, String> entry : groupFieldNameValueMap.entrySet()) {
-												printWriter.println("GROUP_FIELD_NAME:" + entry.getKey());
-												printWriter.println("GROUP_FIELD_VALUE:" + entry.getValue());
-											}
-											printWriter.println("GROUP_OFFSET:0");
-											printWriter.println("GROUP_LENGTH:0");
-											printWriter.println("GROUP_FILENAME:/db2data/archiveq/load/CDW/"
-													+ filesAndFoldersPattern + ".ARD.OUT/"
-													+ documentToMergeList.get(k).getFileName());
-
-											// Armazena documento
-											File documentToStore = new File(unsescapedSubPath + File.separator
-													+ documentToMergeList.get(k).getFileName());
-											FileUtils.writeByteArrayToFile(documentToStore,
-													documentToMergeList.get(k).getContent());
-
-										} else {
-											if (!documentWithErrorMap.containsKey((j + 1))) {
-												documentWithErrorMap.put((j + 1), lineFileName);
-												documentWithErrorMap.put((j + 1),
-														"OTHER_ERR: documentToMergeList filenames does not contain EE18 Line "
-																+ (j + 1) + " filename. ");
-											}
-											continue;
+											printWriter.println("GROUP_FIELD_NAME:" + convertedKeysList.get(p));
+											printWriter.println("GROUP_FIELD_VALUE:" + convertedValuesList.get(p));
 										}
-										printWriter.close();
+										printWriter.println("GROUP_OFFSET:0");
+										printWriter.println("GROUP_LENGTH:0");
+										printWriter
+												.println("GROUP_FILENAME:" + groupFilenameValue + filesAndFoldersPattern
+														+ ".ARD.OUT/" + byNumberOfDocslistOfList.get(m).get(n).getFileName());
 
-										// Criar ficheiro ARD
-										Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-												"Building .ARD file...");
-										File fileArd = new File(
-												unsescapedPath + File.separator + filesAndFoldersPattern + ".ARD");
-										FileUtils.touch(fileArd);
+										// Armazena documento
+										File documentToStore = new File(unsescapedSubPath + File.separator
+												+ byNumberOfDocslistOfList.get(m).get(n).getFileName());
+										FileUtils.writeByteArrayToFile(documentToStore,
+												byNumberOfDocslistOfList.get(m).get(n).getContent());
 
-										// Zipar
-										Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-												"Building zipped folder...");
-										FileOutputStream fos = new FileOutputStream(unsescapedPath + ".zip");
-										ZipOutputStream zipOut = new ZipOutputStream(fos);
-										File fileToZip = new File(unsescapedPath);
-
-										zipFile(fileToZip, fileToZip.getName(), zipOut);
-										zipOut.close();
-										fos.close();
-
-										Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-												"Deleting source files and folders...");
-										deleteDirectory(fileToZip);
+										// Apos colocar o zip na pasta, marcar estado lido para integracao
+										// (FILE_READ_AND_READY_TO_SEND)
+										Connection cnt = DatabaseInterface.getConnection(userInfo);
+										updateDbState(userInfo, cnt,
+												"UPDATE documents_p19068 SET state=?, lastupdated=? WHERE docid=?;",
+												new Object[] { DocumentState.FILE_READ_AND_READY_TO_SEND.value,
+														new Timestamp(System.currentTimeMillis()),
+														byNumberOfDocslistOfList.get(m).get(n).getDocId() },
+												new Integer[] { Types.INTEGER, Types.TIMESTAMP, Types.INTEGER });
 
 									}
+									printWriter.close();
+
+									// Criar ficheiro ARD
+									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"Building .ARD file...");
+									File fileArd = new File(
+											unsescapedPath + File.separator + filesAndFoldersPattern + ".ARD");
+									FileUtils.touch(fileArd);
+
+									// Zipar
+									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"Building zipped folder...");
+									FileOutputStream fos = new FileOutputStream(unsescapedPath + ".zip");
+									ZipOutputStream zipOut = new ZipOutputStream(fos);
+									File fileToZip = new File(unsescapedPath);
+
+									zipFile(fileToZip, fileToZip.getName(), zipOut);
+									zipOut.close();
+									fos.close();
+
+									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+											"Deleting source files and folders...");
+									deleteDirectory(fileToZip);
+									zipCounter += 1;
 								}
+
+								if (reader != null) {
+									reader.close();
+								}
+
+								if (eventFileName != null && !eventFileName.isEmpty()
+										&& zipCounter == byNumberOfDocslistOfList.size()) {
+									deleteEventFile(login, eventFileName);
+								}
+
+							} else {
+								Logger.error(userInfo.getUtilizador(), this,
+										"DocumentsP19068Bean.sendToGeDocTask.this.run()",
+										"No documents with state to read were found in database ");
 							}
 
 						} else {
 							Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-									"EE18 file could not be obtained.");
+									"OUTPUT_FOLDER_PATH not properly defined. Please check .properties file ");
 						}
-
 					} else {
 						Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-								"documentToMergeList is null or empty. ");
+								"No documents were found in the database to create the zip file ");
+
 					}
 
-				} catch (SQLException e) {
+//				if(stream != null) {
+//					stream.close();
+//				}
 
-					// Notify caller....
-					e.printStackTrace();
-					// throw e;
-				} catch (IOException e) {
-					System.err.println("Cannot create directories - " + e);
+				} else {
+					Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+							"INPUT_FOLDER_PATH not properly defined. Please check .properties file ");
+				}
 
-				} catch (Exception e) {
-					// dbDoc = null;
-					e.printStackTrace();
-				} finally {
-					DatabaseInterface.closeResources(pst, rs);
-					if (reader != null) {
-						try {
-							reader.close();
-						} catch (IOException ioe) {
-							Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-									procData.getSignature() + "caught exception: " + ioe.getMessage(), ioe);
+			} catch (IOException e) {
+				Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+						"IOException", e);
+
+			} catch (Exception e) {
+				Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+						"Exception", e);
+			}
+		}
+
+		private void deleteEventFile(String login, String eventTxtFileName) {
+			try {
+				boolean result = Files.deleteIfExists(Paths.get(eventTxtFileName));
+				if (result) {
+					Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()", "EE18 file deleted");
+				} else {
+					Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+							"Unable to delete the EE18 file");
+				}
+
+			} catch (Exception e) {
+				Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+						"Exception. Unable to delete the EE18 file", e);
+			}
+		}
+
+		private boolean isFileSequenceCorrect(List<String> sequentialNamesListEventFile,
+				List<Document> sentAndAwaitingDbDocumentsList) {
+			for (int k = 0; k < sentAndAwaitingDbDocumentsList.size(); k++) {
+				if (!sentAndAwaitingDbDocumentsList.get(k).getFileName().equals(sequentialNamesListEventFile.get(k))) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		private void updateDbState(UserInfoInterface userInfo, Connection connection, String updateQuery,
+				Object[] parameters, Integer[] dataTypes) throws SQLException {
+			PreparedStatement psmt = null;
+			ResultSet rst = null;
+
+			try {
+				psmt = connection.prepareStatement(updateQuery);
+				for (int k = 0; k < parameters.length; k++) {
+					psmt.setObject(k + 1, parameters[k], dataTypes[k]);
+				}
+				int statusNumber = psmt.executeUpdate();
+				Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+						statusNumber + " rows affected while executing query: " + updateQuery + " with paramenters "
+								+ Arrays.toString(parameters));
+
+			} catch (SQLException sqle) {
+				Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+						"SQL state: " + sqle.getSQLState() + " and message: " + sqle.getMessage(), sqle);
+			} catch (Exception e) {
+				Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+						updateQuery + e.getMessage(), e);
+			} finally {
+				DatabaseInterface.closeResources(connection, psmt, rst);
+			}
+		}
+	}
+
+		private boolean hasValue(MultiValuedMap<Integer, String> fileMap, String value) {
+			for (Integer key : fileMap.keySet()) {
+				if (fileMap.containsValue(value)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+			private void extractLinesContent(Properties properties, List<String> sequentialNamesList,
+					MultiValuedMap<Integer, String> statusOkFileMap, MultiValuedMap<Integer, String> statusNotOkFileMap,
+					BufferedReader reader) throws IOException {
+				int count = 0;
+				String fileLine;
+				while ((fileLine = reader.readLine()) != null) {
+
+					if (!fileLine.startsWith("D")) { // se começar por H - header, D - conteudo, T - footer
+						continue;
+					}
+
+					String statusDescLineValue = fileLine.substring(
+							Integer.valueOf(properties.getProperty("statusdesc.begin")) - 1,
+							Integer.valueOf(properties.getProperty("statusdesc.end")) - 1);
+					String fileNameLineValue = fileLine.substring(
+							Integer.valueOf(properties.getProperty("nomeobj.begin")) - 1,
+							Integer.valueOf(properties.getProperty("nomeobj.end")) - 1);
+					fileNameLineValue = fileNameLineValue != null && !fileNameLineValue.trim().isEmpty()
+							? fileNameLineValue.trim()
+							: "Empty_file_name";
+
+					// criar lista sequencial nomes
+					sequentialNamesList.add(fileNameLineValue);
+
+					if ("OK".equals(statusDescLineValue.trim())) { // O valor estará sempre preenchido
+						String linkLineValue = fileLine.substring(
+								Integer.valueOf(properties.getProperty("link.begin")) - 1,
+								Integer.valueOf(properties.getProperty("link.end")) - 1);
+						linkLineValue = linkLineValue != null && !linkLineValue.trim().isEmpty() ? linkLineValue.trim()
+								: "Link not provided";
+
+						// Aqui criamos lista de nomes lidos OK do EE18
+
+						// Key - line number (1-based), Value - NOME_OBJ, LINK
+						statusOkFileMap.put(count, fileNameLineValue);
+						statusOkFileMap.put(count, linkLineValue);
+
+					} else { // STATUS_DESC: NOT_OK ou outros
+						String codErro = fileLine.substring(
+								Integer.valueOf(properties.getProperty("coderro.begin")) - 1,
+								Integer.valueOf(properties.getProperty("coderro.end")) - 1);
+						codErro = codErro != null && !codErro.trim().isEmpty() ? codErro.trim()
+								: "CODERRO not provided";
+						String descErro = fileLine.substring(
+								Integer.valueOf(properties.getProperty("descerro.begin")) - 1,
+								Integer.valueOf(properties.getProperty("descerro.end")) - 1);
+						descErro = descErro != null && !descErro.trim().isEmpty() ? descErro.trim()
+								: "DESCERRO not provided";
+
+						// Key - line number (1-based), Value - NOME_OBJ, STATUS_DESC, CODERRO, DESCERRO
+						statusNotOkFileMap.put(count, fileNameLineValue);
+						statusNotOkFileMap.put(count, statusDescLineValue);
+						statusNotOkFileMap.put(count, codErro);
+						statusNotOkFileMap.put(count, descErro);
+					}
+					count++;
+				}
+			}
+
+			private void getZipContent(Properties properties, String login, String eventZipFileName,
+					List<String> sequentialNamesList, MultiValuedMap<Integer, String> statusOkFileMap,
+					MultiValuedMap<Integer, String> statusNotOkFileMap) throws IOException {
+				// Obter txt dentro do zip com data mais recente
+				ZipFile zipFile = new ZipFile(eventZipFileName);
+				Enumeration<? extends ZipEntry> entries = zipFile.entries();
+
+				// Iter 1 - popular mapa com nome ficheiro, data e ordenar
+				TreeMap<String, Date> txtFileMap = new TreeMap<>();
+				while (entries.hasMoreElements()) {
+					ZipEntry entry = entries.nextElement();
+					String name = entry.getName();
+					Date date = new Date(entry.getTime());
+					txtFileMap.put(name, date);
+				}
+
+				if (txtFileMap != null && !txtFileMap.isEmpty()) {
+					// Iter 2 - Obter apenas linhas do txt mais recente
+					String eventTxtFileName = txtFileMap.firstKey();
+					BufferedReader reader = null;
+					InputStream stream = null;
+					Enumeration<? extends ZipEntry> zipEntries = zipFile.entries();
+					while (zipEntries.hasMoreElements()) {
+						ZipEntry entry = zipEntries.nextElement();
+						// So lê linhas do ficheiro mais recente
+						if (!eventTxtFileName.equals(entry.getName())) {
+							continue;
 						}
+						stream = zipFile.getInputStream(entry);
+						reader = new BufferedReader(new InputStreamReader(stream));
+
+						extractLinesContent(properties, sequentialNamesList, statusOkFileMap, statusNotOkFileMap,
+								reader);
 					}
+					if (stream != null) {
+						stream.close();
+					}
+
+				} else {
+					Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
+							"Zip file is empty and the content cannot be obtained.");
 				}
 			}
 		  
-			private void searchEventTxtFilesInFolder(final File folder, Map<String, Date> result) {
+			private void searchFilesInFolder(final File folder, String extension, Map<String, Date> result) {
 				for (final File file : folder.listFiles()) {
 					if (file.isDirectory()) {
-						searchEventTxtFilesInFolder(file, result);
+						searchFilesInFolder(file, extension, result);
 					}
 
 					if (file.isFile()) {
-						if (file.getName().toLowerCase().endsWith(".txt")) {
-
+						if (file.getName().toLowerCase().endsWith(extension)) {
 							result.put(file.getAbsolutePath(), new Date(file.lastModified()));
-							// result.add(file.getAbsolutePath());
 						}
 					}
 				}
@@ -825,5 +1181,3 @@ public class DocumentsP19068Bean extends DocumentsBean {
 				fis.close();
 			}
 	  }
-}
-

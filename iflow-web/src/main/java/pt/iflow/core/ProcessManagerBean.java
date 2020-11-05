@@ -6076,36 +6076,39 @@ public class ProcessManagerBean implements ProcessManager {
 	      
 	       StringBuilder sQueryDelegated = new StringBuilder(DBQueryManager.getQuery("ProcessManager.get_activity_filters_delegated"));
 
-	      // 2: anFlowId
+
+		  sQueryDelegated.append(")C WHERE 1=1 ");
+	      
+		  // 2: anFlowId
 	      if (anFlowId > -1) {
-	        sQuery.append(" and a.flowid=?");
-	        sQueryDelegated.append(" and a.flowid=?");
+//	        sQuery.append(" and flowid=?");
+	        sQueryDelegated.append(" and flowid=?");
 	      }
 	      // 3: adtAfter
 	      if (filter.getDateAfter() != null) {
-	        sQuery.append(" and a.created >= ?");
+//	        sQuery.append(" and a.created >= ?");
 	        sQueryDelegated.append(" and a.created >= ?");
 	      }
 	      // 4: adtBefore
 	      if (filter.getDateBefore() != null) {
-	        sQuery.append(" and a.created < ?");
+//	        sQuery.append(" and a.created < ?");
 	        sQueryDelegated.append(" and a.created < ?");
 	      }
 	      // 5: pnumber
 	      if (StringUtils.isNotEmpty(filter.getPnumber())) {
-	        sQuery.append(" and upper(pnumber) like upper(?)");
+//	        sQuery.append(" and upper(pnumber) like upper(?)");
 	        sQueryDelegated.append(" and upper(pnumber) like upper(?)");
 	      }
-
+	      
 	      if(filter.getOrderType() != null && filter.getOrderType().equals("desc")){
 	    	  
 	    	  //alteração da ordenação Tarefas
-	    	  sQueryDelegated.append(")C order by created asc");
+	    	  sQueryDelegated.append(" order by created asc");
 	         // sQueryDelegated.append(" order by iconid asc, created desc");
 	    	  //sQueryDelegated.append(" order by created desc");
 	      }else{
 	    	  
-	    	  sQueryDelegated.append(")C order by created desc");
+	    	  sQueryDelegated.append(" order by created desc");
 	         // sQueryDelegated.append(" order by iconid asc, created asc");
 	    	  //sQueryDelegated.append(" order by created desc");
 	      }
@@ -6150,18 +6153,18 @@ public class ProcessManagerBean implements ProcessManager {
 	        // after getting the 'normal' activities, we get the 'delegated ones'
 	        //nField = 1;
 
-	        if (anFlowId > -1) {
-	          st.setInt(nField, anFlowId);
-	          ++nField;
-	        }
-	        if (filter.getDateAfter() != null) {
-	          st.setTimestamp(nField, new Timestamp(filter.getDateAfter().getTime()));
-	          ++nField;
-	        }
-	        if (filter.getDateBefore() != null) {
-	          st.setTimestamp(nField, new Timestamp(filter.getDateBefore().getTime()));
-	          ++nField;
-	        }
+//	        if (anFlowId > -1) {
+//	          st.setInt(nField, anFlowId);
+//	          ++nField;
+//	        }
+//	        if (filter.getDateAfter() != null) {
+//	          st.setTimestamp(nField, new Timestamp(filter.getDateAfter().getTime()));
+//	          ++nField;
+//	        }
+//	        if (filter.getDateBefore() != null) {
+//	          st.setTimestamp(nField, new Timestamp(filter.getDateBefore().getTime()));
+//	          ++nField;
+//	        }
 	        
 	        rs = st.executeQuery();
 	        while (rs.next()) {

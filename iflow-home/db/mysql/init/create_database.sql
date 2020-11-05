@@ -92,6 +92,7 @@ CREATE TABLE `process` (
   `idx17` varchar(1024),
   `idx18` varchar(1024),
   `idx19` varchar(1024),
+  hidden int(1),
   PRIMARY KEY (`flowid`, `pid`,`subpid`),
   INDEX `ind_process` (`created`),
   INDEX IND_PROCESS_IDX0 (idx0),

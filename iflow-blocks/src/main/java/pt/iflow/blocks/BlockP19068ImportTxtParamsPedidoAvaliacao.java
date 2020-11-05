@@ -127,7 +127,10 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 					cleanSelectedField(procData, fieldName);
 				}
 			}
-
+			
+			List<Integer> sequenceCounterList = new ArrayList<>();
+			sequenceCounterList.add(0);
+			
 			for (String line : linesList) {
 				String currentLineEventCode = line.substring(117, 121);
 				if (!eventCodes.contains(currentLineEventCode)) {
@@ -135,7 +138,7 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 
 				}
 				obtainAndSetConfigFileFields(procData, login, valorInputIdPedidoAvaliacao, properties,
-						totalEventCodesFromConfigFile, totalFieldsFromConfigFile, line, currentLineEventCode);
+						totalEventCodesFromConfigFile, totalFieldsFromConfigFile, line, currentLineEventCode, sequenceCounterList);
 			}
 
 		} catch (Exception e) {
@@ -158,7 +161,7 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 
 	private void obtainAndSetConfigFileFields(ProcessData procData, String login, String valorInputIdPedidoAvaliacao,
 			Properties properties, Integer totalEventCodesFromConfigFile, Integer totalFieldsFromConfigFile,
-			String line, String currentLineEventCode) {
+			String line, String currentLineEventCode, List<Integer> sequenceCounterList) {
 
 		for (int p = 1; p <= totalEventCodesFromConfigFile; p++) {
 			String eventCodeFromConfigFile = properties.getProperty("single.field.event.code" + p);
@@ -187,6 +190,7 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 					break;
 
 				} else {
+					boolean isRequestTypeEqualsEdition = false;
 					for (int q = 1; q <= totalFieldsFromConfigFile; q++) {
 						String fieldEventCode = properties.getProperty("event.code" + q);
 						String name = properties.getProperty("name" + q);
@@ -224,17 +228,61 @@ public class BlockP19068ImportTxtParamsPedidoAvaliacao extends Block {
 							if (fieldValueFromTxt == null
 									|| (!("Text".equals(fieldDataType) || "TextArray".equals(fieldDataType))
 											&& fieldValueFromTxt.trim().isEmpty())) {
-								String errorMessage = fieldValueFromTxt == null ? "Could not get data: " + name
-										+ " in field number: " + q
-										+ " , check if property is well defined or document is missing/NULL field "
-										: "Could not parse empty data for: " + name + " of " + fieldDataType
-												+ " data type. Skipping...";
+								String errorMessage = "";
+
+								if (fieldValueFromTxt == null) {
+									errorMessage = "Could not get data: " + name + " in field number: " + q
+											+ " , check if property is well defined or document is missing/NULL field ";
+								} else {
+									errorMessage = "Could not parse empty data for: " + name + " of " + fieldDataType
+											+ " data type. Skipping...";
+									cleanSelectedField(procData, name);
+								}
 								Logger.error(login, this, "after", errorMessage);
 								continue;
 
 							}
+							
+							// Para cada linha do tipo B053, criar num array um id de fração com o ID do pedido concatenado (sem zeros à esq.)
+							// com um sequenciador 001, 002, etc
+							if("lista_intIdFracao".equals(name)) {
+								int sequenceCounter = (int)sequenceCounterList.get(0);
+								int length = String.valueOf(sequenceCounter).length();
+								String sequenceNumber = "";
+                                
+								if (length < 4) {
+							        sequenceNumber = String.format("%03d", sequenceCounter);
+								} else {
+									sequenceNumber = String.format("%0" + length + "d", sequenceCounter);
+							    }
+								
+								fieldValueFromTxt = valorInputIdPedidoAvaliacao.replaceFirst("^0+(?!$)", "") + "." + sequenceNumber;
+								sequenceCounterList.set(0, sequenceCounter+=1);
+							}
+							
+							// Remove zeros à esquerda do numero
+							if("montanteCredito".equals(name)) {
+								fieldValueFromTxt = fieldValueFromTxt.replaceFirst("^0+(?!$)", "");
+							}
+							
+							// 2 - Edição Relatório 
+							if("tipoPedido".equals(name) && "2".equals(fieldValueFromTxt)) {
+								isRequestTypeEqualsEdition = true;
+								
+							}
+							
+							// So le se tipoPedido for 2 (Edição Relatório) 
+							if ("motivo".equals(name) || "observacoes".equals(name)) {
+								if (!isRequestTypeEqualsEdition) {
+									cleanSelectedField(procData, name);
+									continue;
+								} else {
+									fieldValueFromTxt = fieldValueFromTxt.replaceFirst("^0+(?!$)", "");
+								}
+							}
+							
 							createInstanceFieldsMap(totalFieldsFromConfigFile, valorInputIdPedidoAvaliacao, name);
-							setProcDataValues(procData, login, name, fieldDataType, fieldValueFromTxt);
+							setProcDataValues(procData, login, name, fieldDataType, fieldValueFromTxt.trim());
 						}
 					}
 				}

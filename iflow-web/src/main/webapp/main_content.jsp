@@ -252,7 +252,13 @@ try {
     String layout = fdFormData.getParameter("layout");
     if (layout == null) {
       layout = (String) session.getAttribute("layout");
-      if (layout == null) layout = "0";
+      if (layout == null) {
+    	  String defaultLayout = StringUtils.trimToEmpty(Setup.getProperty("DEFAULT_TASKS_LAYOUT"));
+    	  if(StringUtils.equalsIgnoreCase("1", defaultLayout) || StringUtils.equalsIgnoreCase("0", defaultLayout))
+    	  	layout = defaultLayout;
+    	  else
+    		layout = "0";
+      }
     } else {
       session.setAttribute("layout", layout); // Utilizador actualizou valor
     }
@@ -298,11 +304,14 @@ try {
       startIndex = 0;
       session.setAttribute("startindexTasks", startIndex.toString());
 	}
-	if (StringUtils.isEmpty(sShowFlowId)) 
-	  	sShowFlowId = "-1";
+	if (StringUtils.isEmpty(sShowFlowId)){		
+		sShowFlowId = StringUtils.trimToEmpty(Setup.getProperty("DEFAULT_TASKS_FLOWID"));
+	}	  	
 	try {
 		nShowFlowId = Integer.parseInt(sShowFlowId);
-	}catch (Exception e) { }
+	}catch (Exception e) { 
+		sShowFlowId = "-1";
+	}
     session.setAttribute("filtro_showflowid", sShowFlowId);
     
 	String showflowidselection = "";
@@ -603,6 +612,7 @@ try {
     int j=0;
     for (int i=0; i < alAct.size(); i++) {
       a = alAct.get((i));
+      
       String sCreatedDate = DateUtility.formatFormDate(userInfo, a.created);
       if (!allDates.contains(sCreatedDate)) {
         allDates.add(sCreatedDate);
@@ -616,7 +626,39 @@ try {
       if (i >= startIndex && j < nNEWEST_LIMIT) {
         // build hashmap to be able to display things properly
         Map<String,String> hm = new HashMap<String,String>();
-  
+        //Metadados
+        if(StringUtils.equals(sShowFlowId, Setup.getProperty("DEFAULT_TASKS_FLOWID"))){
+        	try{
+        		ProcessData procData = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(a.getFlowid(), a.getPid(), a.getSubpid()), Const.nALL_PROCS);
+        		Map<String,String> taskProcessDetail = ProcessPresentation.getProcessDetail(userInfo, procData);
+                Map<String,String> taskProcessDetailVarNames = ProcessPresentation.getProcessDetailVarnames(userInfo, procData);
+                Set<String> metanomes = taskProcessDetail.keySet();
+                String tituloMetadados = "";
+                String valorMetadados = "";
+                Integer contadorColuna = 7;
+                
+                for(String metanome : metanomes){
+                  if(!StringUtils.contains(Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA"), taskProcessDetailVarNames.get(metanome)))
+                	  continue;
+              	  tituloMetadados+="<div class=\"pr0" +contadorColuna+ "_header\" style=\"text-align: left;width:10%; font-weight:bold\">" +metanome+ "</div>";
+              	  valorMetadados+="<div class=\"pr0" +contadorColuna+ "\" style=\"text-align: left;width:10%; font-weight:bold\">" +taskProcessDetail.get(metanome)+ "</div>";
+              	  
+                }
+                hsSubstLocal.put("tituloMetadados", tituloMetadados);
+          		hm.put("valorMetadados", valorMetadados);
+        	} catch(Exception e){
+        		Logger.errorJsp(login, sPage, "exception: " + e.getMessage());
+        		hsSubstLocal.put("tituloMetadados", "");
+          		hm.put("valorMetadados", "");
+        	}
+        	
+        	
+        } else {
+        	hsSubstLocal.put("tituloMetadados", "");
+      		hm.put("valorMetadados", "");
+        }
+        
+  		///
         IFlowData fd = hmFlows.get(String.valueOf(a.flowid));
   
         if (fd == null) continue;
