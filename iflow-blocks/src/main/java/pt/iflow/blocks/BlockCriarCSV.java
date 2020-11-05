@@ -25,6 +25,7 @@ public class BlockCriarCSV extends Block {
   private static final String VARIABLE = "variable";
   private static final String SEPARATOR = "separator";
   private static final String COLUMN_VALUES = "columnValues";
+  private static final String COLUMN_NAMES = "columnNames";
 
   public BlockCriarCSV(int anFlowId, int id, int subflowblockid, String filename) {
     super(anFlowId, id, subflowblockid, filename);
@@ -60,12 +61,13 @@ public class BlockCriarCSV extends Block {
     String filename = getAttribute(FILENAME);
     String var = getAttribute(VARIABLE);
     String separator = getAttribute(SEPARATOR);
+    String sColNames = getAttribute(COLUMN_NAMES);
     String sColValues = getAttribute(COLUMN_VALUES);
     ProcessListVariable variable = null;
     if (StringUtils.isBlank(filename) || StringUtils.isBlank(var) || StringUtils.isBlank(separator)
         || StringUtils.isBlank(sColValues)) {
       Logger.error(login, this, "after", "Unable to process data into file: must set variables (found: filename="
-          + filename + "; variable=" + var + "; separator=" + separator + "; colValues=" + sColValues + ")");
+          + filename + "; variable=" + var + "; separator=" + separator + "; sColNames=" + sColNames + "; colValues=" + sColValues + ")");
     } else {
       variable = procData.getList(var);
       if (variable == null) {
@@ -75,10 +77,12 @@ public class BlockCriarCSV extends Block {
         try {
           filename = procData.transform(userInfo, filename);
           separator = procData.transform(userInfo, separator);
+          sColNames = procData.transform(userInfo, sColNames);
+          String[] colNames = sColNames.split(",");
           String[] colValues = sColValues.split(","); //separar as listas
           ByteArrayOutputStream out = new ByteArrayOutputStream();
           String sError = BlockData.exportToSpreadSheet(this, userInfo, filename, separator, parseToDataTable(userInfo, procData,
-              separator, colValues), out);
+              separator,colNames, colValues), out);
           if (StringUtils.isNotBlank(sError)) {
             logMsg.append("Unable to export: " + sError);
             Logger.warning(login, this, "after", "Unable to export: " + sError);
@@ -100,7 +104,7 @@ public class BlockCriarCSV extends Block {
         } catch (Exception e) {
           Logger.error(login, this, "after",
               "Unable to process data into file: error processing file (found: filename=" + filename + "; variable="
-                  + var + "; separator=" + separator + "; colValues=" + sColValues + ")", e);
+                  + var + "; separator=" + separator + "; colNames=" + sColNames + "; colValues=" + sColValues + ")", e);
         }
       }
     }
@@ -138,8 +142,13 @@ public class BlockCriarCSV extends Block {
   }
 
   private List<List<String>> parseToDataTable(UserInfoInterface userInfo, ProcessData procData, String separator,
-      String[] colValues) {
+		  String[] colNames, String[] colValues) {
     List<List<String>> retObj = new ArrayList<List<String>>();
+    List<String> lColNames = new ArrayList<String>();
+    for (String colName : colNames) {
+      lColNames.add(colName.trim());
+    }
+    retObj.add(lColNames);
     int maxSize = getMaxSize(procData, colValues);
     int pos = 0;
     while (pos < maxSize) {
