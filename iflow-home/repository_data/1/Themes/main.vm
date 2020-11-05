@@ -368,7 +368,7 @@
 		
 		</head>
 
-	<body onresize="javascript:mainResize()"  onload="javascript:setProcFlow()" /*onload="updateNotifications()"*/>
+	<body onresize="javascript:mainResize()"  onload="javascript:setProcFlow(),updateNotifications()" /*onload="updateNotifications()"*/>
 	<script language="JavaScript">
 	function setProcFlow(){
 		/*[OPEN PROCESS WITH URL] :  Para testes = getCookie("toRedirect") ... openProcess(OP_flowid, OP_params[0], OP_params[1], false, 3);
@@ -428,10 +428,62 @@
                                         
                                          
                                      	#if($sys_admin == "no")
-                                            
+                                        <!-- NEW -->
+											<li>
+												<a id="delegButton" onclick="showAlert()">
+				                               		<img width="35px" height="32px" src="images/alertas.png"/>
+												</a>
+												<span class="spanAlerts">
+				                                   	<a id="delegButtonCount">$nAlerts</a>
+				                               	</span>
+												
+												<ul id="alert_list" class="notification-area notvisible">
+													#if($notifications.size()> 0)
+				                                   	<div class="table_inc" id="msg_table" style="color:black;" >
+				                                   	#else
+				                                   	<div class="table_inc" id="msg_table" style="display:none;color:black;" >
+				                                   	#end
+				                                   		<div class="" style="display:inline; width:100%;">
+															<span class="spanAlert" style="color:black; display:inline;	padding: 0; background-color:initial;">$notificationsMsg | </span>
+															
+															<a href="#" onclick="javascript:tabber_right(11, 'inbox.jsp');showAlert(); ">Show All</a>
+															</div>
+															<div id="table_notifications" style="">
+															
+														</div>
+					                           		</div>
+												</ul>
+												<div id="schedule_list" class="schedule_box notification-area notvisible rounded">
+					               					<div class="col-md-12" style="margin-top:5%; height: 4rem; border-bottom: 1px solid black;">
+					               						<div class="col-md-3"><img class="" src="images/arrow_left.png" width="16" height="16" onclick="showSchedule();"/></div>
+					               						<div class="col-md-9"><span class="spanAlert" style="color:black; display:inline;padding: 0; background-color:initial;">Escolher data e hora</span></div>
+					               					</div>
+					               					
+					               					<div class="col-md-12" style="margin-top: 4%;height: 4rem;">
+					               						<div class="col-md-3" style="width:16px;"></div>
+					               							<div class="col-md-9 col-sm-6">
+														  	<div class="form-group">
+															<div class='input-group date' id='calendar'>
+																 <input type='text' class="form-control" id='suspend_date'/>
+																	<span class="input-group-addon">
+																	<span class="glyphicon glyphicon-calendar"></span>
+																	</span>
+																</div>
+															</div>
+														</div>
+													</div>
+													
+													<div class="col-md-12" style="margin-top:2%;">	               						
+													  	<div class="form-group pull-right">
+															<a href="#" style="text-decoration: none; " id="btnSalvar" class="teste"><span class="spanAlert" style="color: #93B6C8 !important;display:inline;padding: 0;background-color:initial;font-size: 1.7rem;">Salvar</span></a> 
+														</div>										
+													</div>                                           				
+											</div>							
+											</li>
+											<!-- NEW -->    
                                             
 											
-                                          #end
+                                        #end
                                           
 
                                           #if($sys_admin == "yes")
