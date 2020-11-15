@@ -558,6 +558,11 @@
            <value />
        </XmlAttribute>
        <XmlAttribute>
+            <name>columnNames</name>
+            <description>Column Names</description>
+            <value />
+       </XmlAttribute>
+       <XmlAttribute>
            <name>columnValues</name>
            <description>Column Values</description>
            <value />
