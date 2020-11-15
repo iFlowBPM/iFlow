@@ -1097,8 +1097,11 @@ public class BlockData extends Block {
 	              // append " at start and end
 	              stmp = "\"" + stmp + "\"";
 	            }
-
-	            sbtmp.append(stmp).append(separator);
+	            if(altmp != null && col == altmp.size()-1) {
+	            	sbtmp.append(stmp);
+	            }else {
+	            	sbtmp.append(stmp).append(separator);
+	            }	            
 	          }
 	          aWriter.println(sbtmp.toString());
 	        }      
@@ -1339,7 +1342,8 @@ public class BlockData extends Block {
 
             if (updateDS) {
             	// write always or first time
-            	procData.getList(var).parseAndSetItemValue(irow, value); 
+            	if (procData.getList(var) != null)
+            		procData.getList(var).parseAndSetItemValue(irow, value); 
             }
           } // while
         }
