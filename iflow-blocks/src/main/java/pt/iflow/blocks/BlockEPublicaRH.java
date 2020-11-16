@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -188,7 +189,9 @@ public class BlockEPublicaRH extends Block {
 			sbJson.append("\"legislaturaCode\":\"").append(StringUtils.defaultIfEmpty(""+ procData.get("legislatura").getValue(),"")).append("\",");					
 			String gabinetePresidencia = ""+ procData.get("gabinete_presidencia").getValue();
 			gabinetePresidencia = (gabinetePresidencia == null || gabinetePresidencia.equals("null"))?"":gabinetePresidencia;
-			sbJson.append("\"gabinetePresidencia\":\"").append(gabinetePresidencia).append("\",");	
+			if (!gabinetePresidencia.contentEquals("")) {
+				sbJson.append("\"gabinetePresidencia\":\"").append(getBooleanValue(gabinetePresidencia)).append("\",");
+			}
 			String partidoCode = ""+ procData.get("partido").getValue();
 			partidoCode = (partidoCode == null || partidoCode.equals("null"))?"":partidoCode;
 			if (!partidoCode.contentEquals("")) {
@@ -206,17 +209,37 @@ public class BlockEPublicaRH extends Block {
 			sbJson.append("\"telemovel\":\"").append(StringUtils.defaultIfEmpty(""+ procData.get("telemovel").getValue(),"")).append("\",");				
 			sbJson.append("\"emailPessoal\":\"").append(StringUtils.defaultIfEmpty(""+ procData.get("email").getValue(),"")).append("\",");				
 			sbJson.append("\"nivelHabilitacaoLiterariaCode\":\"").append(StringUtils.defaultIfEmpty(""+ procData.get("habilitacoes_literarias").getValue(),"")).append("\",");				
-			sbJson.append("\"cursoCode\":\"").append(StringUtils.defaultIfEmpty(""+ procData.get("curso").getValue(),"")).append("\",");				
+
+			
+			String cursoCode = ""+ procData.get("curso").getValue();
+			cursoCode = (cursoCode == null || cursoCode.equals("null"))?"":cursoCode;
+			
+			if (!cursoCode.contentEquals("")) {
+				sbJson.append("\"cursoCode\":\"").append(StringUtils.defaultIfEmpty(""+ procData.get("curso").getValue(),"")).append("\",");		
+			}
+
+			/*
 			String outroCurso = ""+ procData.get("curso_outro").getValue();
 			outroCurso = (outroCurso == null || outroCurso.equals("null"))?"":outroCurso;
-			sbJson.append("\"outroCurso\":\"").append(outroCurso).append("\",");				
+			sbJson.append("\"outroCurso\":\"").append(outroCurso).append("\",");
+			*/
+			
 			sbJson.append("\"dataConclusaoCurso\":\"").append(StringUtils.defaultIfEmpty(""+ procData.get("curso_data_conclusao").getValue(),"")).append("\",");				
 			sbJson.append("\"iban\":\"").append(StringUtils.defaultIfEmpty(""+ procData.get("iban").getValue(),"")).append("\",");				
 			sbJson.append("\"bancoInternacional\":\"").append(getBooleanValue(""+procData.get("banco_internacional").getValue())).append("\",");				
-			sbJson.append("\"bancoCode\":\"").append(StringUtils.defaultIfEmpty(""+ procData.get("banco").getValue(),"")).append("\",");				
+
+			String bancoCode = ""+ procData.get("banco").getValue();
+			bancoCode = (bancoCode == null || bancoCode.equals("null"))?"":bancoCode;
+
+			if (!bancoCode.contentEquals("")) {
+				sbJson.append("\"bancoCode\":\"").append(StringUtils.defaultIfEmpty(""+ procData.get("banco").getValue(),"")).append("\",");
+			}
+			
+			/*
 			String outroBanco = ""+ procData.get("banco_outro").getValue();
 			outroBanco = (outroBanco == null || outroBanco.equals("null"))?"":outroBanco;
 			sbJson.append("\"outroBanco\":\"").append(outroBanco).append("\",");				
+			*/
 
 			String entidadeServicoOrganismoCode = ""+ procData.get("entidade_origem").getValue();
 			entidadeServicoOrganismoCode = (entidadeServicoOrganismoCode == null || entidadeServicoOrganismoCode.equals("null") || entidadeServicoOrganismoCode.equals("UNDEF"))?"":entidadeServicoOrganismoCode;
@@ -227,34 +250,40 @@ public class BlockEPublicaRH extends Block {
 				sbJson.append("\"carreiraCategriaOrigem\":\"").append(StringUtils.defaultIfEmpty(carreiraCategriaOrigem,"")).append("\",");			
 			}
 			
+			String bic = ""+ procData.get("bic").getValue();
+			bic = (bic == null || bic.equals("null") || bic.equals("UNDEF"))?"":bic;
 			sbJson.append("\"bic\":\"").append(StringUtils.defaultIfEmpty(""+ procData.get("bic").getValue(),"")).append("\"");				
 
 			
+			/*
 			//descontos facultativos
 			int descontosSize = procData.getList("lista_sin_designacao").size();
 			if (descontosSize > 0) {
 				sbJson.append(",\"descontosFacultativos\":[{");
 
 				// List <NameValuePair>[] descontosArray = new ArrayList[descontosSize]; 
-				for(int i = 0; i < descontosSize; i++) {		
+				for(int i = 0; i < descontosSize; i++) {
+					if ((""+ procData.getListItemFormatted("lista_sin_outro", i)).contentEquals("0")) {}
 
-					if (i>0) sbJson.append("},{");
-
-					//				List <NameValuePair> descontos = new ArrayList<NameValuePair>();
-					//				descontos.add(new BasicNameValuePair("descontoFacultaticoCode", ""+ procData.getListItem("lista_sin_designacao", i)));
-					//				descontos.add(new BasicNameValuePair("numAssociado", ""+ procData.get("num_funcionario").getValue()));
-					//				descontos.add(new BasicNameValuePair("valor", ""+ procData.getListItem("lista_sin_valor", i).getValue()));
-					//				descontos.add(new BasicNameValuePair("taxa", ""+ procData.getListItem("lista_sin_taxa", i).getValue()));
-					//				descontosArray[i] = descontos;
-
-					sbJson.append("\"descontoFacultativoCode\":\"").append(""+ procData.getListItemFormatted("lista_sin_designacao", i)).append("\",");
-					sbJson.append("\"numAssociado\":\"").append(""+ procData.get("num_funcionario").getValue()).append("\",");
-					sbJson.append("\"valor\":\"").append(""+ procData.getListItemFormatted("lista_sin_valor", i)).append("\",");
-					sbJson.append("\"taxa\":\"").append(""+ procData.getListItemFormatted("lista_sin_taxa", i)).append("\"");
-
+						if (i>0) sbJson.append("},{");
+	
+						//				List <NameValuePair> descontos = new ArrayList<NameValuePair>();
+						//				descontos.add(new BasicNameValuePair("descontoFacultaticoCode", ""+ procData.getListItem("lista_sin_designacao", i)));
+						//				descontos.add(new BasicNameValuePair("numAssociado", ""+ procData.get("num_funcionario").getValue()));
+						//				descontos.add(new BasicNameValuePair("valor", ""+ procData.getListItem("lista_sin_valor", i).getValue()));
+						//				descontos.add(new BasicNameValuePair("taxa", ""+ procData.getListItem("lista_sin_taxa", i).getValue()));
+						//				descontosArray[i] = descontos;
+	
+						sbJson.append("\"descontoFacultativoCode\":\"").append(""+ procData.getListItemFormatted("lista_sin_designacao", i)).append("\",");
+						sbJson.append("\"numAssociado\":\"").append(""+ procData.get("num_funcionario").getValue()).append("\",");
+						sbJson.append("\"valor\":\"").append(""+ procData.getListItemFormatted("lista_sin_valor", i)).append("\",");
+						sbJson.append("\"taxa\":\"").append(""+ procData.getListItemFormatted("lista_sin_taxa", i)).append("\"");
+	
+					;
 				};
 				sbJson.append("}]");
 			}
+			*/
 
 			//dados fiscais
 //			List <NameValuePair> dadosFiscais = new ArrayList<NameValuePair>();
@@ -276,8 +305,9 @@ public class BlockEPublicaRH extends Block {
 			
 			sbJson.append(",\"dadosFiscais\":{");
 			sbJson.append("\"irsZona\":\"").append(StringUtils.defaultIfEmpty(""+ procData.get("irs_zona").getValue(),"")).append("\",");		
-			if(procData.get("estadocivil").getValue().equals("1") || procData.get("estadocivil").getValue().equals("5")) {
-				sbJson.append("\"casadoUniaoFacto\":\"").append("true").append("\",");
+			// if(procData.get("estadocivil").getValue().equals("1") || procData.get("estadocivil").getValue().equals("5")) {
+			if(procData.get("estado_civil_fiscal").getValue().equals("1")) {
+						sbJson.append("\"casadoUniaoFacto\":\"").append("true").append("\",");
 				sbJson.append("\"naoCasado\":\"").append("false").append("\",");			
 			}else {
 				sbJson.append("\"casadoUniaoFacto\":\"").append("false").append("\",");
@@ -323,14 +353,18 @@ public class BlockEPublicaRH extends Block {
 					String numCC = ""+ procData.getListItemFormatted("lista_menor_cc_num", i);
 					String dataValidadeCC = ""+ procData.getListItemFormatted("lista_menor_cc_val", i);
 					String nif = ""+ procData.getListItemFormatted("lista_menor_nif", i);
+					String genero = ""+ procData.getListItemFormatted("lista_menor_sexo", i);
+					String datanascimento = ""+ procData.getListItemFormatted("lista_menor_datanascimento", i);
 					
-					if (nome != null && !nome.equals("")) {
+					if (nome != null && !nome.equals("") && !nome.equals("null") && dataValidadeCC != null && !dataValidadeCC.equals("") && !dataValidadeCC.equals("null")) {
 						if (pos==0) sbJson.append("{");
 						else sbJson.append("},{");
 						sbJson.append("\"nome\":\"").append(nome).append("\",");
 						sbJson.append("\"numCC\":\"").append(numCC).append("\",");
 						sbJson.append("\"dataValidadeCC\":\"").append(dataValidadeCC).append("\",");
-						sbJson.append("\"nif\":\"").append(nif).append("\"");
+						sbJson.append("\"nif\":\"").append(nif).append("\",");
+						sbJson.append("\"sexo\":\"").append(genero).append("\",");
+						sbJson.append("\"dataNascimento\":\"").append(datanascimento).append("\"");
 						pos++;
 					}
 				};
@@ -376,9 +410,13 @@ public class BlockEPublicaRH extends Block {
 			}
 			
 			//conn.connect();
-			
-			if(conn.getResponseCode() != HttpStatus.SC_OK && conn.getResponseCode() != HttpStatus.SC_BAD_REQUEST){
-				throw new HttpStatusException("Connection error", conn.getResponseCode(), url.toString());
+			try {
+				if(conn.getResponseCode() != HttpStatus.SC_OK && conn.getResponseCode() != HttpStatus.SC_BAD_REQUEST){
+					throw new HttpStatusException("Connection error", conn.getResponseCode(), url.toString());
+				}
+			}
+			catch (IOException eio) {
+				
 			}
 
 			BufferedReader input = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
