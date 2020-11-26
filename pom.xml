@@ -579,7 +579,12 @@
 			    <artifactId>tomcat-coyote</artifactId>
 			    <version>8.5.59</version>
 			    <scope>provided</scope>
-			</dependency>						
+			</dependency>
+			<dependency>
+		      	<groupId>com.onelogin</groupId>
+		      	<artifactId>java-saml</artifactId>
+		      	<version>2.6.0</version>
+		  	</dependency>						
 		</dependencies>
 	</dependencyManagement>
 	<build>

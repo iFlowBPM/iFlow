@@ -489,13 +489,11 @@
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.11.3</version>
 		</dependency>
 		<dependency>
-			<groupId>org.opensaml</groupId>
-			<artifactId>opensaml</artifactId>
-			<version>2.6.4</version>
-		</dependency>
+	      	<groupId>com.onelogin</groupId>
+	      	<artifactId>java-saml</artifactId>
+	  	</dependency>
 	</dependencies>
 
 	<build>

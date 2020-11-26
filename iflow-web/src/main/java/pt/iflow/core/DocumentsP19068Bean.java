@@ -654,7 +654,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 								DocumentData dbDoc = new DocumentData(rst.getInt("docid"));
 								Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
 										"Entering getDocumentData() for docid number: " + rst.getInt("docid"));
-								Document doc = DocumentsP19068Bean.super.getDocumentData(userInfo, procData, dbDoc,
+								Document doc = getDocumentData(userInfo, procData, dbDoc,
 										connection, true);
 								if (doc != null) {
 									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
@@ -840,7 +840,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 											.get(outputFolderPath + File.separator + filesAndFoldersPattern);
 									Path pathSubFolder = Paths
 											.get(outputFolderPath + File.separator + filesAndFoldersPattern
-													+ File.separator + filesAndFoldersPattern + ".OUT");
+													+ File.separator + filesAndFoldersPattern + ".ARD.OUT");
 
 									Files.createDirectories(pathFolder);
 									Files.createDirectories(pathSubFolder);

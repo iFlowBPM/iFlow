@@ -832,7 +832,7 @@ Disabled. Use servlet container defaults
       <url-pattern>/saml2/SSOService</url-pattern>
    </servlet-mapping>
      <servlet-mapping>
-      <servlet-name>SSOService</servlet-name>
+      <servlet-name>SSOAdfsService</servlet-name>
       <url-pattern>/adfs/SSOService</url-pattern>
    </servlet-mapping>
    

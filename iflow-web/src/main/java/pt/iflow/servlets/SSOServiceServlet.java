@@ -41,6 +41,7 @@ public class SSOServiceServlet extends javax.servlet.http.HttpServlet implements
 		HttpSession session = request.getSession();
 		AuthenticationResult result = new AuthenticationResult();
 		String samlXMLB64Response = request.getParameter("SAMLResponse");
+		Logger.debug("System", this, "service", "Received Saml Response:" + samlXMLB64Response);
 		//if (StringUtils.isBlank(samlXMLB64Response))
 		//	samlXMLB64Response = request.getAttribute("SAMLResponse").toString();
 		//samlXMLB64Response = org.apache.commons.lang.StringUtils.replaceChars(samlXMLB64Response, ' ', '+');
@@ -60,7 +61,7 @@ public class SSOServiceServlet extends javax.servlet.http.HttpServlet implements
 				AccountSettings accountSettings = new AccountSettings();
 				accountSettings.setCertificate(publicEPKey);
 				Response samlResponse = new Response(accountSettings);
-				Logger.debug("System", this, "service", "Received Saml Response:" + samlXMLB64Response);
+				Logger.debug("System", this, "service", "Received Saml Base64 Response:" + samlXMLB64Response);
 				samlResponse.loadXmlFromBase64(samlXMLB64Response);
 				//samlResponse.loadXml(samlXMLB64Response);
 	

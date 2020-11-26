@@ -138,13 +138,14 @@ public class AuthRequestAdfs {
     }
 	
 	public String getAuthNRedirectUrl(String assertionConsumerServiceUrl) {
-	    String finalAssertion = Setup.getProperty("ASSERTION_CONSUMER_SERVICE_URL") + "/iFlow/adfs/SSOService";
+	    String finalAssertion = this.appSettings.getAssertionConsumerServiceUrl();
         String issuerId = assertionConsumerServiceUrl;
         String url = "";
 
         try {
             AuthNRequestBuilder authNRequestBuilder = new AuthNRequestBuilder();
             AuthnRequest authRequest = authNRequestBuilder.buildAuthenticationRequest(finalAssertion, issuerId);
+            authRequest.setRequestedAuthnContext(null);
             String samlRequest = generateSAMLRequest(authRequest);
             url = Setup.getProperty("ENTITY_PROVIDER_URL_1") + "?SAMLRequest=" + samlRequest;
         } catch (Exception ex) {
@@ -162,7 +163,7 @@ public class AuthRequestAdfs {
         StringWriter rspWrt = new StringWriter();
         XMLHelper.writeNode(authDOM, rspWrt);
         String messageXML = rspWrt.toString();
-
+        Logger.info(userInfo.getUtilizador(), this, "generateSAMLRequest","sending SAML Request: " + messageXML);
         Deflater deflater = new Deflater(Deflater.DEFLATED, true);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DeflaterOutputStream deflaterOutputStream = new DeflaterOutputStream(byteArrayOutputStream, deflater);
