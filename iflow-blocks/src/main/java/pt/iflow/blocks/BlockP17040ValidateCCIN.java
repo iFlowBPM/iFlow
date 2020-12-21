@@ -327,9 +327,9 @@ public class BlockP17040ValidateCCIN extends BlockP17040Validate {
 					String txRef = (String) infInstValues.get("txRef");
 					if (!isValidDomainValue(userInfo, connection, "T_TXR", txRef))
 						result.add(new ValidationError("CI051", "infInst", "txRef", idCont, infInstId, txRef));
-					if ((StringUtils.equals(tpTxJuro, "002") && !StringUtils.equals(txRef, "0000"))
-							|| (!StringUtils.equals(tpTxJuro, "002") && StringUtils.equals(txRef, "0000")))
-						result.add(new ValidationError("CI095", "infInst", "txRef", idCont, infInstId, txRef));
+//					if ((StringUtils.equals(tpTxJuro, "002") && !StringUtils.equals(txRef, "0000"))
+//							|| (!StringUtils.equals(tpTxJuro, "002") && StringUtils.equals(txRef, "0000")))
+//						result.add(new ValidationError("CI095", "infInst", "txRef", idCont, infInstId, txRef));
 					if (StringUtils.isBlank(txRef) && tpCaractEspAux.contains( "002"))
 						result.add(new ValidationError("CI108", "infInst", "txRef", idCont, infInstId, txRef));
 	
