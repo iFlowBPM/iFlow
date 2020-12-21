@@ -113,7 +113,15 @@
 					<groupId>bouncycastle</groupId>
 					<artifactId>bctsp-jdk14</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.apache.santuario</groupId>
+		    		<artifactId>xmlsec</artifactId>
+				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.santuario</groupId>
+		    <artifactId>xmlsec</artifactId>
 		</dependency>
 
 		<!-- APP.iKnow -->

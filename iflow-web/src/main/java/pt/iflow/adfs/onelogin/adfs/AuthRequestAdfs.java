@@ -33,11 +33,13 @@ public class AuthRequestAdfs {
 	private String id;
 	private String issueInstant;
 	private AppSettings appSettings;
+	private AccountSettings accountSettings;
 	public static final int base64 = 1;
 	UserInfoInterface userInfo = BeanFactory.getUserInfoFactory().newClassManager(this.getClass().getName());
 
 	public AuthRequestAdfs(AppSettings appSettings, AccountSettings accountSettings) {
 		this.appSettings = appSettings;
+		this.accountSettings = accountSettings;
 		id = "_" + UUID.randomUUID().toString();
 		SimpleDateFormat simpleDf = new SimpleDateFormat("yyyy-MM-dd'T'H:mm:ss");
 		issueInstant = simpleDf.format(new Date());
@@ -147,7 +149,7 @@ public class AuthRequestAdfs {
             AuthnRequest authRequest = authNRequestBuilder.buildAuthenticationRequest(finalAssertion, issuerId);
             authRequest.setRequestedAuthnContext(null);
             String samlRequest = generateSAMLRequest(authRequest);
-            url = Setup.getProperty("ENTITY_PROVIDER_URL_1") + "?SAMLRequest=" + samlRequest;
+            url = accountSettings.getIdp_sso_target_url() + "?SAMLRequest=" + samlRequest;
         } catch (Exception ex) {
         	Logger.error(userInfo.getUtilizador(), this, "AuthRequestAdfs.getAuthNRedirectUrl()","Exception while creating AuthN request - " + ex.getMessage(), ex);
            

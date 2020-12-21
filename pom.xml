@@ -92,6 +92,12 @@
 				<artifactId>crypto-api</artifactId>
 				<version>${crypto-api.version}</version> <!-- replicated in iflow-applet -->
 			</dependency>
+			<dependency>
+			    <groupId>org.apache.santuario</groupId>
+			    <artifactId>xmlsec</artifactId>
+			    <version>1.5.8</version>
+			</dependency>
+						
 
 			<!-- APP.external -->
 			<dependency>

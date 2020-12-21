@@ -183,6 +183,10 @@ Disabled. Use servlet container defaults
       	<param-name>pt.iflow.filter_exception5</param-name>
       	<param-value>/iFlow/saml2/SSOService</param-value>
       </init-param>
+      <init-param>
+      	<param-name>pt.iflow.filter_exception6</param-name>
+      	<param-value>/iFlow/adfs/SSOService</param-value>
+      </init-param>
    </filter>
    <filter>
   		<filter-name>DisableUrlSessionFilter</filter-name>
@@ -195,6 +199,10 @@ Disabled. Use servlet container defaults
 	<filter>
   		<filter-name>SUApplicationFilter</filter-name>
 	  	<filter-class>pt.iflow.servlets.SUApplicationFilter</filter-class>
+	</filter>
+	<filter>
+  		<filter-name>AdminPagesForAdminsOnlyFilter</filter-name>
+	  	<filter-class>pt.iflow.servlets.AdminPagesForAdminsOnlyFilter</filter-class>
 	</filter>
 
     <!--
@@ -254,6 +262,10 @@ Disabled. Use servlet container defaults
 	  <filter-name>SUApplicationFilter</filter-name>
 	  <url-pattern>/*</url-pattern>	  
 	</filter-mapping>
+	<filter-mapping>
+	  <filter-name>AdminPagesForAdminsOnlyFilter</filter-name>
+	  <url-pattern>/Admin/*</url-pattern>	  
+	</filter-mapping>	
 	
    <listener>
 	 <listener-class>org.apache.axis.transport.http.AxisHTTPSessionListener</listener-class>
@@ -588,7 +600,12 @@ Disabled. Use servlet container defaults
   -->
 
    <!-- end of axis -->
-
+	<servlet-mapping>
+	    <servlet-name>jsp</servlet-name>
+	    <url-pattern>*.jsp</url-pattern>
+	    <url-pattern>*.jspx</url-pattern>
+	    <url-pattern>*.jspf</url-pattern>
+	</servlet-mapping>
    <!-- Kaptcha -->
 	<servlet-mapping>
 		<servlet-name>Kaptcha</servlet-name>

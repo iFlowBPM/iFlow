@@ -63,6 +63,11 @@ import pt.iflow.api.utils.UserInfoInterface;
 	      return;
 	    }
 
+	    if(!userInfo.isOrgAdmin()){
+	    	response.sendError(401);
+			return;
+	    }
+	    
 		String action = request.getParameter(PARAM_ACTION);
 		
 		if (GET_FLOW_VARIABLES.equals(action)) {

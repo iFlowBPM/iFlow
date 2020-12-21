@@ -39,6 +39,12 @@ public class UserDialogServlet extends javax.servlet.http.HttpServlet implements
       out.print("session-expired");
       return;
     }
+    
+    if(!(ui.isOrgAdmin() && ui.isOrgAdminUsers())){
+    	response.sendError(401);
+		return;
+    }
+    
     IMessages msg = ui.getMessages();
 
     String userId = request.getParameter("userid");

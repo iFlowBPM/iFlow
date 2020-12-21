@@ -18,6 +18,7 @@
 <%@ page import="pt.iflow.processannotation.ProcessAnnotationManagerBean"%>
 <%@page import="pt.iflow.api.processannotation.*"%>
 <%@page import="pt.iflow.api.filters.FlowFilter"%>
+<%@page import="java.util.stream.Collectors"%>
 <script language="JavaScript">
 function assignActivity(folderid, sactivity) {
     tabber_right(1, '<%=response.encodeURL("main_content.jsp")%>?setfolder='+folderid+'&activities='+sactivity);
@@ -627,28 +628,41 @@ try {
         // build hashmap to be able to display things properly
         Map<String,String> hm = new HashMap<String,String>();
         //Metadados
-        if(StringUtils.equals(sShowFlowId, Setup.getProperty("DEFAULT_TASKS_FLOWID"))){
+        if(StringUtils.isNotBlank(Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA"))/* StringUtils.equals(sShowFlowId, Setup.getProperty("DEFAULT_TASKS_FLOWID"))*/){
         	try{
         		ProcessData procData = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(a.getFlowid(), a.getPid(), a.getSubpid()), Const.nALL_PROCS);
         		Map<String,String> taskProcessDetail = ProcessPresentation.getProcessDetail(userInfo, procData);
                 Map<String,String> taskProcessDetailVarNames = ProcessPresentation.getProcessDetailVarnames(userInfo, procData);
                 Set<String> metanomes = taskProcessDetail.keySet();
+                Collection<String> metanomesVar = taskProcessDetailVarNames.values();
+                //List metanomes = taskProcessDetail.keySet().stream().collect(Collectors.toList());
                 String tituloMetadados = "";
                 String valorMetadados = "";
                 Integer contadorColuna = 6;
                 
-                for(String metanome : metanomes){
-                  if(!StringUtils.contains(Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA"), taskProcessDetailVarNames.get(metanome)))
-                	  continue;
-              	  tituloMetadados+="<div class=\"pr0" +contadorColuna+ "_header\" style=\"text-align: left;width:10%; font-weight:bold\">" +metanome+ "</div>";
-              	  valorMetadados+="<div class=\"pr0" +contadorColuna+ "\" style=\"text-align: left;width:10%; font-weight:bold\">" +taskProcessDetail.get(metanome)+ "</div>";
-              	  
+                String[] allowedMetadata = Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA").split(",");
+                
+                for(String allowedMetadataName : allowedMetadata){
+                	String keyAux="";
+                	for(String metanome : metanomes)
+                		if(StringUtils.equals(taskProcessDetailVarNames.get(metanome), allowedMetadataName))
+                			keyAux = metanome;
+                	
+                	tituloMetadados+="<div class=\"pr0" +contadorColuna+ "_header\" style=\"text-align: left;width:10%; font-weight:bold\">" +keyAux+ "</div>";
+                    valorMetadados+="<div class=\"pr0" +contadorColuna+ "\" style=\"text-align: left;width:10%; font-weight:bold\">" +(taskProcessDetail.get(keyAux)==null?"&nbsp;":taskProcessDetail.get(keyAux) )+ "</div>";                    	  	                    	
                 }
-                hsSubstLocal.put("tituloMetadados", tituloMetadados);
-          		hm.put("valorMetadados", valorMetadados);
+                
+                String tituloMetadadosAux = (String)hsSubstLocal.get("tituloMetadados");
+                if(tituloMetadadosAux == null || tituloMetadados.length()>tituloMetadadosAux.length())
+                	hsSubstLocal.put("tituloMetadados", tituloMetadados);
+          		
+                hm.put("valorMetadados", valorMetadados);
         	} catch(Exception e){
+        		
         		Logger.errorJsp(login, sPage, "exception: " + e.getMessage());
-        		hsSubstLocal.put("tituloMetadados", "");
+//         		hsSubstLocal.put("tituloMetadados", "");
+//           		hm.put("valorMetadados", "");
+        		//hsSubstLocal.put("tituloMetadados", "");
           		hm.put("valorMetadados", "");
         	}
         	

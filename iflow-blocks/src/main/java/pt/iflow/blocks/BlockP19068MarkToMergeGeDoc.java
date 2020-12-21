@@ -51,8 +51,8 @@ public class BlockP19068MarkToMergeGeDoc extends Block {
 	public Port[] getOutPorts(UserInfoInterface userInfo) {
 		Port[] retObj = new Port[2];
 		retObj[0] = portSuccess;
-		retObj[1] = portEmpty;
-		retObj[2] = portError;
+//		retObj[1] = portEmpty;
+		retObj[1] = portError;
 		return retObj;
 	}
 

@@ -4,6 +4,7 @@ package pt.iflow.documents;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 import pt.iflow.api.core.BeanFactory;
@@ -122,8 +124,34 @@ public class DocumentServlet extends HttpServlet {
       return;
     }
     byte [] ba = doc.getContent();
+    
+    
     //response.setHeader("Content-Disposition","attachment;filename=\"" + doc.getFileName().replace(' ', '_')+"\";");
     response.setHeader("Content-Disposition","attachment;filename=\"" + doc.getFileName()+"\";");
+    
+    /*
+      por causa do IE as imagens tÃªm que ter o content-type definido
+      Joao Costa 2020-12-17
+      
+    */
+    HashMap<String,String> hmExts = new HashMap<String,String>();
+    hmExts.put("apng", "image/apng");
+    hmExts.put("avif","image/avif");
+    hmExts.put("gif","image/gif");
+    hmExts.put("jpg","image/jpeg");
+    hmExts.put("jpeg","image/jpeg");
+    hmExts.put("jfif","image/jpeg");
+    hmExts.put("pjpeg","image/jpeg");
+    hmExts.put("pjp","image/jpeg");
+    hmExts.put("png","image/png");
+    hmExts.put("svg","image/svg+xml");
+    hmExts.put("webp","image/webp");
+    
+    String ext = FilenameUtils.getExtension(doc.getFileName().toLowerCase());
+    String mimeType = hmExts.get(ext);
+    if (mimeType != null)
+        response.setHeader("Content-Type",mimeType);
+    	
     response.setContentLength(ba.length);
     OutputStream out = response.getOutputStream();
     out.write(ba);
