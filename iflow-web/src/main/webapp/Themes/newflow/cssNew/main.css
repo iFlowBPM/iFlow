@@ -682,19 +682,22 @@ ui-accordion-header>a>img {
 
 .process_t3 .pr05_header {
 	float: right;
+	padding: 5px;
 	width: 200px;
 	font-size: 14px;
 }
 
 .process_t3 .pr06_header {
 	float: left;
+	padding: 5px;
 	width: 80px;
 	font-size: 14px;
 }
 
 .process_t3 .pr07_header {
 	float: right;
-	text-align: left;
+	padding: 5px;
+	text-align: right;
 	font-size: 14px;
 }
 

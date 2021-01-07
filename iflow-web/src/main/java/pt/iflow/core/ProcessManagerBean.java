@@ -6100,14 +6100,25 @@ public class ProcessManagerBean implements ProcessManager {
 	        sQueryDelegated.append(" and upper(pnumber) like upper(?)");
 	      }
 	      
-	      if(filter.getOrderType() != null && filter.getOrderType().equals("desc")){
+	      if(filter.getOrderBy() != null && filter.getOrderType()!= null ){
 	    	  
 	    	  //alteração da ordenação Tarefas
-	    	  sQueryDelegated.append(" order by created asc");
+	    	  String orderByAux = "pid", orderTypeAux = "desc";
+	    	  if(StringUtils.equalsIgnoreCase(filter.getOrderBy(), "pid") || 
+	    			  StringUtils.equalsIgnoreCase(filter.getOrderBy(), "previousUserId") || 
+	    			  StringUtils.equalsIgnoreCase(filter.getOrderBy(), "created") || 
+	    			  StringUtils.equalsIgnoreCase(filter.getOrderBy(), "description"))
+	    		  orderByAux = filter.getOrderBy();
+	    	  if(StringUtils.equalsIgnoreCase(filter.getOrderType(), "desc") || 
+	    			  StringUtils.equalsIgnoreCase(filter.getOrderType(), "asc") )
+	    		  orderTypeAux = filter.getOrderType();
+	    	  
+	    	  sQueryDelegated.append(" order by " + orderByAux + " " + orderTypeAux);
+	    	  //sQueryDelegated.append(" order by created asc");
 	         // sQueryDelegated.append(" order by iconid asc, created desc");
 	    	  //sQueryDelegated.append(" order by created desc");
 	      }else{
-	    	  
+	    	  //sQuery.append(" order by created desc");
 	    	  sQueryDelegated.append(" order by created desc");
 	         // sQueryDelegated.append(" order by iconid asc, created asc");
 	    	  //sQueryDelegated.append(" order by created desc");
