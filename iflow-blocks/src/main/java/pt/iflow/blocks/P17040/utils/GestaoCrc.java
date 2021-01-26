@@ -374,7 +374,7 @@ public class GestaoCrc {
 				"    comCInst.id = infInst.comCInst_id and "+
 				"    infInst.idCont = ? and "+
 				"    infInst.idInst = ? and "+
-				"    infInst.dtRefInst <= ? and "+
+				//"    infInst.dtRefInst <= ? and "+
 				"    u_gestao.status_id= 4  "+
 				"    order by u_gestao.receivedate desc;";
 			
