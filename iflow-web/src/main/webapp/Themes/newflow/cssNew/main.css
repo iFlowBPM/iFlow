@@ -701,6 +701,14 @@ ui-accordion-header>a>img {
 	font-size: 14px;
 }
 
+.process_t3 .pr08_small_header {
+	float: left;
+	padding: 2px;
+	font-size: 10px;
+	width:4.7%;
+	word-wrap: break-word
+}
+
 .title_cont {
 	color: #333333;
 	font-size: 14px;

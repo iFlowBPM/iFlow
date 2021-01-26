@@ -142,7 +142,8 @@ public class BlockGetFileInDisk extends Block {
           Logger.info(userInfo.getUtilizador(), this, "processForm", "file (" + doc.getFileName() + ") for var " + sDocumentVar
               + " added.");
           if (StringUtils.equalsIgnoreCase(sDelete, "" + Boolean.TRUE)) {
-            directory.delete();
+        	FileUtils.deleteDirectory(directory);
+            //directory.delete();
             Logger.info(userInfo.getUtilizador(), this, "processForm", "file (" + directory.getPath() + ") deleted ");
           }
 

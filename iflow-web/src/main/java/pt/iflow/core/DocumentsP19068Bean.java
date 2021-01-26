@@ -11,9 +11,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -899,23 +902,23 @@ public class DocumentsP19068Bean extends DocumentsBean {
 									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
 											"Building .ARD file...");
 									File fileArd = new File(
-											unsescapedPath + File.separator + filesAndFoldersPattern + ".ARD");
+											unsescapedPath + File.separator + filesAndFoldersPattern + ".ARDc");
 									FileUtils.touch(fileArd);
 
 									// Zipar
 									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
 											"Building zipped folder...");
-									FileOutputStream fos = new FileOutputStream(unsescapedPath + ".zip");
-									ZipOutputStream zipOut = new ZipOutputStream(fos);
-									File fileToZip = new File(unsescapedPath);
-
-									zipFile(fileToZip, fileToZip.getName(), zipOut);
-									zipOut.close();
-									fos.close();
-
+//									FileOutputStream fos = new FileOutputStream(unsescapedPath + ".zip");
+//									ZipOutputStream zipOut = new ZipOutputStream(fos);
+//									File fileToZip = new File(unsescapedPath);
+//
+//									zipFile(fileToZip, fileToZip.getName(), zipOut);
+//									zipOut.close();
+//									fos.close();
+									zipFolder(Paths.get(unsescapedPath), Paths.get(unsescapedPath+".zip"));
 									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
 											"Deleting source files and folders...");
-									deleteDirectory(fileToZip);
+									deleteDirectory(new File(unsescapedPath));
 									zipCounter += 1;
 								}
 
@@ -1152,6 +1155,19 @@ public class DocumentsP19068Bean extends DocumentsBean {
 				return directoryToBeDeleted.delete();
 			}
 
+			private void zipFolder(final Path sourceFolderPath, Path zipPath) throws Exception {
+		        final ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zipPath.toFile()));
+		        Files.walkFileTree(sourceFolderPath, new SimpleFileVisitor<Path>() {
+		            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+		                zos.putNextEntry(new ZipEntry(sourceFolderPath.relativize(file).toString()));
+		                Files.copy(file, zos);
+		                zos.closeEntry();
+		                return FileVisitResult.CONTINUE;
+		            }
+		        });
+		        zos.close();
+		    }
+			
 			private void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut) throws IOException {
 				if (fileToZip.isHidden()) {
 					return;

@@ -68,7 +68,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Data de envio
+						Data de receção
 					</label>
 					<div class="btn-group pull-right">
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=created&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
@@ -319,7 +319,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Nº de processo
+						Ref GA
 					</label>
 					<div class="btn-group pull-right">
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=pid&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
@@ -327,6 +327,7 @@
 					</div>
 					</span>
 				</li>
+				<!--
 				<li class="form-group">
 					<label class="form-label">
 						Utilizador prévio
@@ -336,9 +337,10 @@
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=previousUserId&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
 					</div>
 				</li>
+				-->
 				<li class="form-group">
 					<label class="form-label">
-						Data de envio
+						Data de receção
 					</label>
 					<div class="btn-group pull-right">
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=created&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
@@ -353,7 +355,146 @@
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=description&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
 						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=description&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
 					</div>
+				</li>		
+                
+				<li class="form-group">
+					<label class="form-label">
+						N. Processo
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_N. Processo&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_N. Processo&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
 				</li>
+                <li class="form-group">
+					<label class="form-label">
+						Nome do gestor
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Nome do gestor&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Nome do gestor&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                <li class="form-group">
+					<label class="form-label">
+						Data do Pedido
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Data do Pedido&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Data do Pedido&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                <li class="form-group">
+					<label class="form-label">
+						Entidade Avaliadora
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Entidade Avaliadora&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Entidade Avaliadora&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                <li class="form-group">
+					<label class="form-label">
+						Estado
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Estado&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Estado&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                
+                <li class="form-group">
+					<label class="form-label">
+						NIF
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_NIF&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_NIF&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                <li class="form-group">
+					<label class="form-label">
+						Nome de Cliente
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Nome de Cliente&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Nome de Cliente&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                <li class="form-group">
+					<label class="form-label">
+						Natureza do Bem
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Natureza do Bem&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Natureza do Bem&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                <li class="form-group">
+					<label class="form-label">
+						Freguesia
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Freguesia&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Freguesia&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                <li class="form-group">
+					<label class="form-label">
+						Concelho
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Concelho&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Concelho&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                
+                <li class="form-group">
+					<label class="form-label">
+						Distrito
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Distrito&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Distrito&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                <li class="form-group">
+					<label class="form-label">
+						Morada do Bem
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Morada do Bem&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Morada do Bem&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                <li class="form-group">
+					<label class="form-label">
+						Origem
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Origem&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Origem&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                <li class="form-group">
+					<label class="form-label">
+						Nº Conta DO
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Nº Conta DO&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Nº Conta DO&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+                <li class="form-group">
+					<label class="form-label">
+						Tipo de Imóvel
+					</label>
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Tipo de Imóvel&orderType=asc');"><img src="Themes/newflow/images/up-arrow.png"/></button> 
+						<button type="button" class="btn btn-default btn-xs" onclick="javascript:tabber_right(2, 'main_content.jsp', 'orderBy=meta_Tipo de Imóvel&orderType=desc');"><img src="Themes/newflow/images/down-arrow.png"/></button> 
+					</div>
+				</li>
+				
 			</ul>  
 		</form>
 		<form style="display:inline" class="dropdown keep-open">
@@ -363,6 +504,7 @@
 					<label></label>
 					<button type="button" class="close pull-right" onclick="">&times;</button>
 				</li>
+				<!--
 				<li class="form-group">
 					<label class="form-label">
 						Selecionar fluxo
@@ -373,14 +515,18 @@
 					</select>
 
 				</li>
+				-->
 				<li class="form-group">
+				<!--
 					<label class="form-label">
 						Utilizador prévio
 					</label>
-					<input type="text" class="form-control donotclosemenu pull-right" id="previousUseridText" title="Utilizador Anterior" value="$filterPreviousUserid"
+					-->
+					<input type="hidden" class="form-control donotclosemenu pull-right" id="previousUseridText" title="Utilizador Anterior" value="$filterPreviousUserid"
 							style="display: inline; width: 150px; height: 20px; padding: 0;">
 					</input>
 				</li>
+				
 				<li class="form-group">
 					<label class="form-label">
 						Descrição
@@ -391,7 +537,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Data de
+						Data de receção desde
 					</label>
 					<span class="pull-right">
 						<input type="text" class="form-control donotclosemenu" id="dataCriacaoText" title="Data de"  value="$filterDate"
@@ -402,7 +548,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Data até
+						Data de receção até
 					</label>
 					<span class="pull-right">
 						<input type="text" class="form-control donotclosemenu" id="dataUltMovText" title="Data ate"  value="$filterLastMoveDate"
@@ -413,7 +559,7 @@
 				</li>
 				<li class="form-group">
 					<label class="form-label">
-						Nº processo
+						Ref GA
 					</label>
 					<input type="text" class="form-control donotclosemenu pull-right" id="filterProcessNumber" title="N processo" value="$filterProcessNumber"
 							style="display: inline; width: 150px; height: 20px; padding: 0;">
@@ -475,15 +621,18 @@
 		#if($hasActivities)
 
 	<div  class="process_t3">
-		<div class="pr01_header" style="text-align: left;width:35px;font-weight:bold"></div>
-		<div class="pr01_header" style="text-align: left;width:10%;font-weight:bold">Nº processo</div>
-		<div class="pr02_header" style="text-align: left;width:10%;font-weight:bold">Vindo de</div>
-		<div class="pr04_header" style="text-align: left;width:10%; font-weight:bold">Descrição</div>
-		<div class="pr05_header" style="text-align: left;width:10%; font-weight:bold"></div>
+		<div class="pr08_small_header" style="text-align: left;font-weight:bold"></div>
+		<div class="pr08_small_header" style="text-align: left;font-weight:bold">Ref GA</div>
+		<!--
+		<div class="pr08_small_header" style="text-align: left;font-weight:bold">Vindo de</div>
+		-->
+		<div class="pr08_small_header" style="text-align: left;font-weight:bold">Descrição</div>
+		<!--
+		<div class="pr08_small_header" style="text-align: left;font-weight:bold"></div>
+		-->
+		<div class="pr08_small_header" style="text-align: left;font-weight:bold">Pendente há</div>
 		$tituloMetadados
-		<div class="pr06_header" style="text-align: left;width:10%; font-weight:bold">Pendente há</div>
-		
-		<div class="pr07_header" style="text-align: left;width:10%;font-weight:bold">Data de envio</div>
+		<div class="pr08_small_header" style="text-align: left;font-weight:bold">Data de receção</div>
 		
 	</div>
 
@@ -503,14 +652,12 @@
 
 	<div id="pte_$act.get("pid")" class="process_t3" onclick="javascript:changeColor(this); openProcess($act.get("flowid"), '$response.encodeURL($url_prefix, $act.get("uri"))', 'flowid=$act.get("flowid")&pid=$act.get("pid")&subpid=$act.get("subpid")', false, 3);"
 		style="$style_read;">
-		<div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='background-color:$act.get("task_annotation_color_backgroundColor")'>
+		<div id="cube_$act.get("pid")" class="cube draggable"  valToAssign='$valToAssign' pid="$act.get("pid")" title='$act.get("task_annotation_color_title")' style='text-align: center;width:4.7%; background-color:$act.get("task_annotation_color_backgroundColor")'>
 			$act.get("pinitials") 
 		</div>
-		<div class="pr01" style="width:10%">$act.get("pnumber") </div>
-		<div class="pr02" style="width:10%">
-			<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterPreviousUserid=$act.get("previousUserid")')">$act.get("previousUserid")</a>
-		</div>
-		<div class="pr04" style="width:10%">
+		<div class="pr08_small_header">$act.get("pnumber")</div>
+		
+		<div class="pr08_small_header" style="">
 				#set($descr = $act.get("desc"))
 				#if ($descr.length() > $maxLen)
 					<span id="span_short_$act.get("pnumber")">
@@ -525,13 +672,13 @@
 					$descr
 				#end
 		</div>
-		<div class="pr05" style="text-align: left;width:10%; font-weight:bold"></div>
-		$act.get("valorMetadados")
-		<div  class="pr06" style="width:10%;"><div>$act.get("duration")</div>
+		<!--div class="pr08_small_header" style="text-align: left; font-weight:bold"></div -->
+		
+		<div  class="pr08_small_header" style=""><div>$act.get("duration")</div>
 <!--div style="height:2px;width:$act.get("diffDays")px;background-color:$act.get("durationColor")"></div-->
 		</div>
-		
-		<div class="pr07" style="width:10%;">
+		$act.get("valorMetadados")
+		<div class="pr08_small_header" style="">
 			<a href="javascript:tabber_right(2, 'main_content.jsp', 'filterDate=$act.get("createdDate")&filterLastMoveDate=$act.get("createdDate")')" style="padding-left: 5%;">$act.get("createdDate")</a>
 			<br>
 			<div class="dropdown">

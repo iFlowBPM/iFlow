@@ -19,6 +19,7 @@
 <%@page import="pt.iflow.api.processannotation.*"%>
 <%@page import="pt.iflow.api.filters.FlowFilter"%>
 <%@page import="java.util.stream.Collectors"%>
+<%@page import="java.text.Collator"%>
 <script language="JavaScript">
 function assignActivity(folderid, sactivity) {
     tabber_right(1, '<%=response.encodeURL("main_content.jsp")%>?setfolder='+folderid+'&activities='+sactivity);
@@ -608,7 +609,37 @@ try {
     String allUsersStr = "";
     List<String> allDates = new ArrayList<String>();
     String allDatesStr = "";
-  
+ 
+    //ordenar por metadados
+    Collator myCollator = Collator.getInstance(Locale.forLanguageTag("pt"));
+    if(StringUtils.isNotBlank(Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA")) && StringUtils.startsWith(orderBy, "meta_")){
+    	for (int i=0; i < alAct.size(); i++) 
+    		for (int j= 0; j < (alAct.size()-1); j++) {
+    			Activity actAntes = alAct.get((j));
+    			Activity actDepois = alAct.get((j+1));
+    			
+    			ProcessData procDataAntes = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(actAntes.getFlowid(), actAntes.getPid(), actAntes.getSubpid()), Const.nALL_PROCS);
+    			ProcessData procDataDepois = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(actDepois.getFlowid(), actDepois.getPid(), actDepois.getSubpid()), Const.nALL_PROCS);
+    			
+    			Map<String,String> taskProcessDetailAntes = ProcessPresentation.getProcessDetail(userInfo, procDataAntes);
+    			Map<String,String> taskProcessDetailDepois = ProcessPresentation.getProcessDetail(userInfo, procDataDepois);
+    			
+    			String valueAntes = taskProcessDetailAntes.get(StringUtils.removeStart(orderBy, "meta_"));
+    			String valueDepois = taskProcessDetailDepois.get(StringUtils.removeStart(orderBy, "meta_"));;
+    			
+    			if(valueAntes==null) valueAntes="";
+    			if(valueDepois==null) valueDepois="";
+    			
+    			if (StringUtils.equalsIgnoreCase(orderType, "asc") && (myCollator.compare(valueAntes, valueDepois)<0) ){
+    				alAct.set(j, actDepois);
+    				alAct.set(j+1, actAntes);
+    			} else if (StringUtils.equalsIgnoreCase(orderType, "desc") && (myCollator.compare(valueAntes, valueDepois)>0) ){
+    				alAct.set(j, actDepois);
+    				alAct.set(j+1, actAntes);
+    			}
+    		}
+    }
+   
     // newest
     int j=0;
     for (int i=0; i < alAct.size(); i++) {
@@ -648,8 +679,8 @@ try {
                 		if(StringUtils.equals(taskProcessDetailVarNames.get(metanome), allowedMetadataName))
                 			keyAux = metanome;
                 	
-                	tituloMetadados+="<div class=\"pr0" +contadorColuna+ "_header\" style=\"text-align: left;width:10%; font-weight:bold\">" +keyAux+ "</div>";
-                    valorMetadados+="<div class=\"pr0" +contadorColuna+ "\" style=\"text-align: left;width:10%; font-weight:bold\">" +(taskProcessDetail.get(keyAux)==null?"&nbsp;":taskProcessDetail.get(keyAux) )+ "</div>";                    	  	                    	
+                	tituloMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" +keyAux+ "</div>";
+                    valorMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" +(taskProcessDetail.get(keyAux)==null?"&nbsp;":taskProcessDetail.get(keyAux) )+ "</div>";                    	  	                    	
                 }
                 
                 String tituloMetadadosAux = (String)hsSubstLocal.get("tituloMetadados");

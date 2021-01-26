@@ -2,6 +2,8 @@ package pt.iflow.blocks;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
+
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
 import pt.iflow.api.core.BeanFactory;

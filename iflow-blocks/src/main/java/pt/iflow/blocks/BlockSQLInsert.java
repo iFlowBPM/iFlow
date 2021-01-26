@@ -71,12 +71,15 @@ public class BlockSQLInsert extends BlockSQL {
 			sQuery = this.getAttribute(advancedQuery);
 			
 			if (StringUtils.isNotEmpty(sQuery)) {
+				Logger.info(login, this, "after","sQuery pure: " + sQuery );
 				sQuery = procData.transform(userInfo, sQuery, true);
+				Logger.info(login, this, "after","sQuery transformed: " + sQuery );
 			}
 						
 			if (StringUtils.isEmpty(sQuery))
 				sQuery = null;
 		} catch (Exception e) {
+			Logger.error(login, this, "after", procData.getSignature() + "Transforming sQuery: ", e);
 			sQuery = null;
 		}
 
