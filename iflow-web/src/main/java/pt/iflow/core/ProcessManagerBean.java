@@ -88,6 +88,7 @@ import pt.iflow.api.utils.Utils;
 import pt.iflow.api.utils.series.FirstOverlimitException;
 import pt.iflow.api.utils.series.SeriesManager;
 import pt.iflow.api.utils.series.SeriesProcessor;
+import pt.iflow.blocks.BlockOpenProc;
 import pt.iflow.delegations.DelegationManager;
 import pt.iflow.update.UpdateManager;
 import bsh.org.objectweb.asm.Type;
@@ -2057,13 +2058,16 @@ public class ProcessManagerBean implements ProcessManager {
         }
 
         if (!delegated) {
-          String profile = a.profilename == null ? a.userid : a.profilename;
-          int read = !forceNotRead? 0 : (StringUtils.equals(userid, a.userid) ? 1 : 0);
-          pst.setString(1, a.userid);
-          pst.setInt(11, 0); // delegated
-          pst.setString(12, profile);
-          pst.setInt(13, read);
-          pst.execute();
+          //duplicate violation fix
+          if(this.getUserProcessActivity(BeanFactory.getUserInfoFactory().newUserInfoDelegate(new BlockOpenProc(-1,-1,-1,null), a.getUserid()), a.getFlowid(), a.getPid(), 1)==null){
+              String profile = a.profilename == null ? a.userid : a.profilename;
+              int read = !forceNotRead? 0 : (StringUtils.equals(userid, a.userid) ? 1 : 0);
+              pst.setString(1, a.userid);
+              pst.setInt(11, 0); // delegated
+              pst.setString(12, profile);
+              pst.setInt(13, read);
+              pst.execute();
+          }                  	
 
           Logger.debug(userid, this, "createActivities", 
               "created activity for user " + a.userid);

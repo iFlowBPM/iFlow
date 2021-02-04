@@ -615,28 +615,30 @@ try {
     if(StringUtils.isNotBlank(Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA")) && StringUtils.startsWith(orderBy, "meta_")){
     	for (int i=0; i < alAct.size(); i++) 
     		for (int j= 0; j < (alAct.size()-1); j++) {
-    			Activity actAntes = alAct.get((j));
-    			Activity actDepois = alAct.get((j+1));
-    			
-    			ProcessData procDataAntes = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(actAntes.getFlowid(), actAntes.getPid(), actAntes.getSubpid()), Const.nALL_PROCS);
-    			ProcessData procDataDepois = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(actDepois.getFlowid(), actDepois.getPid(), actDepois.getSubpid()), Const.nALL_PROCS);
-    			
-    			Map<String,String> taskProcessDetailAntes = ProcessPresentation.getProcessDetail(userInfo, procDataAntes);
-    			Map<String,String> taskProcessDetailDepois = ProcessPresentation.getProcessDetail(userInfo, procDataDepois);
-    			
-    			String valueAntes = taskProcessDetailAntes.get(StringUtils.removeStart(orderBy, "meta_"));
-    			String valueDepois = taskProcessDetailDepois.get(StringUtils.removeStart(orderBy, "meta_"));;
-    			
-    			if(valueAntes==null) valueAntes="";
-    			if(valueDepois==null) valueDepois="";
-    			
-    			if (StringUtils.equalsIgnoreCase(orderType, "asc") && (myCollator.compare(valueAntes, valueDepois)<0) ){
-    				alAct.set(j, actDepois);
-    				alAct.set(j+1, actAntes);
-    			} else if (StringUtils.equalsIgnoreCase(orderType, "desc") && (myCollator.compare(valueAntes, valueDepois)>0) ){
-    				alAct.set(j, actDepois);
-    				alAct.set(j+1, actAntes);
-    			}
+    			try{
+	    			Activity actAntes = alAct.get((j));
+	    			Activity actDepois = alAct.get((j+1));
+	    			
+	    			ProcessData procDataAntes = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(actAntes.getFlowid(), actAntes.getPid(), actAntes.getSubpid()), Const.nALL_PROCS);
+	    			ProcessData procDataDepois = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(actDepois.getFlowid(), actDepois.getPid(), actDepois.getSubpid()), Const.nALL_PROCS);
+	    			
+	    			Map<String,String> taskProcessDetailAntes = ProcessPresentation.getProcessDetail(userInfo, procDataAntes);
+	    			Map<String,String> taskProcessDetailDepois = ProcessPresentation.getProcessDetail(userInfo, procDataDepois);
+	    			
+	    			String valueAntes = taskProcessDetailAntes.get(StringUtils.removeStart(orderBy, "meta_"));
+	    			String valueDepois = taskProcessDetailDepois.get(StringUtils.removeStart(orderBy, "meta_"));;
+	    			
+	    			if(valueAntes==null) valueAntes="";
+	    			if(valueDepois==null) valueDepois="";
+	    			
+	    			if (StringUtils.equalsIgnoreCase(orderType, "desc") && (myCollator.compare(valueAntes, valueDepois)<0) ){
+	    				alAct.set(j, actDepois);
+	    				alAct.set(j+1, actAntes);
+	    			} else if (StringUtils.equalsIgnoreCase(orderType, "asc") && (myCollator.compare(valueAntes, valueDepois)>0) ){
+	    				alAct.set(j, actDepois);
+	    				alAct.set(j+1, actAntes);
+	    			}
+    			} catch(Exception e){}
     		}
     }
    
