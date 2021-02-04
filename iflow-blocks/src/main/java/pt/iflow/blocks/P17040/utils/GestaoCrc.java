@@ -381,7 +381,7 @@ public class GestaoCrc {
 			pst = connection.prepareStatement(query);
 			pst.setString(1, idCont);
 			pst.setString(2, idInst);
-			pst.setDate(3, new java.sql.Date(dtRefInst.getTime()));			
+			//pst.setDate(3, new java.sql.Date(dtRefInst.getTime()));			
 			rs = pst.executeQuery();
 			
 			if(!rs.next())
