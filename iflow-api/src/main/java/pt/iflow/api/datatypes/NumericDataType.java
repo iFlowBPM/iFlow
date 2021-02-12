@@ -15,6 +15,7 @@ import pt.iflow.api.datatypes.msg.Messages;
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.processdata.ProcessListVariable;
 import pt.iflow.api.processdata.ProcessVariableValue;
+import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.ServletUtils;
 import pt.iflow.api.utils.UserInfoInterface;
@@ -94,7 +95,7 @@ public abstract class NumericDataType implements DataTypeInterface {
     	//TODO Foi retirado o format para não deixar por o decimal point 4444 -> 4.444
     	// Outra opção é multiplicar por 1(lenght-1) ou  
        // s = fmt.format(num);
-    	s = num.toString();
+    	s = fmt.format(num);// num.toString();
 //      }
 //      else {        
 //        java.lang.Double d = num.doubleValue();
@@ -137,7 +138,8 @@ public abstract class NumericDataType implements DataTypeInterface {
   public void setLocale(Locale locale) {
     if(null == locale) locale = Locale.getDefault();
     this.locale = locale;
-    this.fmt = new DecimalFormat("#,##0.000", new DecimalFormatSymbols(this.locale));
+    //this.fmt = new DecimalFormat("#,##0.000", new DecimalFormatSymbols(this.locale));
+    this.fmt = new DecimalFormat(Const.sDEF_FLOAT_FORMAT);
   }
 
   

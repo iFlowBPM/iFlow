@@ -836,7 +836,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 
 									// 1.1: Criar extensao comum
 									String filesAndFoldersPattern = origin + "." + applicationCode + "." + group + "."
-											+ docArea + "." + date + "." + hour + "." + sequenceNumber;
+											+ docArea + "." + date + "." + hour + /**"." +**/ sequenceNumber;
 
 									// 2: Criar pastas
 									Path pathFolder = Paths
@@ -858,6 +858,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 									FileWriter fileWriter = new FileWriter(fileIndex.getAbsolutePath());
 									PrintWriter printWriter = new PrintWriter(fileWriter);
 									printWriter.println("CODEPAGE:850");
+									printWriter.println("CODAPP:GA");
 
 									for (int n = 0; n < byNumberOfDocslistOfList.get(m).size(); n++) { // Por cada Document do batch
 																							// listOfList[i]

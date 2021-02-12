@@ -939,4 +939,62 @@
         <description>Remove element from array</description>
         <i18n>library.utils.block.remove_from_array</i18n>
     </XmlBlock>
+    <XmlBlock>
+        <class>BlockSQLQueryToCSV</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>20</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>40</y>
+            </position>
+        </XmlPort>
+        <XmlAttribute>
+            <name>Datasource</name>
+            <description>Datasource</description>
+            <value />
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>Query</name>
+            <description>Query</description>
+            <value />
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>Filepath</name>
+            <description>Filepath</description>
+            <value />
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>Separator</name>
+            <description>Separator</description>
+            <value />
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>Header</name>
+            <description>Header</description>
+            <value />
+        </XmlAttribute>                
+        <image>bpmn_task.png</image>
+        <description>SQLQuery to CSV file</description>
+        <i18n>library.dms.block.sqlquery_to_csv</i18n>
+    </XmlBlock>
 </XmlLibrary>
