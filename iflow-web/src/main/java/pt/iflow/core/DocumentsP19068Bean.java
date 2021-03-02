@@ -1,16 +1,18 @@
 package pt.iflow.core;
 
+import static pt.iflow.blocks.P17040.utils.FileGeneratorUtils.fillAtributtes;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,16 +25,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
@@ -41,10 +46,23 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+
+import com.uniksystem.p19068.AddrReqType;
+import com.uniksystem.p19068.ConteudoWSTBFFRequest50;
+import com.uniksystem.p19068.ConteudoWSTBFFRequest50.QUERY;
+import com.uniksystem.p19068.ConteudoWSTBFFResponse50;
+import com.uniksystem.p19068.Dtestrquery;
+import com.uniksystem.p19068.Dtestrquery.QVALUE;
+import com.uniksystem.p19068.Execute;
+import com.uniksystem.p19068.ExecuteResponse;
+import com.uniksystem.p19068.HdrReqType;
+import com.uniksystem.p19068.MsgTypeValue;
+import com.uniksystem.p19068.OrigemType;
+import com.uniksystem.p19068.RequestType;
+import com.uniksystem.p19068.WSTBFFServiceagent;
 
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.core.ProcessCatalogueImpl;
@@ -187,29 +205,77 @@ public class DocumentsP19068Bean extends DocumentsBean {
 				retObj.setSubpid(subpid);
 				retObj.setLength(length);
 
-				if (!canRead(userInfo, procData, adoc)) {
-					retObj = null;
-					Logger.error(
-							login,
-							this,
-							"getDocument",
-							procData.getSignature()
-									+ "User does not have permission to retrieve file");
-					throw new Exception("Permission denied");
-				}
+//				if (!canRead(userInfo, procData, adoc)) {
+//					retObj = null;
+//					Logger.error(
+//							login,
+//							this,
+//							"getDocument",
+//							procData.getSignature()
+//									+ "User does not have permission to retrieve file");
+//					throw new Exception("Permission denied");
+//				}
 
 				if (abFull) {
+					HashMap<String, Object> gedocDocUrl = fillAtributtes(null, db, userInfo,
+							"SELECT docurl,documentary_area FROM documents_p19068 WHERE state=8 AND docid= {0} ", new Object[] { retObj.getDocId() });
 					//stored in filesystem
 					if (StringUtils.isNotEmpty(filePath) && (new File(filePath)).exists()) {
 						Logger.warning(login,this,"getDocument", "retrieving file in filesystem, docid: " + retObj.getDocId());
 			              dataStream = new FileInputStream(filePath);
 			              dataStream2 = new FileInputStream(filePath);
 					}
-					//stored in this external repos 
-					//TODO cgeck if merger
-					else if (false){					
-						Logger.warning(login,this,"getDocument", "retrieving file in external repos, docid: " + retObj.getDocId());
-						//TODO chicha						
+					//stored in gedoc
+					else if(false && StringUtils.isNotBlank((String) gedocDocUrl.get("docurl"))){
+						WSTBFFServiceagent service = new WSTBFFServiceagent(new URL(""));
+						Execute parameters = new Execute();
+						RequestType requestType = new RequestType();
+						
+						HdrReqType hdr = new HdrReqType();
+							AddrReqType addrReq = new AddrReqType();
+							addrReq.setAction("WSTBFF");
+							addrReq.setFrom("GA");
+							addrReq.setMsgType(MsgTypeValue.PI);
+							addrReq.setReqMsgId("");;
+							addrReq.setTimeout(3000l);
+							addrReq.setTimestamp("");
+							addrReq.setTo("0007");
+							addrReq.setVersion("5.0");
+							OrigemType origem = new OrigemType();
+							origem.setApliOri("GA");
+							origem.setCanal("");
+							origem.setEmpresa("0007");
+							origem.setEstrutura("");
+							
+							hdr.setAddrReq(addrReq);
+							hdr.setOrigem(origem);
+						ConteudoWSTBFFRequest50 conteudo = new ConteudoWSTBFFRequest50();
+							QUERY queryRequest = new QUERY();
+							List<Dtestrquery> i = queryRequest.getI();
+							Dtestrquery dtestrQuery = new Dtestrquery();
+							dtestrQuery.setOPERATOR(1l);
+							dtestrQuery.setQNAME("DOC_ID");
+							QVALUE qvalue = new QVALUE();
+							qvalue.getI().add((String) gedocDocUrl.get("docurl"));
+							dtestrQuery.setQVALUE(qvalue);
+							i.add(dtestrQuery);
+							
+							dtestrQuery = new Dtestrquery();
+							dtestrQuery.setOPERATOR(1l);
+							dtestrQuery.setQNAME("DOCAREA");
+							qvalue = new QVALUE();
+							qvalue.getI().add((String) gedocDocUrl.get("documentary_area"));
+							dtestrQuery.setQVALUE(qvalue);
+							
+							conteudo.setQUERY(queryRequest);
+							
+							requestType.setHdr(hdr);
+							requestType.setConteudo(conteudo);
+							parameters.setRequest(requestType);
+							
+							ExecuteResponse response = service.getHTTP().execute(parameters);
+							ConteudoWSTBFFResponse50 conteudoResponse = (ConteudoWSTBFFResponse50) response.getResponse().getConteudo();
+							String url =conteudoResponse.getURL().getValue();
 					}
 					//stored in regular DB
 					else {
@@ -268,10 +334,30 @@ public class DocumentsP19068Bean extends DocumentsBean {
 	}	
 	
 	Document addDocument(UserInfoInterface userInfo, ProcessData procData, Document adoc, Connection db) throws Exception {
+		String filename = adoc.getFileName();
+		filename = stripAccents(filename);	
+		adoc.setFileName(filename);
+		
 		Document result = super.addDocument(userInfo, procData, adoc, db);
 		if(StringUtils.equals(procData.getTempData("FLOW_STATE_RESULT"), "Formulário"))
 			cleanFileThreat.uploadFile(result.getDocId());
 		return result;
+	}
+	
+	public static String stripAccents(String s){
+	    s = Normalizer.normalize(s, Normalizer.Form.NFD);
+	    s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+	    s = StringUtils.replaceChars(s, " ", "_");
+	    s = StringUtils.replaceChars(s, "ç", "c");
+	    s = StringUtils.replaceChars(s, "Ç", "C");
+	    return s;
+	}
+	
+	class InputFileEvent {
+		String docid;
+		Boolean isOk;
+		String codErro;
+		String descErro;
 	}
 	
 	class sendToGeDocTask extends TimerTask {
@@ -285,347 +371,28 @@ public class DocumentsP19068Bean extends DocumentsBean {
 				Properties properties = Setup.readPropertiesFile("P19068.properties");
 				String inputFolderPath = properties.getProperty("INPUT_FOLDER_PATH");
 
+				
 				if (inputFolderPath != null && !inputFolderPath.trim().isEmpty()) {
 					File inputFolder = new File(inputFolderPath.trim());
-					BufferedReader reader = null;
-
-					TreeMap<String, Date> fileMap = new TreeMap<>();
-					searchFilesInFolder(inputFolder, ".txt", fileMap);
-
-					List<String> sequentialNamesListEventFile = new ArrayList<>();
-
-					// Key - line number (1-based), Value - NOME_OBJ, LINK
-					MultiValuedMap<Integer, String> statusOkFileMap = new ArrayListValuedHashMap<>();
-
-					// Key - line number (1-based), Value - NOME_OBJ, STATUS_DESC, CODERRO, DESCERRO
-					MultiValuedMap<Integer, String> statusNotOkFileMap = new ArrayListValuedHashMap<>();
-
-					String eventFileName = "";
-
-					/**
-					 * Se tem .txt
-					 */
-					if (fileMap != null && !fileMap.isEmpty()) {
-
-						// obter o txt mais recente para fazer leitura dos campos
-						eventFileName = fileMap.firstKey();
-
-						reader = new BufferedReader(new FileReader(eventFileName));
-						extractLinesContent(properties, sequentialNamesListEventFile, statusOkFileMap,
-								statusNotOkFileMap, reader);
-
-					} else {
-						/**
-						 * Se tem .zip
-						 */
-						Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-								"EE18 file folder does not contain .txt files or cannot be read. Checking for .zip files...");
-						searchFilesInFolder(inputFolder, ".zip", fileMap);
-
-						if (fileMap != null && !fileMap.isEmpty()) {
-							// Obter zip com data mais recente
-							eventFileName = fileMap.firstKey();
-
-							getZipContent(properties, login, eventFileName, sequentialNamesListEventFile,
-									statusOkFileMap, statusNotOkFileMap);
-
-						} else {
-							Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-									"EE18 file folder does not contain .zip files or cannot be read. Proceding to check if table contains documents ready to integrate...");
-						}
-
+					Collection inputFiles = FileUtils.listFiles(inputFolder, null, false);
+					Iterator inputFilesIterator = inputFiles.iterator();
+					
+					while(inputFilesIterator.hasNext()){
+						File inputFile = (File) inputFilesIterator.next();
+						List<InputFileEvent> inputFileEvents = extractInputFileEvents(inputFile);
+						
+						for(InputFileEvent inputFileEvent : inputFileEvents)
+							updateGedocIntegrationStatus(inputFileEvent, userInfo);
+												
+						FileUtils.copyFileToDirectory(inputFile, new File(inputFolderPath+"_HIST"));
+						inputFile.delete();
 					}
-
-					if ((sequentialNamesListEventFile != null && !sequentialNamesListEventFile.isEmpty())
-							&& (statusOkFileMap != null && statusNotOkFileMap != null)) {
-						Connection conn = DatabaseInterface.getConnection(userInfo);
-						PreparedStatement pst = null;
-						ResultSet rs = null;
-						String query = null;
-						int stateCount = 0;
-
-						try {
-							query = "SELECT COUNT(*) AS StateCount FROM documents_p19068 WHERE state=?;";
-							pst = conn.prepareStatement(query);
-							pst.setInt(1, DocumentState.FILE_READ_AND_READY_TO_SEND.value); // 2)
-							rs = pst.executeQuery();
-							if (rs.next()) {
-								stateCount = rs.getInt("StateCount");
-
-							} else {
-								Logger.error(userInfo.getUtilizador(), this,
-										"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-										"Could not get the document counts");
-							}
-
-						} catch (SQLException sqle) {
-							Logger.error(userInfo.getUtilizador(), this,
-									"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-									"SQL state: " + sqle.getSQLState() + " and message: " + sqle.getMessage(), sqle);
-						} catch (Exception e) {
-							Logger.error(userInfo.getUtilizador(), this,
-									"DocumentsP19068Bean.sendToGeDocTask.this.run()", query + e.getMessage(), e);
-						} finally {
-							DatabaseInterface.closeResources(conn, pst, rs);
-						}
-
-						int eventFileTotalCount = statusOkFileMap.keySet().size() + statusNotOkFileMap.keySet().size();
-
-						if (stateCount != eventFileTotalCount) { // Primeiro: Contagens erradas
-							Connection connection = DatabaseInterface.getConnection(userInfo);
-							updateDbState(userInfo, connection,
-									"UPDATE documents_p19068 SET state=?, lastupdated=? WHERE state=?;",
-									new Object[] { DocumentState.REJECTED_BY_GROUP_QUANTITY_DOESNT_MATCH.value,
-											new Timestamp(System.currentTimeMillis()),
-											DocumentState.FILE_READ_AND_READY_TO_SEND.value },
-									new Integer[] { Types.INTEGER, Types.TIMESTAMP, Types.INTEGER });
-
-						} else { // Segundo: Nome ficheiros vazios.
-							if (hasValue(statusOkFileMap, "Empty_file_name")
-									|| hasValue(statusNotOkFileMap, "Empty_file_name")) {
-								Connection connection = DatabaseInterface.getConnection(userInfo);
-								updateDbState(userInfo, connection,
-										"UPDATE documents_p19068 SET state=?, lastupdated=? WHERE state=?;",
-										new Object[] { DocumentState.REJECTED_BY_GROUP_EMPTY_FILENAMES.value,
-												new Timestamp(System.currentTimeMillis()),
-												DocumentState.FILE_READ_AND_READY_TO_SEND.value },
-										new Integer[] { Types.INTEGER, Types.TIMESTAMP, Types.INTEGER });
-
-							} else { // se chega aqui, nao tem nomes ficheiros vazios. Contagens sao corretas
-								List<Document> awaitingEventFileFeedbackDbDocumentsList = new ArrayList<>();
-
-								Connection connection = DatabaseInterface.getConnection(userInfo);
-								PreparedStatement psmt = null;
-								ResultSet rst = null;
-								String selectQuery = null;
-								try {
-									selectQuery = "SELECT * FROM documents_p19068 ORDER BY docid ASC;";
-									psmt = connection.prepareStatement(selectQuery);
-									rst = psmt.executeQuery();
-									while (rst.next()) {
-										if (rst.getInt("state") == DocumentState.FILE_READ_AND_READY_TO_SEND.value) { // 2)
-											DocumentData dbDoc = new DocumentData(rst.getInt("docid"));
-											Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-													"Entering getDocumentData() for docid number: "
-															+ rst.getInt("docid"));
-											Document doc = DocumentsP19068Bean.super.getDocumentData(userInfo, procData,
-													dbDoc, connection, true);
-											if (doc != null) {
-												Logger.error(login, this,
-														"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-														"Document data for docid number: " + rst.getInt("docid")
-																+ " was successfully obtained.");
-												awaitingEventFileFeedbackDbDocumentsList.add(doc);
-											} else {
-												Logger.error(login, this,
-														"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-														"Document data for docid number: " + rst.getInt("docid")
-																+ " was NOT obtained.");
-											}
-										}
-									}
-								} catch (SQLException sqle) {
-									Logger.error(userInfo.getUtilizador(), this,
-											"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-											"SQL state: " + sqle.getSQLState() + " and message: " + sqle.getMessage(),
-											sqle);
-								} catch (Exception e) {
-									Logger.error(userInfo.getUtilizador(), this,
-											"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-											selectQuery + e.getMessage(), e);
-								} finally {
-									DatabaseInterface.closeResources(connection, psmt, rst);
-								}
-								List<Document> controlDocumentsList = new ArrayList<>();
-								controlDocumentsList.addAll(awaitingEventFileFeedbackDbDocumentsList);
-
-								if (awaitingEventFileFeedbackDbDocumentsList != null
-										&& !awaitingEventFileFeedbackDbDocumentsList.isEmpty()) {
-
-									if (!isFileSequenceCorrect(sequentialNamesListEventFile,
-											awaitingEventFileFeedbackDbDocumentsList)) { // Verifica se ficheiros da BD
-																							// e do
-																							// EE18 tem a mesma
-																							// sequencia.
-																							// Se nao,
-																							// REJECTED_BY_GROUP_SEQUENCE_DOESNT_MATCH
-										Connection connect = DatabaseInterface.getConnection(userInfo);
-										updateDbState(userInfo, connect,
-												"UPDATE documents_p19068 SET state=?, lastupdated=? WHERE state=?;",
-												new Object[] {
-														DocumentState.REJECTED_BY_GROUP_SEQUENCE_DOESNT_MATCH.value,
-														new Timestamp(System.currentTimeMillis()),
-														DocumentState.FILE_READ_AND_READY_TO_SEND.value },
-												new Integer[] { Types.INTEGER, Types.TIMESTAMP, Types.INTEGER });
-
-									} else { // se chega aqui, nao tem nomes ficheiros vazios. Contagens sao corretas e
-												// a
-												// mesma sequencia
-										Set<Integer> keysOk = statusOkFileMap.keySet();
-										Set<Integer> keysNotOk = statusNotOkFileMap.keySet();
-
-										if (awaitingEventFileFeedbackDbDocumentsList != null
-												&& !awaitingEventFileFeedbackDbDocumentsList.isEmpty()) {
-											for (Document document : awaitingEventFileFeedbackDbDocumentsList) {
-
-												// Por lista OK
-
-												boolean isMatchFound = false;
-
-												for (Integer key : keysOk) { // Por cada elemento do Multivaluedmap,
-																				// obter
-																				// nome ficheiro da lista ok
-													if (!statusOkFileMap.get(key).isEmpty()) {
-														List<String> valuesList = (List<String>) statusOkFileMap
-																.get(key);
-														String firstValueObjName = "";
-														String secondValueLink = "";
-														for (int i = 0; i < valuesList.size(); i++) {
-															firstValueObjName = valuesList.get(i);
-															if (valuesList.size() > i + 1) {
-																secondValueLink = valuesList.get(++i);
-															}
-														}
-														if (document.getFileName().equals(firstValueObjName)) {
-															isMatchFound = true;
-															Connection cnt = DatabaseInterface.getConnection(userInfo);
-															updateDbState(userInfo, cnt,
-																	"UPDATE documents_p19068 SET state=?, docurl=?, lastupdated=? WHERE docid=?;",
-																	new Object[] {
-																			DocumentState.PROCESS_CONCLUDED_OK.value,
-																			secondValueLink,
-																			new Timestamp(System.currentTimeMillis()),
-																			document.getDocId() },
-																	new Integer[] { Types.INTEGER, Types.VARCHAR,
-																			Types.TIMESTAMP, Types.INTEGER });
-
-															controlDocumentsList.remove(document);
-
-															// Se estado PROCESS_CONCLUDED_OK, apaga documento da tabela
-															// documents
-//										Connection connect = DatabaseInterface.getConnection(userInfo);
-//										PreparedStatement ps = null;
-//										String deleteQuery = null;
-//										try {
-//											deleteQuery = "DELETE FROM documents WHERE docid=?;";
-//											ps = connect.prepareStatement(deleteQuery);
-//											ps.setInt(1, document.getDocId());
-//											int row = ps.executeUpdate();
-//											
-//											Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",	row + " rows affected while executing query: " + deleteQuery + " for docid " + document.getDocId());
-//										
-//										} catch (SQLException sqle) {
-//											Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",	"SQL state: " + sqle.getSQLState() + " and message: " + sqle.getMessage(), sqle);
-//										} catch (Exception e) {
-//											Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",	query + e.getMessage(), e);
-//										} finally {
-//											DatabaseInterface.closeResources(conn, pst, rs);
-//										}
-														}
-													} else {
-														Logger.error(login, this,
-																"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-																"Values for key " + key
-																		+ " are empty for docid number: "
-																		+ document.getDocId());
-													}
-												}
-												// Por lista NOK. Se n esta na lista OK, procurar na lista erros
-
-												if (!isMatchFound) {
-													boolean isNokMatchFound = false;
-
-													for (Integer keyNok : keysNotOk) {
-														if (!statusNotOkFileMap.get(keyNok).isEmpty()) {
-															List<String> valuesNotOkList = (List<String>) statusNotOkFileMap
-																	.get(keyNok);
-															String firstValueObjName = "";
-															String secondValueStatus = "";
-															String thirdValueCodErr = "";
-															String fourthValueDescErr = "";
-
-															// Key - line number (1-based), Value - NOME_OBJ,
-															// STATUS_DESC,
-															// CODERRO, DESCERRO
-															for (int j = 0; j < valuesNotOkList.size(); j++) {
-																firstValueObjName = valuesNotOkList.get(j);
-																if (valuesNotOkList.size() > j + 3) {
-																	secondValueStatus = valuesNotOkList.get(++j);
-																	thirdValueCodErr = valuesNotOkList.get(++j);
-																	fourthValueDescErr = valuesNotOkList.get(++j);
-																}
-															}
-															if (document.getFileName().equals(firstValueObjName)) {
-																isNokMatchFound = true;
-																Connection cnt = DatabaseInterface
-																		.getConnection(userInfo);
-																updateDbState(userInfo, cnt,
-																		"UPDATE documents_p19068 SET state=?, status_desc=?, errorcode=?, errordesc=?, lastupdated=? WHERE docid=?;",
-																		new Object[] {
-																				DocumentState.REJECTED_INDIVIDUALLY.value,
-																				secondValueStatus, thirdValueCodErr,
-																				fourthValueDescErr,
-																				new Timestamp(
-																						System.currentTimeMillis()),
-																				document.getDocId() },
-																		new Integer[] { Types.INTEGER, Types.VARCHAR,
-																				Types.VARCHAR, Types.VARCHAR,
-																				Types.TIMESTAMP, Types.INTEGER });
-
-																controlDocumentsList.remove(document);
-															}
-														} else {
-															Logger.error(login, this,
-																	"DocumentsP19068Bean.sendToGeDocTask.this.run()",
-																	"Values for key " + keyNok
-																			+ " are empty for docid number: "
-																			+ document.getDocId());
-														}
-													}
-													// b) Se tb nao encontra match - marcar estado rejeitado
-													// individualmente
-													if (!isNokMatchFound) {
-														Connection cnt = DatabaseInterface.getConnection(userInfo);
-														updateDbState(userInfo, cnt,
-																"UPDATE documents_p19068 SET state=?, status_desc=?, lastupdated=? WHERE docid=?;",
-																new Object[] {
-																		DocumentState.REJECTED_INDIVIDUALLY.value,
-																		"Document not found in EE18 file",
-																		new Timestamp(System.currentTimeMillis()),
-																		document.getDocId() },
-																new Integer[] { Types.INTEGER, Types.VARCHAR,
-																		Types.TIMESTAMP, Types.INTEGER });
-													}
-												}
-											}
-										}
-
-										if (!controlDocumentsList.isEmpty()) {
-											for (Document doc : awaitingEventFileFeedbackDbDocumentsList) {
-												Connection cnt = DatabaseInterface.getConnection(userInfo);
-												updateDbState(userInfo, cnt,
-														"UPDATE documents_p19068 SET state=?, status_desc=?, lastupdated=? WHERE docid=?;",
-														new Object[] { DocumentState.REJECTED_INDIVIDUALLY.value,
-																"Document not found in EE18 file",
-																new Timestamp(System.currentTimeMillis()),
-																doc.getDocId() },
-														new Integer[] { Types.INTEGER, Types.VARCHAR, Types.TIMESTAMP,
-																Types.INTEGER });
-											}
-										}
-									}
-								} else {
-									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-											"No entries found in table documents_p19068 for state SENT_AWAITING_RESPONSE ");
-								}
-							}
-						}
-
-					} else {
-						Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
-								"No fields found in EE18 event file ");
-					}
-
+					
+					//deleteSuccessIntegrationsContent(userInfo);
+				}
+				
+				
+				if (true || inputFolderPath != null && !inputFolderPath.trim().isEmpty()) {					
 					/**
 					 * 
 					 * Início processo para criacao ficheiro ZIP
@@ -778,6 +545,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 
 						// Criar zip. Atencao limite 100Mb, 500 docs, num sequencia diferente
 						String outputFolderPath = properties.getProperty("OUTPUT_FOLDER_PATH");
+						String outputHistoricFolderPath = properties.getProperty("OUTPUT_HISTORIC_FOLDER_PATH");
 
 						if (outputFolderPath != null && !outputFolderPath.trim().isEmpty()) {
 
@@ -857,8 +625,8 @@ public class DocumentsP19068Bean extends DocumentsBean {
 											unsescapedPath + File.separator + filesAndFoldersPattern + ".ARD.IND");
 									FileWriter fileWriter = new FileWriter(fileIndex.getAbsolutePath());
 									PrintWriter printWriter = new PrintWriter(fileWriter);
+									SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyyMMddhhmmssSS");
 									printWriter.println("CODEPAGE:850");
-									printWriter.println("CODAPP:GA");
 
 									for (int n = 0; n < byNumberOfDocslistOfList.get(m).size(); n++) { // Por cada Document do batch
 																							// listOfList[i]
@@ -870,19 +638,32 @@ public class DocumentsP19068Bean extends DocumentsBean {
 										List<String> convertedValuesList = Arrays
 												.asList(indexValuesList.get(m).split(",", -1));
 										for (int p = 0; p < convertedKeysList.size(); p++) {
-
 											printWriter.println("GROUP_FIELD_NAME:" + convertedKeysList.get(p));
 											printWriter.println("GROUP_FIELD_VALUE:" + convertedValuesList.get(p));
 										}
+										printWriter.println("GROUP_FIELD_NAME:CODAPP");
+										printWriter.println("GROUP_FIELD_VALUE:GA");
+										
+										String doc_id = dateTimeFormat.format(new Date()) + n;
+										updateDbState(userInfo, DatabaseInterface.getConnection(userInfo),
+												"UPDATE documents_p19068 SET docurl=?	WHERE docid=?;",
+												new Object[] { doc_id, byNumberOfDocslistOfList.get(m).get(n).getDocId()},
+												new Integer[] { Types.VARCHAR , Types.INTEGER });
+										printWriter.println("GROUP_FIELD_NAME:DOC_ID");
+										printWriter.println("GROUP_FIELD_VALUE:" + doc_id);
+										
 										printWriter.println("GROUP_OFFSET:0");
 										printWriter.println("GROUP_LENGTH:0");
 										printWriter
 												.println("GROUP_FILENAME:" + groupFilenameValue + filesAndFoldersPattern
-														+ ".ARD.OUT/" + byNumberOfDocslistOfList.get(m).get(n).getFileName());
+														+ ".ARD.OUT/" 
+														+ byNumberOfDocslistOfList.get(m).get(n).getDocId() + "_"
+														+ stripAccents(byNumberOfDocslistOfList.get(m).get(n).getFileName()));
 
 										// Armazena documento
 										File documentToStore = new File(unsescapedSubPath + File.separator
-												+ byNumberOfDocslistOfList.get(m).get(n).getFileName());
+												+ byNumberOfDocslistOfList.get(m).get(n).getDocId() + "_" 
+												+ stripAccents(byNumberOfDocslistOfList.get(m).get(n).getFileName()));
 										FileUtils.writeByteArrayToFile(documentToStore,
 												byNumberOfDocslistOfList.get(m).get(n).getContent());
 
@@ -917,21 +698,16 @@ public class DocumentsP19068Bean extends DocumentsBean {
 //									zipOut.close();
 //									fos.close();
 									zipFolder(Paths.get(unsescapedPath), Paths.get(unsescapedPath+".zip"));
+									if(StringUtils.isBlank(outputHistoricFolderPath))
+										outputHistoricFolderPath += "_HIST";
+									FileUtils.copyFileToDirectory(new File(unsescapedPath+".zip"), new File(outputHistoricFolderPath));
+									
 									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
 											"Deleting source files and folders...");
 									deleteDirectory(new File(unsescapedPath));
 									zipCounter += 1;
 								}
-
-								if (reader != null) {
-									reader.close();
-								}
-
-								if (eventFileName != null && !eventFileName.isEmpty()
-										&& zipCounter == byNumberOfDocslistOfList.size()) {
-									deleteEventFile(login, eventFileName);
-								}
-
+								
 							} else {
 								Logger.error(userInfo.getUtilizador(), this,
 										"DocumentsP19068Bean.sendToGeDocTask.this.run()",
@@ -965,6 +741,79 @@ public class DocumentsP19068Bean extends DocumentsBean {
 				Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
 						"Exception", e);
 			}
+		}
+
+		private void deleteSuccessIntegrationsContent(UserInfoInterface userInfo) {
+			Connection connection =  null;
+			PreparedStatement psmt = null;
+			try {
+				connection =  DatabaseInterface.getConnection(userInfo);
+				psmt = connection.prepareStatement("UPDATE documents SET datadoc=NULL "
+						+ "WHERE docid IN (SELECT docid FROM documents_p19068 WHERE state=? )");
+				
+				psmt.setInt(1, DocumentState.PROCESS_CONCLUDED_OK.value);
+				psmt.execute();
+				psmt.close();				
+			} catch (SQLException e) {
+				Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.deleteSuccessIntegrationsContent", "Exception", e);
+			} finally {
+				DatabaseInterface.closeResources(connection, psmt);
+			}
+			
+		}
+
+		private void updateGedocIntegrationStatus(InputFileEvent inputFileEvent, UserInfoInterface userInfo) {
+			Connection connection =  null;
+			PreparedStatement psmt = null;
+			try {
+				connection =  DatabaseInterface.getConnection(userInfo);
+				psmt = connection.prepareStatement("UPDATE documents_p19068 SET state=?, errorcode=?, errordesc=?, lastupdated=? WHERE docurl=?");
+				
+				if(inputFileEvent.isOk)
+					psmt.setInt(1, DocumentState.PROCESS_CONCLUDED_OK.value);
+				else
+					psmt.setInt(1, DocumentState.REJECTED_INDIVIDUALLY.value);
+				
+				psmt.setString(2, StringUtils.defaultIfEmpty(inputFileEvent.codErro,""));
+				psmt.setString(3, StringUtils.defaultIfEmpty(inputFileEvent.descErro,""));
+				psmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+				psmt.setString(5, StringUtils.defaultIfEmpty(inputFileEvent.docid,"NO_VALUE"));
+				
+				psmt.execute();
+				psmt.close();				
+			} catch (Exception e) {
+				Logger.error(userInfo.getUtilizador(), this, "DocumentsP19068Bean.updateGedocIntegrationStatus", "Exception", e);
+			} finally {
+				DatabaseInterface.closeResources(connection, psmt);
+			}
+			
+		}
+
+		private List<InputFileEvent> extractInputFileEvents(File inputFile){
+			ArrayList<InputFileEvent> result = new ArrayList<>();
+			List<String> lines;
+			
+			try {
+				lines = FileUtils.readLines(inputFile);
+				
+				for(String line : lines){
+					if(!StringUtils.startsWith(line, "D"))
+						continue;
+					
+					InputFileEvent inputFileEvent = new InputFileEvent();
+					inputFileEvent.docid = StringUtils.trim(StringUtils.substring(line, 797 , 823));
+					inputFileEvent.isOk = StringUtils.equalsIgnoreCase("ok", StringUtils.substring(line, 11544 , 11546));
+					inputFileEvent.codErro = StringUtils.trim(StringUtils.substring(line, 10736 , 10751));
+					inputFileEvent.descErro = StringUtils.trim(StringUtils.substring(line, 10751 , 11478));
+					
+					result.add(inputFileEvent);
+				}
+			} catch (IOException e) {
+				Logger.error("", this, "DocumentsP19068Bean.extractInputFileEvents", "Exception treating:" + inputFile.getName(), e);
+			}
+			
+			
+			return result;
 		}
 
 		private void deleteEventFile(String login, String eventTxtFileName) {
@@ -1059,12 +908,14 @@ public class DocumentsP19068Bean extends DocumentsBean {
 								Integer.valueOf(properties.getProperty("link.end")) - 1);
 						linkLineValue = linkLineValue != null && !linkLineValue.trim().isEmpty() ? linkLineValue.trim()
 								: "Link not provided";
+						String identificadorDocumentoGedoc = fileLine.substring(400,426).trim();
 
 						// Aqui criamos lista de nomes lidos OK do EE18
 
 						// Key - line number (1-based), Value - NOME_OBJ, LINK
 						statusOkFileMap.put(count, fileNameLineValue);
 						statusOkFileMap.put(count, linkLineValue);
+						statusOkFileMap.put(count, identificadorDocumentoGedoc);
 
 					} else { // STATUS_DESC: NOT_OK ou outros
 						String codErro = fileLine.substring(

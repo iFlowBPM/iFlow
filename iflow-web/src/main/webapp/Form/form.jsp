@@ -339,7 +339,7 @@ String popupReturnBlockId = null;
 if (pid > 0) {
 %>
 <script language="JavaScript" type="text/javascript">
-  parent.showAnnotations(<%=flowid%>,<%=pid%>,<%=subpid%>,'<%=from%>');
+  //parent.showAnnotations(<%=flowid%>,<%=pid%>,<%=subpid%>,'<%=from%>');
 </script>
 <%} else {%>
 <script language="JavaScript" type="text/javascript">

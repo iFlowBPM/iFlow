@@ -464,4 +464,99 @@
     <description>SQL Save</description>
     <i18n>library.db.block.save</i18n>
   </XmlBlock>
+  
+  <XmlBlock>
+		<class>BlockMultiQuery</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>dataSource</name>
+			<description>Data Source</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>isTransaction</name>
+			<description>Transaction?</description>
+			<value>true</value>
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>query1</name>
+			<description>Query</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>query2</name>
+			<description>Query</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>query3</name>
+			<description>Query</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>query4</name>
+			<description>Query</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>query5</name>
+			<description>Query</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>query6</name>
+			<description>Query</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>query7</name>
+			<description>Query</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>query8</name>
+			<description>Query</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>query9</name>
+			<description>Query</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>query10</name>
+			<description>Query</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>MultiQuery</description>
+		<i18n>library.db.block.multiquery</i18n>
+	</XmlBlock>
+	
 </XmlLibrary>
