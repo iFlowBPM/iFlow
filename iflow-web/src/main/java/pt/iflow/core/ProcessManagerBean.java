@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.Collator;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -29,6 +30,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -67,6 +69,7 @@ import pt.iflow.api.notification.Email;
 import pt.iflow.api.notification.EmailManager;
 import pt.iflow.api.notification.EmailTemplate;
 import pt.iflow.api.notification.NotificationManager;
+import pt.iflow.api.presentation.ProcessPresentation;
 import pt.iflow.api.processdata.EvalException;
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.processdata.ProcessHeader;
@@ -83,6 +86,7 @@ import pt.iflow.api.userdata.views.UserViewInterface;
 import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.DataSetVariables;
 import pt.iflow.api.utils.Logger;
+import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
 import pt.iflow.api.utils.series.FirstOverlimitException;
@@ -6235,7 +6239,25 @@ public class ProcessManagerBean implements ProcessManager {
 			        l.add(wle);
 	        }
 	      }
-	      result = l.listIterator();
+	      
+	      LinkedList<Activity> linkedListActivity = new LinkedList<Activity>();
+	      	for (int i=0; i < l.size(); i++) {
+      			try{
+  	    			Activity act = l.get((i));
+  	    			
+  	    			ProcessData procDataAct = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(act.getFlowid(), act.getPid(), act.getSubpid()), Const.nALL_PROCS);
+  	    			
+  	    			Map<String,String> taskProcessDetail = ProcessPresentation.getProcessDetail(userInfo, procDataAct);
+  	    			
+  	    			act.putAll(taskProcessDetail);
+  	    			
+  	    			linkedListActivity.add(act);
+  	    			
+      			} catch(Exception e){}
+	      		
+	      	}
+	      
+	      result = linkedListActivity.listIterator();
 	    } catch (SQLException sqle) {
 	      Logger.error(userid, this, "getUserActivitiesOrderFilters", "sql exception: " + sqle.getMessage()+" QUERY:"+union, sqle);
 	      result = null;

@@ -618,15 +618,15 @@ try {
     			try{
 	    			Activity actAntes = alAct.get((j));
 	    			Activity actDepois = alAct.get((j+1));
+	    				    			
+	    			//ProcessData procDataAntes = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(actAntes.getFlowid(), actAntes.getPid(), actAntes.getSubpid()), Const.nALL_PROCS);
+	    			//ProcessData procDataDepois = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(actDepois.getFlowid(), actDepois.getPid(), actDepois.getSubpid()), Const.nALL_PROCS);
 	    			
-	    			ProcessData procDataAntes = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(actAntes.getFlowid(), actAntes.getPid(), actAntes.getSubpid()), Const.nALL_PROCS);
-	    			ProcessData procDataDepois = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(actDepois.getFlowid(), actDepois.getPid(), actDepois.getSubpid()), Const.nALL_PROCS);
+	    			//Map<String,String> taskProcessDetailAntes = ProcessPresentation.getProcessDetail(userInfo, procDataAntes);
+	    			//Map<String,String> taskProcessDetailDepois = ProcessPresentation.getProcessDetail(userInfo, procDataDepois);
 	    			
-	    			Map<String,String> taskProcessDetailAntes = ProcessPresentation.getProcessDetail(userInfo, procDataAntes);
-	    			Map<String,String> taskProcessDetailDepois = ProcessPresentation.getProcessDetail(userInfo, procDataDepois);
-	    			
-	    			String valueAntes = taskProcessDetailAntes.get(StringUtils.removeStart(orderBy, "meta_"));
-	    			String valueDepois = taskProcessDetailDepois.get(StringUtils.removeStart(orderBy, "meta_"));;
+	    			String valueAntes = actAntes.getDetail(StringUtils.removeStart(orderBy, "meta_"));
+	    			String valueDepois = actDepois.getDetail(StringUtils.removeStart(orderBy, "meta_"));;
 	    			
 	    			if(valueAntes==null) valueAntes="";
 	    			if(valueDepois==null) valueDepois="";
