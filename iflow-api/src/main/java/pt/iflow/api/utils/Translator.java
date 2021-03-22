@@ -33,8 +33,8 @@ public class Translator {
 				String[] keyValue = aux.split("=");
 				hashBundle.put(keyValue[0], (keyValue.length==2)?keyValue[1]:"");
     		}
-		} catch (IOException e) {
-			Logger.error("", this, "Translator", messagesEnUS, e);
+		} catch (Exception e) {
+			//Logger.error("", this, "Translator", messagesEnUS, e);
 		}
     	bundle = BeanFactory.getRepBean().getBundle("blockform",locale, userInfo.getOrganization());
     	missingKeys = new ArrayList<String>();

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -44,6 +45,8 @@ import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+
+import javax.xml.ws.BindingProvider;
 
 import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.io.FileUtils;
@@ -226,56 +229,9 @@ public class DocumentsP19068Bean extends DocumentsBean {
 			              dataStream2 = new FileInputStream(filePath);
 					}
 					//stored in gedoc
-					else if(false && StringUtils.isNotBlank((String) gedocDocUrl.get("docurl"))){
-						WSTBFFServiceagent service = new WSTBFFServiceagent(new URL(""));
-						Execute parameters = new Execute();
-						RequestType requestType = new RequestType();
-						
-						HdrReqType hdr = new HdrReqType();
-							AddrReqType addrReq = new AddrReqType();
-							addrReq.setAction("WSTBFF");
-							addrReq.setFrom("GA");
-							addrReq.setMsgType(MsgTypeValue.PI);
-							addrReq.setReqMsgId("");;
-							addrReq.setTimeout(3000l);
-							addrReq.setTimestamp("");
-							addrReq.setTo("0007");
-							addrReq.setVersion("5.0");
-							OrigemType origem = new OrigemType();
-							origem.setApliOri("GA");
-							origem.setCanal("");
-							origem.setEmpresa("0007");
-							origem.setEstrutura("");
-							
-							hdr.setAddrReq(addrReq);
-							hdr.setOrigem(origem);
-						ConteudoWSTBFFRequest50 conteudo = new ConteudoWSTBFFRequest50();
-							QUERY queryRequest = new QUERY();
-							List<Dtestrquery> i = queryRequest.getI();
-							Dtestrquery dtestrQuery = new Dtestrquery();
-							dtestrQuery.setOPERATOR(1l);
-							dtestrQuery.setQNAME("DOC_ID");
-							QVALUE qvalue = new QVALUE();
-							qvalue.getI().add((String) gedocDocUrl.get("docurl"));
-							dtestrQuery.setQVALUE(qvalue);
-							i.add(dtestrQuery);
-							
-							dtestrQuery = new Dtestrquery();
-							dtestrQuery.setOPERATOR(1l);
-							dtestrQuery.setQNAME("DOCAREA");
-							qvalue = new QVALUE();
-							qvalue.getI().add((String) gedocDocUrl.get("documentary_area"));
-							dtestrQuery.setQVALUE(qvalue);
-							
-							conteudo.setQUERY(queryRequest);
-							
-							requestType.setHdr(hdr);
-							requestType.setConteudo(conteudo);
-							parameters.setRequest(requestType);
-							
-							ExecuteResponse response = service.getHTTP().execute(parameters);
-							ConteudoWSTBFFResponse50 conteudoResponse = (ConteudoWSTBFFResponse50) response.getResponse().getConteudo();
-							String url =conteudoResponse.getURL().getValue();
+					else if(StringUtils.isNotBlank((String) gedocDocUrl.get("docurl"))){
+						Logger.debug(login,this,"getDocument", "retrieving file in gedoc, docid: " + retObj.getDocId());
+						dataStream = getGedocContent(gedocDocUrl);						
 					}
 					//stored in regular DB
 					else {
@@ -333,6 +289,69 @@ public class DocumentsP19068Bean extends DocumentsBean {
 		return retObj;
 	}	
 	
+	private InputStream getGedocContent(HashMap<String, Object> gedocDocUrl) throws MalformedURLException{
+		Properties properties = Setup.readPropertiesFile("P19068.properties");				
+		Execute parameters = new Execute();
+		RequestType requestType = new RequestType();
+		//hdr
+		HdrReqType hdr = new HdrReqType();
+		AddrReqType addrReq = new AddrReqType();
+		addrReq.setAction("WSTBFF");
+		addrReq.setFrom("GA");
+		addrReq.setMsgType(MsgTypeValue.PI);
+		addrReq.setReqMsgId("");;
+		addrReq.setTimeout(3000l);
+		addrReq.setTimestamp("");
+		addrReq.setTo("0007");
+		addrReq.setVersion("5.0");
+		OrigemType origem = new OrigemType();
+		origem.setApliOri("GA");
+		origem.setCanal("");
+		origem.setEmpresa("0007");
+		origem.setEstrutura("");
+		
+		hdr.setAddrReq(addrReq);
+		hdr.setOrigem(origem);		
+		//conteudo
+		ConteudoWSTBFFRequest50 conteudo = new ConteudoWSTBFFRequest50();
+		QUERY queryRequest = new QUERY();
+		List<Dtestrquery> i = queryRequest.getI();
+		
+		Dtestrquery dtestrQuery = new Dtestrquery();
+		dtestrQuery.setOPERATOR(1l);
+		dtestrQuery.setQNAME("DOC_ID");
+		QVALUE qvalue = new QVALUE();
+		qvalue.getI().add((String) gedocDocUrl.get("docurl"));
+		dtestrQuery.setQVALUE(qvalue);
+		i.add(dtestrQuery);
+		
+		dtestrQuery = new Dtestrquery();
+		dtestrQuery.setOPERATOR(1l);
+		dtestrQuery.setQNAME("DOCAREA");
+		qvalue = new QVALUE();
+		qvalue.getI().add((String) gedocDocUrl.get("documentary_area"));
+		dtestrQuery.setQVALUE(qvalue);
+		i.add(dtestrQuery);
+		
+		conteudo.setQUERY(queryRequest);
+		//build request
+		requestType.setConteudo(conteudo);
+		requestType.setHdr(hdr);
+		parameters.setRequest(requestType);
+		
+		WSTBFFServiceagent service = new WSTBFFServiceagent(new URL(properties.getProperty("GEDOC_TIBCO_URL")));
+		service = service.getPort(WSTBFFServiceagent.class);
+		BindingProvider bindingProvider = (BindingProvider)service;
+		Map requestContext = bindingProvider.getRequestContext();
+		requestContext.put(BindingProvider.USERNAME_PROPERTY, properties.getProperty("GEDOC_TIBCO_USER"));
+		requestContext.put(BindingProvider.PASSWORD_PROPERTY, properties.getProperty("GEDOC_TIBCO_"));
+		
+		ExecuteResponse response = service.getHTTP().execute(parameters);
+		ConteudoWSTBFFResponse50 conteudoResponse = (ConteudoWSTBFFResponse50) response.getResponse().getConteudo();
+		String url =conteudoResponse.getURL().getValue();			
+		
+		return null;
+	}
 	Document addDocument(UserInfoInterface userInfo, ProcessData procData, Document adoc, Connection db) throws Exception {
 		String filename = adoc.getFileName();
 		filename = stripAccents(filename);	
@@ -350,6 +369,16 @@ public class DocumentsP19068Bean extends DocumentsBean {
 	    s = StringUtils.replaceChars(s, " ", "_");
 	    s = StringUtils.replaceChars(s, "ç", "c");
 	    s = StringUtils.replaceChars(s, "Ç", "C");
+	    
+	    Integer separador = StringUtils.lastIndexOf(s, '.');
+	    final int maxSize = 200;
+	    if(separador>maxSize){
+	    	String nome = StringUtils.substring(s, 0, separador);
+	    	String tipo = StringUtils.substring(s, separador);
+	    	s  = StringUtils.substring(nome, 0, maxSize) + tipo;
+	    } else if(separador<0 && s.length()>maxSize)
+	    	s = StringUtils.substring(s, 0, maxSize);	    	
+	    
 	    return s;
 	}
 	
@@ -370,7 +399,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 				ProcessData procData = new ProcessData(catalogue, -1, Const.nSESSION_PID, Const.nSESSION_SUBPID);
 				Properties properties = Setup.readPropertiesFile("P19068.properties");
 				String inputFolderPath = properties.getProperty("INPUT_FOLDER_PATH");
-
+				String inputHistoricFolderPath = properties.getProperty("INPUT_HISTORIC_FOLDER_PATH");
 				
 				if (inputFolderPath != null && !inputFolderPath.trim().isEmpty()) {
 					File inputFolder = new File(inputFolderPath.trim());
@@ -384,7 +413,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 						for(InputFileEvent inputFileEvent : inputFileEvents)
 							updateGedocIntegrationStatus(inputFileEvent, userInfo);
 												
-						FileUtils.copyFileToDirectory(inputFile, new File(inputFolderPath+"_HIST"));
+						FileUtils.copyFileToDirectory(inputFile, new File(inputHistoricFolderPath));
 						inputFile.delete();
 					}
 					
@@ -634,9 +663,9 @@ public class DocumentsP19068Bean extends DocumentsBean {
 //							    indexValuesList = Referência do Relatório de avaliação,Data Relatório de avaliação,Tipo de Documento,NIF,Referência WF,Referência Crédito
 
 										List<String> convertedKeysList = Arrays
-												.asList(indexKeyList.get(m).split(",", -1));
+												.asList(indexKeyList.get(n).split(",", -1));
 										List<String> convertedValuesList = Arrays
-												.asList(indexValuesList.get(m).split(",", -1));
+												.asList(indexValuesList.get(n).split(",", -1));
 										for (int p = 0; p < convertedKeysList.size(); p++) {
 											printWriter.println("GROUP_FIELD_NAME:" + convertedKeysList.get(p));
 											printWriter.println("GROUP_FIELD_VALUE:" + convertedValuesList.get(p));
@@ -699,7 +728,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 //									fos.close();
 									zipFolder(Paths.get(unsescapedPath), Paths.get(unsescapedPath+".zip"));
 									if(StringUtils.isBlank(outputHistoricFolderPath))
-										outputHistoricFolderPath += "_HIST";
+										outputHistoricFolderPath = outputFolderPath + "_HIST";
 									FileUtils.copyFileToDirectory(new File(unsescapedPath+".zip"), new File(outputHistoricFolderPath));
 									
 									Logger.error(login, this, "DocumentsP19068Bean.sendToGeDocTask.this.run()",
