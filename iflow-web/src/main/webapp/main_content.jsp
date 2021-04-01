@@ -644,6 +644,7 @@ try {
    
     // newest
     int j=0;
+    Map<Integer,Map<String,String>> flowDetailVarnamesCache = new HashMap<Integer, Map<String,String>>();
     for (int i=0; i < alAct.size(); i++) {
       a = alAct.get((i));
       
@@ -664,8 +665,11 @@ try {
         if(StringUtils.isNotBlank(Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA"))/* StringUtils.equals(sShowFlowId, Setup.getProperty("DEFAULT_TASKS_FLOWID"))*/){
         	try{
         		ProcessData procData = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(a.getFlowid(), a.getPid(), a.getSubpid()), Const.nALL_PROCS);
-        		Map<String,String> taskProcessDetail = ProcessPresentation.getProcessDetail(userInfo, procData);
+        		Map<String,String> taskProcessDetail = a.getDetail();//ProcessPresentation.getProcessDetail(userInfo, procData);
                 Map<String,String> taskProcessDetailVarNames = ProcessPresentation.getProcessDetailVarnames(userInfo, procData);
+                if(taskProcessDetailVarNames==null)
+                	taskProcessDetailVarNames = flowDetailVarnamesCache.put(a.getFlowid(), ProcessPresentation.getProcessDetail(userInfo, procData));
+                
                 Set<String> metanomes = taskProcessDetail.keySet();
                 Collection<String> metanomesVar = taskProcessDetailVarNames.values();
                 //List metanomes = taskProcessDetail.keySet().stream().collect(Collectors.toList());

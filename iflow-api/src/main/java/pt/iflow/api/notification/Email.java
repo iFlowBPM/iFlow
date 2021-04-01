@@ -453,7 +453,8 @@ public class Email implements Cloneable {
         // Security.setProperty( "ssl.SocketFactory.provider", "pt.iknow.notification.DummySSLSocketFactory");
         Properties props = new Properties();
         Authenticator authenticator = null;
-
+        props.put("mail.protocol.ssl.trust",host);
+        props.put("mail.smtp.ssl.trust",host);
         props.put("mail.smtp.host", host);
         if (port > 0) {
           props.put("mail.smtp.port", String.valueOf(port));

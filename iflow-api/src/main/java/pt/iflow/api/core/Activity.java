@@ -32,6 +32,7 @@ public class Activity {
     public void putAll(Map<String, String> map) { detail.putAll(map); }
 
     public String getDetail(String num) { return detail.get(num); }
+    public LinkedHashMap<String, String> getDetail() { return detail; }
 
 	public Activity() {
 		super();
