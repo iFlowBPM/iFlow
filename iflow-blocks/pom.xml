@@ -208,6 +208,22 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+		    <groupId>com.google.code.gson</groupId>
+		    <artifactId>gson</artifactId>		    
+		</dependency>
+		<dependency>
+		    <groupId>org.codehaus.jackson</groupId>
+		    <artifactId>jackson-mapper-asl</artifactId>
+		</dependency>		
+		<dependency>
+		    <groupId>com.sun.jersey</groupId>
+		    <artifactId>jersey-client</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>com.sun.jersey.contribs</groupId>
+		    <artifactId>jersey-multipart</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

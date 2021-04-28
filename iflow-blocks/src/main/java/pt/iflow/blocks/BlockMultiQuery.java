@@ -106,7 +106,7 @@ public class BlockMultiQuery extends BlockSQLSelect {
 					pst = connection.createStatement();
 					if(pst.execute(currentQueryTxt)){
 						rs = pst.getResultSet();
-						if(rs.next())
+					//	if(rs.next())
 							setVarsInProcData(rs,procData, userInfo);						
 					}	
 				} catch(Exception e){
@@ -172,7 +172,7 @@ public class BlockMultiQuery extends BlockSQLSelect {
         Logger.debug(login, this, "after", "All vars cleaned");
         
         int counter = -1;
-        do {
+        while(rs.next()) {
           counter++;
 
           for(ColumnData content : columns) {
@@ -275,7 +275,7 @@ public class BlockMultiQuery extends BlockSQLSelect {
 
             Logger.debug(login, this, "after", "setting " + content.getName() + "[" + counter + "]=" + value);           
           }
-        } while(rs.next());
+        }
 
 	}
 

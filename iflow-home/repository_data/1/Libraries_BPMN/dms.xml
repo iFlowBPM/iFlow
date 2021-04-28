@@ -8,6 +8,82 @@
     <description>FlowDocs</description>
     <i18nName>library.dms.name</i18nName>
     <i18nDescription>library.dms.description</i18nDescription>
+    
+    <XmlBlock>
+		<class>BlockPostMFileConfig</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>endpointURL</name>
+			<description>endpointURL</description>			
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>username</name>
+			<description>username</description>			
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>password</name>
+			<description>password</description>			
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>vault</name>
+			<description>vault</description>			
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>file</name>
+			<description>file</description>			
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>fileConfig</name>
+			<description>fileConfig</description>			
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outId</name>
+			<description>outId</description>			
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outGuid</name>
+			<description>outGuid</description>			
+		</XmlAttribute>		
+		<image>bpmn_task.png</image>
+		<description>BlockPostMFileConfig</description>
+		<i18n>BlockPostMFileConfig</i18n>
+	</XmlBlock>
+	
     <XmlBlock>
         <class>BlockDocumentGet</class>
         <XmlPort>
