@@ -308,7 +308,7 @@
 	
 	#else
 <div id ="view_proc_annotation_dashboard"></div>	
-<div class="content_template3" style="width:90%;margin:10px">
+<div class="content_template3" style="width:100%;margin:0px">
 	<div class="process_t3" style=" border-bottom: 1px Solid #cccccc; padding: 5px 2px 5px 2px; height:40px;float:none;">
 		<form style="display:inline">
 			<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">Ordenar<img width="12" height="12" src="Themes/newflow/images/down-arrow.png" style="margin-left:2px"/></button>
