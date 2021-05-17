@@ -198,7 +198,7 @@ public class BlockPostMFileConfig extends Block {
 				for(int n=1; n<=total; n++){					
 					Integer propertyDef = Integer.valueOf(properties.getProperty("propertyDef_"+n));
 					Integer mfDataType = Integer.valueOf(properties.getProperty("mfDataType_"+n));
-					String varValue = procData.transform(userInfo, this.getAttribute(properties.getProperty("iflowVar_"+n)));
+					String varValue = procData.transform(userInfo, properties.getProperty("iflowVar_"+n));
 					
 					if(mfDataType==MFDataType.LOOKUP)
 						propertyValues[n-1] = new PropertyValue(propertyDef, new TypedValue(MFDataType.LOOKUP, new Lookup(Integer.valueOf(varValue))));

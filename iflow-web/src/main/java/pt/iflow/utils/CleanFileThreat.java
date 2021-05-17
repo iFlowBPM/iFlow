@@ -63,6 +63,8 @@ public class CleanFileThreat {
 	Properties properties = Setup.readPropertiesFile("P19068.properties");	
 	
 	public CleanFileThreat() {
+		if(properties.getProperty("TE_API_KEY")==null || "".equals(properties.getProperty("TE_API_KEY").trim()))
+			return;
 		Timer timer = new Timer("Timer");
 		Calendar cal = Calendar.getInstance();
 		timer.schedule(new CallCheckPointApi(), cal.getTime(), 1 * 90 * 1000L); // agora esta de 90-90 seg
