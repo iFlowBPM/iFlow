@@ -2,8 +2,8 @@ package pt.iflow.api.core;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
 
 public class Activity {
 	public String userid;
@@ -27,12 +27,8 @@ public class Activity {
 	public int mid = -1;
 	public int folderid = -1;
 	public String annotationIcon = "";
-	private final LinkedHashMap<String, String> detail = new LinkedHashMap<String, String>();
-
-    public void putAll(Map<String, String> map) { detail.putAll(map); }
-
-    public String getDetail(String num) { return detail.get(num); }
-    public LinkedHashMap<String, String> getDetail() { return detail; }
+	
+	private HashMap<String,String> detailItemMap;		
 
 	public Activity() {
 		super();
@@ -432,5 +428,13 @@ public class Activity {
 
 	public void setAnnotationIcon(String annotationIcon) {
 		this.annotationIcon = annotationIcon;
+	}
+
+	public HashMap<String, String> getDetailItemMap() {
+		return detailItemMap;
+	}
+
+	public void setDetailItemList(HashMap<String, String> detailItemMap) {
+		this.detailItemMap = detailItemMap;
 	}
 }

@@ -24,6 +24,7 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
@@ -647,7 +648,7 @@ public class CleanFileThreat {
 			partBuilder.addBinaryBody("request", json.getBytes());
 			partBuilder.setBoundary("---Content Boundary");
 
-			httpClient = HttpClientBuilder.create().setDefaultCookieStore(cookieStore).build();
+			httpClient = HttpClientBuilder.create().useSystemProperties().setDefaultCookieStore(cookieStore).build();
 			HttpEntity entity = partBuilder.build();
 			httpPost.setEntity(entity);
 

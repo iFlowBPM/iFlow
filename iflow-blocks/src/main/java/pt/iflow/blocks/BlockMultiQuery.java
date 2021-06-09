@@ -142,7 +142,7 @@ public class BlockMultiQuery extends BlockSQLSelect {
         Boolean bSingle = true;
         
         for(int i = 1; i <= rsmd.getColumnCount(); i++) {
-          if (Logger.isDebugEnabled()) {
+          if (true || Logger.isDebugEnabled()) {
             String metaData = "index:" + i + "|Name:" + rsmd.getColumnName(i) + "|Label:" + rsmd.getColumnLabel(i) + "|Type:"
                               + rsmd.getColumnTypeName(i) + "," + rsmd.getColumnType(i) + "|ColumnClassName:" + rsmd.getColumnClassName(i);
             

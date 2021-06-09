@@ -185,10 +185,10 @@ public class BlockPostMFileConfig extends Block {
 				//iniciar metadata		
 				UploadInfo[] files = new UploadInfo[1];
 				String[] filenameParts = StringUtils.split(doc.getFileName(), ".");
-				files[0] = new UploadInfo();
+				files[0] = uploadInfo;
 				files[0].setTitle(filenameParts.length>0?filenameParts[0]:"");
 				files[0].setExtension(filenameParts.length>1?filenameParts[1]:"");
-				files[0].setTempFilePath("");
+				files[0].setTempFilePath("");				
 				
 				Properties properties = new Properties();
 				properties.load(new ByteArrayInputStream(docConfig.getContent()));

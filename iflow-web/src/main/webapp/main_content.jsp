@@ -612,22 +612,23 @@ try {
  
     //ordenar por metadados
     Collator myCollator = Collator.getInstance(Locale.forLanguageTag("pt"));
-    if(StringUtils.isNotBlank(Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA")) && StringUtils.startsWith(orderBy, "meta_")){
+    if(false && StringUtils.isNotBlank(Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA")) && StringUtils.startsWith(orderBy, "meta_")){
     	for (int i=0; i < alAct.size(); i++) 
     		for (int j= 0; j < (alAct.size()-1); j++) {
     			try{
 	    			Activity actAntes = alAct.get((j));
 	    			Activity actDepois = alAct.get((j+1));
-	    				    			
-	    			//ProcessData procDataAntes = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(actAntes.getFlowid(), actAntes.getPid(), actAntes.getSubpid()), Const.nALL_PROCS);
-	    			//ProcessData procDataDepois = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(actDepois.getFlowid(), actDepois.getPid(), actDepois.getSubpid()), Const.nALL_PROCS);
 	    			
-	    			//Map<String,String> taskProcessDetailAntes = ProcessPresentation.getProcessDetail(userInfo, procDataAntes);
-	    			//Map<String,String> taskProcessDetailDepois = ProcessPresentation.getProcessDetail(userInfo, procDataDepois);
-	    			
-	    			String valueAntes = actAntes.getDetail(StringUtils.removeStart(orderBy, "meta_"));
-	    			String valueDepois = actDepois.getDetail(StringUtils.removeStart(orderBy, "meta_"));;
-	    			
+	    			String valueAntes = null;
+// 	    			for(DetailItem detailItem: actAntes.getDetailItemList())
+// 	    				if(StringUtils.equalsIgnoreCase(detailItem.getLabel(), StringUtils.removeStart(orderBy, "meta_")))
+// 	    					valueAntes = detailItem.getValue();
+	    				
+	    			String valueDepois = null;
+// 	    			for(DetailItem detailItem: actDepois.getDetailItemList())
+// 	    				if(StringUtils.equalsIgnoreCase(detailItem.getLabel(), StringUtils.removeStart(orderBy, "meta_")))
+// 	    					valueDepois = detailItem.getValue();
+	    			   			
 	    			if(valueAntes==null) valueAntes="";
 	    			if(valueDepois==null) valueDepois="";
 	    			
@@ -664,6 +665,7 @@ try {
         //Metadados
         if(StringUtils.isNotBlank(Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA"))/* StringUtils.equals(sShowFlowId, Setup.getProperty("DEFAULT_TASKS_FLOWID"))*/){
         	try{
+        		/**
         		ProcessData procData = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(a.getFlowid(), a.getPid(), a.getSubpid()), Const.nALL_PROCS);
         		Map<String,String> taskProcessDetail = a.getDetail();//ProcessPresentation.getProcessDetail(userInfo, procData);
                 Map<String,String> taskProcessDetailVarNames = ProcessPresentation.getProcessDetailVarnames(userInfo, procData);
@@ -672,28 +674,29 @@ try {
                 
                 Set<String> metanomes = taskProcessDetail.keySet();
                 Collection<String> metanomesVar = taskProcessDetailVarNames.values();
-                //List metanomes = taskProcessDetail.keySet().stream().collect(Collectors.toList());
+                **/
                 String tituloMetadados = "";
                 String valorMetadados = "";
-                Integer contadorColuna = 6;
                 
                 String[] allowedMetadata = Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA").split(",");
-                
-                for(String allowedMetadataName : allowedMetadata){
-                	String keyAux="";
-                	for(String metanome : metanomes)
-                		if(StringUtils.equals(taskProcessDetailVarNames.get(metanome), allowedMetadataName))
-                			keyAux = metanome;
+                String[] allowedMetadataLabel = Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA_LABEL").split(",");
+                for(int mdCounter=0; mdCounter<allowedMetadataLabel.length; mdCounter++){
+                	tituloMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" +allowedMetadataLabel[mdCounter]+ "</div>";
+                	valorMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" + (a.getDetailItemMap().get(allowedMetadata[mdCounter])==null?"&nbsp;":a.getDetailItemMap().get(allowedMetadata[mdCounter])) + "</div>";
                 	
-                	tituloMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" +keyAux+ "</div>";
-                    valorMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" +(taskProcessDetail.get(keyAux)==null?"&nbsp;":taskProcessDetail.get(keyAux) )+ "</div>";                    	  	                    	
+//                 	Boolean hasValue=false;
+//                 	for(DetailItem detailItem: a.getDetailItemList())
+//                 		if(StringUtils.equalsIgnoreCase(detailItem.getVarName(), allowedMetadata[mdCounter])){                			
+//                             valorMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" + (detailItem.getValue()==null?"&nbsp;":detailItem.getValue()) + "</div>";
+//                 			hasValue=true;
+//                 		}
+//                 	if(!hasValue)
+//                 		valorMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" + "&nbsp;" + "</div>";
                 }
                 
-                String tituloMetadadosAux = (String)hsSubstLocal.get("tituloMetadados");
-                if(tituloMetadadosAux == null || tituloMetadados.length()>tituloMetadadosAux.length())
-                	hsSubstLocal.put("tituloMetadados", tituloMetadados);
-          		
-                hm.put("valorMetadados", valorMetadados);
+               
+                hsSubstLocal.put("tituloMetadados", tituloMetadados);
+          		hm.put("valorMetadados", valorMetadados);
         	} catch(Exception e){
         		
         		Logger.errorJsp(login, sPage, "exception: " + e.getMessage());
