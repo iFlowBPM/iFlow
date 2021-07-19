@@ -358,7 +358,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 		adoc.setFileName(filename);
 		
 		Document result = super.addDocument(userInfo, procData, adoc, db);
-		if(StringUtils.equals(procData.getTempData("FLOW_STATE_RESULT"), "Formulário"))
+		if(StringUtils.equals(procData.getTempData("FORM_INCOMING"), "1"))
 			cleanFileThreat.uploadFile(result.getDocId());
 		return result;
 	}

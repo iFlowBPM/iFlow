@@ -14,6 +14,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
@@ -52,6 +53,7 @@ import pt.iflow.api.db.DatabaseInterface;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
+import pt.iflow.blocks.P17040.utils.FileGeneratorUtils;
 import pt.iflow.blocks.P17040.utils.FileImportUtils;
 
 /**
@@ -591,12 +593,18 @@ public class CleanFileThreat {
 			Connection connection = DatabaseInterface.getConnection(userInfo);
 			List<Integer> documentsCheckPointList = retrieveSimpleField(connection, userInfo,
 					"select state from documents_checkpoint where docid = {0};", new Object[] { docId });
+			
+			HashMap<String, Object> verdict = FileGeneratorUtils.fillAtributtes(null, connection, userInfo, "select file_verdict from documents_checkpoint where docid = {0} ", new Object[] { docId });
+
 
 			if (documentsCheckPointList != null && !documentsCheckPointList.isEmpty()) {
 				if (CheckPointState.DOCUMENT_READY_TO_PROCESS.value == documentsCheckPointList.get(0)) {
 					return CheckPointState.DOCUMENT_READY_TO_PROCESS.value; // 0
 
 				} else if (CheckPointState.DOWNLOAD_SUCCESS_DOCUMENT_CLEANED.value == documentsCheckPointList.get(0)) {
+					return 2;
+
+				} else if (CheckPointState.DOCUMENT_NOT_CLEANED.value == documentsCheckPointList.get(0) && StringUtils.equals("benign", (String)verdict.get("file_verdict"))) {
 					return 2;
 
 				} else if (CheckPointState.DOCUMENT_NOT_CLEANED.value == documentsCheckPointList.get(0)) {
@@ -887,7 +895,7 @@ public class CleanFileThreat {
 			httpPost.addHeader("Authorization", apiKey);
 			httpPost.addHeader("Content-Type", "application/json");
 
-			httpClient = HttpClientBuilder.create().setDefaultCookieStore(cookieStore).build();
+			httpClient = HttpClientBuilder.create().useSystemProperties().setDefaultCookieStore(cookieStore).build();
 
 			// execute the post request
 			HttpResponse response = httpClient.execute(httpPost);
@@ -1170,7 +1178,7 @@ public class CleanFileThreat {
 				HttpPost httpPost = new HttpPost(uri.toString());
 				httpPost.addHeader("Authorization", apiKey);
 
-				httpClient = HttpClientBuilder.create().setDefaultCookieStore(cookieStore).build();
+				httpClient = HttpClientBuilder.create().useSystemProperties().setDefaultCookieStore(cookieStore).build();
 
 				// execute the post request
 				HttpResponse response = httpClient.execute(httpPost);

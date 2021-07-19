@@ -20,6 +20,7 @@
 <%@page import="pt.iflow.api.filters.FlowFilter"%>
 <%@page import="java.util.stream.Collectors"%>
 <%@page import="java.text.Collator"%>
+<%@page import="java.text.SimpleDateFormat"%>
 <script language="JavaScript">
 function assignActivity(folderid, sactivity) {
     tabber_right(1, '<%=response.encodeURL("main_content.jsp")%>?setfolder='+folderid+'&activities='+sactivity);
@@ -646,6 +647,9 @@ try {
     // newest
     int j=0;
     Map<Integer,Map<String,String>> flowDetailVarnamesCache = new HashMap<Integer, Map<String,String>>();
+    SimpleDateFormat sdfReader = new SimpleDateFormat("ddMMyyyy");
+    SimpleDateFormat sdfWriter = new SimpleDateFormat("dd/MM/yyyy");
+    
     for (int i=0; i < alAct.size(); i++) {
       a = alAct.get((i));
       
@@ -664,17 +668,7 @@ try {
         Map<String,String> hm = new HashMap<String,String>();
         //Metadados
         if(StringUtils.isNotBlank(Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA"))/* StringUtils.equals(sShowFlowId, Setup.getProperty("DEFAULT_TASKS_FLOWID"))*/){
-        	try{
-        		/**
-        		ProcessData procData = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(a.getFlowid(), a.getPid(), a.getSubpid()), Const.nALL_PROCS);
-        		Map<String,String> taskProcessDetail = a.getDetail();//ProcessPresentation.getProcessDetail(userInfo, procData);
-                Map<String,String> taskProcessDetailVarNames = ProcessPresentation.getProcessDetailVarnames(userInfo, procData);
-                if(taskProcessDetailVarNames==null)
-                	taskProcessDetailVarNames = flowDetailVarnamesCache.put(a.getFlowid(), ProcessPresentation.getProcessDetail(userInfo, procData));
-                
-                Set<String> metanomes = taskProcessDetail.keySet();
-                Collection<String> metanomesVar = taskProcessDetailVarNames.values();
-                **/
+        	try{        		
                 String tituloMetadados = "";
                 String valorMetadados = "";
                 
@@ -682,16 +676,17 @@ try {
                 String[] allowedMetadataLabel = Setup.getProperty("DEFAULT_TASKS_ALLOWED_METADATA_LABEL").split(",");
                 for(int mdCounter=0; mdCounter<allowedMetadataLabel.length; mdCounter++){
                 	tituloMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" +allowedMetadataLabel[mdCounter]+ "</div>";
-                	valorMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" + (a.getDetailItemMap().get(allowedMetadata[mdCounter])==null?"&nbsp;":a.getDetailItemMap().get(allowedMetadata[mdCounter])) + "</div>";
+                	String valorMetadadosAux = a.getDetailItemMap().get(allowedMetadata[mdCounter]);
+                	if(StringUtils.equals(allowedMetadata[mdCounter], "numero1") || 
+                			StringUtils.equals(allowedMetadata[mdCounter], "numProcesso") || 
+                			StringUtils.equals(allowedMetadata[mdCounter], "numeroImoveis"))
+                		valorMetadadosAux = StringUtils.stripStart(StringUtils.removeStart(StringUtils.removeEnd(valorMetadadosAux, "00000"), "1"),"0") ;
+                	else if(StringUtils.equals(allowedMetadata[mdCounter], "data1") ||
+                			StringUtils.equals(allowedMetadata[mdCounter], "dataPedido"))
+                		valorMetadadosAux = sdfWriter.format(sdfReader.parse(StringUtils.substring(valorMetadadosAux, 0, 8))) ;
                 	
-//                 	Boolean hasValue=false;
-//                 	for(DetailItem detailItem: a.getDetailItemList())
-//                 		if(StringUtils.equalsIgnoreCase(detailItem.getVarName(), allowedMetadata[mdCounter])){                			
-//                             valorMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" + (detailItem.getValue()==null?"&nbsp;":detailItem.getValue()) + "</div>";
-//                 			hasValue=true;
-//                 		}
-//                 	if(!hasValue)
-//                 		valorMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" + "&nbsp;" + "</div>";
+                	valorMetadados+="<div class=\"pr08_small_header\" style=\"text-align: left; font-weight:bold\">" + (valorMetadadosAux==null?"&nbsp;":valorMetadadosAux) + "</div>";
+                	
                 }
                 
                

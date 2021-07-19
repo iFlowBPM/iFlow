@@ -2497,6 +2497,7 @@ public class BlockFormulario extends Block implements FormOperations {
 										addError = false;
 									}// [FORM FIELD FILE VALIDATION] END 
 									else {
+										pdProcData.setTempData("FORM_INCOMING", "1");
 										doc = docBean.addDocument(userInfo, pdProcData, doc);
 
 										Logger.info(sLogin, this, "processForm", retObj.getSignature() + "file ("
