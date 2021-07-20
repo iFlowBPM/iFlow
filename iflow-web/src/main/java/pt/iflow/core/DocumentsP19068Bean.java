@@ -53,7 +53,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
-import com.uniksystem.p19068.AddrReqType;
+/*import com.uniksystem.p19068.AddrReqType;
 import com.uniksystem.p19068.ConteudoWSTBFFRequest50;
 import com.uniksystem.p19068.ConteudoWSTBFFRequest50.QUERY;
 import com.uniksystem.p19068.ConteudoWSTBFFResponse50;
@@ -65,7 +65,7 @@ import com.uniksystem.p19068.HdrReqType;
 import com.uniksystem.p19068.MsgTypeValue;
 import com.uniksystem.p19068.OrigemType;
 import com.uniksystem.p19068.RequestType;
-import com.uniksystem.p19068.WSTBFFServiceagent;
+import com.uniksystem.p19068.WSTBFFServiceagent;*/
 
 import pt.iflow.api.core.BeanFactory;
 import pt.iflow.api.core.ProcessCatalogueImpl;
@@ -290,7 +290,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 	}	
 	
 	private InputStream getGedocContent(HashMap<String, Object> gedocDocUrl) throws MalformedURLException{
-		Properties properties = Setup.readPropertiesFile("P19068.properties");				
+		/*Properties properties = Setup.readPropertiesFile("P19068.properties");				
 		Execute parameters = new Execute();
 		RequestType requestType = new RequestType();
 		//hdr
@@ -348,7 +348,7 @@ public class DocumentsP19068Bean extends DocumentsBean {
 		
 		ExecuteResponse response = service.getHTTP().execute(parameters);
 		ConteudoWSTBFFResponse50 conteudoResponse = (ConteudoWSTBFFResponse50) response.getResponse().getConteudo();
-		String url =conteudoResponse.getURL().getValue();			
+		String url =conteudoResponse.getURL().getValue();		*/	
 		
 		return null;
 	}
