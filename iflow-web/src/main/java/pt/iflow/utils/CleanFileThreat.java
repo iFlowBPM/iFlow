@@ -24,6 +24,7 @@ import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
@@ -63,6 +64,8 @@ public class CleanFileThreat {
 	Properties properties = Setup.readPropertiesFile("P19068.properties");	
 	
 	public CleanFileThreat() {
+		if(properties.getProperty("TE_API_KEY")==null || "".equals(properties.getProperty("TE_API_KEY").trim()))
+			return;
 		Timer timer = new Timer("Timer");
 		Calendar cal = Calendar.getInstance();
 		timer.schedule(new CallCheckPointApi(), cal.getTime(), 1 * 90 * 1000L); // agora esta de 90-90 seg
@@ -645,7 +648,7 @@ public class CleanFileThreat {
 			partBuilder.addBinaryBody("request", json.getBytes());
 			partBuilder.setBoundary("---Content Boundary");
 
-			httpClient = HttpClientBuilder.create().setDefaultCookieStore(cookieStore).build();
+			httpClient = HttpClientBuilder.create().useSystemProperties().setDefaultCookieStore(cookieStore).build();
 			HttpEntity entity = partBuilder.build();
 			httpPost.setEntity(entity);
 

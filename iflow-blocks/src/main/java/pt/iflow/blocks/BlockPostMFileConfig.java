@@ -185,10 +185,10 @@ public class BlockPostMFileConfig extends Block {
 				//iniciar metadata		
 				UploadInfo[] files = new UploadInfo[1];
 				String[] filenameParts = StringUtils.split(doc.getFileName(), ".");
-				files[0] = new UploadInfo();
+				files[0] = uploadInfo;
 				files[0].setTitle(filenameParts.length>0?filenameParts[0]:"");
 				files[0].setExtension(filenameParts.length>1?filenameParts[1]:"");
-				files[0].setTempFilePath("");
+				files[0].setTempFilePath("");				
 				
 				Properties properties = new Properties();
 				properties.load(new ByteArrayInputStream(docConfig.getContent()));
@@ -198,7 +198,7 @@ public class BlockPostMFileConfig extends Block {
 				for(int n=1; n<=total; n++){					
 					Integer propertyDef = Integer.valueOf(properties.getProperty("propertyDef_"+n));
 					Integer mfDataType = Integer.valueOf(properties.getProperty("mfDataType_"+n));
-					String varValue = procData.transform(userInfo, this.getAttribute(properties.getProperty("iflowVar_"+n)));
+					String varValue = procData.transform(userInfo, properties.getProperty("iflowVar_"+n));
 					
 					if(mfDataType==MFDataType.LOOKUP)
 						propertyValues[n-1] = new PropertyValue(propertyDef, new TypedValue(MFDataType.LOOKUP, new Lookup(Integer.valueOf(varValue))));

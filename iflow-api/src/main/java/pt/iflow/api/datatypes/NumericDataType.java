@@ -139,6 +139,10 @@ public abstract class NumericDataType implements DataTypeInterface {
     if(null == locale) locale = Locale.getDefault();
     this.locale = locale;
     //this.fmt = new DecimalFormat("#,##0.000", new DecimalFormatSymbols(this.locale));
+//    DecimalFormat df = new DecimalFormat(Const.sDEF_FLOAT_FORMAT);
+//    DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
+//    dfs.setDecimalSeparator('.');
+//    this.fmt = new DecimalFormat(Const.sDEF_FLOAT_FORMAT, dfs);
     this.fmt = new DecimalFormat(Const.sDEF_FLOAT_FORMAT);
   }
 

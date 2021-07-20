@@ -14,7 +14,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.text.Collator;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -30,7 +29,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -44,12 +42,14 @@ import javax.sql.DataSource;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
+import bsh.org.objectweb.asm.Type;
 import pt.iflow.api.audit.AuditData;
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
 import pt.iflow.api.core.Activity;
 import pt.iflow.api.core.AuthProfile;
 import pt.iflow.api.core.BeanFactory;
+import pt.iflow.api.core.DetailItem;
 import pt.iflow.api.core.ProcessCatalogue;
 import pt.iflow.api.core.ProcessManager;
 import pt.iflow.api.core.UserProcesses;
@@ -86,7 +86,6 @@ import pt.iflow.api.userdata.views.UserViewInterface;
 import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.DataSetVariables;
 import pt.iflow.api.utils.Logger;
-import pt.iflow.api.utils.Setup;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
 import pt.iflow.api.utils.series.FirstOverlimitException;
@@ -95,7 +94,6 @@ import pt.iflow.api.utils.series.SeriesProcessor;
 import pt.iflow.blocks.BlockOpenProc;
 import pt.iflow.delegations.DelegationManager;
 import pt.iflow.update.UpdateManager;
-import bsh.org.objectweb.asm.Type;
 
 /**
  * 
@@ -107,6 +105,8 @@ import bsh.org.objectweb.asm.Type;
 public class ProcessManagerBean implements ProcessManager {
 
   private static ProcessManagerBean instance = null;
+  //HashMap<flowid, HashMap<varname, label>>
+  private static HashMap<Integer, HashMap<String, String>> detailLabelsCache = new HashMap<Integer, HashMap<String,String>>();
 
   private ProcessManagerBean() {
   }
@@ -6132,9 +6132,10 @@ public class ProcessManagerBean implements ProcessManager {
 	    	  //sQueryDelegated.append(" order by created desc");
 	      }
 	      
+	      //TODO P19068
+	      //union = "select * from (" + sQuery.toString()+" UNION "+sQueryDelegated.toString();
+	      union = "select * from (" + sQuery.toString()+")B order by created desc";
 	      
-	      union = "select * from (" + sQuery.toString()+" UNION "+sQueryDelegated.toString();
-
 	      st = db.prepareStatement(union);
 	      ///////////////////
 	      int indexAux=1;
@@ -6145,7 +6146,8 @@ public class ProcessManagerBean implements ProcessManager {
 	    	  st.setInt(indexAux++, Integer.valueOf(filter.getLabelid()));
 	      if(!maxDeadline.equals(""))
 	    	  st.setString(indexAux++, maxDeadline);
-	      st.setString(indexAux++, userid);
+	    //TODO P19068
+	      //st.setString(indexAux++, userid);
 	      nField = indexAux;
 	      ///////////////
 	      if (anFlowId > -1) {
@@ -6188,10 +6190,10 @@ public class ProcessManagerBean implements ProcessManager {
 	        rs = st.executeQuery();
 	        while (rs.next()) {
 	          int flowid = rs.getInt("flowid");
-	          FlowSetting fs = BeanFactory.getFlowSettingsBean().getFlowSetting(flowid, Const.sAPPLICATION_SETTING);
-	          if(fs!=null && !StringUtils.isBlank(fs.getValue()) && !StringUtils.equals(userInfo.getApplication(), fs.getValue())){
-	        	  continue;
-	          }
+//	          FlowSetting fs = BeanFactory.getFlowSettingsBean().getFlowSetting(flowid, Const.sAPPLICATION_SETTING);
+//	          if(fs!=null && !StringUtils.isBlank(fs.getValue()) && !StringUtils.equals(userInfo.getApplication(), fs.getValue())){
+//	        	  continue;
+//	          }
 	          if(filter.ignoreFlow(flowid)) {
 	            continue;
 	          }
@@ -6236,28 +6238,77 @@ public class ProcessManagerBean implements ProcessManager {
                   }
                   wle.setAnnotationIcon(icon);
 
+                  //Detail
+                  HashMap<String,String> detailItemMap = new HashMap<>();
+                  for(int j=0; j<19; j++)		    		  
+		    		  detailItemMap.put(rs.getString("name_idx" + j), rs.getString("idx"+j));	    		  
+                  wle.setDetailItemList(detailItemMap);
+                  
+                  
 			        l.add(wle);
 	        }
 	      }
 	      
-	      LinkedList<Activity> linkedListActivity = new LinkedList<Activity>();
-	      	for (int i=0; i < l.size(); i++) {
-      			try{
-  	    			Activity act = l.get((i));
-  	    			
-  	    			ProcessData procDataAct = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(act.getFlowid(), act.getPid(), act.getSubpid()), Const.nALL_PROCS);
-  	    			
-  	    			Map<String,String> taskProcessDetail = ProcessPresentation.getProcessDetail(userInfo, procDataAct);
-  	    			
-  	    			act.putAll(taskProcessDetail);
-  	    			
-  	    			linkedListActivity.add(act);
-  	    			
-      			} catch(Exception e){}
-	      		
-	      	}
+	      //Detail 
+//	      st.close();
+//	      st = db.prepareStatement("SELECT name_idx0, idx0, " +
+//				"name_idx1, idx1,  " +
+//				"name_idx2, idx2,  " +
+//				"name_idx3, idx3,  " +
+//				"name_idx4, idx4,  " +
+//				"name_idx5, idx5,  " +
+//				"name_idx6, idx6,  " +
+//				"name_idx7, idx7,  " +
+//				"name_idx8, idx8,  " +
+//				"name_idx9, idx9,  " +
+//				"name_idx10, idx10,  " +
+//				"name_idx11, idx11,  " +
+//				"name_idx12, idx12,  " +
+//				"name_idx13, idx13,  " +
+//				"name_idx14, idx14,  " +
+//				"name_idx15, idx15,  " +
+//				"name_idx16, idx16,  " +
+//				"name_idx17, idx17,  " +
+//				"name_idx18, idx18,  " +
+//	    		"name_idx19, idx19 FROM flow, process WHERE process.pid=? AND flow.flowid=process.flowid ");
+//	      
+//	     for (int i=0; i < l.size(); i++) {
+//	    	  Activity act = l.get((i));
+//	    	  
+//	    	  Map<String, String> detailVarnameLabel = detailLabelsCache.get(act.getFlowid());
+//	    	  if(detailVarnameLabel==null){
+//	    		  detailVarnameLabel = new HashMap<String,String>();
+//	    		  try{
+//	    			  ProcessData procDataAct = BeanFactory.getProcessManagerBean().getProcessData(userInfo, new ProcessHeader(act.getFlowid(), act.getPid(), act.getSubpid()), Const.nALL_PROCS);
+//		    		  Map<String, String> detailVarnamesAux = ProcessPresentation.getProcessDetailVarnames(userInfo, procDataAct);
+//	    		  
+//		    		  for(Map.Entry<String, String> entry : detailVarnamesAux.entrySet()){
+//		    			  detailVarnameLabel.put(entry.getValue(), entry.getKey());
+//		    			}
+//		    		  detailLabelsCache.put(act.getFlowid(), (HashMap<String, String>) detailVarnameLabel);
+//	    		  }catch (Exception e){
+//	    			  
+//	    		  }
+//		    		  
+//	    	  }
+//	    	  
+//	    	  st.setInt(1, act.getPid());
+//	    	  rs = st.executeQuery();
+//	    	  ArrayList<DetailItem> detailItemList = new ArrayList<>(); 
+//	    	  while(rs.next()){
+//	    		  for(int j=0; j<19; j++){
+//		    		  DetailItem detailItem = new DetailItem();
+//		    		  detailItem.setIndex(j);
+//		    		  detailItem.setVarName(rs.getString(2*j+1));
+//		    		  detailItem.setValue(rs.getString(2*j+2));
+//		    		  detailItem.setLabel(detailVarnameLabel.get(detailItem.getVarName()));
+//		    		  detailItemList.add(detailItem);
+//	    		  }
+//	    	  }
+//	    	  act.setDetailItemList(detailItemList);	    	  	    	  	    		  	    	 
+//	      }
 	      
-	      result = linkedListActivity.listIterator();
+	      result = l.listIterator();
 	    } catch (SQLException sqle) {
 	      Logger.error(userid, this, "getUserActivitiesOrderFilters", "sql exception: " + sqle.getMessage()+" QUERY:"+union, sqle);
 	      result = null;

@@ -228,8 +228,8 @@ public class DocumentsP19068Bean extends DocumentsBean {
 			              dataStream = new FileInputStream(filePath);
 			              dataStream2 = new FileInputStream(filePath);
 					}
-					//stored in gedoc
-					else if(StringUtils.isNotBlank((String) gedocDocUrl.get("docurl"))){
+					//TODO stored in gedoc
+					else if(false && StringUtils.isNotBlank((String) gedocDocUrl.get("docurl"))){
 						Logger.debug(login,this,"getDocument", "retrieving file in gedoc, docid: " + retObj.getDocId());
 						dataStream = getGedocContent(gedocDocUrl);						
 					}
