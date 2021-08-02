@@ -12,8 +12,11 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.uniksystem.datacapture.model.Document;
-import com.uniksystem.datacapture.model.Metadata;
-import com.uniksystem.datacapture.model.Metadata.Tax;
+import com.uniksystem.datacapture.model.metadata.FinancialDocument;
+import com.uniksystem.datacapture.model.metadata.Invoice;
+import com.uniksystem.datacapture.model.metadata.FinancialDocument.LineItems;
+import com.uniksystem.datacapture.model.metadata.FinancialDocument.TaxBreakdown;
+import com.uniksystem.datacapture.model.metadata.Invoice.Tax;
 
 import pt.iflow.api.blocks.Block;
 import pt.iflow.api.blocks.Port;
@@ -30,7 +33,7 @@ public class BlockDataCaptureGetFile extends Block {
 	public Port portIn, portSuccess, portEmpty, portError;
 
 	private static final String endpointURL = "endpointURL";
-	private static final String securityToken = "securityToken";
+	private static final String accessToken = "accessToken";
 	private static final String inputFileId = "inputFileId";
 	private static final String outputFile = "outputFile";
 	private static final String outputClass = "outputClass";
@@ -106,6 +109,7 @@ public class BlockDataCaptureGetFile extends Block {
 		try {
 			sEndpointURLVar = procData.transform(userInfo, this.getAttribute(endpointURL));
 			sSecurityTokenVar = userInfo.getSAuthToken();
+			//sSecurityTokenVar = procData.transform(userInfo, this.getAttribute(accessToken));
 			inputFileIdVar = procData.transform(userInfo, this.getAttribute(inputFileId));
 			outputFileVar = procData.getList(this.getAttribute(outputFile));
 			outputFileClass = this.getAttribute(outputClass);
@@ -174,83 +178,198 @@ public class BlockDataCaptureGetFile extends Block {
 					 Logger.info(login,"BlockDataCaptureGetFile", "after",
 							 "response returned after processing: " + output);
 					 Document document = new Gson().fromJson(output, Document.class);
-					 //				 Document document = new Gson().fromJson(FileUtils.readFileToString(new File("C:\\Users\\pussman\\Desktop\\dataCapture.txt")), Document.class);;
-					 Metadata invoice = document.getMetadata();
 
-					 DocumentData doc = new DocumentData(document.getFilename(), Base64.getDecoder().decode(document.getData()));
-					 doc = (DocumentData) docBean.addDocument(userInfo, procData, doc);
-					 outputFileVar.parseAndAddNewItem(String.valueOf(doc.getDocId()));
+					 if (output.contains("\"metadata\" :")) {
+						String[] parts = output.split("\"metadata\" :", 2);
+				        String metadataStart = parts[1];
+				        int index = metadataStart.lastIndexOf("},");
+				        String metadata = metadataStart.substring(0, index);
+				        metadata = metadata + "}";
+				        
+				        String[] partsDocType = metadata.split("\"document:class\" : \"", 2);
+				        String docTypeStart = partsDocType[1];
+				        String[] partsDocType2 = docTypeStart.split("\",", 2);
+				        String docType = partsDocType2[0];
+				        
+				        if (docType.equals("invoice")) {
+				        	Invoice invoice = new Gson().fromJson(metadata, Invoice.class);	
 
-					 procData.set(outputFileClass, invoice.getDocumentClass());
-					 outputMetaDataNameListVar.clear();
-					 outputMetaDataValueListVar.clear();
-				
-				 //names
-				 outputMetaDataNameListVar.parseAndAddNewItem("referenceNumber");
-				 outputMetaDataNameListVar.parseAndAddNewItem("clientName");
-				 outputMetaDataNameListVar.parseAndAddNewItem("documentClass");
-				 outputMetaDataNameListVar.parseAndAddNewItem("documentSubclass");
-				 outputMetaDataNameListVar.parseAndAddNewItem("totalAmount");
-				 if(invoice.getTaxLines()!=null)
-					 for(Tax tax : invoice.getTaxLines()){
-						 outputMetaDataNameListVar.parseAndAddNewItem("taxRate");
-						 outputMetaDataNameListVar.parseAndAddNewItem("taxAmount");
-						 outputMetaDataNameListVar.parseAndAddNewItem("taxBaseAmount");					 
+							 DocumentData doc = new DocumentData(document.getFilename(), Base64.getDecoder().decode(document.getData()));
+							 doc = (DocumentData) docBean.addDocument(userInfo, procData, doc);
+							 outputFileVar.parseAndAddNewItem(String.valueOf(doc.getDocId()));
+		
+							 procData.set(outputFileClass, invoice.getDocumentClass());
+							 outputMetaDataNameListVar.clear();
+							 outputMetaDataValueListVar.clear();
+						
+							 //names
+							 outputMetaDataNameListVar.parseAndAddNewItem("referenceNumber");
+							 outputMetaDataNameListVar.parseAndAddNewItem("clientName");
+							 outputMetaDataNameListVar.parseAndAddNewItem("documentClass");
+							 outputMetaDataNameListVar.parseAndAddNewItem("documentSubclass");
+							 outputMetaDataNameListVar.parseAndAddNewItem("totalAmount");
+							 if(invoice.getTaxLines()!=null)
+								 for(Tax tax : invoice.getTaxLines()){
+									 outputMetaDataNameListVar.parseAndAddNewItem("taxRate");
+									 outputMetaDataNameListVar.parseAndAddNewItem("taxAmount");
+									 outputMetaDataNameListVar.parseAndAddNewItem("taxBaseAmount");					 
+								 }
+							 outputMetaDataNameListVar.parseAndAddNewItem("receiveDate");
+							 outputMetaDataNameListVar.parseAndAddNewItem("clientePhone");
+							 outputMetaDataNameListVar.parseAndAddNewItem("vendorName");
+							 outputMetaDataNameListVar.parseAndAddNewItem("currency");
+							 outputMetaDataNameListVar.parseAndAddNewItem("invoiceNumber");
+							 outputMetaDataNameListVar.parseAndAddNewItem("totalLiquidoIsento");
+							 outputMetaDataNameListVar.parseAndAddNewItem("vendorTaxId");
+							 outputMetaDataNameListVar.parseAndAddNewItem("vendorPhone");
+							 outputMetaDataNameListVar.parseAndAddNewItem("shipmentDate");
+							 outputMetaDataNameListVar.parseAndAddNewItem("clientAddress");
+							 outputMetaDataNameListVar.parseAndAddNewItem("vatAmount");
+							 outputMetaDataNameListVar.parseAndAddNewItem("clientTaxId");
+							 outputMetaDataNameListVar.parseAndAddNewItem("dueDate");
+							 outputMetaDataNameListVar.parseAndAddNewItem("invoiceTerms");
+							 outputMetaDataNameListVar.parseAndAddNewItem("vendorAddress");
+							 outputMetaDataNameListVar.parseAndAddNewItem("emissionDate");
+							 outputMetaDataNameListVar.parseAndAddNewItem("PONumber");
+							 outputMetaDataNameListVar.parseAndAddNewItem("dataDeVencimento");
+							 outputMetaDataNameListVar.parseAndAddNewItem("baseAmount");
+											
+							 //values
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getReferenceNumber());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getClientName());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getDocumentClass());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getDocumentSubclass());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getTotalAmount());
+							 if(invoice.getTaxLines()!=null)
+								 for(Tax tax : invoice.getTaxLines()){
+									 outputMetaDataValueListVar.parseAndAddNewItem("" + tax.getTaxRate());
+									 outputMetaDataValueListVar.parseAndAddNewItem("" + tax.getTaxAmount());
+									 outputMetaDataValueListVar.parseAndAddNewItem("" + tax.getTaxBaseAmount());					 
+								 }				 
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getReceiveDate());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getClientePhone());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getVendorName());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getCurrency());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getInvoiceNumber());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getTotalLiquidoIsento());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getVendorTaxId());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getVendorPhone());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getShipmentDate());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getClientAddress());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getVatAmount());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getClientTaxId());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" +invoice.getDueDate());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getInvoiceTerms());
+							 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getVendorAddress());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getEmissionDate());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getPONumber());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getDataDeVencimento());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getBaseAmount());
+				        
+				        }else if(docType.equals("financial-document")) {
+				        	FinancialDocument financialDoc = new Gson().fromJson(metadata, FinancialDocument.class);					 
+							 
+							 DocumentData doc = new DocumentData(document.getFilename(), Base64.getDecoder().decode(document.getData()));
+							 doc = (DocumentData) docBean.addDocument(userInfo, procData, doc);
+							 outputFileVar.parseAndAddNewItem(String.valueOf(doc.getDocId()));
+		
+							 procData.set(outputFileClass, financialDoc.getDocumentClass());
+							 outputMetaDataNameListVar.clear();
+							 outputMetaDataValueListVar.clear();
+						
+							 //names
+							 outputMetaDataNameListVar.parseAndAddNewItem("documentClass");
+							 outputMetaDataNameListVar.parseAndAddNewItem("dueDate");
+							 outputMetaDataNameListVar.parseAndAddNewItem("issueDate");
+							 outputMetaDataNameListVar.parseAndAddNewItem("documentIdentifier");
+							 outputMetaDataNameListVar.parseAndAddNewItem("orderNumber");
+							 outputMetaDataNameListVar.parseAndAddNewItem("recipientTaxNumber");
+							 outputMetaDataNameListVar.parseAndAddNewItem("recipientName");
+							 outputMetaDataNameListVar.parseAndAddNewItem("supplierTaxNumber");
+							 outputMetaDataNameListVar.parseAndAddNewItem("supplierName");
+							 outputMetaDataNameListVar.parseAndAddNewItem("documentType");
+							 outputMetaDataNameListVar.parseAndAddNewItem("currency");
+							 if(financialDoc.getLineItems()!=null) {
+								 for(LineItems line : financialDoc.getLineItems()){
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemCode");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemDescription");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemQuantity");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemUnit");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemRate");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemTax");	
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemBaseAmount");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemAmount");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemBaseTotalAmountBase");	
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemAmountTotal");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemOrderNumber");
+								 }
+							 }
+							 if(financialDoc.getTaxBreakdown()!=null) {
+								 for(TaxBreakdown tax : financialDoc.getTaxBreakdown()){
+									 outputMetaDataNameListVar.parseAndAddNewItem("taxBase");
+									 outputMetaDataNameListVar.parseAndAddNewItem("taxRate");
+									 outputMetaDataNameListVar.parseAndAddNewItem("taxAmount");
+									 outputMetaDataNameListVar.parseAndAddNewItem("taxTotal");
+									 outputMetaDataNameListVar.parseAndAddNewItem("taxCode");
+								 }
+							 }
+							 outputMetaDataNameListVar.parseAndAddNewItem("amountDue");
+							 outputMetaDataNameListVar.parseAndAddNewItem("amountRounding");
+							 outputMetaDataNameListVar.parseAndAddNewItem("amountTotal");
+							 outputMetaDataNameListVar.parseAndAddNewItem("amountPaid");
+							 outputMetaDataNameListVar.parseAndAddNewItem("amountBaseTotal");
+							 outputMetaDataNameListVar.parseAndAddNewItem("amountTaxTotal");
+											
+							 //values
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getDocumentClass());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + financialDoc.getDueDate());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + financialDoc.getIssueDate());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getDocumentIdentifier());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getOrderNumber());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getRecipientTaxNumber());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getRecipientName());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getSupplierTaxNumber());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getSupplierName());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getDocumentType());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getCurrency());
+							 if(financialDoc.getLineItems()!=null)
+								 for(LineItems line : financialDoc.getLineItems()){
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemCode());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemDescription());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemQuantity());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemUnit());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemRate());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemTax());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemBaseAmount());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemAmount());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemBaseTotalAmountBase());	
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemAmountTotal());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemOrderNumber());
+								 }
+							 if(financialDoc.getTaxBreakdown()!=null)
+								 for(TaxBreakdown tax : financialDoc.getTaxBreakdown()){
+									 outputMetaDataValueListVar.parseAndAddNewItem(tax.getTaxBase());
+									 outputMetaDataValueListVar.parseAndAddNewItem(tax.getTaxRate());
+									 outputMetaDataValueListVar.parseAndAddNewItem(tax.getTaxAmount());
+									 outputMetaDataValueListVar.parseAndAddNewItem(tax.getTaxTotal());
+									 outputMetaDataValueListVar.parseAndAddNewItem(tax.getTaxCode());
+								 }	
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getAmountDue());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getAmountRounding());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getAmountTotal());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getAmountPaid());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getAmountBaseTotal());
+							 outputMetaDataValueListVar.parseAndAddNewItem(financialDoc.getAmountTaxTotal());
+				        }else {
+				        	Logger.error(login, this, "after", procData.getSignature() + "Document Type not supported by block");
+							outPort = portError;
+				        }
+					 outPort = portSuccess;
+					 }else {
+						 Logger.error(login, this, "after", procData.getSignature() + "Unable to retrieve metadata");
+							outPort = portError;
 					 }
-				 outputMetaDataNameListVar.parseAndAddNewItem("receiveDate");
-				 outputMetaDataNameListVar.parseAndAddNewItem("clientePhone");
-				 outputMetaDataNameListVar.parseAndAddNewItem("vendorName");
-				 outputMetaDataNameListVar.parseAndAddNewItem("currency");
-				 outputMetaDataNameListVar.parseAndAddNewItem("invoiceNumber");
-				 outputMetaDataNameListVar.parseAndAddNewItem("totalLiquidoIsento");
-				 outputMetaDataNameListVar.parseAndAddNewItem("vendorTaxId");
-				 outputMetaDataNameListVar.parseAndAddNewItem("vendorPhone");
-				 outputMetaDataNameListVar.parseAndAddNewItem("shipmentDate");
-				 outputMetaDataNameListVar.parseAndAddNewItem("clientAddress");
-				 outputMetaDataNameListVar.parseAndAddNewItem("vatAmount");
-				 outputMetaDataNameListVar.parseAndAddNewItem("clientTaxId");
-				 outputMetaDataNameListVar.parseAndAddNewItem("dueDate");
-				 outputMetaDataNameListVar.parseAndAddNewItem("invoiceTerms");
-				 outputMetaDataNameListVar.parseAndAddNewItem("vendorAddress");
-				 outputMetaDataNameListVar.parseAndAddNewItem("emissionDate");
-				 outputMetaDataNameListVar.parseAndAddNewItem("PONumber");
-				 outputMetaDataNameListVar.parseAndAddNewItem("dataDeVencimento");
-				 outputMetaDataNameListVar.parseAndAddNewItem("baseAmount");
-								
-				 //values
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getReferenceNumber());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getClientName());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getDocumentClass());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getDocumentSubclass());
-				 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getTotalAmount());
-				 if(invoice.getTaxLines()!=null)
-					 for(Tax tax : invoice.getTaxLines()){
-						 outputMetaDataValueListVar.parseAndAddNewItem("" + tax.getTaxRate());
-						 outputMetaDataValueListVar.parseAndAddNewItem("" + tax.getTaxAmount());
-						 outputMetaDataValueListVar.parseAndAddNewItem("" + tax.getTaxBaseAmount());					 
-					 }				 
-				 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getReceiveDate());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getClientePhone());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getVendorName());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getCurrency());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getInvoiceNumber());
-				 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getTotalLiquidoIsento());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getVendorTaxId());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getVendorPhone());
-				 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getShipmentDate());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getClientAddress());
-				 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getVatAmount());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getClientTaxId());
-				 outputMetaDataValueListVar.parseAndAddNewItem("" +invoice.getDueDate());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getInvoiceTerms());
-				 outputMetaDataValueListVar.parseAndAddNewItem(invoice.getVendorAddress());
-				 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getEmissionDate());
-				 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getPONumber());
-				 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getDataDeVencimento());
-				 outputMetaDataValueListVar.parseAndAddNewItem("" + invoice.getBaseAmount());
-								
-				 outPort = portSuccess;
-				 }
+				}
 
 			} catch (Exception e) {
 				Logger.error(login, this, "after", procData.getSignature() + "caught exception: " + e.getMessage(), e);
