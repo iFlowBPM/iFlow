@@ -239,7 +239,7 @@
 		</XmlAttribute>
 		<XmlAttribute>
 			<name>inputDocument</name>
-			<description>Document</description>
+			<description>Document ID</description>
 			<value />
 		</XmlAttribute>
 		<XmlAttribute>
