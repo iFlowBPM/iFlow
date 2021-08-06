@@ -1,9 +1,9 @@
-package com.uniksystem.datacapture.model;
+package com.uniksystem.datacapture.model.metadata;
 
 import java.util.Date;
 import java.util.List;
 
-public class Metadata {
+public class Invoice extends Metadata{
 	private String referenceNumber;
 	private String clientName;
 	private String documentClass;
@@ -30,7 +30,7 @@ public class Metadata {
 	private Date dataDeVencimento;
 	private Double baseAmount;
 
-	public Metadata() {
+	public Invoice() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -270,4 +270,3 @@ public class Metadata {
 		}
 	}
 }
-
