@@ -594,10 +594,12 @@ public class CleanFileThreat {
 			List<Integer> documentsCheckPointList = retrieveSimpleField(connection, userInfo,
 					"select state from documents_checkpoint where docid = {0};", new Object[] { docId });
 			
-			HashMap<String, Object> verdict = FileGeneratorUtils.fillAtributtes(null, connection, userInfo, "select file_verdict from documents_checkpoint where docid = {0} ", new Object[] { docId });
-
+			HashMap<String, Object> verdict = FileGeneratorUtils.fillAtributtes(null, connection, userInfo, "select file_verdict from documents_checkpoint where docid = {0} ", new Object[] { docId });			
 
 			if (documentsCheckPointList != null && !documentsCheckPointList.isEmpty()) {
+				Logger.info(userInfo.getUtilizador(), this, "CleanFileThreat.retrieveFileState","state: " + documentsCheckPointList.get(0));
+				Logger.info(userInfo.getUtilizador(), this, "CleanFileThreat.retrieveFileState","file_verdict: " + verdict.get("file_verdict"));
+				
 				if (CheckPointState.DOCUMENT_READY_TO_PROCESS.value == documentsCheckPointList.get(0)) {
 					return CheckPointState.DOCUMENT_READY_TO_PROCESS.value; // 0
 

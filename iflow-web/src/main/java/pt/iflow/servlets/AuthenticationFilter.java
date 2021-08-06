@@ -17,6 +17,7 @@ import pt.iflow.api.utils.ServletUtils;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iflow.api.utils.Utils;
 import pt.iflow.servlets.AuthenticationServlet.AuthenticationResult;
+import pt.iflow.utils.AuthenticationToken;
 
 /**
  * 
@@ -63,7 +64,8 @@ public class AuthenticationFilter extends IFlowFilter {
             sendError(httpResponse);
             return;
           }
-        } else if(null != userInfo && Const.AUTHENTICATION_TOKEN && StringUtils.isNotBlank(request.getParameter(Const.AUTHENTICATION_TOKEN_PARAM_NAME))){
+        } else if(null != userInfo && Const.AUTHENTICATION_TOKEN && StringUtils.isNotBlank(request.getParameter(Const.AUTHENTICATION_TOKEN_PARAM_NAME)) 
+        		&& !StringUtils.equals(userInfo.getUtilizador(), AuthenticationToken.getUserByAuthenticationToken(request.getParameter(Const.AUTHENTICATION_TOKEN_PARAM_NAME)))){
         	AuthenticationResult result = AuthenticationServlet.authenticate(httpRequest, httpResponse, null, null, null);
             mustAuthenticate = !result.isAuth;
         }
