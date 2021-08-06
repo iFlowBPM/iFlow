@@ -9,59 +9,6 @@
 	<description>data-capture</description>
 	<i18nName>library.data-capture.name</i18nName>
 	<i18nDescription>library.data-capture.description</i18nDescription>
-	
-	<XmlBlock>
-		<class>BlockDataCaptureCheckBatchReady</class>
-		<XmlPort>
-			<name>portIn</name>
-			<description>Entrada</description>
-			<in_out>in</in_out>
-			<position>
-				<x>-5</x>
-				<y>25</y>
-			</position>
-		</XmlPort>
-		<XmlPort>
-			<name>portSuccess</name>
-			<description>Sucesso</description>
-			<in_out>out</in_out>
-			<position>
-				<x>102</x>
-				<y>15</y>
-			</position>
-		</XmlPort>
-		<XmlPort>
-			<name>portEmpty</name>
-			<description>portEmpty</description>
-			<in_out>out</in_out>
-			<position>
-				<x>102</x>
-				<y>30</y>
-			</position>
-		</XmlPort>
-		<XmlPort>
-			<name>portError</name>
-			<description>Erro</description>
-			<in_out>out</in_out>
-			<position>
-				<x>102</x>
-				<y>45</y>
-			</position>
-		</XmlPort>
-		<XmlAttribute>
-			<name>endpointURL</name>
-			<description>endpoint URL</description>
-			<value />
-		</XmlAttribute>
-		<XmlAttribute>
-			<name>inputLotId</name>
-			<description>lot id</description>
-			<value />
-		</XmlAttribute>
-		<image>bpmn_task.png</image>
-		<description>library.data-capture.block.check.batch.ready</description>
-		<i18n>library.data-capture.block.check.batch.ready</i18n>
-	</XmlBlock>
 
 	<XmlBlock>
 		<class>BlockDataCaptureFilesInLot</class>
@@ -117,10 +64,10 @@
 			<value />
 		</XmlAttribute>
 		<image>bpmn_task.png</image>
-		<description>library.data-capture.block.files.in.batch</description>
-		<i18n>library.data-capture.block.files.in.batch</i18n>
+		<description>DataCaptureFilesInLot</description>
+		<i18n>DataCaptureFilesInLot</i18n>
 	</XmlBlock>
-	
+
 	<XmlBlock>
 		<class>BlockDataCaptureGetFile</class>
 		<XmlPort>
@@ -190,8 +137,423 @@
 			<value />
 		</XmlAttribute>
 		<image>bpmn_task.png</image>
-		<description>library.data-capture.block.get.file</description>
-		<i18n>library.data-capture.block.get.file</i18n>
+		<description>DataCaptureGetFile</description>
+		<i18n>DataCaptureGetFile</i18n>
+	</XmlBlock>
+
+	<XmlBlock>
+		<class>BlockDataCaptureGetFileV2</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>endpointURL</name>
+			<description>endpoint URL</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputFileId</name>
+			<description>file id</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputMetaDataNameList</name>
+			<description>output metadata name list</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outputMetaDataValueList</name>
+			<description>output metadata value list</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>DataCaptureGetFileV2</description>
+		<i18n>DataCaptureGetFileV2</i18n>
+	</XmlBlock>
+
+	<XmlBlock>
+		<class>BlockPostMFile</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>endpointURL</name>
+			<description>endpointURL</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>username</name>
+			<description>username</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>password</name>
+			<description>password</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>vault</name>
+			<description>vault</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>file</name>
+			<description>file</description>
+			<value />
+		</XmlAttribute>
+
+		<XmlAttribute>
+			<name>inputFactura</name>
+			<description>inputFactura</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputValor</name>
+			<description>inputValor</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputKeywords</name>
+			<description>inputKeywords</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputAutor</name>
+			<description>inputAutor</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputDataDoc</name>
+			<description>inputDataDoc</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputName</name>
+			<description>inputName</description>
+			<value />
+		</XmlAttribute>
+
+		<XmlAttribute>
+			<name>outId</name>
+			<description>outId</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>outGuid</name>
+			<description>outGuid</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>PostMFile</description>
+		<i18n>PostMFile</i18n>
+	</XmlBlock>
+	
+	<XmlBlock>
+		<class>BlockDataCapturePostDocument</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>endpointURL</name>
+			<description>endpointURL</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>file</name>
+			<description>file</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>documentType</name>
+			<description>documentType</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>DataCapturePostDocument</description>
+		<i18n>DataCapturePostDocument</i18n>
+	</XmlBlock>
+	
+	<XmlBlock>
+		<class>BlockDataCapturePostDocumentV2</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>endpointURL</name>
+			<description>endpointURL</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>file</name>
+			<description>file OR docid</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>batchIdIn</name>
+			<description>batchId IN</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>batchIdOut</name>
+			<description>batchId OUT</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>fileIdOut</name>
+			<description>fileId OUT</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>BlockDataCapturePostDocumentV2</description>
+		<i18n>BlockDataCapturePostDocumentV2</i18n>
+	</XmlBlock>
+	
+	<XmlBlock>
+		<class>BlockDataCaptureCheckBatchReady</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>endpointURL</name>
+			<description>endpoint URL</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>inputLotId</name>
+			<description>lot id</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>BlockDataCaptureCheckBatchReady</description>
+		<i18n>BlockDataCaptureCheckBatchReady</i18n>
+	</XmlBlock>
+	
+	<XmlBlock>
+		<class>BlockDataCaptureGetTextV2</class>
+		<XmlPort>
+			<name>portIn</name>
+			<description>Entrada</description>
+			<in_out>in</in_out>
+			<position>
+				<x>-5</x>
+				<y>25</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portSuccess</name>
+			<description>Sucesso</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>15</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portEmpty</name>
+			<description>portEmpty</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>30</y>
+			</position>
+		</XmlPort>
+		<XmlPort>
+			<name>portError</name>
+			<description>Erro</description>
+			<in_out>out</in_out>
+			<position>
+				<x>102</x>
+				<y>45</y>
+			</position>
+		</XmlPort>
+		<XmlAttribute>
+			<name>endpointURL</name>
+			<description>endpoint URL</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>fileId</name>
+			<description>file id</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>pageId</name>
+			<description>page</description>
+			<value />
+		</XmlAttribute>
+		<XmlAttribute>
+			<name>textOutput</name>
+			<description>output text of file</description>
+			<value />
+		</XmlAttribute>
+		<image>bpmn_task.png</image>
+		<description>BlockDataCaptureGetTextV2</description>
+		<i18n>BlockDataCaptureGetTextV2</i18n>
 	</XmlBlock>
 	
 	<XmlBlock>
