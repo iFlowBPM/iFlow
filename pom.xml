@@ -412,7 +412,7 @@
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcprov-jdk15to18</artifactId>
-				<version>1.64</version> <!--  replicated in iflow-applet -->
+				<version>1.67</version> <!--  replicated in iflow-applet -->
 			</dependency>
 			<dependency>
 				<groupId>bouncycastle</groupId>
