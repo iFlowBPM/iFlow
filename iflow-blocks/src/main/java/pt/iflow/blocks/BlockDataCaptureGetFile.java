@@ -14,6 +14,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.uniksystem.datacapture.model.Document;
 import com.uniksystem.datacapture.model.metadata.FinancialDocument;
 import com.uniksystem.datacapture.model.metadata.Invoice;
+import com.uniksystem.datacapture.model.metadata.Generic;
 import com.uniksystem.datacapture.model.metadata.FinancialDocument.LineItems;
 import com.uniksystem.datacapture.model.metadata.FinancialDocument.TaxBreakdown;
 import com.uniksystem.datacapture.model.metadata.Invoice.Tax;
@@ -187,11 +188,155 @@ public class BlockDataCaptureGetFile extends Block {
 				        metadata = metadata + "}";
 				        
 				        String[] partsDocType = metadata.split("\"document:class\" : \"", 2);
-				        String docTypeStart = partsDocType[1];
-				        String[] partsDocType2 = docTypeStart.split("\",", 2);
-				        String docType = partsDocType2[0];
+				        String docTypeStart = null;
+				        if (partsDocType != null && partsDocType.length > 1) 
+				        	docTypeStart = partsDocType[1];
+				        String docType = null;
+				        if (docTypeStart != null) {
+				        	String[] partsDocType2 = docTypeStart.split("\",", 2);
+				        	docType = partsDocType2[0];
+				        }
 				        
-				        if (docType.equals("invoice")) {
+				        // if document:class is not found in metadata docType is null, go to default
+				        if (docType == null) {
+				        	Generic generic = new Gson().fromJson(metadata, Generic.class);	
+				        
+							 DocumentData doc = new DocumentData(document.getFilename(), Base64.getDecoder().decode(document.getData()));
+							 doc = (DocumentData) docBean.addDocument(userInfo, procData, doc);
+							 outputFileVar.parseAndAddNewItem(String.valueOf(doc.getDocId()));
+							 
+							 procData.set(outputFileClass, "for-human-revision");
+							 outputMetaDataNameListVar.clear();
+							 outputMetaDataValueListVar.clear();
+							 
+							 //names
+							 outputMetaDataNameListVar.parseAndAddNewItem("client_name");
+							 outputMetaDataNameListVar.parseAndAddNewItem("subclass");
+							 outputMetaDataNameListVar.parseAndAddNewItem("total_amount");
+							 if(generic.getTaxLines()!=null)
+								 for(Tax tax : generic.getTaxLines()){
+									 outputMetaDataNameListVar.parseAndAddNewItem("tax_rate");
+									 outputMetaDataNameListVar.parseAndAddNewItem("tax_amount");
+									 outputMetaDataNameListVar.parseAndAddNewItem("tax_base_amount");					 
+								 }
+							 outputMetaDataNameListVar.parseAndAddNewItem("vendor_name");
+							 outputMetaDataNameListVar.parseAndAddNewItem("currency");
+							 if(generic.getLineItems()!=null) {
+								 for(LineItems line : generic.getLineItems()){
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemCode");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemDescription");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemQuantity");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemUnit");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemRate");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemTax");	
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemBaseAmount");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemAmount");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemBaseTotalAmountBase");	
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemAmountTotal");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemOrderNumber");
+								 }
+							 }
+							 if(generic.getLineitems()!=null) {
+								 for(LineItems line : generic.getLineitems()){
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemCode");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemDescription");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemQuantity");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemUnit");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemRate");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemTax");	
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemBaseAmount");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemAmount");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemBaseTotalAmountBase");	
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemAmountTotal");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemOrderNumber");
+								 }
+							 }
+							 if(generic.getLineitemsfull()!=null) {
+								 for(LineItems line : generic.getLineitemsfull()){
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemCode");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemDescription");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemQuantity");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemUnit");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemRate");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemTax");	
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemBaseAmount");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemAmount");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemBaseTotalAmountBase");	
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemAmountTotal");
+									 outputMetaDataNameListVar.parseAndAddNewItem("itemOrderNumber");
+								 }
+							 }
+							 outputMetaDataNameListVar.parseAndAddNewItem("invoice_number");
+							 outputMetaDataNameListVar.parseAndAddNewItem("vendor_tax_id");
+							 outputMetaDataNameListVar.parseAndAddNewItem("vat_amount");
+							 outputMetaDataNameListVar.parseAndAddNewItem("client_tax_id");
+							 outputMetaDataNameListVar.parseAndAddNewItem("emission_date");
+							 outputMetaDataNameListVar.parseAndAddNewItem("base_amount");
+							 
+							 //values
+							 outputMetaDataValueListVar.parseAndAddNewItem(generic.getClientName());
+							 outputMetaDataValueListVar.parseAndAddNewItem(generic.getSubclass());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + generic.getTotalAmount());
+							 if(generic.getTaxLines()!=null)
+								 for(Tax tax : generic.getTaxLines()){
+									 outputMetaDataValueListVar.parseAndAddNewItem("" + tax.getTaxRate());
+									 outputMetaDataValueListVar.parseAndAddNewItem("" + tax.getTaxAmount());
+									 outputMetaDataValueListVar.parseAndAddNewItem("" + tax.getTaxBaseAmount());					 
+								 }				 
+							 outputMetaDataValueListVar.parseAndAddNewItem(generic.getVendorName());
+							 outputMetaDataValueListVar.parseAndAddNewItem(generic.getCurrency());
+							 if(generic.getLineItems()!=null)
+								 for(LineItems line : generic.getLineItems()){
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemCode());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemDescription());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemQuantity());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemUnit());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemRate());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemTax());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemBaseAmount());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemAmount());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemBaseTotalAmountBase());	
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemAmountTotal());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemOrderNumber());
+								 }
+							 if(generic.getLineitems()!=null)
+								 for(LineItems line : generic.getLineitems()){
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemCode());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemDescription());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemQuantity());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemUnit());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemRate());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemTax());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemBaseAmount());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemAmount());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemBaseTotalAmountBase());	
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemAmountTotal());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemOrderNumber());
+								 }
+							 if(generic.getLineitemsfull()!=null)
+								 for(LineItems line : generic.getLineitemsfull()){
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemCode());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemDescription());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemQuantity());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemUnit());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemRate());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemTax());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemBaseAmount());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemAmount());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemBaseTotalAmountBase());	
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemAmountTotal());
+									 outputMetaDataValueListVar.parseAndAddNewItem(line.getItemOrderNumber());
+								 }
+
+							 outputMetaDataValueListVar.parseAndAddNewItem(generic.getInvoiceNumber());
+							 outputMetaDataValueListVar.parseAndAddNewItem(generic.getVendorTaxId());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + generic.getVatAmount());
+							 outputMetaDataValueListVar.parseAndAddNewItem(generic.getClientTaxId());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + generic.getEmissionDate());
+							 outputMetaDataValueListVar.parseAndAddNewItem("" + generic.getBaseAmount());
+
+				        }
+				        else if (docType.equals("invoice")) {
 				        	Invoice invoice = new Gson().fromJson(metadata, Invoice.class);	
 
 							 DocumentData doc = new DocumentData(document.getFilename(), Base64.getDecoder().decode(document.getData()));
