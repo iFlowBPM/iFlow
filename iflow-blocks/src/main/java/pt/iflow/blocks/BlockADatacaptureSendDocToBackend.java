@@ -127,7 +127,7 @@ public class BlockADatacaptureSendDocToBackend extends Block {
 		}
 
 		if (StringUtilities.isEmpty(sEndpointURLVar) || docIdVar == null 
-				|| StringUtilities.isEmpty(sSecurityTokenVar) || StringUtilities.isEmpty(documentTypeVar)) {
+				|| StringUtilities.isEmpty(documentTypeVar)) {
 			Logger.error(login, this, "after", procData.getSignature() + "empty value for block attributes");
 			outPort = portError;
 		} else
@@ -158,7 +158,6 @@ public class BlockADatacaptureSendDocToBackend extends Block {
 				 WebResource webResource = client.resource(sEndpointURLVar);
 				 ClientResponse response =
 				 webResource.accept("application/json").type(MediaType.MULTIPART_FORM_DATA_TYPE)
-				 .header("Authorization","Bearer " + sSecurityTokenVar)
 				 .post(ClientResponse.class, multipartEntity);
 				
 				 if (response.getStatus() != 200) {

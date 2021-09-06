@@ -106,7 +106,7 @@ public class BlockDataCaptureFilesInLot extends Block {
     	  Client client = Client.create();
     	  String webResourceAux = sEndpointURLVar.replace("?", sInputLotIdVar);
     	  WebResource webResource = client.resource(webResourceAux);
-    	  ClientResponse response = webResource.accept("application/json").header("Authorization", "Bearer " + sSecurityTokenVar).get(ClientResponse.class);
+    	  ClientResponse response = webResource.accept("application/json").get(ClientResponse.class);
 
     	  if (response.getStatus() != 200) {
 			 Logger.error(login,"BlockDataCaptureFilesInLot", "after", "response status NOK: " + response.getStatus() + " " + response.getEntity(String.class));

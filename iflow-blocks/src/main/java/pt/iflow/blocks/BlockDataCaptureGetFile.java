@@ -27,8 +27,10 @@ import pt.iflow.api.documents.Documents;
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.processdata.ProcessListVariable;
 import pt.iflow.api.utils.Logger;
+import pt.iflow.api.utils.Const;
 import pt.iflow.api.utils.UserInfoInterface;
 import pt.iknow.utils.StringUtilities;
+
 
 public class BlockDataCaptureGetFile extends Block {
 	public Port portIn, portSuccess, portEmpty, portError;
@@ -109,7 +111,6 @@ public class BlockDataCaptureGetFile extends Block {
 
 		try {
 			sEndpointURLVar = procData.transform(userInfo, this.getAttribute(endpointURL));
-			sSecurityTokenVar = userInfo.getSAuthToken();
 			//sSecurityTokenVar = procData.transform(userInfo, this.getAttribute(accessToken));
 			inputFileIdVar = procData.transform(userInfo, this.getAttribute(inputFileId));
 			outputFileVar = procData.getList(this.getAttribute(outputFile));
@@ -133,10 +134,9 @@ public class BlockDataCaptureGetFile extends Block {
 				 String webResourceAux = sEndpointURLVar.replace("?",
 				 inputFileIdVar);
 				 WebResource webResource = client.resource(webResourceAux);
-				 ClientResponse response =
-				 webResource.accept("application/json").header("Authorization",
-				 "Bearer " + sSecurityTokenVar).get(ClientResponse.class);
-				
+				 //ClientResponse response = webResource.accept("application/json").header("Authorization", "Bearer " + sSecurityTokenVar).get(ClientResponse.class);
+				 ClientResponse response = webResource.accept("application/json").get(ClientResponse.class);
+
 				 if (response.getStatus() != 200) {
 				 Logger.error(login,"BlockDataCaptureGetFile", "after",
 						 "response status NOK: " + response.getStatus() + " " + response.getEntity(String.class));
@@ -512,7 +512,7 @@ public class BlockDataCaptureGetFile extends Block {
 					 outPort = portSuccess;
 					 }else {
 						 Logger.error(login, this, "after", procData.getSignature() + "Unable to retrieve metadata");
-							outPort = portError;
+							outPort = portEmpty;
 					 }
 				}
 

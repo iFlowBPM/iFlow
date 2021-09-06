@@ -1,5 +1,7 @@
 package pt.iflow.blocks;
 
+import java.net.URI;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.sun.jersey.api.client.Client;
@@ -13,6 +15,7 @@ import pt.iflow.api.documents.Documents;
 import pt.iflow.api.processdata.ProcessData;
 import pt.iflow.api.utils.Logger;
 import pt.iflow.api.utils.UserInfoInterface;
+import pt.iflow.api.utils.Const;
 import pt.iknow.utils.StringUtilities;
 
 public class BlockDataCaptureCheckBatchReady extends Block {
@@ -84,7 +87,7 @@ public class BlockDataCaptureCheckBatchReady extends Block {
 
     try {
 	    sEndpointURLVar = procData.transform(userInfo, this.getAttribute(endpointURL));
-	    sSecurityTokenVar = userInfo.getSAuthToken();
+	    //sSecurityTokenVar = userInfo.getSAuthToken();
 	    sInputLotIdVar = procData.transform(userInfo,this.getAttribute(inputLotId));
     } catch (Exception e){
     	Logger.error(login, this, "after", procData.getSignature() + "error transforming attributes");
@@ -100,8 +103,8 @@ public class BlockDataCaptureCheckBatchReady extends Block {
     	  Client client = Client.create();
     	  String webResourceAux = sEndpointURLVar.replace("?", sInputLotIdVar);
     	  WebResource webResource = client.resource(webResourceAux);
-    	  ClientResponse response = webResource.accept("application/json").header("Authorization", "Bearer " + sSecurityTokenVar).get(ClientResponse.class);
-
+    	  ClientResponse response = webResource.accept("application/json").get(ClientResponse.class);
+    	  
     	  if (response.getStatus() != 200) {
 			 Logger.error(login,"BlockDataCaptureBatchIsReady", "after", "response status NOK: " + response.getStatus() + " " + response.getEntity(String.class));
 			 outPort = portError;
