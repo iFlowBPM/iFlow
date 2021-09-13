@@ -1,6 +1,8 @@
 package com.uniksystem.datacapture.model;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.uniksystem.datacapture.model.metadata.Metadata;
 
@@ -16,7 +18,7 @@ public class Document {
 	private DocumentStatusEnum status;
 	private Date createdDate;
 	private String createdBy;
-	private Metadata metadata;
+	private Map<String, Object> metadata;
     private Date marked_timestamp;
     
     public String getOriginalFileName() {
@@ -148,12 +150,13 @@ public class Document {
 		this.createdBy = createdBy;
 	}
 
-	public Metadata getMetadata() {
+	public Map<String, Object> getMetadata() {
 		return metadata;
 	}
 
-	public void setMetadata(Metadata metadata) {
+	public void setMetadata(Map<String, Object> metadata) {
 		this.metadata = metadata;
 	}
+
 
 }
