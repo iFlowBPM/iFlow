@@ -110,7 +110,7 @@ public class BlockDataCaptureCheckBatchReady extends Block {
 			 outPort = portError;
     	  } else {
     		  String output = response.getEntity(String.class);    		  
-    		  Logger.info(login,"BlockDataCaptureBatchIsReady", "after", "response returned: " + output);
+    		  Logger.info(login,"BlockDataCaptureBatchIsReady", "after", "response returned for batch " + sInputLotIdVar + ": " + output);
     		  
     		  if(StringUtils.equalsIgnoreCase("1", output) || StringUtils.equalsIgnoreCase("true", output))
     			  outPort = portSuccess;
