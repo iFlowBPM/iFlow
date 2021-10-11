@@ -33,6 +33,11 @@ import org.apache.commons.lang.StringUtils;
 
 public class Const {
 
+	//backend URL
+
+	public static String BACKEND_URL = null;
+
+
 	public static String IFLOW_HOME_PROP = "iflow.home";
 	public static final String IFLOW_HOME = System.getProperty(Const.IFLOW_HOME_PROP);
 
@@ -507,6 +512,10 @@ public class Const {
 	public static synchronized void updateConstants() {
 
 		String stmp = null;
+
+		//setting constant backend
+
+		BACKEND_URL = Setup.getProperty("BACKEND_URL");
 
 		// direct setting constants
 		APP_PROTOCOL = Setup.getProperty("APP_PROTOCOL");
