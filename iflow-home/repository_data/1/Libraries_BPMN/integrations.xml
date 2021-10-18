@@ -117,6 +117,11 @@
             <description>Client id</description>
             <value/>
         </XmlAttribute>
+        <XmlAttribute>
+            <name>output</name>
+            <description>Result of block</description>
+            <value/>
+        </XmlAttribute>
         <image>bpmn_task.png</image>
         <description>library.integrations.block.onboarding.crc</description>
         <i18n>library.integrations.block.onboarding.crc</i18n>
