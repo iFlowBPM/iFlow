@@ -224,37 +224,11 @@
 		    <groupId>com.sun.jersey.contribs</groupId>
 		    <artifactId>jersey-multipart</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.segment.analytics.java</groupId>
-			<artifactId>analytics</artifactId>
-			<version>2.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.segment.analytics.java</groupId>
-			<artifactId>analytics-core</artifactId>
-			<version>2.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.segment.backo</groupId>
-			<artifactId>backo</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.squareup.okhttp3</groupId>
-			<artifactId>okhttp</artifactId>
-			<version>3.9.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.squareup</groupId>
-			<artifactId>javawriter</artifactId>
-			<version>2.5.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.squareup.retrofit</groupId>
-			<artifactId>retrofit</artifactId>
-			<version>1.9.0</version>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
@@ -281,7 +255,15 @@
 					</archive>
 				</configuration>
 			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
 		<resources>
 			<resource>
 				<targetPath>pt/iflow/blocks</targetPath>

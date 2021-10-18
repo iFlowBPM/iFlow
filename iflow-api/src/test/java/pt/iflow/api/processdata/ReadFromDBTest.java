@@ -1,19 +1,12 @@
 package pt.iflow.api.processdata;
 
-import java.io.StringReader;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Properties;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.mysql.jdbc.exceptions.MySQLNonTransientException;
-import com.mysql.jdbc.exceptions.MySQLSyntaxErrorException;
+import java.io.StringReader;
+import java.sql.*;
+import java.util.Properties;
 
 public class ReadFromDBTest extends ProcessTestCase {
     

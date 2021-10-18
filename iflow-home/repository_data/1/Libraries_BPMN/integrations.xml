@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by jmv (.) -->
+
+<XmlLibrary xmlns="http://www.iknow.pt/XmlLibrary" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.iknow.pt/XmlLibrary ../schemas/xmllibrary.xsd">
+    <name>integrations</name>
+    <version>1.0</version>
+    <author>Uniksystem</author>
+    <description>integrations_for_services</description>
+    <i18nName>library.integrations.name</i18nName>
+    <i18nDescription>library.integrations.description</i18nDescription>
+
+    <XmlBlock>
+        <class>BlockOnboardingTink</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+        <XmlAttribute>
+            <name>endpointURL</name>
+            <description>Endpoint URL with appSettingId</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>reportID</name>
+            <description>Id of the report to retrieve</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>name</name>
+            <description>Name of account owner</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>birth_date</name>
+            <description>Birth day of account owner</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>account_number</name>
+            <description>Number of account</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>currency</name>
+            <description>Currency of account account</description>
+            <value/>
+        </XmlAttribute>
+        <image>bpmn_task.png</image>
+        <description>library.integrations.block.onboarding.tink</description>
+        <i18n>library.integrations.block.onboarding.tink</i18n>
+    </XmlBlock>
+    <XmlBlock>
+        <class>BlockOnboardingCRC</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+        <XmlAttribute>
+            <name>endpointURL</name>
+            <description>Endpoint URL with appSettingId</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>crc</name>
+            <description>Crc number</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>client_id</name>
+            <description>Client id</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>output</name>
+            <description>Result of block</description>
+            <value/>
+        </XmlAttribute>
+        <image>bpmn_task.png</image>
+        <description>library.integrations.block.onboarding.crc</description>
+        <i18n>library.integrations.block.onboarding.crc</i18n>
+    </XmlBlock>
+    <XmlBlock>
+        <class>BlockOnboardingSendSmsOTP</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+        <XmlAttribute>
+            <name>apiSettingsID</name>
+            <description>API setting ID of organization</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>phone</name>
+            <description>Phone number</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>message</name>
+            <description>Message to send</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>output</name>
+            <description>Service response</description>
+            <value/>
+        </XmlAttribute>
+        <image>bpmn_task.png</image>
+        <description>library.integrations.block.send.sms.otp</description>
+        <i18n>library.integrations.block.send.sms.otp</i18n>
+    </XmlBlock>
+    <XmlBlock>
+        <class>BlockOnboardingEmailEndpoint</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+        <XmlAttribute>
+            <name>apiSettingsID</name>
+            <description>API setting ID of organization</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>data</name>
+            <description>Email data as per specification</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>output</name>
+            <description>Service response</description>
+            <value/>
+        </XmlAttribute>
+        <image>bpmn_task.png</image>
+        <description>library.integrations.block.email.endpoint</description>
+        <i18n>library.integrations.block.email.endpoint</i18n>
+    </XmlBlock>
+    <XmlBlock>
+        <class>BlockOnboardingCreateUserAlice</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+        <XmlAttribute>
+            <name>apiSettingsID</name>
+            <description>API setting ID of organization</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>firstName</name>
+            <description>User first name</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>surname</name>
+            <description>User surname</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>email</name>
+            <description>User email</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>userID</name>
+            <description>User id in AliceBiometrics</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>userToken</name>
+            <description>User token for further requests</description>
+            <value/>
+        </XmlAttribute>
+        <image>bpmn_task.png</image>
+        <description>library.integrations.block.create.user.alice</description>
+        <i18n>library.integrations.block.create.user.alice</i18n>
+    </XmlBlock>
+    <XmlBlock>
+        <class>BlockOnboardingGetReportAlice</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+        <XmlAttribute>
+            <name>apiSettingsID</name>
+            <description>API setting ID of organization</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>createdAt</name>
+            <description>Report user creation date in string</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>faceMatchDocScore</name>
+            <description>Report user match selfie with documents</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>livelinessScore</name>
+            <description>Report user liveliness score</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>nicPassport</name>
+            <description>CC number or passport number</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>expirationDate</name>
+            <description>Document expiration date</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>mediaIdSelfie</name>
+            <description>Selfie id to be used for getting Media</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>mediaIdDocumentFront</name>
+            <description>Document front picture id for getting Media</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>mediaIdDocumentBack</name>
+            <description>Document back picture id for getting Media</description>
+            <value/>
+        </XmlAttribute>
+        <image>bpmn_task.png</image>
+        <description>library.integrations.block.get.report.alice</description>
+        <i18n>library.integrations.block.get.report.alice</i18n>
+    </XmlBlock>
+    <XmlBlock>
+        <class>BlockOnboardingGetMediaAlice</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+        <XmlAttribute>
+            <name>apiSettingsID</name>
+            <description>API setting ID of organization</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>mediaId</name>
+            <description>Media id to download</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>userId</name>
+            <description>User alice id</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>output</name>
+            <description>Resultado</description>
+            <value/>
+        </XmlAttribute>
+        <image>bpmn_task.png</image>
+        <description>library.integrations.block.get.media.alice</description>
+        <i18n>library.integrations.block.get.media.alice</i18n>
+    </XmlBlock>
+</XmlLibrary>
