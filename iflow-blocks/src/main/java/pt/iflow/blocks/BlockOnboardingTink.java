@@ -136,7 +136,7 @@ public class BlockOnboardingTink extends Block {
 
 
                 Client client = Client.create();
-                WebResource webResource = client.resource(BACKEND_URL+"api/open/onboarding/tink_report/"+sEndpointURLVar);
+                WebResource webResource = client.resource(BACKEND_URL+"/api/open/onboarding/tink_report/"+sEndpointURLVar);
                 ClientResponse response =
                         webResource.accept("application/json")
                                 .type(MediaType.APPLICATION_JSON)
