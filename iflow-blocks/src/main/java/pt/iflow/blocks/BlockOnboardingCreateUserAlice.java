@@ -137,7 +137,7 @@ public class BlockOnboardingCreateUserAlice extends Block {
                 String responseEntity = response.getEntity(String.class);
                 if (response.getStatus() != 200) {
 
-                    Logger.error(login, "BlockOnboardingCRC", "after",
+                    Logger.error(login, "BlockOnboardingCreateUserAlice", "after",
                             "response status NOK: " + response.getStatus() + " " + responseEntity);
                     outPort = portError;
                 } else {
@@ -148,13 +148,13 @@ public class BlockOnboardingCreateUserAlice extends Block {
                         if (jsonResponse.has("token") && jsonResponse.has("userID")) {
                             procData.set(sUserToken, jsonResponse.get("token").toString());
                             procData.set(sUserID, jsonResponse.get("userID").toString());
-                            Logger.info(login, "BlockOnboardingCRC", "after",
+                            Logger.info(login, "BlockOnboardingCreateUserAlice", "after",
                                     "response returned: " + responseEntity);
 
                             outPort = portSuccess;
                         }
                     } catch (JSONException e) {
-                        Logger.info(login, "BlockOnboardingCRC", "after",
+                        Logger.info(login, "BlockOnboardingCreateUserAlice", "after",
                                 "response returned: " + "Token or userID not found in JSON");
                         outPort = portError;
                     }

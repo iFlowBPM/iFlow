@@ -130,11 +130,11 @@ public class BlockOnboardingSendSmsOTP extends Block {
                 procData.set(sOutput, responseEntity);
                 if (response.getStatus() != 200) {
 
-                    Logger.error(login, "BlockOnboardingCRC", "after",
+                    Logger.error(login, "BlockOnboardingSendSmsOTP", "after",
                             "response status NOK: " + response.getStatus() + " " + responseEntity);
                     outPort = portError;
                 } else {
-                    Logger.info(login, "BlockOnboardingCRC", "after",
+                    Logger.info(login, "BlockOnboardingSendSmsOTP", "after",
                             "response returned: " + responseEntity);
 
 

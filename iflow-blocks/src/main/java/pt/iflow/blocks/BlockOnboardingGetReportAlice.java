@@ -1,6 +1,7 @@
 package pt.iflow.blocks;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -20,6 +21,7 @@ import static pt.iflow.api.utils.Const.BACKEND_URL;
 public class BlockOnboardingGetReportAlice extends Block {
     public Port portIn, portSuccess, portError;
 
+    private static final String userID = "userID";
     private static final String apiSettingsID = "apiSettingsID";
     private static final String createdAt = "createdAt";
     private static final String faceMatchDocScore = "faceMatchDocScore";
@@ -92,6 +94,7 @@ public class BlockOnboardingGetReportAlice extends Block {
         String login = userInfo.getUtilizador();
         StringBuffer logMsg = new StringBuffer();
 
+        String sUserID = null;
         String sApiSettingsID = null;
         String sCreatedAt = null;
         String sFaceMatchDocScore = null;
@@ -108,6 +111,7 @@ public class BlockOnboardingGetReportAlice extends Block {
 
         try {
             sApiSettingsID = procData.transform(userInfo, this.getAttribute(apiSettingsID));
+            sUserID = procData.transform(userInfo, this.getAttribute(userID));
             sCreatedAt = this.getAttribute(createdAt);
             sFaceMatchDocScore = this.getAttribute(faceMatchDocScore);
             sLivelinessScore = this.getAttribute(livelinessScore);
@@ -124,7 +128,7 @@ public class BlockOnboardingGetReportAlice extends Block {
             outPort = portError;
         }
 
-        if (StringUtilities.isEmpty(sCreatedAt)||StringUtilities.isEmpty(sApiSettingsID) ||StringUtilities.isEmpty(sFaceMatchDocScore)
+        if (StringUtilities.isEmpty(sUserID)||StringUtilities.isEmpty(sCreatedAt)||StringUtilities.isEmpty(sApiSettingsID) ||StringUtilities.isEmpty(sFaceMatchDocScore)
                 ||StringUtilities.isEmpty(sLivelinessScore) ||StringUtilities.isEmpty(sNicPassport) ||StringUtilities.isEmpty(sExpirationDate)
                 ||StringUtilities.isEmpty(sMediaIdSelfie)  ||StringUtilities.isEmpty(sMediaIdDocumentFront)||StringUtilities.isEmpty(sMediaIdDocumentBack)) {
             Logger.error(login, this, "after", procData.getSignature() + "empty value for block attributes");
@@ -132,13 +136,16 @@ public class BlockOnboardingGetReportAlice extends Block {
         } else
             try {
 
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("settingsID", sApiSettingsID);
+                jsonObject.addProperty("userID", sUserID);
 
                 Client client = Client.create();
                 WebResource webResource = client.resource(BACKEND_URL + "/api/open/onboarding/alice_report");
                 ClientResponse response =
                         webResource.accept("application/json")
                                 .type(MediaType.APPLICATION_JSON)
-                                .get(ClientResponse.class);
+                                .post(ClientResponse.class, jsonObject.toString());
                 String responseEntity = response.getEntity(String.class);
                 if (response.getStatus() != 200) {
 
@@ -148,13 +155,13 @@ public class BlockOnboardingGetReportAlice extends Block {
                 } else {
 
 
-
+                    try{
                     AliceReportJson2 jsonResponse = new Gson().fromJson(responseEntity, AliceReportJson2.class);
 
 
                     procData.set(sCreatedAt, jsonResponse.getReport().getCreatedAt());
-                    procData.set(sFaceMatchDocScore, (String.valueOf(jsonResponse.getReport().getSummary().getFaceMatching().get(0).getScore())));
-                    procData.set(sLivelinessScore, String.valueOf(jsonResponse.getReport().getSummary().getFaceLiveness()));
+                    procData.set(sFaceMatchDocScore, jsonResponse.getReport().getSummary().getFaceMatching().get(0).getScore().floatValue());
+                    procData.set(sLivelinessScore, jsonResponse.getReport().getSummary().getFaceLiveness().floatValue());
                     procData.set(sMediaIdSelfie, jsonResponse.getReport().getSelfies().get(0).getId()+ "." +jsonResponse.getReport().getSelfies().get(0).getMedia().getPreview().getExtension());
 
 
@@ -181,7 +188,11 @@ public class BlockOnboardingGetReportAlice extends Block {
                     Logger.info(login, "BlockOnboardingGetReportAlice", "after",
                             "response returned: " + responseEntity);
 
-                    outPort = portSuccess;
+                    outPort = portSuccess;}
+                    catch (Exception e){
+                        Logger.error(login, this, "after", procData.getSignature() + "caught exception:  error getting data from JSON response possible bad document upload " + e.getMessage(), e);
+                        outPort = portError;
+                    }
                 }
 
             } catch (Exception e) {

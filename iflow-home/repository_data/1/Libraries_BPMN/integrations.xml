@@ -122,6 +122,86 @@
             <description>Result of block</description>
             <value/>
         </XmlAttribute>
+        <XmlAttribute>
+            <name>NIPC</name>
+            <description>NIPC da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>firma</name>
+            <description>Nome da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>CAE</name>
+            <description>CAE da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>formaDeObrigar</name>
+            <description>Forma de obrigar da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>dataValidade</name>
+            <description>Data de validade do CRC</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>morada</name>
+            <description>Morada da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>distrito</name>
+            <description>Distrito da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>concelho</name>
+            <description>Concelho da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>freguesia</name>
+            <description>Freguesia da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>codigoPostal</name>
+            <description>Codigo postal da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>localidade</name>
+            <description>Localidade da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>repNome</name>
+            <description>Lista representantes da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>repNif</name>
+            <description>Lista nif dos representantes da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>repCargo</name>
+            <description>Lista cargo dos representantes da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>repBeneficiario</name>
+            <description>Lista dos beneficiario da empresa</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>repPercentagem</name>
+            <description>Lista percentagem da empresa</description>
+            <value/>
+        </XmlAttribute>
         <image>bpmn_task.png</image>
         <description>library.integrations.block.onboarding.crc</description>
         <i18n>library.integrations.block.onboarding.crc</i18n>
@@ -322,6 +402,11 @@
         <XmlAttribute>
             <name>apiSettingsID</name>
             <description>API setting ID of organization</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>userID</name>
+            <description>User id number</description>
             <value/>
         </XmlAttribute>
         <XmlAttribute>
