@@ -506,4 +506,67 @@
         <description>library.integrations.block.get.media.alice</description>
         <i18n>library.integrations.block.get.media.alice</i18n>
     </XmlBlock>
+    <XmlBlock>
+        <class>BlockOnboardingIESEmpresas</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+        <XmlAttribute>
+            <name>apiSettingsId</name>
+            <description>API setting ID of organization</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>nif</name>
+            <description>Company Nif</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>year</name>
+            <description>Year to check</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>outputFile</name>
+            <description>PDF output</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>q0102_exercicio</name>
+            <description>q0102_exercicio</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>q04AR208</name>
+            <description>q04AR208</description>
+            <value/>
+        </XmlAttribute>
+        <image>bpmn_task.png</image>
+        <description>library.integrations.block.ies.empresas</description>
+        <i18n>library.integrations.block.ies.empresas</i18n>
+    </XmlBlock>
 </XmlLibrary>

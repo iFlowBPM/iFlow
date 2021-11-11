@@ -189,9 +189,9 @@ public class BlockOnboardingCRC extends Block {
 
                     try {
 
-                        String[] teste = responseEntity.split("\n");
-                        String jsonSplit = responseEntity.split(teste[0])[1].split("Content-Length: ")[1].split("\r\n\r\n")[1];
-                        String fileSplit = responseEntity.split(teste[0])[2].split("Content-Length: ")[1].split("\n")[2];
+                        String[] jsonResponseArray = responseEntity.split("\n");
+                        String jsonSplit = responseEntity.split(jsonResponseArray[0])[1].split("Content-Length: ")[1].split("\r\n\r\n")[1];
+                        String fileSplit = responseEntity.split(jsonResponseArray[0])[2].split("Content-Length: ")[1].split("\n")[2];
                         procData.set(sOutput, fileSplit);
 
                         CrCDataDTO dataJson = new Gson().fromJson(jsonSplit, CrCDataDTO.class);
