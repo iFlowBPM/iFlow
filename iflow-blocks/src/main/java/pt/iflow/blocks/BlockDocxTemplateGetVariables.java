@@ -159,6 +159,7 @@ public class BlockDocxTemplateGetVariables extends Block {
         logMsg.append("Using '" + outPort.getName() + "';");
         Logger.logFlowState(userInfo, procData, this, logMsg.toString());
         return outPort;
+
     }
 
     @Override
