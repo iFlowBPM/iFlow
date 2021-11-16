@@ -603,9 +603,9 @@ public class CleanFileThreat {
 				if (CheckPointState.DOCUMENT_READY_TO_PROCESS.value == documentsCheckPointList.get(0)) {
 					return CheckPointState.DOCUMENT_READY_TO_PROCESS.value; // 0
 
-				} else if (CheckPointState.DOWNLOAD_SUCCESS_DOCUMENT_CLEANED.value == documentsCheckPointList.get(0)) {
+				} else if (CheckPointState.DOWNLOAD_SUCCESS_DOCUMENT_CLEANED.value == documentsCheckPointList.get(0)
+						|| StringUtils.equals("benign", (String) verdict.get("file_verdict"))) {
 					return 2;
-
 				} else if (CheckPointState.DOCUMENT_NOT_CLEANED.value == documentsCheckPointList.get(0) && StringUtils.equals("benign", (String)verdict.get("file_verdict"))) {
 					return 2;
 
@@ -797,6 +797,10 @@ public class CleanFileThreat {
 		requestElements.put("file_name", filename);
 		requestElements.put("file_type", filename.substring(filename.lastIndexOf(".") + 1));
 		requestElements.set("features", featuresArray);
+        ObjectNode idElement = mapper.createObjectNode();
+        ObjectNode revisionElement = mapper.createObjectNode();
+        idElement.put("id", "10b4a9c6-e414-425c-ae8b-fe4dd7b25244");
+        revisionElement.put("revision", 1);
 
 		for (int i = 0; i < featuresArray.size(); i++) {
 
