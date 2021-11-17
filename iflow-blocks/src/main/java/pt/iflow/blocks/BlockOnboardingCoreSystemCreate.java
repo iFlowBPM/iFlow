@@ -19,18 +19,27 @@ import javax.ws.rs.core.MediaType;
 
 import static pt.iflow.api.utils.Const.BACKEND_URL;
 
-public class BlockOnboardingCreateUserAlice extends Block {
+public class BlockOnboardingCoreSystemCreate extends Block {
     public Port portIn, portSuccess, portError;
 
     private static final String apiSettingsID = "apiSettingsID";
-    private static final String firstName = "firstName";
-    private static final String surname = "surname";
+    private static final String name = "name";
+    private static final String company = "company";
+    private static final String company_type = "company_type";
+    private static final String tin = "tin";
+    private static final String type = "type";
+    private static final String address = "address";
+    private static final String zip_code = "zip_code";
+    private static final String city = "city";
+    private static final String country = "country";
     private static final String email = "email";
-    private static final String userID = "userID";
-    private static final String userToken = "userToken";
+    private static final String mobile = "mobile";
+    private static final String iban = "iban";
+    private static final String partner_id = "partner_id";
+    private static final String output = "output";
 
 
-    public BlockOnboardingCreateUserAlice(int anFlowId, int id, int subflowblockid, String subflow) {
+    public BlockOnboardingCoreSystemCreate(int anFlowId, int id, int subflowblockid, String subflow) {
         super(anFlowId, id, subflowblockid, subflow);
         hasInteraction = false;
     }
@@ -90,11 +99,20 @@ public class BlockOnboardingCreateUserAlice extends Block {
         StringBuffer logMsg = new StringBuffer();
 
         String sApiSettingsID = null;
-        String sFirstName = null;
-        String sSurname = null;
+        String sName = null;
+        String sCompany = null;
+        String sCompany_type = null;
+        String sTin = null;
+        String sType = null;
+        String sAddress = null;
+        String sZip_code = null;
+        String sCity = null;
+        String sCountry = null;
         String sEmail = null;
-        String sUserID = null;
-        String sUserToken = null;
+        String sMobile = null;
+        String sIban = null;
+        String sPartner_id = null;
+        String sOutput = null;
 
 
         ProcessListVariable variable = null;
@@ -102,20 +120,33 @@ public class BlockOnboardingCreateUserAlice extends Block {
 
         try {
             sApiSettingsID = procData.transform(userInfo, this.getAttribute(apiSettingsID));
-            sFirstName = procData.transform(userInfo, this.getAttribute(firstName));
-            sSurname = procData.transform(userInfo, this.getAttribute(surname));
+            sName = procData.transform(userInfo, this.getAttribute(name));
+            sCompany = procData.transform(userInfo, this.getAttribute(company));
+            sCompany_type = procData.transform(userInfo, this.getAttribute(company_type));
+            sTin = procData.transform(userInfo, this.getAttribute(tin));
+            sType = procData.transform(userInfo, this.getAttribute(type));
+            sAddress = procData.transform(userInfo, this.getAttribute(address));
+            sZip_code = procData.transform(userInfo, this.getAttribute(zip_code));
+            sCity = procData.transform(userInfo, this.getAttribute(city));
+            sCountry = procData.transform(userInfo, this.getAttribute(country));
             sEmail = procData.transform(userInfo, this.getAttribute(email));
-            sUserID = this.getAttribute(userID);
-            sUserToken = this.getAttribute(userToken);
-            // sSecurityTokenVar = userInfo.getSAuthToken();
+            sMobile = procData.transform(userInfo, this.getAttribute(mobile));
+            sIban = procData.transform(userInfo, this.getAttribute(iban));
+            sPartner_id = procData.transform(userInfo, this.getAttribute(partner_id));
+            sOutput = this.getAttribute(output);
+
 
         } catch (Exception e) {
             Logger.error(login, this, "after", procData.getSignature() + "error transforming attributes");
             outPort = portError;
         }
 
-        if (StringUtilities.isEmpty(sFirstName) || StringUtilities.isEmpty(sSurname) || StringUtilities.isEmpty(sApiSettingsID)
-                || StringUtilities.isEmpty(sEmail) || StringUtilities.isEmpty(sUserID) || StringUtilities.isEmpty(sUserToken)) {
+        if (StringUtilities.isEmpty(sApiSettingsID) || StringUtilities.isEmpty(sName) || StringUtilities.isEmpty(sCompany)
+                || StringUtilities.isEmpty(sCompany_type) || StringUtilities.isEmpty(sTin) || StringUtilities.isEmpty(sType)
+                || StringUtilities.isEmpty(sAddress) || StringUtilities.isEmpty(sZip_code) || StringUtilities.isEmpty(sCity)
+                || StringUtilities.isEmpty(sCountry) || StringUtilities.isEmpty(sEmail) || StringUtilities.isEmpty(sMobile)
+                || StringUtilities.isEmpty(sIban) || StringUtilities.isEmpty(sPartner_id) || StringUtilities.isEmpty(sOutput)
+        ) {
             Logger.error(login, this, "after", procData.getSignature() + "empty value for block attributes");
             outPort = portError;
         } else
@@ -123,13 +154,23 @@ public class BlockOnboardingCreateUserAlice extends Block {
 
 
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("firstName", sFirstName);
-                jsonObject.addProperty("lastName", sSurname);
+                jsonObject.addProperty("name", sName);
+                jsonObject.addProperty("company", sCompany);
+                jsonObject.addProperty("company_type", sCompany_type);
+                jsonObject.addProperty("tin", sTin);
+                jsonObject.addProperty("type", sType);
+                jsonObject.addProperty("address", sAddress);
+                jsonObject.addProperty("zip_code", sZip_code);
+                jsonObject.addProperty("city", sCity);
+                jsonObject.addProperty("country", sCity);
                 jsonObject.addProperty("email", sEmail);
+                jsonObject.addProperty("mobile", sMobile);
+                jsonObject.addProperty("iban", sIban);
+                jsonObject.addProperty("partner_id", sPartner_id);
 
 
                 Client client = Client.create();
-                WebResource webResource = client.resource(BACKEND_URL + "/api/open/onboarding/alice_user/" + sApiSettingsID);
+                WebResource webResource = client.resource(BACKEND_URL + "/api/open/onboarding/create_merchant/" + sApiSettingsID);
                 ClientResponse response =
                         webResource.accept("application/json")
                                 .type(MediaType.APPLICATION_JSON)
@@ -137,24 +178,16 @@ public class BlockOnboardingCreateUserAlice extends Block {
                 String responseEntity = response.getEntity(String.class);
                 if (response.getStatus() != 200) {
 
-                    Logger.error(login, "BlockOnboardingCreateUserAlice", "after",
+                    Logger.error(login, "BlockOnboardingCoreSystemCreate", "after",
                             "response status NOK: " + response.getStatus() + " " + responseEntity);
                     outPort = portError;
                 } else {
                     try {
 
 
-                        JSONObject jsonResponse = new JSONObject(responseEntity);
-                        if (jsonResponse.has("token") && jsonResponse.has("userID")) {
-                            procData.set(sUserToken, jsonResponse.get("token").toString());
-                            procData.set(sUserID, jsonResponse.get("userID").toString());
-                            Logger.info(login, "BlockOnboardingCreateUserAlice", "after",
-                                    "response returned: " + responseEntity);
-
-                            outPort = portSuccess;
-                        }
-                    } catch (JSONException e) {
-                        Logger.info(login, "BlockOnboardingCreateUserAlice", "after",
+                        procData.set(sOutput, responseEntity);
+                    } catch (Exception e) {
+                        Logger.info(login, "BlockOnboardingCoreSystemCreate", "after",
                                 "response returned: " + "Token or userID not found in JSON");
                         outPort = portError;
                     }

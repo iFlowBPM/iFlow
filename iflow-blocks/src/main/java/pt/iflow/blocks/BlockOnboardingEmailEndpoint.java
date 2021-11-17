@@ -123,13 +123,13 @@ public class BlockOnboardingEmailEndpoint extends Block {
                 procData.set(sOutput, responseEntity);
                 if (response.getStatus() != 200) {
 
-                    Logger.error(login, "BlockOnboardingCRC", "after",
+                    Logger.error(login, "BlockOnboardingEmailEndpoint", "after",
                             "response status NOK: " + response.getStatus() + " " + responseEntity);
                     outPort = portError;
                 } else {
 
 
-                    Logger.info(login, "BlockOnboardingCRC", "after",
+                    Logger.info(login, "BlockOnboardingEmailEndpoint", "after",
                             "response returned: " + responseEntity);
 
                     outPort = portSuccess;
