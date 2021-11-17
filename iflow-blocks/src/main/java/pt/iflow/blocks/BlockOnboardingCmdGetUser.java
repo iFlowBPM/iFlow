@@ -274,6 +274,7 @@ public class BlockOnboardingCmdGetUser extends Block {
                     CmdUserDTO dataJson = new Gson().fromJson(responseEntity, CmdUserDTO.class);
 
                     procData.set(sNIC , dataJson.getNic());
+
                     procData.set(sNomeProprio , dataJson.getNomeProprio());
                     procData.set(sNomeApelido , dataJson.getNomeApelido());
                     procData.set(sDataNascimento , dataJson.getDataNascimento());
