@@ -41,7 +41,7 @@ public class BlockOnboardingCRC extends Block {
     private static final String repNome = "repNome";
     private static final String repNif = "repNif";
     private static final String repCargo = "repCargo";
-    private static final String repBeneficiario = "repCargo";
+    private static final String repBeneficiario = "repBeneficiario";
     private static final String repPercentagem = "repPercentagem";
 
 
