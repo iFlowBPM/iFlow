@@ -21,6 +21,7 @@ import static pt.iflow.api.utils.Const.BACKEND_URL;
 public class BlockOnboardingCmdGetSaml extends Block {
     public Port portIn, portSuccess, portError;
 
+    private static final String redirectEndpoint = "redirectEndpoint";
     private static final String output = "output";
     private static final String NIC = "NIC";
     private static final String NomeProprio = "NomeProprio";
@@ -119,6 +120,7 @@ public class BlockOnboardingCmdGetSaml extends Block {
         String login = userInfo.getUtilizador();
         StringBuffer logMsg = new StringBuffer();
 
+        String sRedirectEndpoint = null;
         String sNIC = null;
         String sNomeProprio = null;
         String sNomeApelido = null;
@@ -159,7 +161,7 @@ public class BlockOnboardingCmdGetSaml extends Block {
 
 
         try {
-
+            sRedirectEndpoint = procData.transform(userInfo, this.getAttribute(redirectEndpoint));
             sOutput = this.getAttribute(output);
             sNIC = procData.transform(userInfo, this.getAttribute(NIC));
             sNomeProprio = procData.transform(userInfo, this.getAttribute(NomeProprio));
@@ -204,7 +206,7 @@ public class BlockOnboardingCmdGetSaml extends Block {
             outPort = portError;
         }
 
-        if (StringUtilities.isEmpty(sContactosXML) || StringUtilities.isEmpty(sNIC) || StringUtilities.isEmpty(sNomeProprio)
+        if (StringUtilities.isEmpty(sRedirectEndpoint) || StringUtilities.isEmpty(sContactosXML) || StringUtilities.isEmpty(sNIC) || StringUtilities.isEmpty(sNomeProprio)
                 || StringUtilities.isEmpty(sNomeApelido) || StringUtilities.isEmpty(sDataNascimento) || StringUtilities.isEmpty(sNomeCompleto)
                 || StringUtilities.isEmpty(sNIF) || StringUtilities.isEmpty(sNISS) || StringUtilities.isEmpty(sNSNS)
                 || StringUtilities.isEmpty(sNIFCifrado) || StringUtilities.isEmpty(sNISSCifrado) || StringUtilities.isEmpty(sNICCifrado) || StringUtilities.isEmpty(sNSNSCifrado)
@@ -259,6 +261,7 @@ public class BlockOnboardingCmdGetSaml extends Block {
                 jsonObject.addProperty("NumeroTelemovel", sNumeroTelemovel);
                 jsonObject.addProperty("CodigoNacionalidade", sCodigoNacionalidade);
                 jsonObject.addProperty("TemAssinaturaDigitalCMD", sTemAssinaturaDigitalCMD);
+                jsonObject.addProperty("url", sRedirectEndpoint);
 
 
 

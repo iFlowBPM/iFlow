@@ -1323,6 +1323,11 @@
             </position>
         </XmlPort>
         <XmlAttribute>
+            <name>redirectEndpoint</name>
+            <description>Redirect Endpoint</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
             <name>NIC</name>
             <description>NIC</description>
             <value/>
