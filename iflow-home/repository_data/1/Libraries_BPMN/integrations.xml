@@ -819,7 +819,7 @@
             </position>
         </XmlPort>
         <XmlAttribute>
-            <name>apiSettingsId</name>
+            <name>settingsID</name>
             <description>API setting ID of organization</description>
             <value/>
         </XmlAttribute>
@@ -927,7 +927,7 @@
             </position>
         </XmlPort>
         <XmlAttribute>
-            <name>apiSettingsId</name>
+            <name>settingsID</name>
             <description>API setting ID of organization</description>
             <value/>
         </XmlAttribute>

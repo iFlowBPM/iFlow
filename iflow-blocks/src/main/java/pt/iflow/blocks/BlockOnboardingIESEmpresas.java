@@ -346,8 +346,7 @@ public class BlockOnboardingIESEmpresas extends Block {
 
 
                     } catch (Exception e) {
-                        Logger.info(login, "BlockOnboardingIESEmpresas", "after",
-                                "response returned: " + "Token or userID not found in JSON");
+                        Logger.error(login, this, "after", procData.getSignature() + "response is OK, caught exception possible incomplete json response: " + e.getMessage(), e);
                         outPort = portError;
                     }
 

@@ -22,7 +22,7 @@ import static pt.iflow.api.utils.Const.BACKEND_URL;
 public class BlockOnboardingCoreSystemCreate extends Block {
     public Port portIn, portSuccess, portError;
 
-    private static final String apiSettingsID = "apiSettingsID";
+    private static final String settingsID = "settingsID";
     private static final String name = "name";
     private static final String company = "company";
     private static final String company_type = "company_type";
@@ -98,7 +98,7 @@ public class BlockOnboardingCoreSystemCreate extends Block {
         String login = userInfo.getUtilizador();
         StringBuffer logMsg = new StringBuffer();
 
-        String sApiSettingsID = null;
+        String sSettingsID = null;
         String sName = null;
         String sCompany = null;
         String sCompany_type = null;
@@ -119,7 +119,7 @@ public class BlockOnboardingCoreSystemCreate extends Block {
 
 
         try {
-            sApiSettingsID = procData.transform(userInfo, this.getAttribute(apiSettingsID));
+            sSettingsID = procData.transform(userInfo, this.getAttribute(settingsID));
             sName = procData.transform(userInfo, this.getAttribute(name));
             sCompany = procData.transform(userInfo, this.getAttribute(company));
             sCompany_type = procData.transform(userInfo, this.getAttribute(company_type));
@@ -141,7 +141,7 @@ public class BlockOnboardingCoreSystemCreate extends Block {
             outPort = portError;
         }
 
-        if (StringUtilities.isEmpty(sApiSettingsID) || StringUtilities.isEmpty(sName) || StringUtilities.isEmpty(sCompany)
+        if (StringUtilities.isEmpty(sSettingsID) || StringUtilities.isEmpty(sName) || StringUtilities.isEmpty(sCompany)
                 || StringUtilities.isEmpty(sCompany_type) || StringUtilities.isEmpty(sTin) || StringUtilities.isEmpty(sType)
                 || StringUtilities.isEmpty(sAddress) || StringUtilities.isEmpty(sZip_code) || StringUtilities.isEmpty(sCity)
                 || StringUtilities.isEmpty(sCountry) || StringUtilities.isEmpty(sEmail) || StringUtilities.isEmpty(sMobile)
@@ -162,7 +162,7 @@ public class BlockOnboardingCoreSystemCreate extends Block {
                 jsonObject.addProperty("address", sAddress);
                 jsonObject.addProperty("zip_code", sZip_code);
                 jsonObject.addProperty("city", sCity);
-                jsonObject.addProperty("country", sCity);
+                jsonObject.addProperty("country", sCountry);
                 jsonObject.addProperty("email", sEmail);
                 jsonObject.addProperty("mobile", sMobile);
                 jsonObject.addProperty("iban", sIban);
@@ -170,7 +170,7 @@ public class BlockOnboardingCoreSystemCreate extends Block {
 
 
                 Client client = Client.create();
-                WebResource webResource = client.resource(BACKEND_URL + "/api/open/onboarding/create_merchant/" + sApiSettingsID);
+                WebResource webResource = client.resource(BACKEND_URL + "/api/open/onboarding/create_merchant/" + sSettingsID);
                 ClientResponse response =
                         webResource.accept("application/json")
                                 .type(MediaType.APPLICATION_JSON)
@@ -187,8 +187,7 @@ public class BlockOnboardingCoreSystemCreate extends Block {
 
                         procData.set(sOutput, responseEntity);
                     } catch (Exception e) {
-                        Logger.info(login, "BlockOnboardingCoreSystemCreate", "after",
-                                "response returned: " + "Token or userID not found in JSON");
+                        Logger.error(login, this, "after", procData.getSignature() + "response is OK, caught exception possible incomplete json response: " + e.getMessage(), e);
                         outPort = portError;
                     }
 

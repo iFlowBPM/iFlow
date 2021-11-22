@@ -288,8 +288,7 @@ public class BlockOnboardingCmdGetSaml extends Block {
                         outPort = portSuccess;
 
                     } catch (Exception e) {
-                        Logger.info(login, "BlockOnboardingCmdGetSaml", "after",
-                                "response returned: " + "Token or userID not found in JSON");
+                        Logger.error(login, this, "after", procData.getSignature() + "response is OK, caught exception possible incomplete json response: " + e.getMessage(), e);
                         outPort = portError;
                     }
 
