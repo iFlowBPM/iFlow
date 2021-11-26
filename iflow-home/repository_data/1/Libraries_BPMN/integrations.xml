@@ -1667,4 +1667,52 @@
         <description>library.integrations.block.dnb.get.inquiry</description>
         <i18n>library.integrations.block.dnb.get.inquiry</i18n>
     </XmlBlock>
+    <XmlBlock>
+        <class>BlockOnboardingDnBGetEntityPDF</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+        <XmlAttribute>
+            <name>apiSettingsID</name>
+            <description>API settings ID </description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>entityID</name>
+            <description>Entity id</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>output</name>
+            <description>Output list of output documents</description>
+            <value/>
+        </XmlAttribute>
+        <image>bpmn_task.png</image>
+        <description>library.integrations.block.dnb.get.entity.pdf</description>
+        <i18n>library.integrations.block.dnb.get.entity.pdf</i18n>
+    </XmlBlock>
 </XmlLibrary>
