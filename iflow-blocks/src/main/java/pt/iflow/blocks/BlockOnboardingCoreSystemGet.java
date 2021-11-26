@@ -205,7 +205,8 @@ public class BlockOnboardingCoreSystemGet extends Block {
                             sIban.parseAndAddNewItem("" + data.getIban());
                         }
 
-
+                        Logger.info(login, "BlockOnboardingCoreSystemGet", "after",
+                                "response returned: " + responseEntity);
                         outPort = portSuccess;
 
                     } catch (Exception e) {

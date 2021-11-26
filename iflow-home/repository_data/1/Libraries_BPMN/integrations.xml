@@ -978,7 +978,7 @@
         </XmlAttribute>
         <XmlAttribute>
             <name>company_type</name>
-            <description>List wtih company type</description>
+            <description>List with company type</description>
             <value/>
         </XmlAttribute>
         <XmlAttribute>
@@ -1003,7 +1003,7 @@
         </XmlAttribute>
         <XmlAttribute>
             <name>email</name>
-            <description>List with names</description>
+            <description>List with emails</description>
             <value/>
         </XmlAttribute>
         <XmlAttribute>
@@ -1515,5 +1515,156 @@
         <image>bpmn_task.png</image>
         <description>library.integrations.block.get.cmd.saml</description>
         <i18n>library.integrations.block.get.cmd.saml</i18n>
+    </XmlBlock>
+    <XmlBlock>
+        <class>BlockOnboardingDnBPepCheck</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+        <XmlAttribute>
+            <name>apiSettingsID</name>
+            <description>API settings ID </description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>subjectName</name>
+            <description>Subject name</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>subjectTypeText</name>
+            <description>Subject type</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>streetAddressLine</name>
+            <description>Street address line format = Street Name, Street Number, Building Name, Estate Name</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>townName</name>
+            <description>Town name</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>postalCode</name>
+            <description>Postal code</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>countryISO</name>
+            <description>Country ISO format</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>birthDate</name>
+            <description>Birthdate formats = YYYY-MM-dd || YYYY-MM || YYYY</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>age</name>
+            <description>Age</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>screeningMonitoringMode</name>
+            <description>Screening Monitoring Mode</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>outputInquiryID</name>
+            <description>Output InquiryID</description>
+            <value/>
+        </XmlAttribute>
+        <image>bpmn_task.png</image>
+        <description>library.integrations.block.dnb.pep.check</description>
+        <i18n>library.integrations.block.dnb.pep.check</i18n>
+    </XmlBlock>
+    <XmlBlock>
+        <class>BlockOnboardingDnBGetInquiry</class>
+        <XmlPort>
+            <name>portIn</name>
+            <description>Entrada</description>
+            <in_out>in</in_out>
+            <position>
+                <x>-5</x>
+                <y>25</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portSuccess</name>
+            <description>Sucesso</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>15</y>
+            </position>
+        </XmlPort>
+        <XmlPort>
+            <name>portError</name>
+            <description>Erro</description>
+            <in_out>out</in_out>
+            <position>
+                <x>102</x>
+                <y>45</y>
+            </position>
+        </XmlPort>
+        <XmlAttribute>
+            <name>apiSettingsID</name>
+            <description>API settings ID </description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>inquiryId</name>
+            <description>Inquiry Id</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>name</name>
+            <description>Output list of names</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>birthday</name>
+            <description>List of birthdates </description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>riskScore</name>
+            <description>List with risk scores</description>
+            <value/>
+        </XmlAttribute>
+        <XmlAttribute>
+            <name>entityID</name>
+            <description>Entity ID</description>
+            <value/>
+        </XmlAttribute>
+        <image>bpmn_task.png</image>
+        <description>library.integrations.block.dnb.get.inquiry</description>
+        <i18n>library.integrations.block.dnb.get.inquiry</i18n>
     </XmlBlock>
 </XmlLibrary>

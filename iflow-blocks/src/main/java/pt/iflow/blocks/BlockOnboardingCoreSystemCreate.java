@@ -186,6 +186,10 @@ public class BlockOnboardingCoreSystemCreate extends Block {
 
 
                         procData.set(sOutput, responseEntity);
+
+                        Logger.info(login, "BlockOnboardingCoreSystemCreate", "after",
+                                "response returned: " + responseEntity);
+                        outPort = portSuccess;
                     } catch (Exception e) {
                         Logger.error(login, this, "after", procData.getSignature() + "response is OK, caught exception possible incomplete json response: " + e.getMessage(), e);
                         outPort = portError;

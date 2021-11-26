@@ -344,6 +344,10 @@ public class BlockOnboardingIESEmpresas extends Block {
                             vQ04AR215.parseAndAddNewItem("" + linha.getQ04AR201());
                         }
 
+                        Logger.info(login, "BlockOnboardingIESEmpresas", "after",
+                                "response returned: " + responseEntity);
+
+                        outPort = portSuccess;
 
                     } catch (Exception e) {
                         Logger.error(login, this, "after", procData.getSignature() + "response is OK, caught exception possible incomplete json response: " + e.getMessage(), e);

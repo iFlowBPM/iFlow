@@ -321,7 +321,8 @@ public class BlockOnboardingCmdGetUser extends Block {
                     procData.set(sLocalidadePostal , dataJson.getLocalidadePostal());
                     procData.set(sCodigoFreguesia , dataJson.getCodigoFreguesia());
 
-
+                    Logger.info(login, "BlockOnboardingCmdGetUser", "after",
+                            "response returned: " + responseEntity);
                     outPort = portSuccess;
 
                 } catch (Exception e) {

@@ -285,6 +285,9 @@ public class BlockOnboardingCmdGetSaml extends Block {
                         procData.set(sOutput , convertedObject.get("SAMLRequest").getAsString());
 
 
+                        Logger.info(login, "BlockOnboardingCmdGetSaml", "after",
+                                "response returned: " + responseEntity);
+
                         outPort = portSuccess;
 
                     } catch (Exception e) {
